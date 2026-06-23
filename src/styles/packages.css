@@ -1,0 +1,120 @@
+/* Packages & Offers Page Styles - Mobile First */
+
+/* Brand Colors */
+:root {
+  --purple: #67245F;
+  --green: #044630;
+  --yellow: #F5BD1A;
+  --light-bg: #ECEBE7;
+}
+
+/* Section container */
+.packages-section {
+  padding: 2rem 1rem;
+  background-color: var(--light-bg);
+  direction: rtl; /* Arabic RTL */
+  text-align: right;
+}
+
+.section-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.2rem; /* larger title */
+  color: var(--purple);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Grid layout for package cards */
+.packages-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: stretch; /* make cards equal height */
+}
+
+@media (min-width: 600px) {
+  .packages-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .packages-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.package-card {
+  background: #fff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.package-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.package-img {
+  width: 100%;
+  height: 200px; /* consistent height for all images */
+  object-fit: contain; /* keep full image visible */
+  cursor: pointer;
+}
+
+.package-info {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-grow: 1;
+}
+
+.package-name {
+  font-size: 1.5rem; /* larger package name */
+  color: var(--purple);
+  margin: 0;
+}
+
+.package-price {
+  font-size: 1.3rem; /* larger price */
+  font-weight: bold;
+  color: var(--green);
+}
+
+.package-duration {
+  font-style: italic;
+  color: #555;
+}
+
+.package-details {
+  flex-grow: 1;
+  color: #333;
+}
+
+.book-btn {
+  align-self: flex-start;
+  background-color: var(--yellow);
+  color: #000;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.book-btn:hover {
+  background-color: #e5a70d;
+  transform: translateY(-2px);
+}
+
+/* Lightbox overlay modifications */
+.gallery-lightbox {
+  background: rgba(0, 0, 0, 0.9);
+}

@@ -1,0 +1,50 @@
+/* src/styles/fonts.css */
+/* Font-face definitions for IRIS Studio brand typography */
+
+/* Arabic font: Juman */
+@font-face {
+  font-family: 'Juman';
+  src: url('../assets/fonts/alfont_com_AlFont_com_juman-normal.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Juman';
+  src: url('../assets/fonts/alfont_com_AlFont_com_juman-bold-.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* English font: DegularDisplay */
+@font-face {
+  font-family: 'DegularDisplay';
+  src: url('../assets/fonts/DegularDisplay-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DegularDisplay';
+  src: url('../assets/fonts/DegularDisplay-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DegularDisplay';
+  src: url('../assets/fonts/DegularDisplay-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* CSS variables for easy reference */
+:root {
+  --font-body: 'Juman', sans-serif;               /* Arabic body text */
+  --font-heading: 'Juman', sans-serif;            /* Arabic headings (bold) */
+  --font-hero: 'DegularDisplay', sans-serif;     /* Hero title (black) */
+  --font-english-bold: 'DegularDisplay', sans-serif;    /* English bold for numbers/prices */
+  --font-english-regular: 'DegularDisplay', sans-serif;/* English regular */
+}

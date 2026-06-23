@@ -1,0 +1,307 @@
+/* ========================================
+   Work Page – Customer-facing gallery
+   ======================================== */
+
+.work-page {
+  min-height: 100vh;
+  padding: 2rem 1.5rem 4rem;
+  background: #f8f6fb;
+  direction: rtl;
+}
+
+/* ---- Hero ---- */
+.work-hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.work-hero h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #2d1b2e;
+  margin-bottom: 0.5rem;
+}
+
+.work-hero p {
+  font-size: 1.05rem;
+  color: #7a6a80;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* ---- Empty ---- */
+.work-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 5rem 2rem;
+  color: #a89cb0;
+  text-align: center;
+}
+
+.work-empty span {
+  font-size: 4rem;
+}
+
+.work-empty h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #5a4a60;
+}
+
+/* ---- Masonry grid (CSS columns) ---- */
+.work-masonry {
+  column-count: 3;
+  column-gap: 1.25rem;
+}
+
+/* ---- Card ---- */
+.work-card {
+  break-inside: avoid;
+  margin-bottom: 1.25rem;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.07);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+
+.work-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(103, 36, 95, 0.18);
+}
+
+/* Image fills card width, height is natural (no crop) */
+.work-card-img-wrap {
+  width: 100%;
+  line-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.work-card-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  transition: transform 0.35s ease;
+}
+
+.work-card:hover .work-card-img {
+  transform: scale(1.04);
+}
+
+/* Hover overlay with zoom icon */
+.work-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(103, 36, 95, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.work-card:hover .work-card-overlay {
+  opacity: 1;
+}
+
+.work-zoom-icon {
+  font-size: 2.5rem;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+  transform: scale(0.8);
+  transition: transform 0.25s ease;
+}
+
+.work-card:hover .work-zoom-icon {
+  transform: scale(1);
+}
+
+/* ---- Card info ---- */
+.work-card-info {
+  padding: 1rem 1.25rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.work-card-info h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2d1b2e;
+  margin: 0;
+}
+
+.work-badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(4, 70, 48, 0.08);
+  color: #044630;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+  .work-masonry {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .work-masonry {
+    column-count: 1;
+  }
+
+  .work-hero h1 {
+    font-size: 1.8rem;
+  }
+}
+
+/* ========================================
+   Lightbox
+   ======================================== */
+
+.lb-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(10, 5, 15, 0.92);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: lb-fade-in 0.2s ease;
+}
+
+@keyframes lb-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Close button */
+.lb-close {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;       /* LTR left = RTL left side */
+  background: rgba(255,255,255,0.12);
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10001;
+}
+.lb-close:hover { background: rgba(255,255,255,0.25); }
+
+/* Counter */
+.lb-counter {
+  position: absolute;
+  top: 1.4rem;
+  right: 1.5rem;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  z-index: 10001;
+}
+
+/* Image container */
+.lb-img-wrap {
+  max-width: 90vw;
+  max-height: 78vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lb-zoom-in 0.22s cubic-bezier(0.165,0.84,0.44,1);
+}
+
+@keyframes lb-zoom-in {
+  from { transform: scale(0.88); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.lb-img {
+  max-width: 100%;
+  max-height: 78vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  display: block;
+}
+
+/* Info bar */
+.lb-info {
+  margin-top: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  direction: rtl;
+}
+
+.lb-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.lb-badge {
+  padding: 0.28rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(103, 36, 95, 0.55);
+  color: #e8d0e4;
+}
+
+/* Navigation arrows */
+.lb-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #fff;
+  font-size: 2.5rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+  z-index: 10001;
+  line-height: 1;
+}
+
+.lb-arrow:hover {
+  background: rgba(255,255,255,0.22);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.lb-arrow-right { right: 1.5rem; }
+.lb-arrow-left  { left: 1.5rem; }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .lb-arrow { display: none; }
+  .lb-img-wrap { max-width: 95vw; }
+  .lb-img { max-height: 65vh; }
+}
+

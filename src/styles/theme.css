@@ -1,0 +1,57 @@
+:root {
+  --color-purple: #67245f;
+  --color-gold: #f5bd1a;
+  --color-dark-green: #044630;
+  --color-light-gray: #ecebe7;
+  --font-primary: 'Cairo', 'Inter', sans-serif;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-light-gray);
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* Button utilities */
+.btn-primary {
+  background: var(--color-gold);
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-purple);
+  border: 2px solid var(--color-purple);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-secondary:hover {
+  background: var(--color-purple);
+  color: #fff;
+}

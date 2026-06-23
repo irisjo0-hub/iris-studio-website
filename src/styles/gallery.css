@@ -1,0 +1,32 @@
+/* src/styles/gallery.css */
+
+.gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.gallery-lightbox img {
+  max-width: 90%;
+  max-height: 80vh;
+  border-radius: 8px;
+}
+
+.gallery-lightbox .close-btn,
+.gallery-lightbox .prev-btn,
+.gallery-lightbox .next-btn {
+  position: absolute;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.gallery-lightbox .close-btn { top: 1rem; right: 1rem; }
+.gallery-lightbox .prev-btn { left: 2rem; }
+.gallery-lightbox .next-btn { right: 2rem; }
