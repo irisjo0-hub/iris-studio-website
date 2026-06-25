@@ -4,149 +4,206 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 80px;
+  height: 100px;
   padding: 0 5%;
-  background: rgba(236, 235, 231, 0.8);
+  background: rgba(236, 235, 231, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   position: sticky;
   top: 0;
   z-index: 1000;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(15, 90, 71, 0.1);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
-  transition: var(--transition-smooth);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navbar.scrolled {
+  height: 70px;
+  background: rgba(236, 235, 231, 0.98);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .logo-container {
   display: flex;
   align-items: center;
-  padding: 8px 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .logo {
-  height: 120px;
-  /* Larger, cleaner logo */
+  height: 140px;
   width: auto;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
 }
 
 .logo:hover {
-  transform: scale(1.5);
+  transform: scale(1.05);
 }
 
-/* Nav links styling */
+/* When scrolled: completely hide the logo container */
+.navbar.scrolled .logo-container {
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Nav Links for Desktop */
 .nav-links {
   display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 80px;
-  right: 0;
-  width: 100%;
-  background: rgba(236, 235, 231, 0.95);
-  backdrop-filter: blur(20px);
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.nav-links.open {
-  max-height: 400px;
+  align-items: center;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .nav-item {
-  padding: 16px 24px;
+  padding: 8px 16px;
   color: var(--color-purple);
   text-decoration: none;
   font-family: var(--font-primary);
   font-weight: 700;
-  font-size: 1.05rem;
-  transition: var(--transition-smooth);
-  border-right: 3px solid transparent;
-  text-align: right;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border-radius: 20px;
+  border: 1px solid transparent;
 }
 
 .nav-item:hover {
-  background: rgba(103, 36, 95, 0.06);
+  background: rgba(110, 38, 123, 0.08);
   color: var(--color-green);
-  border-right-color: var(--color-gold);
 }
 
-/* Mobile Hamburger Menu */
+.nav-item.active {
+  background: var(--color-purple);
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(110, 38, 123, 0.15);
+}
+
+/* Hamburger menu button (hidden on desktop) */
 .hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
   background: transparent;
   border: none;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  height: 20px;
-  width: 26px;
   padding: 0;
+  z-index: 1100;
+  outline: none;
 }
 
 .hamburger .bar {
   width: 100%;
-  height: 2px;
-  background: var(--color-purple);
+  height: 3px;
+  background-color: var(--color-purple);
   border-radius: 4px;
-  transition: var(--transition-smooth);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Desktop Navigation overrides */
-@media (min-width: 992px) {
+/* Hamburger active transformation */
+.hamburger.active .bar:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+
+.hamburger.active .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active .bar:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Mobile responsive drawer */
+.nav-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100vh;
+  background: #ECEBE7;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
+  z-index: 1050;
+  padding: 100px 24px 40px;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid rgba(15, 90, 71, 0.1);
+}
+
+.nav-drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.drawer-item {
+  padding: 12px 20px;
+  color: var(--color-purple);
+  text-decoration: none;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  border: 1px solid transparent;
+}
+
+.drawer-item:hover {
+  background: rgba(110, 38, 123, 0.08);
+  color: var(--color-green);
+}
+
+.drawer-item.active {
+  background: var(--color-purple);
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(110, 38, 123, 0.15);
+}
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1040;
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Mobile view layout overrides */
+@media (max-width: 991px) {
   .navbar {
-    height: 90px;
-    padding: 0 8%;
+    height: 80px;
+    padding: 0 20px;
+  }
+
+  .navbar.scrolled {
+    height: 60px;
   }
 
   .logo {
-    height: 120px;
-    /* Desktop logo height is even larger */
+    height: 90px;
   }
 
-  .nav-links {
-    position: static;
-    flex-direction: row;
-    max-height: none;
-    background: transparent;
-    backdrop-filter: none;
-    width: auto;
-    overflow: visible;
-    border-bottom: none;
-    gap: 32px;
-  }
-
-  .nav-item {
-    padding: 8px 0;
-    color: var(--color-purple);
-    font-size: 1rem;
-    position: relative;
-    border-right: none;
-  }
-
-  .nav-item::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--color-gold);
-    transition: var(--transition-smooth);
-  }
-
-  .nav-item:hover {
-    background: transparent;
-    color: var(--color-green);
-  }
-
-  .nav-item:hover::after {
-    width: 100%;
+  .desktop-nav {
+    display: none;
   }
 
   .hamburger {
-    display: none;
+    display: flex;
   }
 }

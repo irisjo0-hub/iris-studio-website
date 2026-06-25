@@ -23,7 +23,7 @@
 .booking-page {
   min-height: 100vh;
   background: var(--bk-bg);
-  padding: 40px 24px 80px;
+  padding: 24px 16px 60px; /* Reduced padding for visual balance */
   direction: rtl;
   font-family: 'Cairo', 'Segoe UI', sans-serif;
   color: var(--bk-text);
@@ -32,16 +32,16 @@
 /* ── Header ── */
 .bk-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 20px; /* Reduced from 32px */
 }
 .bk-title {
-  font-size: 2.4rem;
+  font-size: 2.1rem; /* Slightly smaller title for mobile scaling */
   font-weight: 900;
   color: var(--bk-purple);
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 }
 .bk-subtitle {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   color: var(--bk-muted);
   margin: 0;
 }
@@ -50,8 +50,8 @@
 .bk-steps-indicator {
   display: flex;
   justify-content: center;
-  gap: 48px;
-  margin-bottom: 40px;
+  gap: 32px; /* Reduced from 48px to prevent overflow */
+  margin-bottom: 24px; /* Reduced from 40px */
 }
 .bk-step-dot {
   display: flex;
@@ -109,25 +109,43 @@
   margin: 0 auto;
   background: var(--bk-white);
   border-radius: var(--bk-radius);
-  padding: 36px 40px;
+  padding: 24px 28px; /* Reduced from 36px 40px for a more compact card */
   box-shadow: var(--bk-shadow);
   border: 1px solid rgba(0,0,0,0.04);
 }
 .bk-section-title {
-  font-size: 1.5rem;
+  font-size: 1.35rem; /* Slightly smaller size for balance */
   font-weight: 800;
   color: var(--bk-purple);
-  margin: 0 0 28px;
-  padding-bottom: 14px;
+  margin: 0 0 20px; /* Reduced from 28px */
+  padding-bottom: 10px;
   border-bottom: 2px solid var(--bk-gold);
+}
+
+/* Date picker calendar icon wrapper */
+.date-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+.date-input-wrapper .calendar-icon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  pointer-events: none;
+  z-index: 2;
+}
+.date-picker-input {
+  padding-right: 44px !important; /* Leave space for calendar emoji */
 }
 
 /* ── Package cards ── */
 .pkg-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
 }
 .pkg-card {
   background: var(--bk-bg);
@@ -277,9 +295,9 @@
   margin-bottom: 14px;
 }
 .slots-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+  gap: 8px;
 }
 .slot-btn {
   padding: 10px 18px;
@@ -473,101 +491,102 @@
 
 /* ── Summary card ── */
 .summary-card {
-  border: 2px solid var(--bk-border);
+  border: 1px dashed var(--bk-border); /* Dashed border for receipt aesthetic */
   border-radius: 14px;
   overflow: hidden;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  background: var(--bk-white);
 }
 .summary-header {
   background: var(--bk-purple);
   color: #fff;
-  padding: 20px 28px;
+  padding: 14px 20px; /* Reduced padding */
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .summary-logo {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 900;
   color: var(--bk-gold);
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 .summary-sub {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   opacity: 0.8;
 }
 .summary-rows {
-  padding: 20px 28px;
+  padding: 14px 20px; /* Compact padding */
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px; /* Compact gap */
 }
 .summary-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--bk-bg);
-  font-size: 0.95rem;
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(0,0,0,0.06); /* Dashed borders */
+  font-size: 0.92rem;
 }
 .summary-row:last-child { border-bottom: none; }
 .summary-row span { color: var(--bk-muted); }
 .summary-row strong { color: var(--bk-text); font-weight: 700; }
 
 .summary-extras {
-  padding: 16px 28px;
+  padding: 12px 20px; /* Compact padding */
   background: var(--bk-bg);
-  border-top: 1px solid var(--bk-border);
+  border-top: 1px dashed var(--bk-border);
 }
 .summary-extras h4 {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--bk-purple);
-  margin: 0 0 10px;
+  margin: 0 0 6px;
 }
 .summary-extra-row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.9rem;
-  padding: 5px 0;
+  font-size: 0.85rem;
+  padding: 4px 0;
   color: var(--bk-text);
 }
 
 .summary-totals {
-  padding: 20px 28px;
+  padding: 14px 20px; /* Compact padding */
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   background: var(--bk-white);
-  border-top: 2px solid var(--bk-border);
+  border-top: 1px dashed var(--bk-border);
 }
 .total-row {
   display: flex;
   justify-content: space-between;
-  font-size: 1rem;
-  padding: 6px 0;
+  font-size: 0.95rem;
+  padding: 4px 0;
 }
-.total-row strong { font-weight: 800; font-size: 1.1rem; }
+.total-row strong { font-weight: 800; font-size: 1.05rem; }
 .total-row.deposit { color: var(--bk-green); }
 .total-row.deposit strong { color: var(--bk-green); }
 .total-row.remaining {
   border-top: 2px solid var(--bk-gold);
-  padding-top: 12px;
+  padding-top: 10px;
   font-weight: 800;
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: var(--bk-purple);
 }
-.total-row.remaining strong { color: var(--bk-purple); font-size: 1.3rem; }
+.total-row.remaining strong { color: var(--bk-purple); font-size: 1.2rem; }
 
 .summary-receipt {
-  padding: 16px 28px;
-  border-top: 1px solid var(--bk-border);
+  padding: 12px 20px; /* Compact padding */
+  border-top: 1px dashed var(--bk-border);
 }
 .summary-receipt p {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--bk-muted);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 /* ── Success ── */
@@ -596,10 +615,490 @@
 
 /* ── Responsive ── */
 @media (max-width: 680px) {
-  .bk-section { padding: 24px 18px; }
+  .bk-section { padding: 20px 14px; }
   .pkg-grid { grid-template-columns: repeat(2, 1fr); }
-  .bk-steps-indicator { gap: 20px; }
+  .bk-steps-indicator {
+    gap: 8px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 8px;
+    width: 100%;
+    scrollbar-width: none;
+  }
+  .bk-steps-indicator::-webkit-scrollbar { display: none; }
+  .bk-step-dot { flex-shrink: 0; }
   .bk-step-dot:not(:last-child)::after { display: none; }
   .extras-grid { grid-template-columns: repeat(2, 1fr); }
   .bk-nav-row { flex-direction: column; gap: 12px; }
 }
+
+/* ── Custom Airbnb-Style Calendar ── */
+.custom-calendar-box {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--bk-border);
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  margin-top: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.cal-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--bk-purple);
+}
+
+.cal-arrow-btn {
+  background: var(--bk-bg);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: var(--bk-purple);
+  transition: background 0.2s;
+}
+
+.cal-arrow-btn:hover {
+  background: rgba(111, 36, 111, 0.08);
+}
+
+.cal-weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--bk-muted);
+  margin-bottom: 8px;
+}
+
+.cal-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.cal-day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--bk-text);
+  font-family: inherit;
+}
+
+.day-btn {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day-btn:hover:not(.disabled-day) {
+  background: rgba(111, 36, 111, 0.08);
+  color: var(--bk-purple);
+}
+
+.active-day {
+  background: var(--bk-purple) !important;
+  color: #ffffff !important;
+}
+
+.disabled-day {
+  color: #c4c4c4 !important;
+  cursor: not-allowed;
+}
+
+.selected-date-display {
+  margin-top: 14px;
+  background: rgba(15, 90, 70, 0.06);
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: var(--bk-green);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+/* ── Compact Grid of Add-ons ── */
+.compact-extras-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.compact-extra-card {
+  background: #ffffff;
+  border: 1.5px solid var(--bk-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.25s ease;
+}
+
+.compact-extra-card:hover {
+  border-color: var(--bk-purple);
+}
+
+.selected-extra {
+  border-color: var(--bk-purple);
+  background: rgba(111, 36, 111, 0.03);
+}
+
+.extra-info-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.compact-extra-card .extra-icon {
+  font-size: 1.3rem;
+}
+
+.compact-extra-card .extra-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--bk-text);
+}
+
+.compact-extra-card .extra-price {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--bk-green);
+}
+
+.small-qty .qty-btn {
+  padding: 4px 10px;
+  font-size: 0.95rem;
+}
+
+.small-qty .qty-val {
+  padding: 4px 10px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .compact-extras-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Delivery selection cards ── */
+.delivery-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.delivery-card {
+  background: #ffffff;
+  border: 1.5px solid var(--bk-border);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: center;
+}
+
+.delivery-card:hover {
+  border-color: var(--bk-purple);
+}
+
+.delivery-card.selected {
+  border-color: var(--bk-gold);
+  background: rgba(242, 194, 26, 0.04);
+}
+
+.delivery-card-icon {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.delivery-card-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--bk-purple);
+  margin-bottom: 4px;
+}
+
+.delivery-card-desc {
+  font-size: 0.8rem;
+  color: var(--bk-muted);
+}
+
+@media (max-width: 520px) {
+  .delivery-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Step 4: Payment Layout ── */
+.deposit-payment-screen {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.payment-receipt-summary {
+  background: rgba(15, 90, 70, 0.05);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.payment-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: var(--bk-text);
+  padding: 4px 0;
+}
+
+.payment-row.total-pay {
+  border-top: 1px dashed var(--bk-border);
+  margin-top: 8px;
+  padding-top: 8px;
+  font-weight: 700;
+  color: var(--bk-purple);
+}
+
+.payment-details-box {
+  border: 1px solid var(--bk-border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.payment-details-box p {
+  font-size: 0.9rem;
+  color: var(--bk-text);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pay-method-card {
+  background: var(--bk-bg);
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.pay-method-card .method-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--bk-purple);
+}
+
+.pay-method-card.orange-money .method-title {
+  color: #f16e00;
+}
+
+.method-alias {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--bk-green);
+  margin: 4px 0;
+}
+
+.method-recipient {
+  font-size: 0.75rem;
+  color: var(--bk-muted);
+}
+
+@media (max-width: 520px) {
+  .payment-methods-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.receipt-upload-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bk-bg);
+  border: 2px dashed var(--bk-border);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--bk-purple);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.receipt-upload-label:hover {
+  background: rgba(111, 36, 111, 0.04);
+  border-color: var(--bk-purple);
+}
+
+.receipt-preview-container {
+  margin-top: 14px;
+  text-align: center;
+  border: 1px solid var(--bk-border);
+  border-radius: 8px;
+  padding: 10px;
+  background: #ffffff;
+}
+
+.receipt-preview-img {
+  max-height: 200px;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+/* ── Step 5: Confirmation Layout ── */
+.compact-confirmation-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 2px solid var(--bk-border);
+  overflow: hidden;
+  box-shadow: var(--bk-shadow);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.conf-summary-header {
+  background: var(--bk-purple);
+  color: #ffffff;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.conf-summary-header h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--bk-gold);
+}
+
+.conf-summary-header span {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.conf-details-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.conf-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(0,0,0,0.06);
+  font-size: 0.95rem;
+}
+
+.conf-row:last-child {
+  border-bottom: none;
+}
+
+.conf-row span {
+  color: var(--bk-muted);
+}
+
+.conf-row strong {
+  color: var(--bk-text);
+  font-weight: 700;
+}
+
+.conf-row-addons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(0,0,0,0.06);
+}
+
+.addons-title-label {
+  font-size: 0.9rem;
+  color: var(--bk-muted);
+}
+
+.addons-list-items {
+  padding-right: 12px;
+  font-size: 0.85rem;
+  color: var(--bk-text);
+  font-weight: 700;
+}
+
+.addon-item-sub {
+  margin: 2px 0;
+}
+
+.conf-row.total-amount {
+  color: var(--bk-text);
+  font-weight: 800;
+}
+
+.conf-row.deposit-deduct {
+  color: var(--bk-green);
+}
+
+.conf-row.amount-remaining {
+  color: var(--bk-purple);
+  font-size: 1.1rem;
+}
+
+.conf-row.amount-remaining strong {
+  color: var(--bk-purple);
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
+/* Calendar Dots & Indicators */
+.cal-day-cell {
+  position: relative;
+}
+
+.cal-dot {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: var(--bk-purple);
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.active-day .cal-dot {
+  background-color: #ffffff;
+}
+
+.disabled-day .cal-dot {
+  background-color: #c4c4c4;
+}
+

@@ -9,6 +9,7 @@ import GraduationBooks     from '../pages/GraduationBooks';
 import GraduationBookOrder from '../pages/GraduationBookOrder';
 import TemplatesGallery    from '../pages/TemplatesGallery';
 import Booking             from '../pages/Booking';
+import PrintingProducts    from '../pages/PrintingProducts';
 
 import Admin                   from '../pages/Admin';
 import AdminLogin              from '../pages/AdminLogin';
@@ -21,6 +22,9 @@ import AdminPackages           from '../pages/AdminPackages';
 import AdminTemplates          from '../pages/AdminTemplates';
 import AdminExtras             from '../pages/AdminExtras';
 import AdminBookExtras         from '../pages/AdminBookExtras';
+import AdminOffers             from '../pages/AdminOffers';
+import AdminProducts           from '../pages/AdminProducts';
+import AdminPrintingOrders     from '../pages/AdminPrintingOrders';
 
 const AppRouter = () => (
   <Routes>
@@ -33,6 +37,7 @@ const AppRouter = () => (
     <Route path="/graduation-book-order" element={<Layout><GraduationBookOrder /></Layout>} />
     <Route path="/templates"            element={<Layout><TemplatesGallery /></Layout>} />
     <Route path="/booking"              element={<Layout><Booking /></Layout>} />
+    <Route path="/printing-products"    element={<Layout><PrintingProducts /></Layout>} />
 
     {/* Admin routes */}
     <Route path="/admin"                        element={<Admin />} />
@@ -41,8 +46,11 @@ const AppRouter = () => (
     <Route path="/admin/bookings"               element={<AdminBookings />} />
     <Route path="/admin/schedule"               element={<AdminSchedule />} />
     <Route path="/admin/graduation-orders"      element={<AdminGraduationOrders />} />
+    <Route path="/admin/printing-orders"        element={<AdminPrintingOrders />} />
     <Route path="/admin/work"                   element={<AdminWork />} />
     <Route path="/admin/packages"               element={<AdminPackages />} />
+    <Route path="/admin/offers"                 element={<AdminOffers />} />
+    <Route path="/admin/printing-products"      element={<AdminProducts />} />
     <Route path="/admin/templates"              element={<AdminTemplates />} />
     <Route path="/admin/extras"                 element={<AdminExtras />} />
     <Route path="/admin/book-extras"            element={<AdminBookExtras />} />

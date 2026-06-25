@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Lightbox from '../components/Lightbox';
 import '../styles/packages.css';
@@ -92,9 +93,9 @@ const Packages = () => {
                 <p className="package-price">{pkg.price}</p>
                 <p className="package-duration">{pkg.duration}</p>
                 <p className="package-details">{pkg.details}</p>
-                <button className="book-btn" type="button">
+                <Link to={`/booking?package=${encodeURIComponent(pkg.name)}`} className="book-btn">
                   احجز هذه الباقة
-                </button>
+                </Link>
               </div>
             </article>
           ))}

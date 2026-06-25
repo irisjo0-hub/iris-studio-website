@@ -3,7 +3,7 @@ import { supabase, uploadFile, deleteFile, extractPathFromUrl } from '../lib/sup
 import AdminLayout from '../components/AdminLayout';
 import '../styles/admin.css';
 
-const AdminPackages = () => {
+const AdminOffers = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -11,26 +11,23 @@ const AdminPackages = () => {
   // Form Fields
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
-  const [features, setFeatures] = useState(''); // Comma-separated strings
-  const [colors, setColors] = useState('');     // Comma-separated hexes
-  const [category, setCategory] = useState('shoot'); // 'shoot' or 'graduation'
-  const [sortOrder, setSortOrder] = useState('0');
+  const [description, setDescription] = useState('');
+  const [buttonText, setButtonText] = useState('احجز الآن');
   const [isHidden, setIsHidden] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [existingImageUrl, setExistingImageUrl] = useState('');
 
-  // Load packages on mount
   const fetchItems = async () => {
     try {
       const { data, error } = await supabase
-        .from('packages')
+        .from('offers')
         .select('*')
-        .order('sort_order', { ascending: true });
+        .order('created_at', { ascending: false });
       if (error) throw error;
       if (data) setItems(data);
     } catch (e) {
-      console.error('Failed to load packages:', e);
+      console.error('Failed to fetch offers:', e);
     }
   };
 
@@ -49,10 +46,8 @@ const AdminPackages = () => {
   const resetForm = () => {
     setTitle('');
     setPrice('');
-    setFeatures('');
-    setColors('');
-    setCategory('shoot');
-    setSortOrder('0');
+    setDescription('');
+    setButtonText('احجز الآن');
     setIsHidden(false);
     setImageFile(null);
     setPreviewUrl('');
@@ -60,33 +55,26 @@ const AdminPackages = () => {
     setEditingId(null);
   };
 
-  const handleEdit = (pkg) => {
-    setEditingId(pkg.id);
-    setTitle(pkg.title);
-    setPrice(String(pkg.price));
-    setCategory(pkg.category || 'shoot');
-    setSortOrder(String(pkg.sort_order || 0));
-    setIsHidden(pkg.is_hidden || false);
-    setExistingImageUrl(pkg.image_url || '');
-    setPreviewUrl(pkg.image_url || '');
-    
-    // Convert array fields back to comma strings
-    const featArr = Array.isArray(pkg.features) ? pkg.features : JSON.parse(pkg.features || '[]');
-    setFeatures(featArr.join(', '));
-
-    const colorArr = Array.isArray(pkg.colors) ? pkg.colors : JSON.parse(pkg.colors || '[]');
-    setColors(colorArr.join(', '));
+  const handleEdit = (off) => {
+    setEditingId(off.id);
+    setTitle(off.title);
+    setPrice(String(off.price));
+    setDescription(off.description || '');
+    setButtonText(off.button_text || 'احجز الآن');
+    setIsHidden(off.is_hidden || false);
+    setExistingImageUrl(off.image_url || '');
+    setPreviewUrl(off.image_url || '');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!title.trim()) {
-      alert('الرجاء إدخال عنوان البكج');
+      alert('الرجاء إدخال عنوان العرض');
       return;
     }
     if (price === '') {
-      alert('الرجاء إدخال سعر البكج');
+      alert('الرجاء إدخال سعر العرض');
       return;
     }
 
@@ -95,66 +83,50 @@ const AdminPackages = () => {
       let finalImageUrl = existingImageUrl;
 
       if (imageFile) {
-        // Upload new image
-        const filePath = `${Date.now()}-${imageFile.name}`;
+        const filePath = `offers-${Date.now()}-${imageFile.name}`;
         finalImageUrl = await uploadFile('packages', filePath, imageFile);
 
-        // Delete old image if updating
         if (editingId && existingImageUrl) {
           const oldPath = extractPathFromUrl(existingImageUrl, 'packages');
           if (oldPath) await deleteFile('packages', oldPath);
         }
       }
 
-      // Parse feature strings
-      const parsedFeatures = features.split(',')
-        .map(f => f.trim())
-        .filter(Boolean);
-
-      // Parse color hex codes
-      const parsedColors = colors.split(',')
-        .map(c => c.trim())
-        .filter(Boolean);
-
-      const pkgData = {
+      const offerData = {
         title: title.trim(),
         price: parseFloat(price),
-        features: parsedFeatures,
+        description: description.trim(),
+        button_text: buttonText.trim(),
         image_url: finalImageUrl,
-        colors: parsedColors,
-        sort_order: parseInt(sortOrder, 10) || 0,
-        category: category,
         is_hidden: isHidden
       };
 
       if (editingId) {
-        // Update
         const { error } = await supabase
-          .from('packages')
-          .update(pkgData)
+          .from('offers')
+          .update(offerData)
           .eq('id', editingId);
         if (error) throw error;
-        alert('تم تعديل البكج بنجاح');
+        alert('تم تعديل العرض بنجاح');
       } else {
-        // Insert
         const { error } = await supabase
-          .from('packages')
-          .insert(pkgData);
+          .from('offers')
+          .insert(offerData);
         if (error) throw error;
-        alert('تم إضافة البكج بنجاح');
+        alert('تم إضافة العرض بنجاح');
       }
 
       resetForm();
       fetchItems();
     } catch (err) {
-      alert('حدث خطأ أثناء حفظ البكج: ' + err.message);
+      alert('حدث خطأ أثناء حفظ العرض: ' + err.message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id, imageUrl) => {
-    if (!window.confirm('هل أنت متأكد من حذف هذا البكج؟')) return;
+    if (!window.confirm('هل أنت متأكد من حذف هذا العرض؟')) return;
     try {
       if (imageUrl) {
         const path = extractPathFromUrl(imageUrl, 'packages');
@@ -162,28 +134,28 @@ const AdminPackages = () => {
       }
 
       const { error } = await supabase
-        .from('packages')
+        .from('offers')
         .delete()
         .eq('id', id);
       if (error) throw error;
 
       setItems(items.filter((it) => it.id !== id));
-      alert('تم حذف البكج بنجاح');
+      alert('تم حذف العرض بنجاح');
     } catch (err) {
-      console.error('Failed to delete item:', err);
-      alert('حدث خطأ أثناء الحذف');
+      console.error('Failed to delete offer:', err);
+      alert('حدث خطأ أثناء حذف العرض');
     }
   };
 
   return (
     <AdminLayout>
-      <section className="admin-packages-section" style={{ direction: 'rtl', padding: '20px' }}>
-        <h2 className="section-title">إدارة البكجات والعروض</h2>
-        <p className="section-subtitle">إضافة وتعديل وحذف بكجات التصوير ودفاتر التخرج.</p>
+      <section className="admin-offers-section" style={{ direction: 'rtl', padding: '20px' }}>
+        <h2 className="section-title">إدارة العروض الترويجية</h2>
+        <p className="section-subtitle">إضافة وتعديل عروض الموسم والخصومات المحددة زمنياً.</p>
 
         <div className="admin-form-card">
           <h3 style={{ marginBottom: '1rem', color: 'var(--iris-purple)' }}>
-            {editingId ? '📝 تعديل البكج' : '➕ إضافة بكج جديد'}
+            {editingId ? '📝 تعديل العرض' : '➕ إضافة عرض جديد'}
           </h3>
           <form onSubmit={handleSubmit}>
             <div className="admin-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '20px' }}>
@@ -194,7 +166,7 @@ const AdminPackages = () => {
                   className="admin-input"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="مثال: بكج التخرج المميز"
+                  placeholder="مثال: عرض الصيف الذهبي"
                   disabled={loading}
                 />
               </div>
@@ -207,57 +179,31 @@ const AdminPackages = () => {
                   className="admin-input"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  placeholder="مثال: 30"
+                  placeholder="مثال: 45"
                   disabled={loading}
                 />
               </div>
 
               <div className="form-group">
-                <label>نوع البكج</label>
-                <select
-                  className="admin-input"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  style={{ height: '43px' }}
-                  disabled={loading}
-                >
-                  <option value="shoot">جلسة تصوير (Shoot)</option>
-                  <option value="graduation">دفتر تخرج (Graduation Book)</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>ترتيب العرض</label>
+                <label>نص زر الحجز</label>
                 <input
-                  type="number"
+                  type="text"
                   className="admin-input"
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value)}
-                  placeholder="0"
+                  value={buttonText}
+                  onChange={(e) => setButtonText(e.target.value)}
+                  placeholder="مثال: احجز الآن"
                   disabled={loading}
                 />
               </div>
 
               <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label>المميزات (افصل بينها بفاصلة)</label>
-                <input
-                  type="text"
+                <label>وصف العرض</label>
+                <textarea
                   className="admin-input"
-                  value={features}
-                  onChange={(e) => setFeatures(e.target.value)}
-                  placeholder="مثال: 50 دقيقة, تعديل 10 صور, ستاند خشب"
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label>ألوان التنسيق / التدرج (افصل بينها بفاصلة)</label>
-                <input
-                  type="text"
-                  className="admin-input"
-                  value={colors}
-                  onChange={(e) => setColors(e.target.value)}
-                  placeholder="مثال: #6F246F, #0F5A46"
+                  style={{ minHeight: '80px', resize: 'vertical' }}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="اكتب تفاصيل ومحتوى العرض الترويجي..."
                   disabled={loading}
                 />
               </div>
@@ -270,17 +216,17 @@ const AdminPackages = () => {
                     onChange={(e) => setIsHidden(e.target.checked)}
                     disabled={loading}
                   />
-                  <span>إخفاء البكج من الموقع</span>
+                  <span>إخفاء العرض مؤقتاً</span>
                 </label>
               </div>
 
               <div className="form-group">
-                <label>صورة البكج</label>
-                <label htmlFor="package-image" className="admin-upload-box" style={{ padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #ccc', borderRadius: '8px', cursor: 'pointer' }}>
+                <label>صورة العرض</label>
+                <label htmlFor="offer-image" className="admin-upload-box" style={{ padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #ccc', borderRadius: '8px', cursor: 'pointer' }}>
                   <span className="upload-icon">📸</span>
-                  <span className="upload-text" style={{ marginRight: '8px' }}>اختر صورة البكج</span>
+                  <span className="upload-text" style={{ marginRight: '8px' }}>اختر صورة العرض</span>
                   <input
-                    id="package-image"
+                    id="offer-image"
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
@@ -293,7 +239,7 @@ const AdminPackages = () => {
 
             {previewUrl && (
               <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
-                <p style={{ fontWeight: '700', marginBottom: '0.5rem', color: 'var(--iris-purple)' }}>معاينة صورة البكج:</p>
+                <p style={{ fontWeight: '700', marginBottom: '0.5rem', color: 'var(--iris-purple)' }}>معاينة صورة العرض:</p>
                 <img
                   src={previewUrl}
                   alt="معاينة"
@@ -309,7 +255,7 @@ const AdminPackages = () => {
 
             <div style={{ display: 'flex', gap: '12px' }}>
               <button type="submit" className="btn-action confirm" style={{ padding: '0.75rem 2rem', fontSize: '1rem', width: 'auto' }} disabled={loading}>
-                {loading ? '⏳ جاري الحفظ...' : editingId ? 'تحديث البكج' : 'إضافة البكج'}
+                {loading ? '⏳ جاري الحفظ...' : editingId ? 'تحديث العرض' : 'إضافة العرض'}
               </button>
               {editingId && (
                 <button type="button" className="btn-action reject" onClick={resetForm} style={{ padding: '0.75rem 2rem', fontSize: '1rem', width: 'auto' }}>
@@ -322,12 +268,12 @@ const AdminPackages = () => {
 
         {items.length === 0 ? (
           <div className="admin-empty-state">
-            <h3>لا توجد بكجات مضافة بعد.</h3>
+            <h3>لا توجد عروض مضافة بعد.</h3>
           </div>
         ) : (
           <div className="admin-items-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', marginTop: '24px' }}>
             {items.map((it) => (
-              <div key={it.id} className="admin-item-card" style={{ background: '#fff', borderRadius: '12px', border: '1px solid #eee', overflow: 'hidden', padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div key={it.id} className="admin-item-card" style={{ background: '#fff', borderRadius: '12px', border: '1px solid #eee', overflow: 'hidden', padding: '16px', display: 'flex', flexDirection: 'column', justifycontent: 'space-between' }}>
                 <div>
                   {it.image_url ? (
                     <img src={it.image_url} alt={it.title} style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px' }} />
@@ -336,8 +282,7 @@ const AdminPackages = () => {
                   )}
                   <h3 style={{ marginTop: '12px', fontSize: '1.15rem' }}>{it.title}</h3>
                   <div style={{ color: 'var(--iris-green)', fontWeight: 'bold', fontSize: '1.2rem', margin: '4px 0' }}>{it.price} JOD</div>
-                  <div style={{ fontSize: '0.85rem', color: '#666' }}>التصنيف: {it.category === 'shoot' ? 'جلسة تصوير' : 'دفتر تخرج'}</div>
-                  <div style={{ fontSize: '0.85rem', color: '#666' }}>ترتيب العرض: {it.sort_order}</div>
+                  <p style={{ fontSize: '0.85rem', color: '#666', height: '60px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{it.description}</p>
                   {it.is_hidden && <span style={{ color: 'red', fontSize: '0.8rem', fontWeight: 'bold' }}>[مخفي]</span>}
                 </div>
                 <div className="card-actions" style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
@@ -353,4 +298,4 @@ const AdminPackages = () => {
   );
 };
 
-export default AdminPackages;
+export default AdminOffers;

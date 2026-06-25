@@ -3,21 +3,21 @@
 @import "./fonts.css";
 
 :root {
-  --color-purple: #67245F;
-  --color-green: #044630;
-  --color-gold: #F5BD1A;
+  --color-purple: #6E267B;
+  --color-green: #0F5A47;
+  --color-gold: #F2C230;
   --color-bg-light: #ECEBE7;
   --color-bg-white: #FFFFFF;
   --color-text-main: #1D1D1F;
   --color-text-muted: #515154;
 
-  --font-primary: "Juman", sans-serif;
-  --font-secondary: "Juman", sans-serif;
-  --font-display: "DegularDisplay", "Juman", sans-serif;
+  --font-primary: "Cairo", "Juman", sans-serif;
+  --font-secondary: "Cairo", "Juman", sans-serif;
+  --font-display: "Cairo", "DegularDisplay", "Juman", sans-serif;
 
   --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.04);
-  --shadow-glass: 0 8px 32px rgba(103, 36, 95, 0.04);
+  --shadow-glass: 0 8px 32px rgba(111, 36, 111, 0.04);
   --blur-glass: blur(16px);
   --border-glass: 1px solid rgba(255, 255, 255, 0.3);
 }
@@ -32,19 +32,21 @@
 
 html {
   scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   font-family: var(--font-primary);
   background-color: var(--color-bg-light);
-  background-image:
-    radial-gradient(at 0% 0%, rgba(103, 36, 95, 0.03) 0px, transparent 50%),
-    radial-gradient(at 50% 0%, rgba(4, 70, 48, 0.03) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(245, 189, 26, 0.03) 0px, transparent 50%);
+  background-image: none;
   color: var(--color-text-main);
   line-height: 1.8;
   direction: rtl;
   text-align: right;
+  width: 100%;
+  max-width: 100%;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -78,10 +80,20 @@ select {
   font-family: var(--font-display);
 }
 
+.customer-layout {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .content-wrapper {
   width: 100%;
   max-width: 100%;
   min-height: calc(100vh - 140px);
+  overflow-x: hidden;
 }
 
 .container {

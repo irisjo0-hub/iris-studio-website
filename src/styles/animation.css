@@ -19,24 +19,24 @@
   will-change: transform, opacity;
 }
 
-#We_Break {
+.break-box-banner.animate #We_Break {
   opacity: 0;
   animation: textReveal 0.7s ease forwards;
   animation-delay: 0.8s;
 }
 
-#The_Box {
+.break-box-banner.animate #The_Box {
   opacity: 0;
   animation: textReveal 0.7s ease forwards;
   animation-delay: 1.3s;
 }
 
-#Purple_right_piece,
-#Green_bottom_piece,
-#Yellow_piece_left,
-#Yellow_piece_right,
-#Green_top_piece,
-#Purple_top-left_piece {
+.break-box-banner.animate #Purple_right_piece,
+.break-box-banner.animate #Green_bottom_piece,
+.break-box-banner.animate #Yellow_piece_left,
+.break-box-banner.animate #Yellow_piece_right,
+.break-box-banner.animate #Green_top_piece,
+.break-box-banner.animate #Purple_top-left_piece {
   opacity: 0;
   animation: smoothFloatingOut 3.5s cubic-bezier(.17, .84, .44, 1) infinite;
   animation-delay: 1.7s;

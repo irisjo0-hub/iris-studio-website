@@ -210,4 +210,99 @@ INSERT INTO book_extras (name, price, icon) VALUES
   ('قبعة مطرزة', 0, '🎓'),
   ('قبعة مطبوعة', 0, '🎓'),
   ('ريلز تخرج', 0, '🎬'),
-  ('جريدة تخرج A2', 0, '📰');
+  ('جريدة تخرج A2', 0, '📰'),
+  ('ملصق خشبي 44×30', 0, '🪵'),
+  ('ملصق خشبي 60×40', 0, '🪵'),
+  ('ملصق خشبي + ستاند', 0, '🖼️'),
+  ('وشاح مطرز', 0, '🧣'),
+  ('وشاح مطبوع', 0, '🧣'),
+  ('طاقية مطبوعة', 10, '🎓'),
+  ('ريل جريدة تخرج A2', 10, '📰');
+
+
+-- ────────────────────────────────────────────
+-- 7. REVISIONS & DYNAMIC DATA SYSTEMS
+-- ────────────────────────────────────────────
+
+-- Dynamic Packages Table
+CREATE TABLE IF NOT EXISTS packages (
+  id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at    TIMESTAMPTZ DEFAULT now(),
+  title         TEXT NOT NULL,
+  price         NUMERIC(10,2) NOT NULL DEFAULT 0,
+  features      JSONB NOT NULL DEFAULT '[]'::jsonb, -- array of strings
+  image_url     TEXT,
+  colors        JSONB NOT NULL DEFAULT '[]'::jsonb, -- array of color hex codes
+  sort_order    INT DEFAULT 0,
+  is_hidden     BOOLEAN DEFAULT false,
+  category      TEXT NOT NULL DEFAULT 'shoot' -- 'shoot' or 'graduation'
+);
+
+ALTER TABLE packages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all on packages" ON packages FOR ALL USING (true) WITH CHECK (true);
+
+-- Dynamic Offers Table
+CREATE TABLE IF NOT EXISTS offers (
+  id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at    TIMESTAMPTZ DEFAULT now(),
+  title         TEXT NOT NULL,
+  image_url     TEXT,
+  price         NUMERIC(10,2) NOT NULL DEFAULT 0,
+  description   TEXT NOT NULL DEFAULT '',
+  button_text   TEXT DEFAULT 'احجز الآن',
+  is_hidden     BOOLEAN DEFAULT false
+);
+
+ALTER TABLE offers ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all on offers" ON offers FOR ALL USING (true) WITH CHECK (true);
+
+-- Dynamic Printing Products Table
+CREATE TABLE IF NOT EXISTS printing_products (
+  id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at    TIMESTAMPTZ DEFAULT now(),
+  name          TEXT NOT NULL,
+  description   TEXT NOT NULL DEFAULT '',
+  price         NUMERIC(10,2) NOT NULL DEFAULT 0,
+  image_urls    JSONB DEFAULT '[]'::jsonb, -- array of image URLs
+  category      TEXT DEFAULT '',
+  available_colors JSONB DEFAULT '[]'::jsonb, -- array of color names / hexes
+  color_selection_enabled BOOLEAN DEFAULT false,
+  custom_notes  TEXT DEFAULT '',
+  is_hidden     BOOLEAN DEFAULT false
+);
+
+ALTER TABLE printing_products ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all on printing_products" ON printing_products FOR ALL USING (true) WITH CHECK (true);
+
+-- Dynamic Printing Orders Table
+CREATE TABLE IF NOT EXISTS printing_orders (
+  id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at    TIMESTAMPTZ DEFAULT now(),
+  product_id    BIGINT REFERENCES printing_products(id) ON DELETE SET NULL,
+  product_name  TEXT NOT NULL,
+  customer_name TEXT NOT NULL,
+  phone         TEXT NOT NULL,
+  notes         TEXT DEFAULT '',
+  image_urls    JSONB DEFAULT '[]'::jsonb, -- array of uploaded design images
+  quantity      INT DEFAULT 1,
+  selected_color TEXT DEFAULT '',
+  status        TEXT DEFAULT 'pending'
+);
+
+ALTER TABLE printing_orders ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all on printing_orders" ON printing_orders FOR ALL USING (true) WITH CHECK (true);
+
+-- Insert buckets for printing system
+INSERT INTO storage.buckets (id, name, public) VALUES ('printing-products', 'printing-products', true) ON CONFLICT (id) DO NOTHING;
+INSERT INTO storage.buckets (id, name, public) VALUES ('printing-orders', 'printing-orders', true) ON CONFLICT (id) DO NOTHING;
+
+-- Storage policies for printing buckets
+CREATE POLICY "Public read printing-products" ON storage.objects FOR SELECT USING (bucket_id = 'printing-products');
+CREATE POLICY "Allow upload printing-products" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'printing-products');
+CREATE POLICY "Allow update printing-products" ON storage.objects FOR UPDATE USING (bucket_id = 'printing-products');
+CREATE POLICY "Allow delete printing-products" ON storage.objects FOR DELETE USING (bucket_id = 'printing-products');
+
+CREATE POLICY "Public read printing-orders" ON storage.objects FOR SELECT USING (bucket_id = 'printing-orders');
+CREATE POLICY "Allow upload printing-orders" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'printing-orders');
+CREATE POLICY "Allow update printing-orders" ON storage.objects FOR UPDATE USING (bucket_id = 'printing-orders');
+CREATE POLICY "Allow delete printing-orders" ON storage.objects FOR DELETE USING (bucket_id = 'printing-orders');
