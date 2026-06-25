@@ -5,6 +5,7 @@ import '../styles/graduation.css';
 
 const GraduationBooks = () => {
   const [templates, setTemplates] = useState([]);
+  const [packages, setPackages] = useState([]);
   const [lightbox, setLightbox] = useState(null); // { idx, list }
 
   useEffect(() => {
@@ -20,7 +21,22 @@ const GraduationBooks = () => {
         setTemplates([]);
       }
     };
+    const fetchPackages = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('packages')
+          .select('*')
+          .eq('category', 'graduation')
+          .eq('is_hidden', false)
+          .order('sort_order', { ascending: true });
+        if (error) throw error;
+        if (data) setPackages(data);
+      } catch {
+        setPackages([]);
+      }
+    };
     fetchTemplates();
+    fetchPackages();
   }, []);
 
   const covers = templates.filter(t => t.category === 'cover');
@@ -67,6 +83,53 @@ const GraduationBooks = () => {
         <Link to="/graduation-order" className="grad-hero-btn">
           اطلب الآن ←
         </Link>
+      </section>
+
+      {/* Section: Packages */}
+      <section className="grad-section">
+        <h2 className="grad-section-title">باقات دفاتر التخرج</h2>
+        <div className="grad-section-line" style={{ margin: '0 auto 32px' }} />
+
+        {packages.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px 24px', color: '#7F8C8D', background: '#fff', borderRadius: 16 }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>📦</div>
+            <h3 style={{ fontWeight: 800, color: '#2C3E50', marginBottom: 8 }}>لا توجد باقات متوفرة حالياً</h3>
+            <p>سيتم إضافة باقات التخرج قريباً.</p>
+          </div>
+        ) : (
+          <div className="grad-packages-grid">
+            {packages.map((pkg) => {
+              const features = Array.isArray(pkg.features) ? pkg.features : JSON.parse(pkg.features || '[]');
+              return (
+                <div key={pkg.id} className="grad-pkg-card">
+                  <div className="grad-pkg-header">
+                    <span className="grad-pkg-icon">📔</span>
+                    <h3 className="grad-pkg-name">{pkg.title}</h3>
+                    {pkg.subtitle && <p className="grad-pkg-subtitle">{pkg.subtitle}</p>}
+                  </div>
+                  <div className="grad-pkg-price-block">
+                    <div className="grad-pkg-price">
+                      {pkg.price} <span>د.أ</span>
+                    </div>
+                  </div>
+                  <div className="grad-pkg-body">
+                    <ul className="grad-pkg-features">
+                      {features.map((feat, idx) => (
+                        <li key={idx}>
+                          <span className="grad-pkg-check">✓</span>
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link to={`/graduation-order?package=${pkg.id}`} className="grad-pkg-btn">
+                      اطلب الباقة الآن
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* Section A: Cover Templates */}

@@ -4,10 +4,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  --iris-purple: #67245F;
-  --iris-purple-gradient: linear-gradient(180deg, #67245F 0%, #4E1848 100%);
-  --iris-green: #044630;
-  --iris-gold: #F5BD1A;
+  --iris-purple: #6F2477;
+  --iris-purple-gradient: #6F2477;
+  --iris-green: #0B5B4B;
+  --iris-gold: #F4C21D;
   --iris-bg: #ECEBE7;
   --iris-white: #FFFFFF;
 

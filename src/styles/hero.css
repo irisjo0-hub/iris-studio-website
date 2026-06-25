@@ -1,183 +1,4 @@
-.hero-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  min-height: 90vh;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #67245f 0%, #044630 100%);
-}
-
-.hero-section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.25);
-  z-index: 1;
-}
-
-.hero-container {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 1400px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2rem;
-}
-
-@media (min-width: 768px) {
-  .hero-container {
-    flex-direction: row;
-  }
-}
-
-.hero-left {
-  flex: 1;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.hero-left .hero-image {
-  width: 100%;
-  height: auto;
-  max-width: 500px;
-  object-fit: contain;
-}
-
-.hero-right {
-  flex: 1;
-  text-align: right;
-  max-width: 600px;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.hero-right .hero-logo {
-  width: 250px;
-  height: auto;
-  margin-bottom: 1rem;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
-}
-
-
-/* Full‑screen hero */
-.hero-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  min-height: 90vh; /* reduced height */
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #67245f 0%, #044630 100%);
-}
-
-/* Slight dark overlay for depth */
-.hero-section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.25);
-  z-index: 1;
-}
-
-/* Keep inner container above overlay */
-.hero-container {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  width: 100%;
-  max-width: 1400px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2rem;
-}
-
-/* Hide left decorative column on mobile, keep space for future particles */
-.hero-left {
-  flex: 1;
-  background: linear-gradient(135deg, #F5BD1A, #ECEBE7);
-  min-height: 300px;
-}
-
-
-/* Right content styling */
-.hero-right {
-  flex: 1;
-  text-align: right;
-  max-width: 600px;
-  color: #fff;
-}
-
-.hero-logo {
-  width: 250px;
-  height: auto;
-  margin-bottom: 1rem;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
-}
-
-.hero-title {
-  font-size: 2rem;
-  line-height: 1.2;
-  margin: 0.8rem 0;
-  color: #fff;
-}
-
-@media (min-width: 768px) {
-  .hero-title { font-size: 3rem; }
-}
-
-.hero-description {
-  font-size: 1rem;
-  margin-bottom: 1.5rem;
-  color: #f5bd1a;
-}
-
-/* Buttons already styled in global.css, ensure contrast */
-.hero-buttons .btn-primary { background: var(--color-gold); color: var(--color-purple); }
-
-/* Particle container */
-.particles { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-.particle {
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  background: radial-gradient(circle, rgba(255,255,255,0.5), transparent);
-  border-radius: 50%;
-  animation: float 12s ease-in-out infinite;
-}
-.particle1 { top: 20%; left: 15%; animation-delay: 0s; }
-.particle2 { top: 40%; left: 70%; animation-delay: 3s; }
-.particle3 { top: 75%; left: 30%; animation-delay: 6s; }
-
-@keyframes float {
-  0% { transform: translateY(0) scale(1); opacity: 0.6; }
-  50% { transform: translateY(-30px) scale(1.2); opacity: 0.8; }
-  100% { transform: translateY(0) scale(1); opacity: 0.; }
-}
-
-/* Keep existing blob styles for possible future use */
-.blob { width: 120px; height: 120px; background: var(--color-gold); border-radius: 50%; opacity: 0.15; }
-
-/* Additional spacing for subsequent sections */
-.section { padding: 4rem 0; }
-
-/* Gallery grid (will be in separate CSS file) */
-.gallery-section { background: var(--color-bg-light); }
-.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem; padding: 2rem; }
-.gallery-card { background: rgba(255,255,255,0.6); backdrop-filter: blur(12px); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-premium); transition: transform 0.4s var(--transition-smooth), box-shadow 0.4s; }
-.gallery-card img { width: 100%; height: auto; display: block; }
-.gallery-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+/* hero.css — IRIS Studio Hero Banner styling */
 
 .hero-section {
   display: flex;
@@ -185,7 +6,12 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 1rem;
-  min-height: 80vh;
+  min-height: 70vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-bg-white);
+  border-bottom: 1px solid var(--border-glass);
 }
 
 @media (min-width: 768px) {
@@ -197,60 +23,125 @@
 
 .hero-container {
   display: flex;
+  flex-direction: column-reverse;
   width: 100%;
   max-width: 1400px;
   align-items: center;
   justify-content: space-between;
+  gap: 2rem;
+  z-index: 2;
+}
+
+@media (min-width: 768px) {
+  .hero-container {
+    flex-direction: row;
+  }
 }
 
 .hero-left {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.hero-left .hero-image {
+  width: 100%;
+  height: auto;
+  max-width: 500px;
+  object-fit: contain;
+  border-radius: 24px;
 }
 
 .hero-right {
   flex: 1;
   text-align: right;
   max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: var(--color-text-main);
 }
 
 .hero-logo {
   width: 200px;
   height: auto;
   margin-bottom: 1rem;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.05));
+  align-self: flex-end;
 }
 
 .hero-title {
-  font-size: 2rem;
-  line-height: 1.2;
+  font-size: 2.2rem;
+  line-height: 1.3;
   margin: 0.8rem 0;
+  color: var(--color-purple);
+  font-weight: 900;
+  text-align: right;
 }
 
 @media (min-width: 768px) {
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 }
 
 .hero-description {
-  font-size: 1rem;
+  font-size: 1.1rem;
   margin-bottom: 1.5rem;
-  color: var(--color-text-main);
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  text-align: right;
 }
 
-.hero-buttons .btn {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+.hero-buttons {
+  display: flex;
+  gap: 12px;
+  align-self: flex-end;
 }
 
-/* Blob decorative element */
-.blob {
-  width: 120px;
-  height: 120px;
-  background: var(--color-gold);
+.hero-buttons .btn-primary {
+  background: var(--color-purple);
+  color: #ffffff !important;
+}
+
+.hero-buttons .btn-primary:hover {
+  background: #591e63;
+}
+
+.hero-buttons .btn-secondary {
+  background: var(--color-bg-white);
+  color: var(--color-purple) !important;
+  border: 1px solid var(--color-purple);
+}
+
+.hero-buttons .btn-secondary:hover {
+  background: rgba(110, 38, 123, 0.05);
+}
+
+.particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(110, 38, 123, 0.05), transparent);
   border-radius: 50%;
-  opacity: 0.15;
+  animation: float 12s ease-in-out infinite;
+}
+
+.particle1 { top: 20%; left: 15%; animation-delay: 0s; }
+.particle2 { top: 40%; left: 70%; animation-delay: 3s; }
+.particle3 { top: 75%; left: 30%; animation-delay: 6s; }
+
+@keyframes float {
+  0% { transform: translateY(0) scale(1); opacity: 0.6; }
+  50% { transform: translateY(-30px) scale(1.2); opacity: 0.8; }
+  100% { transform: translateY(0) scale(1); opacity: 0.6; }
 }

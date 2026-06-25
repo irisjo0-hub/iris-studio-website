@@ -3,136 +3,142 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Lightbox from '../components/Lightbox';
 import '../styles/packages.css';
-import heroImg from '../assets/hero.png';
-import heroFeatureImg from '../assets/hero_feature.png';
-import breakBoxImg from "../assets/we-break-the-box.png";
-
-const packages = [
-  {
-    name: 'بكج 20',
-    price: '20 JOD',
-    duration: 'مدة: 25 دقيقة',
-    details: 'تعديل 5 صور',
-    img: heroImg,
-  },
-  {
-    name: 'بكج 30',
-    price: '30 JOD',
-    duration: 'مدة: 50 دقيقة',
-    details: 'تعديل 10 صور',
-    img: heroFeatureImg,
-  },
-  {
-    name: 'بكج 35',
-    price: '35 JOD',
-    duration: 'مدة: 50 دقيقة',
-    details: 'تعديل 10 صور + دفتر تخرج',
-    img: breakBoxImg,
-  },
-  {
-    name: 'الأكثر طلباً',
-    price: '40 JOD',
-    duration: 'مدة: 50 دقيقة',
-    details: 'تعديل 10 صور + دفتر تخرج + بوستر خشب قياس 30*42',
-    img: heroImg,
-  },
-  {
-    name: 'الفل بكج',
-    price: '65 JOD',
-    duration: 'مدة: 50 دقيقة',
-    details: 'تعديل 10 صور + دفتر تخرج + بوستر خشب قياس 30*42 + وشاح وطاقية تطريز',
-    img: heroFeatureImg,
-  },
-];
+import placeholderImg from '../assets/hero.png'; // fallback image
 
 const Packages = () => {
   const [lightboxImg, setLightboxImg] = useState(null);
-  const [uploadedPackages, setUploadedPackages] = useState([]);
+  const [packagesList, setPackagesList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPackages = async () => {
       try {
         const { data, error } = await supabase
-          .from('package_items')
+          .from('packages')
           .select('*')
-          .order('created_at', { ascending: false });
+          .eq('is_hidden', false)
+          .order('sort_order', { ascending: true });
         if (error) throw error;
-        if (data) setUploadedPackages(data);
+        if (data) setPackagesList(data);
       } catch (e) {
         console.error('Failed to load packages from Supabase', e);
+      } finally {
+        setLoading(false);
       }
     };
     fetchPackages();
   }, []);
 
+  const shootPackages = packagesList.filter(p => p.category === 'shoot' || !p.category);
+  const gradPackages = packagesList.filter(p => p.category === 'graduation');
+
   return (
     <main className="packages-page" dir="rtl">
+      {/* Shoot Packages Section */}
       <section className="packages-section">
         <div className="packages-header">
-          <span className="packages-kicker">IRIS Offers</span>
-          <h1 className="section-title">البكجات والعروض</h1>
+          <span className="packages-kicker">IRIS Shoot</span>
+          <h1 className="section-title">باقات جلسات التصوير</h1>
           <p>
-            اختار الباقة الأنسب لجلسة التخرج، واضغط على الصورة لمعاينتها بالحجم الكامل.
+            اختار الباقة الأنسب لجلستك، واضغط على الصورة لمعاينتها بالحجم الكامل.
           </p>
         </div>
 
-        <div className="packages-grid">
-          {packages.map((pkg, idx) => (
-            <article key={idx} className="package-card">
-              <button
-                type="button"
-                className="package-image-btn"
-                onClick={() => setLightboxImg(pkg.img)}
-                aria-label={`عرض صورة ${pkg.name}`}
-              >
-                <img src={pkg.img} alt={pkg.name} className="package-img" />
-              </button>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '40px' }}>⏳ جاري تحميل الباقات...</div>
+        ) : shootPackages.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px', color: '#777' }}>لا تتوفر باقات جلسات تصوير حالياً.</div>
+        ) : (
+          <div className="packages-grid">
+            {shootPackages.map((pkg) => {
+              const features = Array.isArray(pkg.features) ? pkg.features : JSON.parse(pkg.features || '[]');
+              const imgUrl = pkg.image_url || placeholderImg;
+              return (
+                <article key={pkg.id} className="package-card">
+                  <button
+                    type="button"
+                    className="package-image-btn"
+                    onClick={() => setLightboxImg(imgUrl)}
+                    aria-label={`عرض صورة ${pkg.title}`}
+                  >
+                    <img src={imgUrl} alt={pkg.title} className="package-img" />
+                  </button>
 
-              <div className="package-info">
-                <h3 className="package-name">{pkg.name}</h3>
-                <p className="package-price">{pkg.price}</p>
-                <p className="package-duration">{pkg.duration}</p>
-                <p className="package-details">{pkg.details}</p>
-                <Link to={`/booking?package=${encodeURIComponent(pkg.name)}`} className="book-btn">
-                  احجز هذه الباقة
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+                  <div className="package-info">
+                    <h3 className="package-name">{pkg.title}</h3>
+                    <p className="package-price">{pkg.price} JOD</p>
+                    <div className="package-details" style={{ margin: '10px 0' }}>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {features.map((feat, idx) => (
+                          <li key={idx} style={{ fontSize: '0.9rem', color: '#555' }}>
+                            ✓ {feat}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <Link to={`/booking?package=${encodeURIComponent(pkg.title)}`} className="book-btn" style={{ marginTop: 'auto' }}>
+                      احجز هذه الباقة
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </section>
 
-      {uploadedPackages.length > 0 && (
-        <section className="packages-section" style={{ borderTop: '1px solid rgba(0,0,0,0.08)' }}>
-          <div className="packages-header" style={{ marginBottom: '2rem' }}>
-            <h2 className="section-title">صور البكجات والعروض</h2>
-            <p style={{ textAlign: 'center' }}>مجموعة من البكجات والعروض الموسمية الإضافية للاستوديو.</p>
-          </div>
+      {/* Graduation Packages Section */}
+      <section className="packages-section" style={{ borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+        <div className="packages-header">
+          <span className="packages-kicker">IRIS Graduation</span>
+          <h2 className="section-title">باقات دفاتر التخرج</h2>
+          <p>
+            تصفح باقات دفاتر التخرج المتاحة واطلب دفتر تخرجك الآن.
+          </p>
+        </div>
+
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '40px' }}>⏳ جاري تحميل الباقات...</div>
+        ) : gradPackages.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px', color: '#777' }}>لا تتوفر باقات دفاتر تخرج حالياً.</div>
+        ) : (
           <div className="packages-grid">
-            {uploadedPackages.map((pkg) => (
-              <article key={pkg.id} className="package-card">
-                <button type="button" className="package-image-btn" onClick={() => setLightboxImg(pkg.image_url)} aria-label={`عرض صورة ${pkg.title}`}>
-                  <img src={pkg.image_url} alt={pkg.title} className="package-img" style={{ objectFit: 'cover' }} />
-                </button>
-                <div className="package-info">
-                  <h3 className="package-name">{pkg.title}</h3>
-                  <span style={{
-                    display: 'inline-block',
-                    alignSelf: 'flex-start',
-                    padding: '0.35rem 0.8rem',
-                    borderRadius: '20px',
-                    fontSize: '0.8rem',
-                    fontWeight: '700',
-                    backgroundColor: 'rgba(4, 70, 48, 0.1)',
-                    color: 'var(--green, #044630)',
-                    marginTop: '0.5rem'
-                  }}>{pkg.type}</span>
-                </div>
-              </article>
-            ))}
+            {gradPackages.map((pkg) => {
+              const features = Array.isArray(pkg.features) ? pkg.features : JSON.parse(pkg.features || '[]');
+              const imgUrl = pkg.image_url || placeholderImg;
+              return (
+                <article key={pkg.id} className="package-card">
+                  <button
+                    type="button"
+                    className="package-image-btn"
+                    onClick={() => setLightboxImg(imgUrl)}
+                    aria-label={`عرض صورة ${pkg.title}`}
+                  >
+                    <img src={imgUrl} alt={pkg.title} className="package-img" />
+                  </button>
+
+                  <div className="package-info">
+                    <h3 className="package-name">{pkg.title}</h3>
+                    <p className="package-price">{pkg.price} JOD</p>
+                    <div className="package-details" style={{ margin: '10px 0' }}>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {features.map((feat, idx) => (
+                          <li key={idx} style={{ fontSize: '0.9rem', color: '#555' }}>
+                            ✓ {feat}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <Link to={`/graduation-order?package=${pkg.id}`} className="book-btn" style={{ marginTop: 'auto' }}>
+                      اطلب الباقة الآن
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       {lightboxImg && (
         <Lightbox

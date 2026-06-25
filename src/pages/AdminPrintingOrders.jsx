@@ -3,6 +3,46 @@ import { supabase } from '../lib/supabase';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/admin.css';
 
+const parseNotes = (notesStr) => {
+  const result = {
+    isDelivery: false,
+    address: '',
+    alternativePhone: '',
+    googleMaps: '',
+    cleanNotes: notesStr || ''
+  };
+
+  if (!notesStr) return result;
+
+  if (notesStr.includes('[طلب توصيل]')) {
+    result.isDelivery = true;
+    
+    // Extract Address
+    const addressMatch = notesStr.match(/العنوان:\s*([^\n\r]+)/);
+    if (addressMatch) result.address = addressMatch[1].trim();
+
+    // Extract Alt Phone
+    const phoneMatch = notesStr.match(/هاتف بديل:\s*([^\n\r]+)/);
+    if (phoneMatch) result.alternativePhone = phoneMatch[1].trim();
+
+    // Extract Google Maps
+    const mapsMatch = notesStr.match(/خرائط قوقل:\s*([^\n\r]+)/);
+    if (mapsMatch) result.googleMaps = mapsMatch[1].trim();
+
+    // Clean notes: remove the prefix block
+    result.cleanNotes = notesStr
+      .replace(/\[طلب توصيل\]\r?\n?/, '')
+      .replace(/العنوان:[^\n\r]*\r?\n?/, '')
+      .replace(/هاتف بديل:[^\n\r]*\r?\n?/, '')
+      .replace(/خرائط قوقل:[^\n\r]*\r?\n?/, '')
+      .trim();
+  } else if (notesStr.includes('[استلام من الاستوديو]')) {
+    result.cleanNotes = notesStr.replace(/\[استلام من الاستوديو\]\r?\n?/, '').trim();
+  }
+
+  return result;
+};
+
 const AdminPrintingOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -106,6 +146,8 @@ const AdminPrintingOrders = () => {
                 }
               }
 
+              const details = parseNotes(ord.notes);
+
               return (
                 <div
                   key={ord.id}
@@ -151,14 +193,22 @@ const AdminPrintingOrders = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.95rem' }}>
                       <div>العميل: <strong>{ord.customer_name}</strong></div>
                       <div>رقم الهاتف: <strong>{ord.phone}</strong></div>
+                      <div>نوع الاستلام: <strong style={{ color: details.isDelivery ? 'var(--color-purple, #6E267B)' : '#777' }}>{details.isDelivery ? 'توصيل للمنزل 🚚' : 'الاستلام من الاستوديو 🏬'}</strong></div>
+                      {details.isDelivery && <div>هاتف بديل للتوصيل: <strong>{details.alternativePhone || 'لا يوجد'}</strong></div>}
+                      {details.isDelivery && details.address && <div style={{ gridColumn: 'span 2' }}>عنوان التوصيل بالتفصيل: <strong>{details.address}</strong></div>}
+                      {details.isDelivery && details.googleMaps && details.googleMaps !== 'لا يوجد' && (
+                        <div style={{ gridColumn: 'span 2' }}>
+                          خرائط جوجل: <a href={details.googleMaps} target="_blank" rel="noreferrer" style={{ color: 'var(--color-purple, #6E267B)', textDecoration: 'underline' }}>{details.googleMaps}</a>
+                        </div>
+                      )}
                       <div>الكمية المطلوبة: <strong>{ord.quantity}</strong></div>
-                      {ord.selected_color && <div>اللون المختار: <strong style={{ color: 'var(--iris-green)' }}>{ord.selected_color}</strong></div>}
+                      {ord.selected_color && <div>اللون المختار: <strong style={{ color: 'var(--color-green, #0F5A47)' }}>{ord.selected_color}</strong></div>}
                     </div>
 
-                    {ord.notes && (
+                    {details.cleanNotes && (
                       <div style={{ background: '#fcfcfc', border: '1px solid #eee', padding: '10px 14px', borderRadius: '8px', fontSize: '0.9rem', color: '#555', whiteSpace: 'pre-wrap' }}>
-                        <strong>تفاصيل الطلب وملاحظات العميل:</strong>
-                        <div style={{ marginTop: '4px' }}>{ord.notes}</div>
+                        <strong>ملاحظات العميل وتعليمات الطباعة:</strong>
+                        <div style={{ marginTop: '4px' }}>{details.cleanNotes}</div>
                       </div>
                     )}
 

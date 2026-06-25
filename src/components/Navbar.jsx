@@ -7,6 +7,7 @@ const navItems = [
   { path: '/', label: 'الرئيسية' },
   { path: '/booking', label: 'جلسات التصوير' },
   { path: '/graduation-books', label: 'دفاتر التخرج' },
+  { path: '/graduation-book-order', label: 'طلب دفتر تخرج' },
   { path: '/printing-products', label: 'المطبوعات' },
   { path: '/work', label: 'أعمالنا' },
   { path: '/packages', label: 'البكجات والعروض' },
@@ -14,7 +15,6 @@ const navItems = [
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,58 +30,29 @@ const Navbar = () => {
   }, []);
 
   return (
-    <>
-      <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+    <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+      <div className="navbar-container">
         <div className="logo-container">
-          <NavLink to="/" onClick={() => setIsOpen(false)}>
+          <NavLink to="/">
             <img src={irisLogo} alt="IRIS Studio" className="logo" />
           </NavLink>
         </div>
 
-        {/* Desktop Navigation */}
-        <nav className="nav-links desktop-nav">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Mobile Hamburger Button */}
-        <button
-          className={`hamburger ${isOpen ? 'active' : ''}`}
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-        >
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
-        </button>
-      </header>
-
-      {/* Mobile Drawer Menu */}
-      <div className={`nav-drawer ${isOpen ? 'open' : ''}`}>
-        <nav className="drawer-links">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              onClick={() => setIsOpen(false)}
-              className={({ isActive }) => `drawer-item ${isActive ? 'active' : ''}`}
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+        <div className="nav-scroll-wrapper">
+          <nav className="nav-links">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
       </div>
-
-      {/* Overlay to close when clicking outside */}
-      {isOpen && <div className="drawer-overlay" onClick={() => setIsOpen(false)} />}
-    </>
+    </header>
   );
 };
 

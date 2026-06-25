@@ -124,7 +124,6 @@ const AdminProducts = () => {
         if (img.type === 'existing') {
           finalUrls.push(img.url);
         } else if (img.type === 'new' && img.file) {
-          // Use verified public 'packages' bucket for products to prevent 'bucket not found' errors
           const filePath = `products-${Date.now()}-${img.file.name}`;
           const uploadedUrl = await uploadFile('packages', filePath, img.file);
           finalUrls.push(uploadedUrl);

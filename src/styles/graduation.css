@@ -5,12 +5,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  --g-purple:  #67245F;
-  --g-green:   #044630;
-  --g-gold:    #F5BD1A;
+  --g-purple:  #6F2477;
+  --g-green:   #0B5B4B;
+  --g-gold:    #F4C21D;
   --g-bg:      #ECEBE7;
   --g-white:   #FFFFFF;
-  --g-shadow:  0 8px 32px rgba(103,36,95,0.10);
+  --g-shadow:  0 8px 32px rgba(110,38,123,0.10);
   --g-radius:  16px;
   --g-muted:   #7F8C8D;
   --g-border:  #D5D2CA;
@@ -27,8 +27,9 @@
 
 /* ─── Hero Banner ────────────────────────────────────────────── */
 .grad-hero {
-  background: linear-gradient(135deg, var(--g-green) 0%, #0a6e4a 60%, var(--g-purple) 100%);
-  color: #fff;
+  background: var(--g-white);
+  border-bottom: 1px solid var(--g-border);
+  color: var(--g-purple);
   padding: 80px 24px 64px;
   text-align: center;
   position: relative;
@@ -38,13 +39,13 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236e267b' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 .grad-hero-badge {
   display: inline-block;
-  background: rgba(245,189,26,0.2);
+  background: rgba(242, 194, 48, 0.1);
   border: 1.5px solid var(--g-gold);
-  color: var(--g-gold);
+  color: var(--g-purple);
   font-size: 0.85rem;
   font-weight: 700;
   padding: 5px 18px;
@@ -57,10 +58,11 @@
   font-weight: 900;
   margin: 0 0 14px;
   line-height: 1.2;
+  color: var(--g-purple);
 }
 .grad-hero p {
   font-size: 1.1rem;
-  opacity: 0.88;
+  color: var(--g-muted);
   max-width: 560px;
   margin: 0 auto 28px;
   line-height: 1.7;
@@ -152,52 +154,57 @@
   border-radius: 50px;
 }
 .grad-pkg-header {
-  background: var(--g-purple);
-  padding: 16px 18px 12px; /* Reduced padding from 28px 24px 22px */
+  background: var(--g-white);
+  border-bottom: 1px solid var(--g-border);
+  padding: 24px 18px 16px;
   text-align: center;
 }
 .grad-pkg-card.popular .grad-pkg-header {
-  background: linear-gradient(135deg, var(--g-green), #0a6e4a);
+  background: var(--g-white);
+  border-bottom: 2px solid var(--g-gold);
 }
 .grad-pkg-icon {
-  font-size: 2.2rem; /* Reduced from 2.8rem */
+  font-size: 2.2rem;
   margin-bottom: 6px;
   display: block;
 }
 .grad-pkg-name {
-  color: #fff;
-  font-size: 1.1rem; /* Reduced from 1.25rem */
+  color: var(--g-purple);
+  font-size: 1.2rem;
   font-weight: 800;
-  margin: 0 0 2px;
+  margin: 0 0 4px;
 }
 .grad-pkg-subtitle {
-  color: rgba(255,255,255,0.75);
+  color: var(--g-muted);
   font-size: 0.85rem;
   margin: 0;
 }
 .grad-pkg-price-block {
-  background: var(--g-gold);
-  padding: 10px 18px; /* Reduced from 16px 24px */
+  background: #fcfbfa;
+  border-bottom: 1px solid var(--g-border);
+  padding: 12px 18px;
   text-align: center;
 }
 .grad-pkg-price {
-  font-size: 1.6rem; /* Reduced from 2rem */
+  font-size: 1.8rem;
   font-weight: 900;
   color: var(--g-green);
 }
 .grad-pkg-price span {
   font-size: 0.85rem;
   font-weight: 600;
+  color: var(--g-muted);
 }
 .grad-pkg-body {
-  padding: 16px; /* Reduced from 24px */
+  padding: 16px;
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: var(--g-white);
 }
 .grad-pkg-features {
   list-style: none;
-  margin: 0 0 16px; /* Reduced from 24px */
+  margin: 0 0 16px;
   padding: 0;
   flex: 1;
 }
@@ -205,8 +212,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 0; /* Reduced padding */
-  font-size: 0.88rem; /* Reduced from 0.95rem */
+  padding: 6px 0;
+  font-size: 0.88rem;
   border-bottom: 1px solid var(--g-border);
   color: #2C3E50;
 }
@@ -230,7 +237,7 @@
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 10px; /* Reduced from 13px */
+  padding: 12px;
   font-size: 0.95rem;
   font-weight: 800;
   font-family: 'Cairo', sans-serif;
@@ -238,19 +245,21 @@
   text-align: center;
   text-decoration: none;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(103,36,95,0.2);
+  box-shadow: 0 4px 12px rgba(110, 38, 123, 0.15);
 }
 .grad-pkg-btn:hover {
-  background: #4E1848;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(103,36,95,0.28);
+  background: #591e63;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(110, 38, 123, 0.25);
 }
 .grad-pkg-card.popular .grad-pkg-btn {
   background: var(--g-green);
-  box-shadow: 0 4px 12px rgba(4,70,48,0.2);
+  box-shadow: 0 4px 12px rgba(15, 90, 71, 0.15);
 }
 .grad-pkg-card.popular .grad-pkg-btn:hover {
-  background: #033520;
+  background: #0b4536;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(15, 90, 71, 0.25);
 }
 
 /* ─── Extras Cards ────────────────────────────────────────────── */
@@ -449,8 +458,9 @@
   min-height: 100vh;
 }
 .grad-order-hero {
-  background: linear-gradient(135deg, var(--g-purple) 0%, #4E1848 100%);
-  color: #fff;
+  background: var(--g-white);
+  border-bottom: 1px solid var(--g-border);
+  color: var(--g-purple);
   padding: 52px 24px 44px;
   text-align: center;
 }
@@ -458,8 +468,9 @@
   font-size: clamp(1.8rem, 4vw, 2.6rem);
   font-weight: 900;
   margin: 0 0 10px;
+  color: var(--g-purple);
 }
-.grad-order-hero p { font-size: 1rem; opacity: 0.82; margin: 0; }
+.grad-order-hero p { font-size: 1rem; color: var(--g-muted); margin: 0; }
 
 /* Step indicator */
 .grad-steps-bar {
@@ -825,10 +836,11 @@
 
 /* Deposit block */
 .grad-deposit-block {
-  background: linear-gradient(135deg, var(--g-green), #0a6e4a);
+  background: var(--g-white);
+  border: 2px solid var(--g-green);
   border-radius: 14px;
   padding: 24px;
-  color: #fff;
+  color: var(--g-purple);
   margin-bottom: 24px;
   display: flex;
   align-items: center;
@@ -836,12 +848,12 @@
   flex-wrap: wrap;
 }
 .grad-deposit-icon { font-size: 2.5rem; }
-.grad-deposit-text h3 { font-size: 1.15rem; font-weight: 900; margin: 0 0 4px; }
-.grad-deposit-text p { font-size: 0.9rem; opacity: 0.85; margin: 0; }
+.grad-deposit-text h3 { font-size: 1.15rem; font-weight: 900; margin: 0 0 4px; color: var(--g-purple); }
+.grad-deposit-text p { font-size: 0.9rem; color: var(--g-muted); margin: 0; }
 .grad-deposit-amount {
   font-size: 2rem;
   font-weight: 900;
-  color: var(--g-gold);
+  color: var(--g-green);
   margin-right: auto;
 }
 
@@ -876,29 +888,29 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.25s;
-  box-shadow: 0 4px 14px rgba(103,36,95,0.28);
+  box-shadow: 0 4px 14px rgba(110,38,123,0.28);
 }
-.grad-btn-next:hover { background: #4E1848; transform: translateY(-1px); }
+.grad-btn-next:hover { background: #591e63; transform: translateY(-1px); }
 .grad-btn-submit {
   width: 100%;
   padding: 16px;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, var(--g-green), #0a6e4a);
+  background: var(--g-green);
   color: #fff;
   font-family: 'Cairo', sans-serif;
   font-weight: 900;
   font-size: 1.15rem;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 6px 20px rgba(4,70,48,0.28);
+  box-shadow: 0 6px 20px rgba(15, 90, 71, 0.28);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   margin-top: 8px;
 }
-.grad-btn-submit:hover { background: linear-gradient(135deg, #033520, var(--g-green)); transform: translateY(-2px); }
+.grad-btn-submit:hover { background: #0b4536; transform: translateY(-2px); }
 .grad-btn-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
 
 /* Summary card */
@@ -909,14 +921,15 @@
   overflow: hidden;
 }
 .grad-summary-header {
-  background: linear-gradient(135deg, var(--g-purple), #4E1848);
-  color: #fff;
+  background: var(--g-white);
+  border-bottom: 1px solid var(--g-border);
+  color: var(--g-purple);
   padding: 24px 28px;
   display: flex;
   align-items: center;
   gap: 14px;
 }
-.grad-summary-header h3 { font-size: 1.3rem; font-weight: 900; margin: 0; }
+.grad-summary-header h3 { font-size: 1.3rem; font-weight: 900; margin: 0; color: var(--g-purple); }
 .grad-summary-body { padding: 28px; }
 .grad-summary-row {
   display: flex;
@@ -961,14 +974,14 @@
 .grad-success-icon {
   width: 90px;
   height: 90px;
-  background: linear-gradient(135deg, var(--g-green), #0a6e4a);
+  background: var(--g-green);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.8rem;
   margin: 0 auto 24px;
-  box-shadow: 0 8px 28px rgba(4,70,48,0.25);
+  box-shadow: 0 8px 28px rgba(15, 90, 71, 0.25);
 }
 .grad-success h2 { font-size: 1.9rem; font-weight: 900; color: var(--g-green); margin: 0 0 12px; }
 .grad-success p { font-size: 1rem; color: var(--g-muted); max-width: 440px; margin: 0 auto 28px; line-height: 1.7; }

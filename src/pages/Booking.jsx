@@ -169,15 +169,21 @@ const CustomCalendar = ({ value, onChange, existingBookings = [], selectedPackag
             <button
               key={`day-${day.getDate()}`}
               type="button"
-              className={`cal-day-cell day-btn ${selected ? 'active-day' : ''} ${isDayDisabled ? 'disabled-day' : ''} ${hasBookings ? 'has-bookings' : ''}`}
+              className={`cal-day-cell day-btn ${selected ? 'active-day' : ''} ${disabled ? 'past-day disabled-day' : ''} ${fullyBooked ? 'fully-booked-day disabled-day' : ''} ${hasBookings ? 'has-bookings' : ''}`}
               disabled={isDayDisabled}
               onClick={() => handleDateClick(day)}
             >
               {day.getDate()}
-              {hasBookings && <span className="cal-dot"></span>}
+              {hasBookings && !fullyBooked && <span className="cal-dot"></span>}
             </button>
           );
         })}
+      </div>
+      <div className="cal-legend">
+        <div className="legend-item"><span className="legend-dot selected"></span>المحدد</div>
+        <div className="legend-item"><span className="legend-dot has-bookings"></span>متاح (يوجد حجوزات)</div>
+        <div className="legend-item"><span className="legend-dot available"></span>متاح بالكامل</div>
+        <div className="legend-item"><span className="legend-dot fully-booked"></span>محجوز بالكامل</div>
       </div>
     </div>
   );
@@ -225,14 +231,14 @@ const Booking = () => {
   // Validation errors
   const [errors, setErrors] = useState({});
 
-  // Auto-scroll to top when step changes
+  // Auto-scroll to top when step changes or on final submission success
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToTop();
-  }, [step]);
+  }, [step, submitted]);
 
   // Load packages, bookings, and extras
   useEffect(() => {

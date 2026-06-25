@@ -3,9 +3,9 @@
 @import "./fonts.css";
 
 :root {
-  --color-purple: #6E267B;
-  --color-green: #0F5A47;
-  --color-gold: #F2C230;
+  --color-purple: #6F2477;
+  --color-green: #0B5B4B;
+  --color-gold: #F4C21D;
   --color-bg-light: #ECEBE7;
   --color-bg-white: #FFFFFF;
   --color-text-main: #1D1D1F;
@@ -34,7 +34,7 @@ html {
   scroll-behavior: smooth;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -47,7 +47,7 @@ body {
   text-align: right;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -83,7 +83,7 @@ select {
 .customer-layout {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -93,7 +93,7 @@ select {
   width: 100%;
   max-width: 100%;
   min-height: calc(100vh - 140px);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .container {
@@ -144,7 +144,7 @@ select {
   align-items: center;
   justify-content: center;
   padding: 12px 32px;
-  border-radius: 50px;
+  border-radius: 12px;
   font-weight: 700;
   font-size: 1rem;
   text-decoration: none;
@@ -152,48 +152,54 @@ select {
   transition: var(--transition-smooth);
   position: relative;
   overflow: hidden;
-  z-index: 1;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--color-purple) 0%, #4f1b49 100%);
-  color: #ffffff;
   border: none;
-  box-shadow: 0 10px 25px rgba(103, 36, 95, 0.25);
 }
 
-.btn-primary::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #823078 0%, var(--color-purple) 100%);
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.4s ease;
+.btn:hover {
+  transform: translateY(-2px);
 }
 
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 30px rgba(103, 36, 95, 0.35);
+.btn-primary, .btn-purple {
+  background: var(--color-purple);
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(110, 38, 123, 0.15);
 }
 
-.btn-primary:hover::before {
-  opacity: 1;
+.btn-primary:hover, .btn-purple:hover {
+  background: #591e63;
+  box-shadow: 0 12px 25px rgba(110, 38, 123, 0.25);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.8);
-  color: var(--color-purple);
-  border: var(--border-glass);
-  box-shadow: var(--shadow-glass);
-  backdrop-filter: var(--blur-glass);
+  background: #ffffff;
+  color: var(--color-purple) !important;
+  border: 1px solid var(--color-purple);
 }
 
 .btn-secondary:hover {
-  background: var(--color-purple);
-  color: #ffffff;
-  transform: translateY(-3px);
-  box-shadow: 0 15px 30px rgba(103, 36, 95, 0.2);
+  background: rgba(110, 38, 123, 0.05);
+}
+
+.btn-gold {
+  background: var(--color-gold);
+  color: var(--color-green) !important;
+  box-shadow: 0 8px 20px rgba(242, 194, 48, 0.15);
+}
+
+.btn-gold:hover {
+  background: #e2b322;
+  box-shadow: 0 12px 25px rgba(242, 194, 48, 0.25);
+}
+
+.btn-green {
+  background: var(--color-green);
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(15, 90, 71, 0.15);
+}
+
+.btn-green:hover {
+  background: #0b4536;
+  box-shadow: 0 12px 25px rgba(15, 90, 71, 0.25);
 }
 
 .glass-panel {

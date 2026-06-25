@@ -284,8 +284,8 @@ const GraduationBookOrder = () => {
 
   useEffect(() => {
     if (dbPackages.length > 0) {
-      const pkgPrice = parseInt(searchParams.get('package'), 10);
-      const found = dbPackages.find(p => p.price === pkgPrice);
+      const pkgParam = searchParams.get('package');
+      const found = dbPackages.find(p => String(p.id) === String(pkgParam) || p.price === Number(pkgParam));
       if (found) {
         setSelectedPkg(found);
         setStep(2); // Skip package selection if passed in URL
@@ -296,10 +296,10 @@ const GraduationBookOrder = () => {
     }
   }, [searchParams, dbPackages]);
 
-  // Auto-scroll to top when step changes
+  // Auto-scroll to top when step or status changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [step]);
+  }, [step, success, submitted]);
 
   // Step 1 — Cover & Inside Info
   const [extTplNum, setExtTplNum] = useState('');
@@ -1004,7 +1004,7 @@ const GraduationBookOrder = () => {
         {renderStep()}
         <div className="grad-order-actions">
           {step > 1 && (<button className="grad-btn-prev" onClick={prevStep}>السابق</button>)}
-          {step > 1 && step < stepsList.length && (
+          {step < stepsList.length && (
             <button
               className="grad-btn-next"
               onClick={nextStep}

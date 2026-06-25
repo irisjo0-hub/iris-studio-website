@@ -7,9 +7,9 @@
 
 /* ── Variables ── */
 :root {
-  --bk-purple:  #67245F;
-  --bk-green:   #044630;
-  --bk-gold:    #F5BD1A;
+  --bk-purple:  #6F2477;
+  --bk-green:   #0B5B4B;
+  --bk-gold:    #F4C21D;
   --bk-bg:      #ECEBE7;
   --bk-white:   #FFFFFF;
   --bk-text:    #2C3E50;
@@ -637,8 +637,8 @@
   background: #ffffff;
   border-radius: 16px;
   border: 1px solid var(--bk-border);
-  padding: 20px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  padding: 24px;
+  box-shadow: var(--bk-shadow);
   margin-top: 14px;
   width: 100%;
   box-sizing: border-box;
@@ -648,11 +648,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f2eff9;
 }
 
 .cal-title {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: var(--bk-purple);
 }
@@ -660,8 +662,8 @@
 .cal-arrow-btn {
   background: var(--bk-bg);
   border: none;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -669,27 +671,28 @@
   justify-content: center;
   font-weight: 800;
   color: var(--bk-purple);
-  transition: background 0.2s;
+  transition: var(--transition-smooth);
 }
 
 .cal-arrow-btn:hover {
-  background: rgba(111, 36, 111, 0.08);
+  background: var(--bk-purple);
+  color: #ffffff;
 }
 
 .cal-weekdays-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
-  font-weight: 700;
-  font-size: 0.82rem;
+  font-weight: 800;
+  font-size: 0.85rem;
   color: var(--bk-muted);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .cal-days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 8px;
 }
 
 .cal-day-cell {
@@ -699,41 +702,102 @@
   justify-content: center;
   font-size: 0.95rem;
   font-weight: 700;
-  border-radius: 8px;
+  border-radius: 50%;
   border: none;
   background: transparent;
   color: var(--bk-text);
   font-family: inherit;
+  position: relative;
 }
 
 .day-btn {
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .day-btn:hover:not(.disabled-day) {
-  background: rgba(111, 36, 111, 0.08);
+  background: rgba(110, 38, 123, 0.08);
   color: var(--bk-purple);
+  transform: scale(1.05);
 }
 
 .active-day {
   background: var(--bk-purple) !important;
   color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(110, 38, 123, 0.25);
 }
 
 .disabled-day {
-  color: #c4c4c4 !important;
   cursor: not-allowed;
+}
+
+.past-day {
+  color: #d1cfc7 !important;
+  opacity: 0.4;
+}
+
+.fully-booked-day {
+  color: #e74c3c !important;
+  background: rgba(231, 76, 60, 0.05) !important;
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* Legend styling */
+.cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--bk-border);
+  font-size: 0.8rem;
+  color: var(--bk-muted);
+  font-weight: 700;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot.selected {
+  background-color: var(--bk-purple);
+}
+
+.legend-dot.has-bookings {
+  background-color: var(--bk-purple);
+  border: 2px solid var(--bk-border);
+}
+
+.legend-dot.available {
+  background-color: transparent;
+  border: 1px solid var(--bk-border);
+}
+
+.legend-dot.fully-booked {
+  background-color: rgba(231, 76, 60, 0.15);
+  border: 1px solid #e74c3c;
 }
 
 .selected-date-display {
   margin-top: 14px;
-  background: rgba(15, 90, 70, 0.06);
+  background: rgba(15, 90, 71, 0.06);
   padding: 10px 16px;
   border-radius: 8px;
   color: var(--bk-green);
   font-size: 0.95rem;
   text-align: center;
+  font-weight: 700;
 }
 
 /* ── Compact Grid of Add-ons ── */
