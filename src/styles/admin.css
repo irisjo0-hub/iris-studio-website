@@ -22,6 +22,394 @@
   --border-radius: 12px;
 }
 
+/* ============================================================
+   Admin Login Page — Single Centered Card Design (al-*)
+   ============================================================ */
+
+/* Full-page gradient background */
+.al-page {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cairo', 'Segoe UI', sans-serif;
+  background: linear-gradient(145deg, #2a0733 0%, #6F2477 50%, #1a0a3c 100%);
+}
+
+/* Animated background orbs */
+.al-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  animation: al-orb-float 9s ease-in-out infinite;
+  pointer-events: none;
+}
+.al-orb-1 { width: 420px; height: 420px; background: radial-gradient(circle, rgba(244,194,29,0.35), transparent 70%); top: -120px; right: -80px; animation-delay: 0s; }
+.al-orb-2 { width: 320px; height: 320px; background: radial-gradient(circle, rgba(11,91,75,0.4), transparent 70%); bottom: -80px; left: -60px; animation-delay: 3.5s; }
+.al-orb-3 { width: 200px; height: 200px; background: radial-gradient(circle, rgba(244,194,29,0.2), transparent 70%); top: 60%; left: 55%; animation-delay: 6s; }
+
+@keyframes al-orb-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-28px) scale(1.07); }
+}
+
+/* Centered white card */
+.al-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 440px;
+  margin: 1rem;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 24px;
+  padding: 2.8rem 2.6rem 2.2rem;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0,0,0,0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Logo at the top of card */
+.al-card-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.6rem;
+}
+.al-card-logo img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 22px;
+  background: rgba(111, 36, 119, 0.07);
+  padding: 10px;
+  border: 1px solid rgba(111, 36, 119, 0.14);
+  box-shadow: 0 4px 20px rgba(111, 36, 119, 0.15);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.al-card-logo img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 32px rgba(111, 36, 119, 0.25);
+}
+
+/* Form header */
+.al-form-header {
+  text-align: center;
+  margin-bottom: 1.8rem;
+}
+.al-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin: 0 0 0.35rem;
+  line-height: 1.25;
+}
+.al-subtitle {
+  font-size: 0.86rem;
+  color: #8a8fa8;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Form fields */
+.al-form { display: flex; flex-direction: column; gap: 1.1rem; }
+.al-field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.al-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #4a4a6a;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.al-label svg { color: var(--iris-purple); flex-shrink: 0; }
+
+.al-input {
+  width: 100%;
+  padding: 0.78rem 1rem;
+  font-size: 0.92rem;
+  font-family: 'Cairo', sans-serif;
+  color: #1a1a2e;
+  background: #f7f7fb;
+  border: 1.5px solid #e4e4f0;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-sizing: border-box;
+  direction: ltr;
+  text-align: left;
+}
+.al-input::placeholder { color: #b0b0c8; }
+.al-input:focus {
+  border-color: var(--iris-purple);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(111, 36, 119, 0.1);
+}
+.al-input:disabled { opacity: 0.65; cursor: not-allowed; }
+
+/* Error box */
+.al-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background: rgba(192, 57, 43, 0.07);
+  border: 1px solid rgba(192, 57, 43, 0.2);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  color: #c0392b;
+  font-size: 0.83rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.al-error svg { flex-shrink: 0; margin-top: 2px; }
+
+/* Submit button */
+.al-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Cairo', sans-serif;
+  color: #ffffff;
+  background: linear-gradient(135deg, #6F2477, #8e3498);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 4px 20px rgba(111, 36, 119, 0.38);
+}
+.al-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(111, 36, 119, 0.48); }
+.al-btn:active:not(:disabled) { transform: translateY(0); }
+.al-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+/* Loading spinner */
+.al-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: al-spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes al-spin { to { transform: rotate(360deg); } }
+
+/* Security badge */
+.al-secure-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #a8a8c0;
+}
+.al-secure-badge svg { color: #0B5B4B; }
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .al-card {
+    border-radius: 18px;
+    padding: 2.2rem 1.6rem 1.8rem;
+    margin: 0.75rem;
+  }
+  .al-card-logo img { width: 85px; height: 85px; }
+  .al-title { font-size: 1.35rem; }
+}
+
+
+.al-page {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  font-family: 'Cairo', 'Segoe UI', sans-serif;
+  direction: ltr;
+}
+
+/* ── Left decorative panel ── */
+.al-left-panel {
+  flex: 0 0 45%;
+  position: relative;
+  background: linear-gradient(145deg, #3d0f47 0%, #6F2477 45%, #1a0a3c 100%);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.al-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.45;
+  animation: al-orb-float 8s ease-in-out infinite;
+}
+.al-orb-1 { width: 340px; height: 340px; background: radial-gradient(circle, #F4C21D, transparent 70%); top: -80px; right: -80px; animation-delay: 0s; }
+.al-orb-2 { width: 260px; height: 260px; background: radial-gradient(circle, #0B5B4B, transparent 70%); bottom: -60px; left: -60px; animation-delay: 3s; }
+.al-orb-3 { width: 180px; height: 180px; background: radial-gradient(circle, #F4C21D, transparent 70%); top: 55%; left: 30%; animation-delay: 5s; opacity: 0.25; }
+@keyframes al-orb-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-24px) scale(1.06); }
+}
+
+.al-left-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 3.5rem 2.5rem;
+  text-align: center;
+}
+.al-brand { display: flex; flex-direction: column; align-items: center; gap: 1.2rem; flex: 1; justify-content: center; }
+.al-logo {
+  width: 220px; height: 220px; object-fit: contain;
+  border-radius: 40px;
+  background: rgba(255,255,255,0.12);
+  padding: 22px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.35);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.al-logo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 18px 60px rgba(0,0,0,0.45);
+}
+.al-brand-text { display: flex; flex-direction: column; gap: 0.3rem; }
+.al-brand-name { font-size: 1.9rem; font-weight: 900; color: #ffffff; letter-spacing: 4px; text-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+.al-brand-tagline { font-size: 0.88rem; font-weight: 500; color: rgba(244, 194, 29, 0.9); }
+.al-left-footer { display: flex; flex-direction: column; gap: 0.25rem; }
+.al-left-footer p { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin: 0; }
+
+/* ── Right form panel ── */
+.al-right-panel {
+  flex: 1;
+  background: #ECEBE7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.al-form-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2.8rem 2.4rem 2.2rem;
+  box-shadow: 0 12px 50px rgba(111, 36, 119, 0.1), 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid rgba(111, 36, 119, 0.08);
+  direction: rtl;
+}
+
+.al-mobile-logo { display: none; align-items: center; gap: 0.6rem; margin-bottom: 2rem; justify-content: center; }
+.al-mobile-logo img { width: 110px; height: 110px; object-fit: contain; border-radius: 24px; background: rgba(111,36,119,0.08); padding: 10px; border: 1px solid rgba(111,36,119,0.15); }
+
+.al-form-header { margin-bottom: 2rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
+.al-icon-shield {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, rgba(111,36,119,0.12), rgba(111,36,119,0.06));
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--iris-purple);
+  margin-bottom: 0.4rem;
+  border: 1px solid rgba(111,36,119,0.12);
+}
+.al-title { font-size: 1.6rem; font-weight: 800; color: #1a1a2e; margin: 0; line-height: 1.2; }
+.al-subtitle { font-size: 0.875rem; color: #8a8fa8; margin: 0; font-weight: 400; }
+
+.al-form { display: flex; flex-direction: column; gap: 1.1rem; }
+.al-field { display: flex; flex-direction: column; gap: 0.45rem; }
+.al-label { font-size: 0.8rem; font-weight: 700; color: #4a4a6a; display: flex; align-items: center; gap: 0.4rem; }
+.al-label svg { color: var(--iris-purple); flex-shrink: 0; }
+
+.al-input {
+  width: 100%;
+  padding: 0.78rem 1rem;
+  font-size: 0.92rem;
+  font-family: 'Cairo', sans-serif;
+  color: #1a1a2e;
+  background: #f7f7fb;
+  border: 1.5px solid #e4e4f0;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-sizing: border-box;
+  direction: ltr;
+  text-align: left;
+}
+.al-input::placeholder { color: #b0b0c8; }
+.al-input:focus { border-color: var(--iris-purple); background: #ffffff; box-shadow: 0 0 0 3px rgba(111, 36, 119, 0.1); }
+.al-input:disabled { opacity: 0.65; cursor: not-allowed; }
+
+.al-error {
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  background: rgba(192, 57, 43, 0.07);
+  border: 1px solid rgba(192, 57, 43, 0.2);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  color: #c0392b;
+  font-size: 0.83rem; font-weight: 600; line-height: 1.5;
+}
+.al-error svg { flex-shrink: 0; margin-top: 2px; }
+
+.al-btn {
+  display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  margin-top: 0.4rem;
+  font-size: 1rem; font-weight: 700; font-family: 'Cairo', sans-serif;
+  color: #ffffff;
+  background: linear-gradient(135deg, #6F2477, #8e3498);
+  border: none; border-radius: 12px; cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  box-shadow: 0 4px 20px rgba(111, 36, 119, 0.35);
+}
+.al-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(111, 36, 119, 0.45); }
+.al-btn:active:not(:disabled) { transform: translateY(0); }
+.al-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.al-spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2.5px solid rgba(255,255,255,0.4);
+  border-top-color: #ffffff; border-radius: 50%;
+  animation: al-spin 0.75s linear infinite; flex-shrink: 0;
+}
+@keyframes al-spin { to { transform: rotate(360deg); } }
+
+.al-secure-badge {
+  display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+  margin-top: 1.6rem;
+  font-size: 0.72rem; font-weight: 600; color: #a8a8c0;
+}
+.al-secure-badge svg { color: #0B5B4B; }
+
+@media (max-width: 768px) {
+  .al-left-panel { display: none; }
+  .al-right-panel {
+    flex: 1;
+    background: linear-gradient(160deg, #3d0f47 0%, #6F2477 100%);
+    padding: 1.5rem;
+  }
+  .al-form-card { border-radius: 16px; padding: 2rem 1.6rem 1.8rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .al-mobile-logo { display: flex; }
+  .al-title { font-size: 1.35rem; }
+}
+
 /* Base resets for Admin Area */
 .admin-layout {
   display: flex;
@@ -102,6 +490,25 @@
   background-color: var(--iris-purple);
   color: var(--text-light);
   box-shadow: 0 4px 12px rgba(111, 36, 119, 0.2);
+}
+
+/* Centered logo in admin header */
+.header-center-logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.header-center-logo img {
+  height: 46px;
+  width: 46px;
+  object-fit: contain;
+  border-radius: 10px;
+  filter: drop-shadow(0 2px 8px rgba(111, 36, 119, 0.25));
+  pointer-events: auto;
 }
 
 /* Content Area Wrapper */

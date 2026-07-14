@@ -79,7 +79,7 @@ const AdminLayout = ({ children }) => {
       {/* Top Header */}
       <header className="admin-header">
         <div className="header-brand-info">
-          {/* Mobile Hamburguer Menu Button */}
+          {/* Mobile Hamburger Menu Button */}
           <button 
             type="button" 
             className="mobile-menu-toggle"
@@ -88,9 +88,12 @@ const AdminLayout = ({ children }) => {
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          
-          <span className="header-title">IRIS STUDIO</span>
-          <span className="header-badge">لوحة الإدارة</span>
+          <span className="header-badge">Admin</span>
+        </div>
+
+        {/* Center logo */}
+        <div className="header-center-logo">
+          <img src={settings.logo_url || irisLogo} alt="IRIS Studio" />
         </div>
         
         <NavLink to="/" className="header-back-link">
@@ -116,8 +119,7 @@ const AdminLayout = ({ children }) => {
         {/* Fixed Right Sidebar */}
         <aside className={`admin-sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
           <div className="sidebar-brand">
-            <img src={settings.logo_url || irisLogo} alt="IRIS Studio" className="admin-brand-logo-img" />
-            <span className="brand-subtitle">STUDIO ADMIN</span>
+            <span className="brand-subtitle">ADMIN</span>
           </div>
 
           <nav className="sidebar-nav">
