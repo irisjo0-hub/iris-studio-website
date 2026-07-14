@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from '../components/Layout';
+import ProtectedAdminRoute from '../components/ProtectedAdminRoute';
 
 import Home                from '../pages/Home';
 import Work                from '../pages/Work';
@@ -42,22 +43,26 @@ const AppRouter = () => (
       <Route path="/printing-products"     element={<PrintingProducts />} />
     </Route>
 
-    {/* Admin routes */}
-    <Route path="/admin"                        element={<Admin />} />
+    {/* Public Admin Login Route */}
     <Route path="/admin/login"                  element={<AdminLogin />} />
-    <Route path="/admin/dashboard"              element={<AdminDashboard />} />
-    <Route path="/admin/bookings"               element={<AdminBookings />} />
-    <Route path="/admin/schedule"               element={<AdminSchedule />} />
-    <Route path="/admin/graduation-orders"      element={<AdminGraduationOrders />} />
-    <Route path="/admin/printing-orders"        element={<AdminPrintingOrders />} />
-    <Route path="/admin/work"                   element={<AdminWork />} />
-    <Route path="/admin/packages"               element={<AdminPackages />} />
-    <Route path="/admin/offers"                 element={<AdminOffers />} />
-    <Route path="/admin/printing-products"      element={<AdminProducts />} />
-    <Route path="/admin/templates"              element={<AdminTemplates />} />
-    <Route path="/admin/extras"                 element={<AdminExtras />} />
-    <Route path="/admin/book-extras"            element={<AdminBookExtras />} />
-    <Route path="/admin/settings"               element={<AdminSettings />} />
+
+    {/* Protected Admin routes */}
+    <Route element={<ProtectedAdminRoute />}>
+      <Route path="/admin"                        element={<Admin />} />
+      <Route path="/admin/dashboard"              element={<AdminDashboard />} />
+      <Route path="/admin/bookings"               element={<AdminBookings />} />
+      <Route path="/admin/schedule"               element={<AdminSchedule />} />
+      <Route path="/admin/graduation-orders"      element={<AdminGraduationOrders />} />
+      <Route path="/admin/printing-orders"        element={<AdminPrintingOrders />} />
+      <Route path="/admin/work"                   element={<AdminWork />} />
+      <Route path="/admin/packages"               element={<AdminPackages />} />
+      <Route path="/admin/offers"                 element={<AdminOffers />} />
+      <Route path="/admin/printing-products"      element={<AdminProducts />} />
+      <Route path="/admin/templates"              element={<AdminTemplates />} />
+      <Route path="/admin/extras"                 element={<AdminExtras />} />
+      <Route path="/admin/book-extras"            element={<AdminBookExtras />} />
+      <Route path="/admin/settings"               element={<AdminSettings />} />
+    </Route>
   </Routes>
 );
 

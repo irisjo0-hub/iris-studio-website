@@ -19,6 +19,7 @@ import {
   X
 } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { supabase } from '../lib/supabase';
 import irisLogo from '../assets/iris_logo.png';
 import '../styles/admin.css';
 
@@ -28,8 +29,12 @@ const AdminLayout = ({ children }) => {
   const { settings } = useSiteSettings();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminAuth');
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
     navigate('/admin/login');
   };
 
