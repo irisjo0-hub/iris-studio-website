@@ -9,6 +9,14 @@ const ProtectedAdminRoute = () => {
   useEffect(() => {
     let active = true;
 
+    // Safety timeout: if auth check exceeds 5 seconds, redirect to login
+    const safetyTimer = setTimeout(() => {
+      if (active) {
+        setAuthorized(false);
+        setLoading(false);
+      }
+    }, 5000);
+
     const checkAdmin = async () => {
       try {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -39,6 +47,8 @@ const ProtectedAdminRoute = () => {
           setAuthorized(false);
           setLoading(false);
         }
+      } finally {
+        clearTimeout(safetyTimer);
       }
     };
 
@@ -46,6 +56,7 @@ const ProtectedAdminRoute = () => {
 
     return () => {
       active = false;
+      clearTimeout(safetyTimer);
     };
   }, []);
 

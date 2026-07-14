@@ -2,25 +2,26 @@
 
 /* Brand Colors */
 :root {
-  --purple: #6E267B;
-  --green: #0F5A47;
-  --yellow: #F2C230;
-  --light-bg: #ECEBE7;
+  --purple: var(--color-purple);
+  --green: var(--color-green);
+  --yellow: var(--color-gold);
+  --light-bg: var(--color-bg-light);
 }
 
 /* Section container */
 .packages-section {
-  padding: 2rem 1rem;
+  padding: var(--uds-space-lg) var(--uds-space-sm);
   background-color: var(--light-bg);
   direction: rtl; /* Arabic RTL */
   text-align: right;
+  font-family: var(--font-primary), sans-serif;
 }
 
 .section-title {
-  font-family: 'Inter', sans-serif;
-  font-size: 2.2rem; /* larger title */
+  font-family: var(--font-primary), sans-serif;
+  font-size: var(--uds-h2-size); /* larger title */
   color: var(--purple);
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--uds-margin-md);
   text-align: center;
 }
 
@@ -28,7 +29,7 @@
 .packages-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: var(--uds-space-sm);
   align-items: stretch; /* make cards equal height */
 }
 
@@ -46,19 +47,20 @@
 
 .package-card {
   background: #fff;
-  border-radius: 16px;
+  border-radius: var(--uds-radius-md);
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--uds-shadow-md);
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
   border: 1px solid rgba(0, 0, 0, 0.04);
+  font-family: var(--font-primary), sans-serif;
 }
 
 .package-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 40px rgba(103, 36, 95, 0.08);
+  transform: translateY(-4px);
+  box-shadow: var(--uds-shadow-lg);
 }
 
 .package-image-btn {
@@ -72,71 +74,101 @@
 
 .package-img {
   width: 100%;
-  height: 220px;
+  height: 170px; /* Reduced card height */
   object-fit: cover;
   display: block;
   transition: opacity 0.3s ease;
 }
 
 .package-img:hover {
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .package-info {
-  padding: 20px;
+  padding: var(--uds-space-sm); /* Reduced paddings inside card */
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--uds-space-xs);
   flex-grow: 1;
 }
 
 .package-name {
-  font-size: 1.3rem;
+  font-size: var(--uds-text-lg); /* Slightly smaller & optimized heading size */
   font-weight: 800;
   color: var(--purple);
   margin: 0;
+  font-family: var(--font-primary), sans-serif;
 }
 
 .package-price {
-  font-size: 1.4rem;
+  font-size: var(--uds-text-lg); /* Optimized heading size */
   font-weight: 900;
   color: var(--green);
+  font-family: var(--font-primary), sans-serif;
+  margin: 2px 0 0;
 }
 
 .package-duration {
-  font-size: 0.9rem;
+  font-size: var(--uds-text-sm);
   color: #666;
+  font-family: var(--font-primary), sans-serif;
 }
 
 .package-details {
   flex-grow: 1;
-  color: #444;
-  font-size: 0.95rem;
-  line-height: 1.6;
+  color: #555;
+  font-size: var(--uds-text-sm); /* Optimized readability on mobile */
+  line-height: 1.5;
+  margin: 4px 0 12px;
+  font-family: var(--font-primary), sans-serif;
+}
+
+.package-features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Reduced gap */
+}
+
+.package-feature-item {
+  font-size: var(--uds-text-sm);
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.package-feature-item .feature-icon {
+  color: var(--green);
+  flex-shrink: 0;
 }
 
 .book-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  align-self: flex-start;
-  background-color: var(--yellow);
-  color: var(--green);
+  width: 100%; /* Unified button size (full card width) */
+  box-sizing: border-box;
+  background-color: var(--purple); /* Unified button color */
+  color: #ffffff; /* Unified button text color */
   border: none;
-  padding: 10px 20px;
-  border-radius: 12px;
+  padding: var(--uds-btn-padding-y) var(--uds-btn-padding-x);
+  border-radius: var(--uds-btn-radius);
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: var(--uds-btn-font-size);
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(245, 189, 26, 0.2);
+  transition: var(--transition-smooth);
+  box-shadow: var(--uds-shadow-sm);
+  font-family: var(--font-primary), sans-serif;
 }
 
 .book-btn:hover {
-  background-color: #e5a70d;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(245, 189, 26, 0.3);
+  background-color: var(--color-purple-hover, #591e63);
+  transform: var(--uds-btn-hover-transform);
+  box-shadow: var(--uds-shadow-md);
 }
 
 /* Lightbox overlay modifications */

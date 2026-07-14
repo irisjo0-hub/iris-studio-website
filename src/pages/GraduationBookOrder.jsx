@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase, uploadFile } from '../lib/supabase';
+import { Loader2, Check } from 'lucide-react';
 import '../styles/graduation.css';
 
 /* ── Constants ─────────────────────────────────────────────── */
@@ -248,12 +249,14 @@ const GraduationBookOrder = () => {
   const [submitting, setSubmitting] = useState(false);
   const [orderNum, setOrderNum] = useState('');
   const [selectedPkg, setSelectedPkg] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Dynamic packages fetched from DB
   const [dbPackages, setDbPackages] = useState([]);
 
   useEffect(() => {
     const fetchPackages = async () => {
+      let activePkgs = DEFAULT_PACKAGES;
       try {
         const { data, error } = await supabase
           .from('packages')
@@ -263,43 +266,61 @@ const GraduationBookOrder = () => {
           .order('sort_order', { ascending: true });
         
         if (!error && data && data.length > 0) {
-          const formatted = data.map(p => ({
-            id: String(p.id),
-            name: p.title,
-            price: Number(p.price),
-            icon: '📔',
-            features: Array.isArray(p.features) ? p.features : JSON.parse(p.features || '[]'),
-            popular: false
-          }));
-          setDbPackages(formatted);
+          activePkgs = data.map(p => {
+            const featuresArray = Array.isArray(p.features) ? p.features : JSON.parse(p.features || '[]');
+            const hasPopular = featuresArray.includes('الأكثر طلباً') || featuresArray.includes('popular');
+            const cleanFeatures = featuresArray.filter(f => f !== 'الأكثر طلباً' && f !== 'popular');
+            return {
+              id: String(p.id),
+              name: p.title,
+              price: Number(p.price),
+              icon: '📔',
+              features: cleanFeatures,
+              popular: hasPopular
+            };
+          });
+          setDbPackages(activePkgs);
+          
+          // Pre-select package from URL immediately
+          const pkgParam = searchParams.get('package');
+          const found = activePkgs.find(p => String(p.id) === String(pkgParam) || p.price === Number(pkgParam));
+          if (found) {
+            setSelectedPkg(found);
+            setStep(2); // Directly select step 2
+          }
         } else {
           setDbPackages(DEFAULT_PACKAGES);
+          const pkgParam = searchParams.get('package');
+          const found = DEFAULT_PACKAGES.find(p => String(p.id) === String(pkgParam) || p.price === Number(pkgParam));
+          if (found) {
+            setSelectedPkg(found);
+            setStep(2);
+          }
         }
       } catch {
         setDbPackages(DEFAULT_PACKAGES);
+        const pkgParam = searchParams.get('package');
+        const found = DEFAULT_PACKAGES.find(p => String(p.id) === String(pkgParam) || p.price === Number(pkgParam));
+        if (found) {
+          setSelectedPkg(found);
+          setStep(2);
+        }
       }
+      setLoading(false);
     };
     fetchPackages();
-  }, []);
-
-  useEffect(() => {
-    if (dbPackages.length > 0) {
-      const pkgParam = searchParams.get('package');
-      const found = dbPackages.find(p => String(p.id) === String(pkgParam) || p.price === Number(pkgParam));
-      if (found) {
-        setSelectedPkg(found);
-        setStep(2); // Skip package selection if passed in URL
-      } else {
-        setSelectedPkg(null);
-        setStep(1);
-      }
-    }
-  }, [searchParams, dbPackages]);
+  }, [searchParams]);
 
   // Auto-scroll to top when step or status changes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0 });
   }, [step, success, submitted]);
+
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo(0, 0);
+    }
+  }, [loading]);
 
   // Step 1 — Cover & Inside Info
   const [extTplNum, setExtTplNum] = useState('');
@@ -598,6 +619,11 @@ const GraduationBookOrder = () => {
               onClick={() => handleSelectPackage(pkg)}
             >
               {pkg.popular && <div className="grad-pkg-popular-badge">الأكثر طلباً</div>}
+              {selectedPkg?.id === pkg.id && (
+                <div className="grad-pkg-selected-badge">
+                  <Check size={12} strokeWidth={3} />
+                </div>
+              )}
               <div className="grad-pkg-header">
                 <span className="grad-pkg-icon">{pkg.icon}</span>
                 <h3 className="grad-pkg-name">{pkg.name}</h3>
@@ -949,6 +975,15 @@ const GraduationBookOrder = () => {
     );
   };
 
+  if (loading) {
+    return (
+      <main className="grad-order-page" dir="rtl" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', gap: '16px' }}>
+        <Loader2 className="animate-spin" size={40} style={{ color: 'var(--g-purple)' }} />
+        <span style={{ fontFamily: 'var(--font-primary), sans-serif', fontWeight: 700, color: 'var(--g-purple)', fontSize: '1.1rem' }}>جاري تحميل صفحة الطلب...</span>
+      </main>
+    );
+  }
+
   /* ── Success Screen / Invoice ───────────────────────────── */
   if (submitted || success) return (
     <main className="grad-order-page" dir="rtl">
@@ -1004,7 +1039,7 @@ const GraduationBookOrder = () => {
         {renderStep()}
         <div className="grad-order-actions">
           {step > 1 && (<button className="grad-btn-prev" onClick={prevStep}>السابق</button>)}
-          {step < stepsList.length && (
+          {step > 1 && step < stepsList.length && (
             <button
               className="grad-btn-next"
               onClick={nextStep}

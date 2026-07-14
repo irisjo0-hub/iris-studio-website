@@ -23,6 +23,7 @@ const HeroBloomScene = () => {
   const link4Ref = useRef(null);
   const link5Ref = useRef(null);
   const link6Ref = useRef(null);
+  const link7Ref = useRef(null);
   const sloganRef = useRef(null);
   const buttonsRef = useRef(null);
   const glowOverlayRef = useRef(null);
@@ -106,7 +107,13 @@ const HeroBloomScene = () => {
       setMetadataLoaded(true);
     }
   };
-
+  // Helper to clean up before navigation
+  const handleNav = () => {
+    if (videoRef.current) videoRef.current.pause();
+    document.body.classList.remove('scroll-lock');
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill(true));
+    ScrollTrigger.clearScrollMemory();
+  };
   useEffect(() => {
     if (!metadataLoaded) return;
 
@@ -122,6 +129,7 @@ const HeroBloomScene = () => {
     const link4 = link4Ref.current;
     const link5 = link5Ref.current;
     const link6 = link6Ref.current;
+    const link7 = link7Ref.current;
     const slogan = sloganRef.current;
     const buttons = buttonsRef.current;
     const glowOverlay = glowOverlayRef.current;
@@ -130,11 +138,13 @@ const HeroBloomScene = () => {
 
     let active = true;
     let scrollTimeline = null;
+    let rafId = null;
+    let initRafId = null;
 
     const initTimeline = () => {
       if (!active) return;
       if (!video.duration || isNaN(video.duration) || video.duration < 0.1) {
-        requestAnimationFrame(initTimeline);
+        initRafId = requestAnimationFrame(initTimeline);
         return;
       }
 
@@ -156,7 +166,9 @@ const HeroBloomScene = () => {
         progressRef.current = progress;
         if (video.duration) {
           const maxTime = video.duration - 0.05;
-          targetTimeRef.current = progress * Math.max(0, maxTime);
+          // Scale progress so the flower reaches full bloom at 0.72 progress (at "عروضنا") and remains open
+          const videoProgress = Math.min(1, progress / 0.72);
+          targetTimeRef.current = videoProgress * Math.max(0, maxTime);
         }
 
         const isDesktop = window.innerWidth >= 1024;
@@ -165,7 +177,7 @@ const HeroBloomScene = () => {
         const radiusX = isDesktop ? 200 : 0;
         const radiusY = isDesktop ? 100 : 55;
         const depthZ = isDesktop ? 200 : 120;
-        const numberOfItems = 6;
+        const numberOfItems = 7;
         const navStart = 0.12;
         const holdEnd = 0.22;
         const navEnd = 0.80;
@@ -230,22 +242,49 @@ const HeroBloomScene = () => {
         updateCylinderLink(link4, 3);
         updateCylinderLink(link5, 4);
         updateCylinderLink(link6, 5);
+        updateCylinderLink(link7, 6);
 
         // Core Layout Animations (Cross-Fade / Exit transitions past 0.8 progress)
         if (progress > 0.8) {
-          const ratio = (progress - 0.8) / 0.2;
-          const exitOpacity = 1 - ratio;
+          // Hero exit: fades out quickly between 0.8 and 0.9
+          let ratioExit = 0;
+          if (progress > 0.8) {
+            ratioExit = Math.min(1, (progress - 0.8) / 0.1);
+          }
+          const exitOpacity = 1 - ratioExit;
 
           gsap.set(video, { opacity: exitOpacity });
           if (logo) gsap.set(logo, { opacity: exitOpacity });
-          if (buttons) gsap.set(buttons, { opacity: exitOpacity, y: ratio * 15 });
-          if (slogan) gsap.set(slogan, { opacity: exitOpacity, y: ratio * -15 });
+          if (buttons) gsap.set(buttons, { opacity: exitOpacity, y: ratioExit * 15 });
+          if (slogan) gsap.set(slogan, { opacity: exitOpacity, y: ratioExit * -15 });
           if (glowOverlay) gsap.set(glowOverlay, { opacity: exitOpacity });
 
-          // Fade-in sibling layout components (Navbar, White page contents, Footer)
-          if (whitePage) gsap.set(whitePage, { opacity: ratio, visibility: "visible" });
-          if (footer) gsap.set(footer, { opacity: ratio, visibility: "visible" });
-          if (navbar) gsap.set(navbar, { display: "block", opacity: ratio });
+          // Sibling layout entrance: fades in and de-blurs between 0.86 and 1.0
+          let ratioEnter = 0;
+          if (progress > 0.86) {
+            ratioEnter = Math.min(1, (progress - 0.86) / 0.14);
+          }
+          const blurVal = 12 * (1 - ratioEnter);
+
+          if (whitePage) {
+            gsap.set(whitePage, { 
+              opacity: ratioEnter, 
+              filter: blurVal > 0.1 ? `blur(${blurVal}px)` : "none",
+              visibility: ratioEnter > 0.01 ? "visible" : "hidden" 
+            });
+          }
+          if (footer) {
+            gsap.set(footer, { 
+              opacity: ratioEnter, 
+              visibility: ratioEnter > 0.01 ? "visible" : "hidden" 
+            });
+          }
+          if (navbar) {
+            gsap.set(navbar, { 
+              display: ratioEnter > 0.01 ? "block" : "none", 
+              opacity: ratioEnter 
+            });
+          }
         } else {
           // Normal state (0.0 to 0.8 progress)
           gsap.set(video, { opacity: 1 });
@@ -254,7 +293,7 @@ const HeroBloomScene = () => {
           if (slogan) gsap.set(slogan, { opacity: 1, y: 0 });
           if (glowOverlay) gsap.set(glowOverlay, { opacity: 1 });
 
-          if (whitePage) gsap.set(whitePage, { opacity: 0, visibility: "hidden" });
+          if (whitePage) gsap.set(whitePage, { opacity: 0, filter: "blur(12px)", visibility: "hidden" });
           if (footer) gsap.set(footer, { opacity: 0, visibility: "hidden" });
           if (navbar) gsap.set(navbar, { display: "none", opacity: 0 });
         }
@@ -275,7 +314,6 @@ const HeroBloomScene = () => {
       });
 
       // Smooth video seeking using LERP to prevent decoder choking
-      let rafId;
       const smoothVideoSeek = () => {
         if (!active) return;
         if (video && !video.seeking) {
@@ -310,25 +348,33 @@ const HeroBloomScene = () => {
 
     return () => {
       active = false;
-      cancelAnimationFrame(rafId);
+
+      // Cancel smooth video seek loop and wait loop
+      if (rafId) cancelAnimationFrame(rafId);
+      if (initRafId) cancelAnimationFrame(initRafId);
+
+      // Kill the scroll timeline and its ScrollTrigger
       if (scrollTimeline) {
-        const scrollTriggerInstance = scrollTimeline.scrollTrigger;
-        if (scrollTriggerInstance) scrollTriggerInstance.kill();
+        const st = scrollTimeline.scrollTrigger;
+        if (st) st.kill(true);
         scrollTimeline.kill();
       }
-      ScrollTrigger.refresh();
-      const navbar = document.querySelector(".navbar");
-      const whitePage = document.querySelector(".white-content-page");
-      const footer = document.querySelector(".footer, footer");
-      if (navbar) {
-        gsap.set(navbar, { clearProps: "display,opacity" });
-      }
-      if (whitePage) {
-        gsap.set(whitePage, { clearProps: "opacity,visibility" });
-      }
-      if (footer) {
-        gsap.set(footer, { clearProps: "opacity,visibility" });
-      }
+
+      // Kill ALL remaining ScrollTrigger instances to prevent stale state leaking to next page
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill(true));
+      ScrollTrigger.clearScrollMemory();
+
+      // Remove body scroll-lock class unconditionally
+      document.body.classList.remove('scroll-lock');
+
+      // Restore all GSAP-controlled elements to natural CSS state
+      const navbar    = document.querySelector('.navbar');
+      const whitePage = document.querySelector('.white-content-page');
+      const footer    = document.querySelector('.footer, footer');
+
+      if (navbar)    gsap.set(navbar,    { clearProps: 'all' });
+      if (whitePage) gsap.set(whitePage, { clearProps: 'all' });
+      if (footer)    gsap.set(footer,    { clearProps: 'all' });
     };
   }, [metadataLoaded]);
 
@@ -365,6 +411,7 @@ const HeroBloomScene = () => {
               ref={link1Ref} 
               to="/" 
               className="editorial-nav-item-wrapper"
+              onClick={handleNav}
             >
               <span className="editorial-nav-item">الرئيسية</span>
             </NavLink>
@@ -372,6 +419,7 @@ const HeroBloomScene = () => {
               ref={link2Ref} 
               to="/booking" 
               className="editorial-nav-item-wrapper"
+              onClick={handleNav}
             >
               <span className="editorial-nav-item">جلسات التصوير</span>
             </NavLink>
@@ -379,6 +427,7 @@ const HeroBloomScene = () => {
               ref={link3Ref} 
               to="/graduation-books" 
               className="editorial-nav-item-wrapper"
+              onClick={handleNav}
             >
               <span className="editorial-nav-item">دفاتر التخرج</span>
             </NavLink>
@@ -386,6 +435,7 @@ const HeroBloomScene = () => {
               ref={link4Ref} 
               to="/graduation-book-order" 
               className="editorial-nav-item-wrapper"
+              onClick={handleNav}
             >
               <span className="editorial-nav-item">طلب دفتر تخرج</span>
             </NavLink>
@@ -393,6 +443,7 @@ const HeroBloomScene = () => {
               ref={link5Ref} 
               to="/printing-products" 
               className="editorial-nav-item-wrapper"
+              onClick={handleNav}
             >
               <span className="editorial-nav-item">المطبوعات</span>
             </NavLink>
@@ -400,8 +451,17 @@ const HeroBloomScene = () => {
               ref={link6Ref} 
               to="/work" 
               className="editorial-nav-item-wrapper"
+              onClick={handleNav}
             >
               <span className="editorial-nav-item">أعمالنا</span>
+            </NavLink>
+            <NavLink 
+              ref={link7Ref} 
+              to="/packages" 
+              className="editorial-nav-item-wrapper"
+              onClick={handleNav}
+            >
+              <span className="editorial-nav-item">عروضنا</span>
             </NavLink>
           </nav>
 
@@ -420,6 +480,7 @@ const HeroBloomScene = () => {
               <Link 
                 to="/booking" 
                 className="btn btn-premium btn-premium-gold"
+                onClick={handleNav}
               >
                 ابدأ تجربتك
               </Link>
@@ -427,6 +488,7 @@ const HeroBloomScene = () => {
               <Link 
                 to="/work" 
                 className="btn btn-premium btn-premium-purple"
+                onClick={handleNav}
               >
                 استكشف أعمالنا
               </Link>

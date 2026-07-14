@@ -1,5 +1,7 @@
 /* src/styles/admin.css */
 
+@import "./global.css";
+
 /* Custom Google Font for Arabic typography */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
 
@@ -16,10 +18,10 @@
   --text-muted: #7F8C8D;
   --border-color: #BDC3C7;
 
-  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
-  --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.08);
-  --shadow-header: 0 2px 15px rgba(4, 70, 48, 0.12);
-  --border-radius: 12px;
+  --shadow-soft: var(--uds-shadow-sm);
+  --shadow-medium: var(--uds-shadow-md);
+  --shadow-header: var(--uds-shadow-sm);
+  --border-radius: var(--uds-radius-md);
 }
 
 /* ============================================================
@@ -35,7 +37,7 @@
   position: relative;
   align-items: center;
   justify-content: center;
-  font-family: 'Cairo', 'Segoe UI', sans-serif;
+  font-family: var(--font-primary);
   background: linear-gradient(145deg, #2a0733 0%, #6F2477 50%, #1a0a3c 100%);
 }
 
@@ -62,11 +64,11 @@
   z-index: 2;
   width: 100%;
   max-width: 440px;
-  margin: 1rem;
+  margin: var(--uds-margin-sm);
   background: rgba(255, 255, 255, 0.97);
-  border-radius: 24px;
+  border-radius: var(--uds-radius-xl);
   padding: 2.8rem 2.6rem 2.2rem;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0,0,0,0.15);
+  box-shadow: var(--uds-shadow-lg);
   border: 1px solid rgba(255, 255, 255, 0.25);
   display: flex;
   flex-direction: column;
@@ -83,16 +85,16 @@
   width: 100px;
   height: 100px;
   object-fit: contain;
-  border-radius: 22px;
+  border-radius: var(--uds-radius-lg);
   background: rgba(111, 36, 119, 0.07);
   padding: 10px;
   border: 1px solid rgba(111, 36, 119, 0.14);
-  box-shadow: 0 4px 20px rgba(111, 36, 119, 0.15);
+  box-shadow: var(--uds-shadow-sm);
   transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 .al-card-logo img:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 32px rgba(111, 36, 119, 0.25);
+  box-shadow: var(--uds-shadow-md);
 }
 
 /* Form header */
@@ -119,7 +121,7 @@
 .al-field { display: flex; flex-direction: column; gap: 0.4rem; }
 
 .al-label {
-  font-size: 0.8rem;
+  font-size: var(--uds-text-sm);
   font-weight: 700;
   color: #4a4a6a;
   display: flex;
@@ -131,12 +133,12 @@
 .al-input {
   width: 100%;
   padding: 0.78rem 1rem;
-  font-size: 0.92rem;
-  font-family: 'Cairo', sans-serif;
+  font-size: var(--uds-text-sm);
+  font-family: var(--font-primary);
   color: #1a1a2e;
   background: #f7f7fb;
   border: 1.5px solid #e4e4f0;
-  border-radius: 10px;
+  border-radius: var(--uds-radius-sm);
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   box-sizing: border-box;
@@ -158,10 +160,10 @@
   gap: 0.5rem;
   background: rgba(192, 57, 43, 0.07);
   border: 1px solid rgba(192, 57, 43, 0.2);
-  border-radius: 10px;
+  border-radius: var(--uds-radius-sm);
   padding: 0.7rem 0.9rem;
   color: #c0392b;
-  font-size: 0.83rem;
+  font-size: var(--uds-text-sm);
   font-weight: 600;
   line-height: 1.5;
 }
@@ -174,21 +176,21 @@
   justify-content: center;
   gap: 0.55rem;
   width: 100%;
-  padding: 0.9rem 1.5rem;
+  padding: var(--uds-btn-padding-y) var(--uds-btn-padding-x);
   margin-top: 0.5rem;
-  font-size: 1rem;
+  font-size: var(--uds-btn-font-size);
   font-weight: 700;
-  font-family: 'Cairo', sans-serif;
+  font-family: var(--font-primary);
   color: #ffffff;
   background: linear-gradient(135deg, #6F2477, #8e3498);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--uds-btn-radius);
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-  box-shadow: 0 4px 20px rgba(111, 36, 119, 0.38);
+  transition: var(--transition-smooth);
+  box-shadow: var(--uds-shadow-sm);
 }
-.al-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(111, 36, 119, 0.48); }
-.al-btn:active:not(:disabled) { transform: translateY(0); }
+.al-btn:hover:not(:disabled) { transform: var(--uds-btn-hover-transform); box-shadow: var(--uds-shadow-md); }
+.al-btn:active:not(:disabled) { transform: translateY(0) scale(var(--uds-btn-hover-scale)); }
 .al-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
 /* Loading spinner */
@@ -234,7 +236,7 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  font-family: 'Cairo', 'Segoe UI', sans-serif;
+  font-family: var(--font-primary);
   direction: ltr;
 }
 
@@ -341,7 +343,7 @@
   width: 100%;
   padding: 0.78rem 1rem;
   font-size: 0.92rem;
-  font-family: 'Cairo', sans-serif;
+  font-family: var(--font-primary);
   color: #1a1a2e;
   background: #f7f7fb;
   border: 1.5px solid #e4e4f0;
@@ -372,7 +374,7 @@
   width: 100%;
   padding: 0.85rem 1.5rem;
   margin-top: 0.4rem;
-  font-size: 1rem; font-weight: 700; font-family: 'Cairo', sans-serif;
+  font-size: 1rem; font-weight: 700; font-family: var(--font-primary);
   color: #ffffff;
   background: linear-gradient(135deg, #6F2477, #8e3498);
   border: none; border-radius: 12px; cursor: pointer;
@@ -420,7 +422,7 @@
   direction: rtl;
   background-color: var(--iris-bg);
   color: var(--text-dark);
-  font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-primary);
 }
 
 /* Top Header */
@@ -1603,7 +1605,7 @@ body:has(.admin-layout),
 .tab-btn {
   background: none;
   border: none;
-  font-family: 'Cairo', sans-serif;
+  font-family: var(--font-primary);
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-muted);

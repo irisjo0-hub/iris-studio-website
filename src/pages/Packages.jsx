@@ -97,17 +97,17 @@ const Packages = () => {
                   <div className="package-info">
                     <h3 className="package-name">{pkg.title}</h3>
                     <p className="package-price">{pkg.price} JOD</p>
-                    <div className="package-details" style={{ margin: '10px 0' }}>
-                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div className="package-details">
+                      <ul className="package-features-list">
                         {features.map((feat, idx) => (
-                          <li key={idx} style={{ fontSize: '0.9rem', color: '#555', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Check size={14} style={{ color: 'var(--color-green)', flexShrink: 0 }} />
+                          <li key={idx} className="package-feature-item">
+                            <Check size={14} className="feature-icon" />
                             <span>{feat}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
-                    <Link to={`/booking?package=${encodeURIComponent(pkg.title)}`} className="book-btn" style={{ marginTop: 'auto' }}>
+                    <Link to={`/booking?package=${encodeURIComponent(pkg.title)}`} className="book-btn">
                       احجز هذه الباقة
                     </Link>
                   </div>
@@ -166,17 +166,17 @@ const Packages = () => {
                   <div className="package-info">
                     <h3 className="package-name">{pkg.title}</h3>
                     <p className="package-price">{pkg.price} JOD</p>
-                    <div className="package-details" style={{ margin: '10px 0' }}>
-                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div className="package-details">
+                      <ul className="package-features-list">
                         {features.map((feat, idx) => (
-                          <li key={idx} style={{ fontSize: '0.9rem', color: '#555', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Check size={14} style={{ color: 'var(--color-green)', flexShrink: 0 }} />
+                          <li key={idx} className="package-feature-item">
+                            <Check size={14} className="feature-icon" />
                             <span>{feat}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
-                    <Link to={`/graduation-order?package=${pkg.id}`} className="book-btn" style={{ marginTop: 'auto' }}>
+                    <Link to={`/graduation-order?package=${pkg.id}`} className="book-btn">
                       اطلب الباقة الآن
                     </Link>
                   </div>

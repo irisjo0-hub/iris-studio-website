@@ -215,6 +215,7 @@ const Booking = () => {
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Database list vs fallback defaults
   const [dbPackages, setDbPackages] = useState([]);
@@ -250,12 +251,18 @@ const Booking = () => {
 
   // Auto-scroll to top when step changes or on final submission success
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0 });
   };
 
   useEffect(() => {
     scrollToTop();
   }, [step, submitted]);
+
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo(0, 0);
+    }
+  }, [loading]);
 
   // Load packages, bookings, and extras
   useEffect(() => {
@@ -276,11 +283,28 @@ const Booking = () => {
             label: p.features && p.features.includes('25 دقيقة') ? '25 دقيقة' : '50 دقيقة'
           }));
           setDbPackages(parsed);
+          
+          // Pre-select package from URL immediately
+          const pkgName = searchParams.get('package');
+          if (pkgName) {
+            const found = parsed.find((p) => p.name === pkgName);
+            if (found) setSelectedPackage(found);
+          }
         } else {
           setDbPackages(DEFAULT_PACKAGES);
+          const pkgName = searchParams.get('package');
+          if (pkgName) {
+            const found = DEFAULT_PACKAGES.find((p) => p.name === pkgName);
+            if (found) setSelectedPackage(found);
+          }
         }
       } catch {
         setDbPackages(DEFAULT_PACKAGES);
+        const pkgName = searchParams.get('package');
+        if (pkgName) {
+          const found = DEFAULT_PACKAGES.find((p) => p.name === pkgName);
+          if (found) setSelectedPackage(found);
+        }
       }
 
       try {
@@ -302,7 +326,6 @@ const Booking = () => {
           setExtras(extrasData.map((e) => ({ ...e, qty: 0 })));
         }
       } catch {
-        // Fallback extras
         const fallbackExtras = [
           { id: 1, name: 'دفتر تخرج', price: 12 },
           { id: 2, name: 'بوستر فوم 44×30', price: 6 },
@@ -312,20 +335,11 @@ const Booking = () => {
         setAvailableExtras(fallbackExtras);
         setExtras(fallbackExtras.map((e) => ({ ...e, qty: 0 })));
       }
+
+      setLoading(false);
     };
     fetchData();
-  }, []);
-
-  // Pre-select package from URL search parameter
-  useEffect(() => {
-    if (dbPackages.length > 0) {
-      const pkgName = searchParams.get('package');
-      if (pkgName) {
-        const found = dbPackages.find((p) => p.name === pkgName);
-        if (found) setSelectedPackage(found);
-      }
-    }
-  }, [searchParams, dbPackages]);
+  }, [searchParams]);
 
   // Generate slots when date or package changes
   useEffect(() => {
@@ -473,6 +487,15 @@ ${notes}`;
       setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="booking-page" dir="rtl" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', gap: '16px' }}>
+        <Loader2 className="animate-spin" size={40} style={{ color: 'var(--color-purple)' }} />
+        <span style={{ fontFamily: 'var(--font-primary), sans-serif', fontWeight: 700, color: 'var(--color-purple)', fontSize: '1.1rem' }}>جاري تحميل صفحة الحجز...</span>
+      </div>
+    );
+  }
 
   // Success screen
   if (submitted) {

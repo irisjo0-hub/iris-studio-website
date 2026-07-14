@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../lib/supabase";
@@ -50,11 +50,11 @@ const Home = () => {
     return !!window.hasPreloaded;
   });
 
-  const handlePreloaderComplete = () => {
+  const handlePreloaderComplete = useCallback(() => {
     window.hasPreloaded = true;
     setLoading(false);
     setPreloaderDone(true);
-  };
+  }, []);
 
   const [breakBoxVisible, setBreakBoxVisible] = useState(false);
   const [currentOfferIndex, setCurrentOfferIndex] = useState(0);

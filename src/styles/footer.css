@@ -32,8 +32,8 @@
 .footer .footer-content {
   display: grid;
   grid-template-columns: 1.2fr 1fr 1fr;
-  gap: 48px;
-  padding: 56px 24px 40px;
+  gap: var(--uds-space-lg);
+  padding: var(--uds-space-lg) var(--uds-space-md) var(--uds-margin-lg);
   max-width: 1200px;
   margin: 0 auto;
   text-align: right;
@@ -43,7 +43,7 @@
 .footer-brand {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--uds-space-sm);
 }
 
 .footer-logo {
@@ -60,17 +60,17 @@
 
 .footer-tagline {
   color: rgba(29, 29, 31, 0.7);
-  font-size: 0.95rem;
+  font-size: var(--uds-text-base);
   line-height: 1.8;
   max-width: 280px;
 }
 
 /* Headings */
 .footer-heading {
-  font-size: 1.05rem;
+  font-size: var(--uds-text-lg);
   font-weight: 800;
   color: var(--color-purple, #6F2477);
-  margin: 0 0 16px;
+  margin: 0 0 var(--uds-margin-sm);
   position: relative;
   padding-bottom: 10px;
 }
@@ -90,13 +90,13 @@
 .footer-nav {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--uds-space-xs);
 }
 
 .footer-link {
   color: rgba(29, 29, 31, 0.75);
   text-decoration: none;
-  font-size: 0.92rem;
+  font-size: var(--uds-text-sm);
   font-weight: 600;
   transition: all 0.3s ease;
   padding: 4px 0;
@@ -126,13 +126,13 @@
 .footer-contact-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--uds-space-xs);
 }
 
 .footer-contact-link {
   color: rgba(29, 29, 31, 0.75);
   text-decoration: none;
-  font-size: 0.92rem;
+  font-size: var(--uds-text-sm);
   font-weight: 600;
   transition: all 0.3s ease;
   padding: 6px 0;
@@ -145,7 +145,7 @@
 /* Social icons */
 .footer-socials {
   display: flex;
-  gap: 12px;
+  gap: var(--uds-margin-sm);
   margin-top: 16px;
 }
 
@@ -159,69 +159,85 @@
   background: rgba(111, 36, 119, 0.05);
   color: var(--color-purple);
   border: 1px solid rgba(111, 36, 119, 0.12);
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: var(--transition-smooth);
 }
 
 .footer-social-icon:hover {
   background: var(--color-purple);
   color: #ffffff;
   border-color: var(--color-purple);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(111, 36, 119, 0.3);
+  transform: var(--uds-btn-hover-transform);
+  box-shadow: var(--uds-shadow-md);
 }
 
 /* Copyright bottom */
 .footer-bottom {
   border-top: 1px solid rgba(111, 36, 119, 0.08);
-  padding: 20px 24px;
+  padding: var(--uds-space-sm) var(--uds-space-md);
   text-align: center;
 }
 
 .footer-bottom .copyright {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--uds-text-sm);
   color: rgba(29, 29, 31, 0.5);
 }
 
 /* Mobile responsive */
 @media (max-width: 768px) {
   .footer .footer-content {
-    grid-template-columns: 1fr;
-    gap: 32px;
-    padding: 40px 20px 30px;
-    text-align: center;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 24px !important;
+    padding: 32px 16px 24px !important;
+    text-align: right !important;
   }
 
   .footer-brand {
-    align-items: center;
+    grid-column: 1 / -1 !important;
+    align-items: center !important;
+    text-align: center !important;
+    margin-bottom: 8px !important;
   }
 
   .footer-tagline {
-    text-align: center;
+    text-align: center !important;
+    max-width: 100% !important;
+    font-size: var(--uds-text-sm) !important;
+    margin-bottom: 12px !important;
+  }
+
+  .footer-heading {
+    font-size: var(--uds-text-base) !important;
+    padding-bottom: 6px !important;
+    margin-bottom: 8px !important;
+    display: block !important;
   }
 
   .footer-heading::after {
-    right: 50%;
-    transform: translateX(50%);
+    right: 0 !important;
+    transform: none !important;
+    left: auto !important;
   }
 
   .footer-nav {
-    align-items: center;
+    align-items: flex-start !important;
   }
 
   .footer-link::before {
-    display: none;
+    display: none !important;
   }
 
   .footer-link:hover {
-    padding-right: 0;
+    padding-right: 0 !important;
   }
 
   .footer-contact-section {
-    align-items: center;
+    align-items: flex-start !important;
   }
 
   .footer-socials {
-    justify-content: center;
+    justify-content: flex-start !important;
+    margin-top: 8px !important;
   }
 }

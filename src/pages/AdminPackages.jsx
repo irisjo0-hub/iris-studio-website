@@ -16,6 +16,7 @@ const AdminPackages = () => {
   const [category, setCategory] = useState('shoot'); // 'shoot' or 'graduation'
   const [sortOrder, setSortOrder] = useState('0');
   const [isHidden, setIsHidden] = useState(false);
+  const [isPopular, setIsPopular] = useState(false); // Flag package as popular
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [existingImageUrl, setExistingImageUrl] = useState('');
@@ -54,6 +55,7 @@ const AdminPackages = () => {
     setCategory('shoot');
     setSortOrder('0');
     setIsHidden(false);
+    setIsPopular(false);
     setImageFile(null);
     setPreviewUrl('');
     setExistingImageUrl('');
@@ -72,7 +74,9 @@ const AdminPackages = () => {
     
     // Convert array fields back to comma strings
     const featArr = Array.isArray(pkg.features) ? pkg.features : JSON.parse(pkg.features || '[]');
-    setFeatures(featArr.join(', '));
+    const hasPopular = featArr.includes('الأكثر طلباً') || featArr.includes('popular');
+    setIsPopular(hasPopular);
+    setFeatures(featArr.filter(f => f !== 'الأكثر طلباً' && f !== 'popular').join(', '));
 
     const colorArr = Array.isArray(pkg.colors) ? pkg.colors : JSON.parse(pkg.colors || '[]');
     setColors(colorArr.join(', '));
@@ -110,6 +114,10 @@ const AdminPackages = () => {
       const parsedFeatures = features.split(',')
         .map(f => f.trim())
         .filter(Boolean);
+
+      if (isPopular) {
+        parsedFeatures.push('الأكثر طلباً');
+      }
 
       // Parse color hex codes
       const parsedColors = colors.split(',')
@@ -271,6 +279,18 @@ const AdminPackages = () => {
                     disabled={loading}
                   />
                   <span>إخفاء البكج من الموقع</span>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginTop: '30px' }}>
+                  <input
+                    type="checkbox"
+                    checked={isPopular}
+                    onChange={(e) => setIsPopular(e.target.checked)}
+                    disabled={loading}
+                  />
+                  <span style={{ fontWeight: 'bold', color: 'var(--iris-purple, #6e267b)' }}>تمييز كـ الأكثر طلباً</span>
                 </label>
               </div>
 

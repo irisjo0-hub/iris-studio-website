@@ -11,6 +11,7 @@ import GraduationBookOrder from '../pages/GraduationBookOrder';
 import TemplatesGallery    from '../pages/TemplatesGallery';
 import Booking             from '../pages/Booking';
 import PrintingProducts    from '../pages/PrintingProducts';
+import NotFound            from '../pages/NotFound';
 
 import Admin                   from '../pages/Admin';
 import AdminLogin              from '../pages/AdminLogin';
@@ -41,6 +42,7 @@ const AppRouter = () => (
       <Route path="/templates"             element={<TemplatesGallery />} />
       <Route path="/booking"               element={<Booking />} />
       <Route path="/printing-products"     element={<PrintingProducts />} />
+      <Route path="*"                      element={<NotFound />} />
     </Route>
 
     {/* Public Admin Login Route */}

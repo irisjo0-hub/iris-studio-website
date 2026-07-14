@@ -17,15 +17,15 @@
 }
 
 .work-hero h1 {
-  font-size: 2.6rem;
+  font-size: var(--uds-h1-size);
   font-weight: 900;
   color: var(--color-purple, #6F2477);
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--uds-margin-sm);
   letter-spacing: -0.5px;
 }
 
 .work-hero p {
-  font-size: 1.1rem;
+  font-size: var(--uds-text-lg);
   color: #7a6a80;
   max-width: 560px;
   margin: 0 auto;
@@ -48,7 +48,7 @@
 }
 
 .work-empty h3 {
-  font-size: 1.3rem;
+  font-size: var(--uds-h3-size);
   font-weight: 700;
   color: #5a4a60;
 }
@@ -64,16 +64,16 @@
   break-inside: avoid;
   margin-bottom: 1.25rem;
   background: #fff;
-  border-radius: 18px;
+  border-radius: var(--uds-radius-md);
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--uds-shadow-md);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
 }
 
 .work-card:hover {
   transform: translateY(-6px) scale(1.01);
-  box-shadow: 0 16px 40px rgba(103, 36, 95, 0.16);
+  box-shadow: var(--uds-shadow-lg);
 }
 
 /* Image fills card width, height is natural (no crop) */
@@ -132,7 +132,7 @@
 }
 
 .work-card-info h3 {
-  font-size: 1rem;
+  font-size: var(--uds-text-base);
   font-weight: 700;
   color: #2d1b2e;
   margin: 0;
@@ -142,7 +142,7 @@
   display: inline-block;
   align-self: flex-start;
   padding: 0.3rem 0.75rem;
-  border-radius: 20px;
+  border-radius: var(--uds-radius-round);
   font-size: 0.78rem;
   font-weight: 700;
   background: rgba(15, 90, 71, 0.08);
@@ -216,7 +216,7 @@
   top: 1.4rem;
   right: 1.5rem;
   color: rgba(255,255,255,0.7);
-  font-size: 0.9rem;
+  font-size: var(--uds-text-sm);
   font-weight: 600;
   letter-spacing: 0.05em;
   z-index: 10001;
@@ -243,8 +243,8 @@
   width: auto;
   height: auto;
   object-fit: contain;
-  border-radius: 10px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  border-radius: var(--uds-radius-md);
+  box-shadow: var(--uds-shadow-lg);
   display: block;
 }
 
@@ -259,14 +259,14 @@
 
 .lb-title {
   color: #fff;
-  font-size: 1rem;
+  font-size: var(--uds-text-base);
   font-weight: 700;
 }
 
 .lb-badge {
   padding: 0.28rem 0.7rem;
-  border-radius: 20px;
-  font-size: 0.78rem;
+  border-radius: var(--uds-radius-round);
+  font-size: var(--uds-text-sm);
   font-weight: 700;
   background: rgba(103, 36, 95, 0.55);
   color: #e8d0e4;

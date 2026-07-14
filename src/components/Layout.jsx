@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useLocation, Outlet } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
@@ -14,25 +14,21 @@ import '../styles/global.css';
 const pageVariants = {
   initial: {
     opacity: 0,
-    y: 40,
-    filter: 'blur(8px)',
+    y: 20,
   },
   animate: {
     opacity: 1,
     y: 0,
-    filter: 'blur(0px)',
     transition: {
-      duration: 0.65,
-      ease: [0.22, 1, 0.36, 1], // premium ease-out
+      duration: 0.45,
+      ease: [0.22, 1, 0.36, 1],
     },
   },
   exit: {
     opacity: 0,
-    y: -30,
-    filter: 'blur(6px)',
     transition: {
-      duration: 0.35,
-      ease: [0.22, 1, 0.36, 1],
+      duration: 0.2,
+      ease: 'easeIn',
     },
   },
 };

@@ -20,6 +20,51 @@
   --shadow-glass: 0 8px 32px rgba(111, 36, 111, 0.04);
   --blur-glass: blur(16px);
   --border-glass: 1px solid rgba(255, 255, 255, 0.3);
+
+  /* Unified Border Radius */
+  --uds-radius-sm: 8px;
+  --uds-radius-md: 14px;
+  --uds-radius-lg: 20px;
+  --uds-radius-xl: 28px;
+  --uds-radius-round: 9999px;
+
+  /* Unified Shadows */
+  --uds-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --uds-shadow-md: 0 8px 24px rgba(111, 36, 111, 0.06);
+  --uds-shadow-lg: 0 16px 36px rgba(111, 36, 111, 0.10);
+
+  /* Unified Button Size & Padding */
+  --uds-btn-padding-y: 12px;
+  --uds-btn-padding-x: 32px;
+  --uds-btn-font-size: 1rem;
+  --uds-btn-radius: 12px;
+
+  /* Unified Spacings */
+  --uds-space-xs: 8px;
+  --uds-space-sm: 16px;
+  --uds-space-md: 24px;
+  --uds-space-lg: 48px;
+  --uds-space-xl: 64px;
+
+  /* Unified Margins */
+  --uds-margin-sm: 12px;
+  --uds-margin-md: 24px;
+  --uds-margin-lg: 40px;
+
+  /* Unified Headings font-size scale */
+  --uds-h1-size: clamp(2.2rem, 5vw, 4rem);
+  --uds-h2-size: clamp(1.8rem, 4vw, 2.4rem);
+  --uds-h3-size: clamp(1.3rem, 3vw, 1.7rem);
+  --uds-h4-size: clamp(1.1rem, 2.5vw, 1.3rem);
+
+  /* Unified Text font-size scale */
+  --uds-text-sm: 0.875rem;
+  --uds-text-base: 1rem;
+  --uds-text-lg: 1.125rem;
+
+  /* Unified Button Hovers */
+  --uds-btn-hover-transform: translateY(-2px);
+  --uds-btn-hover-scale: 0.98;
 }
 
 *,
@@ -160,10 +205,10 @@ select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 32px;
-  border-radius: 12px;
+  padding: var(--uds-btn-padding-y) var(--uds-btn-padding-x);
+  border-radius: var(--uds-btn-radius);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: var(--uds-btn-font-size);
   text-decoration: none;
   cursor: pointer;
   transition: var(--transition-smooth);
@@ -212,11 +257,11 @@ select {
 }
 
 .btn:hover {
-  transform: translateY(-2px);
+  transform: var(--uds-btn-hover-transform);
 }
 
 .btn:active {
-  transform: translateY(0) scale(0.97);
+  transform: translateY(0) scale(var(--uds-btn-hover-scale));
   transition: transform 0.1s ease;
 }
 
@@ -400,11 +445,11 @@ select {
 
 /* Offsets content below the sticky navbar on subpages */
 .subpage-layout-content {
-  padding-top: 100px;
+  padding-top: 16px;
 }
 
 @media (max-width: 991px) {
   .subpage-layout-content {
-    padding-top: 105px;
+    padding-top: 16px;
   }
 }
