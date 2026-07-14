@@ -1,7 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase, uploadFile } from '../lib/supabase';
+import { Calendar, Clock, User, ShoppingBag, CreditCard, Check, ChevronLeft, ChevronRight, Loader2, Paperclip, Plus, Minus, MapPin, Store, Truck } from 'lucide-react';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import '../styles/booking.css';
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30, filter: 'blur(4px)' },
+  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+};
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+const cardVariant = {
+  hidden: { opacity: 0, y: 20, scale: 0.98 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+};
 
 // ─────────────────────────────────────────────
 // Time helpers
@@ -193,6 +209,7 @@ const CustomCalendar = ({ value, onChange, existingBookings = [], selectedPackag
 // Main Component
 // ─────────────────────────────────────────────
 const Booking = () => {
+  const { settings } = useSiteSettings();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -509,20 +526,33 @@ ${notes}`;
             <h2 className="bk-section-title">الخطوة 1: اختيار الباقة والموعد</h2>
             
             {/* Packages Grid */}
-            <div className="pkg-grid">
+            <motion.div
+              className="pkg-grid"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
               {(dbPackages.length > 0 ? dbPackages : DEFAULT_PACKAGES).map((pkg) => (
-                <div
+                <motion.div
                   key={pkg.name}
                   className={`pkg-card ${selectedPackage?.name === pkg.name ? 'selected' : ''}`}
+                  variants={cardVariant}
                   onClick={() => setSelectedPackage(pkg)}
                 >
                   <div className="pkg-name">{pkg.name}</div>
                   <div className="pkg-price">{pkg.price} JOD</div>
-                  <div className="pkg-duration">⏱ {pkg.label}</div>
-                  {selectedPackage?.name === pkg.name && <div className="pkg-check">✓</div>}
-                </div>
+                  <div className="pkg-duration" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                    <Clock size={12} />
+                    <span>{pkg.label}</span>
+                  </div>
+                  {selectedPackage?.name === pkg.name && (
+                    <div className="pkg-check">
+                      <Check size={12} strokeWidth={3} />
+                    </div>
+                  )}
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
             {/* Custom Airbnb-style Calendar */}
             <div className="calendar-picker-section">
@@ -607,10 +637,10 @@ ${notes}`;
                   عدد المرافقين بالجلسة
                   <span className="bk-hint">(حتى 5 مجاناً، بعدها 2 JOD لكل شخص إضافي)</span>
                 </label>
-                <div className="qty-control">
-                  <button type="button" className="qty-btn" onClick={() => setCompanions((c) => Math.max(0, c - 1))}>−</button>
+                <div className="qty-control" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <button type="button" className="qty-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setCompanions((c) => Math.max(0, c - 1))}><Minus size={14} /></button>
                   <span className="qty-val">{companions}</span>
-                  <button type="button" className="qty-btn" onClick={() => setCompanions((c) => c + 1)}>+</button>
+                  <button type="button" className="qty-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setCompanions((c) => c + 1)}><Plus size={14} /></button>
                 </div>
                 {extraCompanions > 0 && (
                   <p className="bk-hint-cost">
@@ -650,24 +680,31 @@ ${notes}`;
             {/* Compact grid for add-ons (2 columns on mobile) */}
             <div className="extras-section">
               <h3 className="extras-title">المطبوعات والإضافات الاختيارية</h3>
-              <div className="compact-extras-grid">
+              <motion.div
+                className="compact-extras-grid"
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+              >
                 {extras.map((e) => (
-                  <div key={e.id} className={`compact-extra-card ${e.qty > 0 ? 'selected-extra' : ''}`}>
+                  <motion.div key={e.id} className={`compact-extra-card ${e.qty > 0 ? 'selected-extra' : ''}`} variants={cardVariant}>
                     <div className="extra-info-block">
-                      <span className="extra-icon">➕</span>
+                      <div className="extra-icon-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(111,36,119,0.06)', borderRadius: '50%', width: '32px', height: '32px' }}>
+                        <Plus size={14} style={{ color: 'var(--bk-purple)' }} />
+                      </div>
                       <div>
                         <div className="extra-name">{e.name}</div>
                         <div className="extra-price">{e.price} JOD</div>
                       </div>
                     </div>
-                    <div className="qty-control small-qty">
-                      <button type="button" className="qty-btn" onClick={() => updateExtraQty(e.id, -1)}>−</button>
+                    <div className="qty-control small-qty" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <button type="button" className="qty-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => updateExtraQty(e.id, -1)}><Minus size={12} /></button>
                       <span className="qty-val">{e.qty}</span>
-                      <button type="button" className="qty-btn" onClick={() => updateExtraQty(e.id, +1)}>+</button>
+                      <button type="button" className="qty-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => updateExtraQty(e.id, +1)}><Plus size={12} /></button>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             </div>
 
             {/* Delivery Details */}
@@ -678,7 +715,9 @@ ${notes}`;
                   className={`delivery-card ${!deliverySelected ? 'selected' : ''}`}
                   onClick={() => setDeliverySelected(false)}
                 >
-                  <div className="delivery-card-icon">🏬</div>
+                  <div className="delivery-card-icon">
+                    <Store size={32} strokeWidth={1.5} />
+                  </div>
                   <div className="delivery-card-title">الاستلام شخصياً من الاستوديو</div>
                   <div className="delivery-card-desc">مجاناً — إربد، مجمع الخضر</div>
                 </div>
@@ -686,7 +725,9 @@ ${notes}`;
                   className={`delivery-card ${deliverySelected ? 'selected' : ''}`}
                   onClick={() => setDeliverySelected(true)}
                 >
-                  <div className="delivery-card-icon">🚚</div>
+                  <div className="delivery-card-icon">
+                    <Truck size={32} strokeWidth={1.5} />
+                  </div>
                   <div className="delivery-card-title">توصيل المطبوعات للمنزل</div>
                   <div className="delivery-card-desc">+2 JOD لجميع المحافظات</div>
                 </div>
@@ -769,7 +810,7 @@ ${notes}`;
                   </div>
                   <div className="pay-method-card orange-money">
                     <div className="method-title">Orange Money</div>
-                    <div className="method-alias">0797303260</div>
+                    <div className="method-alias">{settings.whatsapp_number ? `0${settings.whatsapp_number.slice(-9)}` : '0797303260'}</div>
                     <div className="method-recipient">الاسم: Hamzah Bani Domi</div>
                   </div>
                 </div>
@@ -777,9 +818,9 @@ ${notes}`;
 
               {/* Receipt upload */}
               <div className="screenshot-upload-wrapper" style={{ marginTop: '24px' }}>
-                <label className="receipt-upload-label" htmlFor="receipt-upload">
-                  <span className="receipt-icon">📎</span>
-                  {receiptName ? receiptName : 'إرفاق صورة لقطة شاشة التحويل *'}
+                <label className="receipt-upload-label" htmlFor="receipt-upload" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <Paperclip size={18} />
+                  <span>{receiptName ? receiptName : 'إرفاق صورة لقطة شاشة التحويل *'}</span>
                 </label>
                 <input
                   id="receipt-upload"
@@ -872,10 +913,21 @@ ${notes}`;
               <button className="bk-btn-outline" onClick={() => setStep(4)}>تعديل بيانات الدفع</button>
               <button
                 className="bk-btn-success"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                 onClick={submitBooking}
                 disabled={submitting}
               >
-                {submitting ? '⏳ جاري الحجز...' : 'تأكيد الحجز النهائي ✓'}
+                {submitting ? (
+                  <>
+                    <Loader2 className="animate-spin" size={18} />
+                    <span>جاري الحجز...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check size={18} />
+                    <span>تأكيد الحجز النهائي</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

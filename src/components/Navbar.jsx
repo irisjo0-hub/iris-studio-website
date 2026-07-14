@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import '../styles/navbar.css';
+import { NavLink, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import irisLogo from '../assets/iris_logo.png';
+import '../styles/navbar.css';
 
 const navItems = [
   { path: '/', label: 'الرئيسية' },
@@ -15,14 +17,13 @@ const navItems = [
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+  const { settings } = useSiteSettings();
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 40) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 40);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -30,31 +31,36 @@ const Navbar = () => {
   }, []);
 
   return (
-    <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+    <motion.header
+      className={`navbar ${scrolled ? 'scrolled' : ''}`}
+      style={isHome ? { display: 'none', opacity: 0 } : {}}
+      initial={isHome ? {} : { y: -80, opacity: 0 }}
+      animate={isHome ? {} : { y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="navbar-container">
-        <div className="logo-container">
-          <NavLink to="/">
-            <img src={irisLogo} alt="IRIS Studio" className="logo" />
-          </NavLink>
-        </div>
-
         <div className="nav-scroll-wrapper">
           <nav className="nav-links">
-            {navItems.map((item) => (
-              <NavLink
+            {navItems.map((item, index) => (
+              <motion.div
                 key={item.path}
-                to={item.path}
-                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                initial={isHome ? {} : { opacity: 0, y: -10 }}
+                animate={isHome ? {} : { opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + index * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               >
-                {item.label}
-              </NavLink>
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  {item.label}
+                </NavLink>
+              </motion.div>
             ))}
           </nav>
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 };
 
 export default Navbar;
-

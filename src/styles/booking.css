@@ -107,17 +107,24 @@
 .bk-section {
   max-width: 860px;
   margin: 0 auto;
-  background: var(--bk-white);
-  border-radius: var(--bk-radius);
-  padding: 24px 28px; /* Reduced from 36px 40px for a more compact card */
-  box-shadow: var(--bk-shadow);
-  border: 1px solid rgba(0,0,0,0.04);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 32px 36px;
+  box-shadow: 0 30px 60px rgba(111, 36, 119, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bk-section:hover {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 40px 80px rgba(111, 36, 119, 0.08);
 }
 .bk-section-title {
-  font-size: 1.35rem; /* Slightly smaller size for balance */
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--bk-purple);
-  margin: 0 0 20px; /* Reduced from 28px */
+  margin: 0 0 20px;
   padding-bottom: 10px;
   border-bottom: 2px solid var(--bk-gold);
 }
@@ -148,26 +155,27 @@
   margin-bottom: 24px;
 }
 .pkg-card {
-  background: var(--bk-bg);
-  border: 2px solid var(--bk-border);
-  border-radius: 12px;
-  padding: 20px 14px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1.5px solid rgba(111, 36, 119, 0.12);
+  border-radius: 16px;
+  padding: 24px 14px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   user-select: none;
 }
 .pkg-card:hover {
   border-color: var(--bk-purple);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(103,36,95,0.12);
+  background: rgba(255, 255, 255, 0.85);
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(111, 36, 119, 0.08);
 }
 .pkg-card.selected {
   border-color: var(--bk-gold);
-  background: rgba(245,189,26,0.06);
-  box-shadow: 0 6px 20px rgba(245,189,26,0.2);
-  transform: translateY(-3px);
+  background: rgba(244, 194, 29, 0.08);
+  box-shadow: 0 10px 25px rgba(244, 194, 29, 0.25);
+  transform: translateY(-5px) scale(1.02);
 }
 .pkg-name {
   font-size: 1.05rem;
@@ -300,26 +308,29 @@
   gap: 8px;
 }
 .slot-btn {
-  padding: 10px 18px;
-  border-radius: 10px;
-  border: 1.5px solid var(--bk-border);
-  background: var(--bk-bg);
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(111, 36, 119, 0.1);
+  background: rgba(255, 255, 255, 0.45);
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   color: var(--bk-text);
   font-family: inherit;
 }
 .slot-btn:hover {
   border-color: var(--bk-purple);
-  background: rgba(103,36,95,0.06);
+  background: rgba(255, 255, 255, 0.85);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(111, 36, 119, 0.05);
 }
 .slot-btn.selected {
-  background: var(--bk-gold);
-  border-color: var(--bk-gold);
-  color: #4A3500;
-  box-shadow: 0 4px 12px rgba(245,189,26,0.3);
+  background: var(--bk-purple);
+  border-color: var(--bk-purple);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(111, 36, 119, 0.3);
+  transform: translateY(-2px);
 }
 .no-slots {
   font-size: 0.95rem;
@@ -634,11 +645,11 @@
 
 /* ── Custom Airbnb-Style Calendar ── */
 .custom-calendar-box {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid var(--bk-border);
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
   padding: 24px;
-  box-shadow: var(--bk-shadow);
+  box-shadow: 0 15px 35px rgba(111, 36, 119, 0.03);
   margin-top: 14px;
   width: 100%;
   box-sizing: border-box;
@@ -650,7 +661,7 @@
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #f2eff9;
+  border-bottom: 1px solid rgba(111, 36, 119, 0.06);
 }
 
 .cal-title {
@@ -660,10 +671,10 @@
 }
 
 .cal-arrow-btn {
-  background: var(--bk-bg);
-  border: none;
-  width: 36px;
-  height: 36px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(111, 36, 119, 0.1);
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -671,12 +682,13 @@
   justify-content: center;
   font-weight: 800;
   color: var(--bk-purple);
-  transition: var(--transition-smooth);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .cal-arrow-btn:hover {
   background: var(--bk-purple);
   color: #ffffff;
+  transform: scale(1.08);
 }
 
 .cal-weekdays-row {

@@ -1,0 +1,384 @@
+Created At: 2026-06-29T10:34:33Z
+Completed At: 2026-06-29T11:40:17Z
+
+				The command completed successfully.
+				Output:
+				<truncated 1 lines>
++  justify-content: center;
++  flex-wrap: wrap;
++  gap: 16px;
++  font-size: clamp(2rem, 4.2vw, 3.4rem);
++}
++
++.strikethrough-text-wrapper {
++  position: relative;
++  display: inline-block;
++  white-space: nowrap;
++}
++
++.strike-target {
++  display: inline-block;
++  will-change: opacity;
++}
++
++.strike-svg {
++  position: absolute;
++  left: -2%;
++  top: 55%;
++  width: 104%;
++  height: 12px;
++  transform: translateY(-50%);
++  pointer-events: none;
++  overflow: visible;
++}
++
++.preloader-identity-group {
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  gap: clamp(20px, 3.5vh, 32px);
++  width: 100%;
++}
++
++.preloader-mask-row-hidden {
++  overflow: hidden;
++  display: flex;
++  justify-content: center;
++  width: 100%;
++}
++
++.identity-item {
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  text-align: center;
++  width: 100%;
++}
++
++.identity-ar {
++  font-family: var(--font-display);
++  font-size: clamp(2.2rem, 4.8vw, 3.8rem);
++  font-weight: 900;
++  color: #005F49;
++  line-height: 1;
++}
++
++.identity-en {
++  font-family: sans-serif;
++  font-size: clamp(10px, 1.2vw, 11px);
++  font-weight: 700;
++  color: var(--color-purple);
++  letter-spacing: 0.15em;
++  opacity: 0.85;
++  margin-top: 4px;
++  text-transform: uppercase;
++}
++
++/* Reduced Motion Fallback styling */
++.preloader-reduced-content {
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  gap: 20px;
++  text-align: center;
++}
++
++.preloader-reduced-text {
++  font-family: var(--font-display);
++  font-size: 2.2rem;
++  font-weight: 800;
++  color: #005F49;
++}
++
++/* Global utility for preloader body scroll-lock */
++body.scroll-lock {
++  overflow: hidden !important;
++  height: 100vh !important;
++  width: 100% !important;
++  position: fixed !important;
++}
++
++/* ==========================================================================
++   SCENE 01 — OPENING SEQUENCE PREMIUM STYLES
++   ========================================================================== */
++
++.opening-sequence-overlay {
++  position: fixed;
++  top: 0;
++  left: 0;
++  right: 0;
++  bottom: 0;
++  background-color: #ECEBE7; /* Brand Light Beige background */
++  z-index: 10000; /* Completely covers navbar and any other page layers */
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  overflow: hidden;
++  user-select: none;
++  pointer-events: all;
++}
++
++.opening-sequence-logo-wrap {
++  position: relative;
++  z-index: 2;
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++}
++
++.opening-sequence-logo {
++  width: 320px; /* Desktop logo width */
++  height: auto;
++  object-fit: contain;
++  position: relative;
++  z-index: 2;
++}
++
++.opening-sequence-shadow {
++  position: absolute;
++  left: 40px; /* Desktop position */
++  bottom: 20px; /* Desktop position */
++  height: 780px; /* Desktop shadow height */
++  width: auto;
++  object-fit: contain;
++  z-index: 1; /* Below logo, above background overlay */
++  pointer-events: none;
++  filter: blur(8px); /* Softly blurred */
++  opacity: 0.20; /* 20% opacity */
++}
++
++@media (max-width: 768px) {
++  .opening-sequence-logo {
++  overflow: hidden;
++  direction: rtl; /* Arabic first layout */
++  user-select: none;
++}
++
++.preloader-sequence-container {
++  position: relative;
++  width: 100%;
++  max-width: 900px;
++  height: 100%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  padding: 0 24px;
++  box-sizing: border-box;
++}
++
++.preloader-logo-wrap {
++  position: absolute;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++}
++
++.preloader-logo {
++  height: clamp(65px, 12vw, 110px);
++  width: auto;
++  object-fit: contain;
++}
++
++.preloader-statement-wrap {
++  position: absolute;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  color: #005F49; /* Brand Dark Green */
++  font-family: var(--font-display);
++  font-weight: 800;
++  line-height: 1.1;
++  text-align: center;
++  width: 100%;
++}
++
++.preloader-mask-row {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  flex-wrap: wrap;
++  gap: 16px;
++  font-size: clamp(2rem, 4.2vw, 3.4rem);
++}
++
++.strikethrough-text-wrapper {
++  position: relative;
++  display: inline-block;
++  white-space: nowrap;
++}
++
++.strike-target {
++  display: inline-block;
++  will-change: opacity;
++}
++
++.strike-svg {
++  position: absolute;
++  left: -2%;
++  top: 55%;
++  width: 104%;
++  height: 12px;
++  transform: translateY(-50%);
++  pointer-events: none;
++  overflow: visible;
++}
++
++.preloader-identity-group {
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  gap: clamp(20px, 3.5vh, 32px);
++  width: 100%;
++}
++
++.preloader-mask-row-hidden {
++  overflow: hidden;
++  display: flex;
++  justify-content: center;
++  width: 100%;
++}
++
++.identity-item {
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  text-align: center;
++  width: 100%;
++}
++
++.identity-ar {
++  font-family: var(--font-display);
++  font-size: clamp(2.2rem, 4.8vw, 3.8rem);
++  font-weight: 900;
++  color: #005F49;
++  line-height: 1;
++}
++
++.identity-en {
++  font-family: sans-serif;
++  font-size: clamp(10px, 1.2vw, 11px);
++  font-weight: 700;
++  color: var(--color-purple);
++  letter-spacing: 0.15em;
++  opacity: 0.85;
++  margin-top: 4px;
++  text-transform: uppercase;
++}
++
++/* Reduced Motion Fallback styling */
++.preloader-reduced-content {
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  gap: 20px;
++  text-align: center;
++}
++
++.preloader-reduced-text {
++  font-family: var(--font-display);
++  font-size: 2.2rem;
++  font-weight: 800;
++  color: #005F49;
++}
++
++/* Global utility for preloader body scroll-lock */
++body.scroll-lock {
++  overflow: hidden !important;
++  height: 100vh !important;
++  width: 100% !important;
++  position: fixed !important;
++}
++
++/* ==========================================================================
++   SCENE 01 — OPENING SEQUENCE PREMIUM STYLES
++   ========================================================================== */
++
++.opening-sequence-overlay {
++  position: fixed;
++  top: 0;
++  left: 0;
++  right: 0;
++  bottom: 0;
++  background-color: #ECEBE7; /* Brand Light Beige background */
++  z-index: 10000; /* Completely covers navbar and any other page layers */
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  overflow: hidden;
++  user-select: none;
++  pointer-events: all;
++}
++
++.opening-sequence-logo-wrap {
++  position: relative;
++  z-index: 2;
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++}
++
++.opening-sequence-logo {
++  width: 320px; /* Desktop logo width */
++  height: auto;
++  object-fit: contain;
++  position: relative;
++  z-index: 2;
++}
++
++.opening-sequence-shadow {
++  position: absolute;
++  left: 40px; /* Desktop position */
++  bottom: 20px; /* Desktop position */
++  height: 780px; /* Desktop shadow height */
++  width: auto;
++  object-fit: contain;
++  z-index: 1; /* Below logo, above background overlay */
++  pointer-events: none;
++  filter: blur(8px); /* Softly blurred */
++  opacity: 0.20; /* 20% opacity */
++}
++
++@media (max-width: 768px) {
++  .opening-sequence-logo {
++    width: 210px; /* Mobile logo width */
++  }
++
++  .opening-sequence-shadow {
++    left: -20px; /* Mobile position */
++    bottom: 10px; /* Mobile position */
++  }
++}/* ==========================================
++   Overlay Pages for Hero Bloom Sequence
++   ========================================== */
++.hero-overlay-page {
++  position: absolute;
++  inset: 0;
++  width: 100%;
++  height: 100vh;
++  background: #ECEBE7;
++  opacity: 0;
++  transform: translateY(100%);
++  display: flex;
++  align-items: center;
++  justify-content: center;
++}
++
++.hero-overlay-page.page-1 { z-index: 50; }
++.hero-overlay-page.page-2 { z-index: 60; }
++.hero-overlay-page.page-3 { z-index: 70; }
++
++.hero-page-content h2 {
++  font-size: clamp(3rem, 6vw, 5rem);
++  font-family: var(--font-display);
++  color: var(--color-purple);
++  margin: 0;
++}
+

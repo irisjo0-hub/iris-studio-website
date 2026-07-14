@@ -25,19 +25,22 @@ import AdminBookExtras         from '../pages/AdminBookExtras';
 import AdminOffers             from '../pages/AdminOffers';
 import AdminProducts           from '../pages/AdminProducts';
 import AdminPrintingOrders     from '../pages/AdminPrintingOrders';
+import AdminSettings           from '../pages/AdminSettings';
 
 const AppRouter = () => (
   <Routes>
-    {/* Customer routes (RTL) */}
-    <Route path="/"                     element={<Layout><Home /></Layout>} />
-    <Route path="/work"                 element={<Layout><Work /></Layout>} />
-    <Route path="/packages"             element={<Layout><Packages /></Layout>} />
-    <Route path="/graduation-books"     element={<Layout><GraduationBooks /></Layout>} />
-    <Route path="/graduation-order"     element={<Layout><GraduationBookOrder /></Layout>} />
-    <Route path="/graduation-book-order" element={<Layout><GraduationBookOrder /></Layout>} />
-    <Route path="/templates"            element={<Layout><TemplatesGallery /></Layout>} />
-    <Route path="/booking"              element={<Layout><Booking /></Layout>} />
-    <Route path="/printing-products"    element={<Layout><PrintingProducts /></Layout>} />
+    {/* Customer routes (RTL) wrapped in layout route to enable transition animations */}
+    <Route element={<Layout />}>
+      <Route path="/"                      element={<Home />} />
+      <Route path="/work"                  element={<Work />} />
+      <Route path="/packages"              element={<Packages />} />
+      <Route path="/graduation-books"      element={<GraduationBooks />} />
+      <Route path="/graduation-order"      element={<GraduationBookOrder />} />
+      <Route path="/graduation-book-order" element={<GraduationBookOrder />} />
+      <Route path="/templates"             element={<TemplatesGallery />} />
+      <Route path="/booking"               element={<Booking />} />
+      <Route path="/printing-products"     element={<PrintingProducts />} />
+    </Route>
 
     {/* Admin routes */}
     <Route path="/admin"                        element={<Admin />} />
@@ -54,6 +57,7 @@ const AppRouter = () => (
     <Route path="/admin/templates"              element={<AdminTemplates />} />
     <Route path="/admin/extras"                 element={<AdminExtras />} />
     <Route path="/admin/book-extras"            element={<AdminBookExtras />} />
+    <Route path="/admin/settings"               element={<AdminSettings />} />
   </Routes>
 );
 

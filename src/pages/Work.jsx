@@ -1,6 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import '../styles/work.css';
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40, filter: 'blur(4px)' },
+  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+};
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } },
+};
+const cardVariant = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+};
 
 const Work = () => {
   const [items, setItems] = useState([]);
@@ -51,10 +65,15 @@ const Work = () => {
 
   return (
     <main className="work-page" dir="rtl">
-      <section className="work-hero">
+      <motion.section
+        className="work-hero"
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+      >
         <h1>أعمالنا</h1>
         <p>معرض لأبرز أعمال التصوير والطباعة والتصاميم المنفذة في استديو آيرس.</p>
-      </section>
+      </motion.section>
 
       {items.length === 0 ? (
         <div className="work-empty">
@@ -63,11 +82,18 @@ const Work = () => {
           <p>يمكنك إضافة أعمال من لوحة التحكم.</p>
         </div>
       ) : (
-        <div className="work-masonry">
+        <motion.div
+          className="work-masonry"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.05 }}
+        >
           {items.map((it, idx) => (
-            <div
+            <motion.div
               key={it.id}
               className="work-card"
+              variants={cardVariant}
               onClick={() => setLightbox(idx)}
               role="button"
               tabIndex={0}
@@ -84,9 +110,9 @@ const Work = () => {
                 <h3>{it.title}</h3>
                 <span className="work-badge">{it.category}</span>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
 
       {/* ---- Lightbox ---- */}

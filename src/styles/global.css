@@ -34,7 +34,27 @@ html {
   scroll-behavior: smooth;
   width: 100%;
   max-width: 100%;
-  overflow-x: clip;
+  overflow-x: hidden;
+  direction: ltr;
+}
+
+/* ===== Custom Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-light);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-purple), #8e3585);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #591e63, var(--color-purple));
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-purple) var(--color-bg-light);
 }
 
 body {
@@ -43,11 +63,10 @@ body {
   background-image: none;
   color: var(--color-text-main);
   line-height: 1.8;
-  direction: rtl;
+  direction: ltr;
   text-align: right;
   width: 100%;
   max-width: 100%;
-  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -83,7 +102,6 @@ select {
 .customer-layout {
   width: 100%;
   max-width: 100%;
-  overflow-x: clip;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -93,7 +111,6 @@ select {
   width: 100%;
   max-width: 100%;
   min-height: calc(100vh - 140px);
-  overflow-x: clip;
 }
 
 .container {
@@ -155,8 +172,62 @@ select {
   border: none;
 }
 
+/* Shimmer effect on hover */
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transition: none;
+  z-index: 1;
+}
+.btn:hover::before {
+  animation: btnShimmer 0.7s ease forwards;
+}
+
+/* Ripple effect on click */
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  z-index: 1;
+}
+.btn:active::after {
+  animation: btnRipple 0.5s ease-out forwards;
+}
+
 .btn:hover {
   transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+@keyframes btnShimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes btnRipple {
+  0% { width: 0; height: 0; opacity: 0.5; }
+  100% { width: 300px; height: 300px; opacity: 0; }
 }
 
 .btn-primary, .btn-purple {
@@ -246,4 +317,94 @@ select {
 
 .floating-anim {
   animation: float 6s ease-in-out infinite;
+}
+
+/* ===== Premium glow pulse for highlighted elements ===== */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(111, 36, 119, 0.1); }
+  50% { box-shadow: 0 0 35px rgba(111, 36, 119, 0.2); }
+}
+
+/* ===== Smooth section entrance ===== */
+.section-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.section-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   PREMIUM PRELOADER OVERLAY ANIMATION STYLES
+   ========================================================================== */
+.preloader-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--color-bg-light); /* Matching page warm cream theme */
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.preloader-artistic-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 240px;
+  height: 240px;
+}
+
+.preloader-halo-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.preloader-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  width: 135px;
+  height: 135px;
+}
+
+.preloader-logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.preloader-brand-text {
+  position: absolute;
+  bottom: -45px;
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-purple);
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Offsets content below the sticky navbar on subpages */
+.subpage-layout-content {
+  padding-top: 100px;
+}
+
+@media (max-width: 991px) {
+  .subpage-layout-content {
+    padding-top: 105px;
+  }
 }
