@@ -1469,7 +1469,7 @@ body.scroll-lock {
 
 .portal-hero-banner {
   position: relative;
-  padding: 85px 20px 40px;
+  padding: 20px 20px 30px;
   background: radial-gradient(circle at 50% 20%, rgba(111, 36, 111, 0.45) 0%, rgba(24, 12, 23, 0.95) 80%);
   border-bottom: 1px solid rgba(245, 189, 26, 0.2);
 }

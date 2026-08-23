@@ -31,7 +31,7 @@
   gap: 16px;
 }
 
-/* Logo */
+/* Logo — Matches Hero Logo Dimensions Exactly */
 .nav-logo-link {
   display: inline-flex;
   align-items: center;
@@ -40,11 +40,23 @@
 }
 
 .logo {
-  height: 42px;
-  width: auto;
-  object-fit: contain;
+  width: 75px !important;
+  min-width: 75px !important;
+  max-width: 75px !important;
+  height: auto !important;
+  max-height: 26px !important;
+  object-fit: contain !important;
   filter: brightness(0) invert(1);
   transition: transform 0.25s ease;
+}
+
+@media (min-width: 768px) {
+  .logo {
+    width: clamp(80px, 8vw, 110px) !important;
+    min-width: 80px !important;
+    max-width: 110px !important;
+    max-height: 36px !important;
+  }
 }
 
 .logo:hover {
