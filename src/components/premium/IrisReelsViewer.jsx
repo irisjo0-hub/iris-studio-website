@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Menu, X, MessageSquare, Share2, ArrowUpRight, Globe,
   Camera, Calendar, Printer, ShoppingBag, FolderKanban,
-  Music, Volume2, VolumeX, Sparkles
+  Music, Volume2, VolumeX, Sparkles, ChevronDown
 } from 'lucide-react';
 
 import { useSiteSettings } from '../../context/SiteSettingsContext';
@@ -400,6 +400,15 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSkipReels = () => {
+    const nextSection = document.getElementById('iris-divisions-section') || document.getElementById('iris-divisions-switcher') || document.querySelector('.iris-divisions-switcher') || document.querySelector('footer');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+    }
+  };
+
   if (items.length === 0) return null;
 
   const currentReel = items[activeIndex] || items[0];
@@ -423,7 +432,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     exit: (dir) => ({
       y: dir > 0 ? '-100%' : '100%',
       scale: 0.96,
-      opacity: 0.85,
+      opacity: 1,
       transition: {
         y: { type: 'spring', stiffness: 260, damping: 28 },
         scale: { duration: 0.4 }
@@ -503,9 +512,22 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 <Menu size={20} />
               </button>
 
-              <div className="reels-counter-pill-tag">
-                <span className="gold-accent-line" />
-                <span className="bidi-isolate" dir="ltr">0{activeIndex + 1} / 08</span>
+              <div className="reels-top-right-actions">
+                <button
+                  type="button"
+                  className="reels-top-skip-btn"
+                  onClick={handleSkipReels}
+                  aria-label={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
+                  title={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
+                >
+                  <span>{isRtl ? 'تخطي' : 'Skip'}</span>
+                  <ChevronDown size={14} className="skip-arrow-anim" />
+                </button>
+
+                <div className="reels-counter-pill-tag">
+                  <span className="gold-accent-line" />
+                  <span className="bidi-isolate" dir="ltr">0{activeIndex + 1} / 08</span>
+                </div>
               </div>
             </div>
 
@@ -564,6 +586,18 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 </span>
               </div>
             </div>
+
+            {/* FLOATING SKIP REELS PILL AT BOTTOM CENTER */}
+            <button
+              type="button"
+              className="reels-floating-skip-pill"
+              onClick={handleSkipReels}
+              aria-label={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
+              title={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
+            >
+              <span>{isRtl ? 'تخطي الريلز' : 'Skip Reels'}</span>
+              <ChevronDown size={16} className="skip-arrow-anim" />
+            </button>
           </div>
         </div>
       </div>
