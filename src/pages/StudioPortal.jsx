@@ -241,7 +241,7 @@ const StudioPortal = () => {
             <p>تواصل معنا لحجز المواعيد أو الاستفسار عن تفاصيل البكجات.</p>
           </div>
           <div className="contact-actions">
-            <a href="https://wa.me/962790000000" target="_blank" rel="noreferrer" className="btn-portal-primary whatsapp-bg">
+            <a href="https://wa.me/962798627259" target="_blank" rel="noreferrer" className="btn-portal-primary whatsapp-bg">
               💬 واتساب الاستوديو
             </a>
             <a href="tel:0790000000" className="btn-portal-secondary">

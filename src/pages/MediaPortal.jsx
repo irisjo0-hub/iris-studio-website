@@ -311,7 +311,7 @@ const MediaPortal = () => {
             <p>تواصل مباشرة مع قسم الميديا والإنتاج عبر الهاتف أو الواتساب.</p>
           </div>
           <div className="contact-actions">
-            <a href="https://wa.me/962790000000" target="_blank" rel="noreferrer" className="btn-portal-primary whatsapp-bg">
+            <a href="https://wa.me/962798627259" target="_blank" rel="noreferrer" className="btn-portal-primary whatsapp-bg">
               💬 تواصل عبر الواتساب
             </a>
             <a href="tel:0790000000" className="btn-portal-secondary">

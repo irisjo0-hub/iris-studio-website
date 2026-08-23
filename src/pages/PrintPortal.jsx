@@ -211,7 +211,7 @@ const PrintPortal = () => {
             <p>فريق المطبوعات والتصميم جاهز لمساعدتك في إعداد وتدقيق الملفات.</p>
           </div>
           <div className="contact-actions">
-            <a href="https://wa.me/962790000000" target="_blank" rel="noreferrer" className="btn-portal-primary whatsapp-bg">
+            <a href="https://wa.me/962798627259" target="_blank" rel="noreferrer" className="btn-portal-primary whatsapp-bg">
               💬 واتساب قسم الطباعة
             </a>
             <a href="tel:0790000000" className="btn-portal-secondary">
