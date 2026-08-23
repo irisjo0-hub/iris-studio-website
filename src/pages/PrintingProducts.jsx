@@ -435,6 +435,7 @@ const PrintingProducts = () => {
   const [imagesFiles, setImagesFiles] = useState([]);
   const [submittingOrder, setSubmittingOrder] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [placedInvoiceData, setPlacedInvoiceData] = useState(null);
 
   const fileInputRef = useRef();
 
@@ -492,6 +493,7 @@ const PrintingProducts = () => {
     setGoogleMapsLink('');
     setImagesPreviews([]);
     setImagesFiles([]);
+    setPlacedInvoiceData(null);
     setOrderPlaced(false);
   };
 
@@ -584,6 +586,27 @@ ${finalNotes}`;
         });
 
       if (error) throw error;
+
+      const invoiceData = {
+        invoiceNo: `INV-${Date.now().toString().slice(-6)}`,
+        date: new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        customerName: customerName.trim(),
+        phone: phone.trim(),
+        deliverySelected,
+        deliveryAddress: deliveryAddress.trim(),
+        items: selectedProduct.id === 'cart_checkout' ? [...cart] : [{
+          cartItemId: selectedProduct.id,
+          name: selectedProduct.name,
+          selectedColor: selectedColor,
+          quantity: quantity,
+          price: Number(selectedProduct.price) || 0
+        }],
+        totalPrice: selectedProduct.id === 'cart_checkout' ? totalCartPrice + (deliverySelected ? 2 : 0) : (Number(selectedProduct.price) || 0) * quantity + (deliverySelected ? 2 : 0),
+        uploadedImagesCount: uploadedUrls.length,
+        notes: notes.trim()
+      };
+
+      setPlacedInvoiceData(invoiceData);
       if (selectedProduct.id === 'cart_checkout') clearCart();
       setOrderPlaced(true);
     } catch (err) {
@@ -787,19 +810,81 @@ ${finalNotes}`;
                 ✕
               </button>
 
-              {orderPlaced ? (
-                <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                  <span style={{ fontSize: '4rem' }}>✅</span>
-                  <h3 style={{ fontSize: '1.4rem', color: '#F5BD1A', margin: '16px 0 8px', fontWeight: '900' }}>تم تقديم طلبك بنجاح!</h3>
-                  <p style={{ color: 'rgba(236,235,231,0.8)', marginBottom: '24px' }}>سيتواصل معك فريق استديو آيرس عبر الواتساب لمراجعة طلبك وإتمام التوصيل أو الاستلام.</p>
-                  <button
-                    type="button"
-                    onClick={closeOrderModal}
-                    className="btn-portal-primary print-btn"
-                    style={{ width: 'auto', padding: '10px 32px' }}
-                  >
-                    حسناً
-                  </button>
+              {orderPlaced && placedInvoiceData ? (
+                <div className="invoice-print-area" style={{ color: '#FFFFFF', padding: '10px 0' }}>
+                  {/* Invoice Header */}
+                  <div style={{ textAlign: 'center', borderBottom: '2px dashed rgba(245, 189, 26, 0.4)', paddingBottom: '16px', marginBottom: '20px' }}>
+                    <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#F5BD1A', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <span>🖨️</span>
+                      <span>آيرس — المطبوعات والتطريز</span>
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: 'rgba(236, 235, 231, 0.7)', marginTop: '4px' }}>
+                      فاتورة طلب إلكترونية مؤكدة
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '14px', background: 'rgba(245, 189, 26, 0.1)', padding: '8px 14px', borderRadius: '10px', fontSize: '0.82rem', border: '1px solid rgba(245, 189, 26, 0.25)' }}>
+                      <span>رقم الفاتورة: <strong style={{ color: '#F5BD1A' }}>#{placedInvoiceData.invoiceNo}</strong></span>
+                      <span>التاريخ: <strong>{placedInvoiceData.date}</strong></span>
+                    </div>
+                  </div>
+
+                  {/* Customer Details Card */}
+                  <div style={{ background: 'rgba(255, 255, 255, 0.04)', borderRadius: '12px', padding: '14px', marginBottom: '18px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.88rem', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div>👤 <strong>الزبون:</strong> {placedInvoiceData.customerName}</div>
+                    <div>📞 <strong>رقم التواصل:</strong> <span dir="ltr">{placedInvoiceData.phone}</span></div>
+                    <div>
+                      🚚 <strong>طريقة التسليم:</strong> {placedInvoiceData.deliverySelected ? `توصيل للمنزل (${placedInvoiceData.deliveryAddress})` : 'استلام من الاستوديو / المحل'}
+                    </div>
+                    {placedInvoiceData.uploadedImagesCount > 0 && (
+                      <div>🖼️ <strong>مرفقات التصميم:</strong> تم رفع {placedInvoiceData.uploadedImagesCount} صور مخصصة للطباعة</div>
+                    )}
+                  </div>
+
+                  {/* Items Table */}
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ fontSize: '0.95rem', color: '#F5BD1A', marginBottom: '10px', fontWeight: '800' }}>🛍️ تفاصيل المنتجات المطلوبة:</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {placedInvoiceData.items.map((item, idx) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(18, 9, 17, 0.95)', padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(245, 189, 26, 0.2)', fontSize: '0.88rem' }}>
+                          <div>
+                            <div style={{ fontWeight: '800', color: '#FFFFFF' }}>{item.name}</div>
+                            {item.selectedColor && (
+                              <span style={{ fontSize: '0.74rem', color: '#F5BD1A' }}>اللون: {item.selectedColor}</span>
+                            )}
+                            <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.6)', marginRight: '8px' }}>
+                              (العدد: {item.quantity})
+                            </span>
+                          </div>
+                          <div style={{ fontWeight: '900', color: '#F5BD1A', fontSize: '0.98rem' }}>
+                            {item.price * item.quantity} JOD
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Total Summary */}
+                  <div style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', borderRadius: '14px', padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: '900', fontSize: '1.1rem', boxShadow: '0 6px 20px rgba(245, 189, 26, 0.35)', marginBottom: '24px' }}>
+                    <span>المجموع الكلي النهائي:</span>
+                    <span>{placedInvoiceData.totalPrice} JOD</span>
+                  </div>
+
+                  {/* Buttons */}
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                      type="button"
+                      onClick={() => window.print()}
+                      style={{ flex: 1, background: 'rgba(245, 189, 26, 0.15)', color: '#F5BD1A', border: '1.5px solid #F5BD1A', borderRadius: '50px', padding: '10px', fontWeight: '900', cursor: 'pointer', fontSize: '0.88rem' }}
+                    >
+                      طباعة الفاتورة 🖨️
+                    </button>
+                    <button
+                      type="button"
+                      onClick={closeOrderModal}
+                      style={{ flex: 1, background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', border: 'none', borderRadius: '50px', padding: '10px', fontWeight: '900', cursor: 'pointer', fontSize: '0.88rem' }}
+                    >
+                      إغلاق والعودة للمتجر 🛍️
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handlePlaceOrder}>
