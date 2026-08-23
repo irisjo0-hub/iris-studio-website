@@ -246,6 +246,7 @@ const AdminGraduationOrders = () => {
   const [orders,      setOrders]      = useState([]);
   const [detailOrder, setDetailOrder] = useState(null);
   const [showDelete,  setShowDelete]  = useState(null); // id
+  const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -302,97 +303,299 @@ const AdminGraduationOrders = () => {
   const getStatusLabel = (val) => STATUS_OPTIONS.find(s => s.value === val)?.label || val;
   const getStatusClass = (val) => STATUS_OPTIONS.find(s => s.value === val)?.colorClass || 'badge-pending';
 
-  const total    = orders.length;
-  const pending  = orders.filter((o) => o.status === 'pending').length;
-  const printing = orders.filter((o) => o.status === 'ready_printing').length;
-  const pickup   = orders.filter((o) => o.status === 'ready_pickup').length;
+  const total     = orders.length;
+  const pending   = orders.filter((o) => (o.status || 'pending') === 'pending').length;
+  const printing  = orders.filter((o) => o.status === 'ready_printing').length;
+  const pickup    = orders.filter((o) => o.status === 'ready_pickup').length;
+  const inDesign  = orders.filter((o) => o.status === 'in_design').length;
+  const completed = orders.filter((o) => o.status === 'completed').length;
+  const cancelled = orders.filter((o) => o.status === 'cancelled').length;
+
+  const filteredOrders = filterStatus === 'all'
+    ? orders
+    : orders.filter((o) => (o.status || 'pending') === filterStatus);
 
   return (
     <AdminLayout>
       <section className="admin-grad-orders">
         <h2 className="section-title">إدارة طلبات دفاتر التخرج</h2>
-        <p className="section-subtitle">إدارة جميع الطلبات مع نظام التتبع والملفات المرفقة.</p>
+        <p className="section-subtitle">إدارة ومتابعة جميع طلبات الدفاتر والملفات المرفقة.</p>
 
-        {/* Stats */}
-        <div className="bookings-stats-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-          <div className="small-stat-card card-purple"><h4>إجمالي الطلبات</h4><p>{total}</p></div>
-          <div className="small-stat-card" style={{ borderRight: '4px solid #D68910', background: '#FCF3CF' }}>
-            <h4 style={{ color: '#D68910' }}>قيد الانتظار</h4><p style={{ color: '#D68910' }}>{pending}</p>
+        {/* Compact 2x2 Interactive Stats Grid */}
+        <div className="bookings-stats-row">
+          <div
+            className={`small-stat-card card-purple ${filterStatus === 'all' ? 'active-stat' : ''}`}
+            onClick={() => setFilterStatus('all')}
+          >
+            <h4>إجمالي الطلبات</h4>
+            <p>{total}</p>
           </div>
-          <div className="small-stat-card" style={{ borderRight: '4px solid #2980B9', background: '#D4E6F1' }}>
-            <h4 style={{ color: '#2980B9' }}>جاهز للطباعة</h4><p style={{ color: '#2980B9' }}>{printing}</p>
+          <div
+            className={`small-stat-card card-gold ${filterStatus === 'pending' ? 'active-stat' : ''}`}
+            onClick={() => setFilterStatus('pending')}
+          >
+            <h4>قيد الانتظار</h4>
+            <p>{pending}</p>
           </div>
-          <div className="small-stat-card" style={{ borderRight: '4px solid #27AE60', background: '#D5F5E3' }}>
-            <h4 style={{ color: '#27AE60' }}>جاهز للاستلام</h4><p style={{ color: '#27AE60' }}>{pickup}</p>
+          <div
+            className={`small-stat-card card-purple ${filterStatus === 'ready_printing' ? 'active-stat' : ''}`}
+            onClick={() => setFilterStatus('ready_printing')}
+          >
+            <h4>جاهز للطباعة</h4>
+            <p>{printing}</p>
+          </div>
+          <div
+            className={`small-stat-card card-green ${filterStatus === 'ready_pickup' ? 'active-stat' : ''}`}
+            onClick={() => setFilterStatus('ready_pickup')}
+          >
+            <h4>جاهز للاستلام</h4>
+            <p>{pickup}</p>
           </div>
         </div>
 
-        {orders.length === 0 ? (
+        {/* Status Filter Navigation Bar */}
+        <div className="booking-filter-tabs-row">
+          <button
+            type="button"
+            className={`booking-filter-tab ${filterStatus === 'all' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('all')}
+          >
+            📋 جميع الطلبات ({total})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-pending ${filterStatus === 'pending' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('pending')}
+          >
+            ⏳ قيد الانتظار ({pending})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab ${filterStatus === 'in_design' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('in_design')}
+          >
+            🎨 قيد التصميم ({inDesign})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab ${filterStatus === 'ready_printing' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('ready_printing')}
+          >
+            🖨️ جاهز للطباعة ({printing})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-approved ${filterStatus === 'ready_pickup' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('ready_pickup')}
+          >
+            📦 جاهز للاستلام ({pickup})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-completed ${filterStatus === 'completed' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('completed')}
+          >
+            ✅ مكتمل ({completed})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-rejected ${filterStatus === 'cancelled' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('cancelled')}
+          >
+            ❌ ملغي ({cancelled})
+          </button>
+        </div>
+
+        {filteredOrders.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">🎓</div>
-            <h3>لا توجد طلبات دفاتر تخرج</h3>
-            <p>الطلبات الجديدة ستظهر هنا تلقائياً.</p>
+            <h3>لا توجد طلبات دفاتر تخرج في هذا القسم</h3>
+            <p>الطلبات الجديدة المطابقة لهذا القسم ستظهر هنا تلقائياً.</p>
+            {filterStatus !== 'all' && (
+              <button
+                type="button"
+                className="empty-btn"
+                onClick={() => setFilterStatus('all')}
+              >
+                عرض جميع الطلبات
+              </button>
+            )}
           </div>
         ) : (
-          <div className="table-container" style={{ overflowX: 'auto' }}>
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>رقم الطلب</th>
-                  <th>وقت الطلب</th>
-                  <th>الاسم</th>
-                  <th>الهاتف</th>
-                  <th>الباقة</th>
-                  <th>قالب الغلاف</th>
-                  <th>الإضافات</th>
-                  <th>الإجمالي</th>
-                  <th>المتبقي</th>
-                  <th>الحالة</th>
-                  <th>إجراءات</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((o) => (
-                  <tr key={o.id} className={o.status === 'completed' ? 'row-completed' : o.status === 'cancelled' ? 'row-cancelled' : ''}>
-                    <td style={{ fontWeight: 800 }}>{o.order_number || '-'}</td>
-                    <td style={{ whiteSpace: 'nowrap', fontSize: '0.82rem' }}>{formatTime(o.created_at)}</td>
-                    <td style={{ fontWeight: 600 }}>{o.arabic_name}</td>
-                    <td style={{ direction: 'ltr' }}>{o.phone}</td>
-                    <td style={{ whiteSpace: 'nowrap' }}>{o.package_name}</td>
-                    <td style={{ whiteSpace: 'nowrap', fontSize: '0.82rem' }}>
-                      غلاف #{o.external_template_number}
-                    </td>
-                    <td style={{ fontSize: '0.82rem', maxWidth: 140, whiteSpace: 'normal' }}>
-                      {[
-                        o.photographic_pages_quantity > 0 ? `${o.photographic_pages_quantity}x صور` : null,
-                        o.delivery_selected ? 'توصيل' : null
-                      ].filter(Boolean).join(' + ') || '-'}
-                    </td>
-                    <td style={{ whiteSpace: 'nowrap', fontWeight: 600 }}>{o.subtotal} JOD</td>
-                    <td style={{ whiteSpace: 'nowrap', color: 'var(--iris-green)', fontWeight: 800 }}>{o.remaining_amount} JOD</td>
-                    <td>
-                      <select
-                        className={`admin-input ${getStatusClass(o.status)}`}
-                        style={{ padding: '4px 8px', fontSize: '0.8rem', width: 140, border: 'none', borderRadius: 50, fontWeight: 700 }}
-                        value={o.status}
-                        onChange={(e) => updateStatus(o.id, e.target.value)}
-                      >
-                        {STATUS_OPTIONS.map(s => (
-                          <option key={s.value} value={s.value} style={{ background: '#fff', color: '#333' }}>{s.label}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <div className="actions-cell">
-                        <button type="button" className="btn-action confirm" onClick={() => setDetailOrder(o)}>عرض التفاصيل</button>
-                        <button type="button" className="btn-action delete"  onClick={() => setShowDelete(o.id)}>حذف</button>
+          <>
+            {/* 1. Mobile Cards View (< 992px) */}
+            <div className="admin-bookings-mobile-cards">
+              {filteredOrders.map((o) => {
+                const totalFilesCount = (o.external_template_image_url ? 1 : 0)
+                  + (o.internal_images_urls?.length || 0)
+                  + (o.photographic_pages_urls?.length || 0);
+
+                return (
+                  <div key={o.id} className={`booking-card-item ${o.status === 'completed' ? 'card-completed' : ''}`}>
+                    <div className="card-header-top">
+                      <div className="card-id-badge">{o.order_number || `#GRAD-${o.id}`}</div>
+                      <div className="card-time-tag">⏱️ {formatTime(o.created_at)}</div>
+                      <span className={`badge ${getStatusClass(o.status)}`}>
+                        {getStatusLabel(o.status)}
+                      </span>
+                    </div>
+
+                    <div className="card-customer-row">
+                      <div className="customer-info-box">
+                        <span className="customer-name">{o.arabic_name || 'طالب آيرس'} ({o.english_name || '-'})</span>
+                        <span className="customer-phone">{o.phone || '-'}</span>
                       </div>
-                    </td>
+                      <div className="customer-contact-actions">
+                        {o.phone && (
+                          <>
+                            <a
+                              href={`https://wa.me/${o.phone.replace(/[^0-9]/g, '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn-card-icon whatsapp-btn"
+                              title="تواصل واتساب"
+                            >
+                              💬 واتساب
+                            </a>
+                            <a
+                              href={`tel:${o.phone}`}
+                              className="btn-card-icon call-btn"
+                              title="اتصال مباشر"
+                            >
+                              📞 اتصال
+                            </a>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="card-info-grid">
+                      <div className="card-info-item">
+                        <span className="info-label">الجامعة والتخصص:</span>
+                        <span className="info-val">{o.university || '-'} - {o.major || '-'}</span>
+                      </div>
+                      <div className="card-info-item">
+                        <span className="info-label">الباقة والافتراضي:</span>
+                        <span className="info-val highlight-gold">{o.package_name || '-'} ({o.package_price} JOD)</span>
+                      </div>
+                      <div className="card-info-item">
+                        <span className="info-label">قالب الغلاف:</span>
+                        <span className="info-val">غلاف #{o.external_template_number || '-'}</span>
+                      </div>
+                      <div className="card-info-item">
+                        <span className="info-label">صفحات فوتوغرافية:</span>
+                        <span className="info-val">{o.photographic_pages_quantity || 0} صفحة ({o.photographic_pages_total || 0} JOD)</span>
+                      </div>
+                    </div>
+
+                    <div className="card-financial-box">
+                      <div className="fin-item">
+                        <span className="fin-lbl">المجموع الكلي:</span>
+                        <span className="fin-val">{o.subtotal != null ? `${o.subtotal} JOD` : '-'}</span>
+                      </div>
+                      <div className="fin-item">
+                        <span className="fin-lbl">المتبقي:</span>
+                        <span className="fin-val remaining-due">{o.remaining_amount != null ? `${o.remaining_amount} JOD` : '-'}</span>
+                      </div>
+                    </div>
+
+                    <div className="card-receipt-box">
+                      <button
+                        type="button"
+                        className="btn-view-receipt-card"
+                        onClick={() => setDetailOrder(o)}
+                      >
+                        🔍 عرض التفاصيل والملفات المرفقة ({totalFilesCount} ملف)
+                      </button>
+                    </div>
+
+                    <div className="card-action-bar">
+                      <div className="status-select-wrap">
+                        <label className="as-label-xs">تحديث الحالة:</label>
+                        <select
+                          value={o.status || 'pending'}
+                          onChange={(e) => updateStatus(o.id, e.target.value)}
+                          className="card-status-select"
+                        >
+                          {STATUS_OPTIONS.map(s => (
+                            <option key={s.value} value={s.value}>{s.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn-action delete btn-card-delete"
+                        onClick={() => setShowDelete(o.id)}
+                      >
+                        🗑️ حذف
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* 2. Desktop Table View (>= 992px) */}
+            <div className="table-container admin-bookings-table-desktop">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>رقم الطلب</th>
+                    <th>وقت الطلب</th>
+                    <th>الاسم</th>
+                    <th>الهاتف</th>
+                    <th>الباقة</th>
+                    <th>قالب الغلاف</th>
+                    <th>الإضافات</th>
+                    <th>الإجمالي</th>
+                    <th>المتبقي</th>
+                    <th>الحالة</th>
+                    <th>إجراءات</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredOrders.map((o) => (
+                    <tr key={o.id} className={o.status === 'completed' ? 'row-completed' : o.status === 'cancelled' ? 'row-cancelled' : ''}>
+                      <td style={{ fontWeight: 800 }}>{o.order_number || '-'}</td>
+                      <td style={{ whiteSpace: 'nowrap', fontSize: '0.82rem' }}>{formatTime(o.created_at)}</td>
+                      <td style={{ fontWeight: 600 }}>{o.arabic_name}</td>
+                      <td style={{ direction: 'ltr' }}>{o.phone}</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>{o.package_name}</td>
+                      <td style={{ whiteSpace: 'nowrap', fontSize: '0.82rem' }}>
+                        غلاف #{o.external_template_number}
+                      </td>
+                      <td style={{ fontSize: '0.82rem', maxWidth: 140, whiteSpace: 'normal' }}>
+                        {[
+                          o.photographic_pages_quantity > 0 ? `${o.photographic_pages_quantity}x صور` : null,
+                          o.delivery_selected ? 'توصيل' : null
+                        ].filter(Boolean).join(' + ') || '-'}
+                      </td>
+                      <td style={{ whiteSpace: 'nowrap', fontWeight: 600 }}>{o.subtotal} JOD</td>
+                      <td style={{ whiteSpace: 'nowrap', color: '#27ae60', fontWeight: 800 }}>{o.remaining_amount} JOD</td>
+                      <td>
+                        <select
+                          className={`admin-input ${getStatusClass(o.status)}`}
+                          style={{ padding: '4px 8px', fontSize: '0.8rem', width: 140, border: 'none', borderRadius: 50, fontWeight: 700 }}
+                          value={o.status}
+                          onChange={(e) => updateStatus(o.id, e.target.value)}
+                        >
+                          {STATUS_OPTIONS.map(s => (
+                            <option key={s.value} value={s.value} style={{ background: '#fff', color: '#333' }}>{s.label}</option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <div className="actions-cell">
+                          <button type="button" className="btn-action confirm" onClick={() => setDetailOrder(o)}>عرض التفاصيل</button>
+                          <button type="button" className="btn-action delete"  onClick={() => setShowDelete(o.id)}>حذف</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </section>
 

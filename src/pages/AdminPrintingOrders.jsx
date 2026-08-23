@@ -84,57 +84,116 @@ const AdminPrintingOrders = () => {
     }
   };
 
+  const total     = orders.length;
+  const pending   = orders.filter((o) => (o.status || 'pending') === 'pending').length;
+  const approved  = orders.filter((o) => o.status === 'approved').length;
+  const completed = orders.filter((o) => o.status === 'completed').length;
+  const rejected  = orders.filter((o) => o.status === 'rejected').length;
+
   const filteredOrders = filterStatus === 'all'
     ? orders
-    : orders.filter(o => o.status === filterStatus);
+    : orders.filter((o) => (o.status || 'pending') === filterStatus);
 
   return (
     <AdminLayout>
-      <section className="admin-bookings-section" style={{ direction: 'rtl', padding: '20px' }}>
+      <section className="admin-bookings-section" style={{ direction: 'rtl' }}>
         <h2 className="section-title">طلبات منتجات الطباعة والتصميم</h2>
-        <p className="section-subtitle">استعرض وتابع طلبات الطباعة المخصصة المرفوعة من العملاء.</p>
+        <p className="section-subtitle">إدارة، فلترة ومتابعة جميع طلبات الطباعة المخصصة المرفوعة من العملاء.</p>
 
-        {/* Filters */}
-        <div style={{ display: 'flex', gap: '12px', margin: '20px 0', flexWrap: 'wrap' }}>
-          {['all', 'pending', 'approved', 'completed', 'rejected'].map((status) => {
-            const labels = {
-              all: 'الكل',
-              pending: 'بانتظار المراجعة ⏳',
-              approved: 'مقبول / قيد العمل ✅',
-              completed: 'مكتمل 📔',
-              rejected: 'مرفوض ✕'
-            };
-            return (
-              <button
-                key={status}
-                onClick={() => setFilterStatus(status)}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  border: filterStatus === status ? 'none' : '1px solid #ccc',
-                  background: filterStatus === status ? 'var(--iris-purple, #6F246F)' : '#fff',
-                  color: filterStatus === status ? '#fff' : '#333',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  fontSize: '0.9rem'
-                }}
-              >
-                {labels[status]}
-              </button>
-            );
-          })}
+        {/* Compact 2x2 Interactive Stats Grid */}
+        <div className="bookings-stats-row">
+          <div
+            className={`small-stat-card card-purple ${filterStatus === 'all' ? 'active-stat' : ''}`}
+            onClick={() => setFilterStatus('all')}
+          >
+            <h4>إجمالي الطلبات</h4>
+            <p>{total}</p>
+          </div>
+          <div
+            className={`small-stat-card card-gold ${filterStatus === 'pending' ? 'active-stat' : ''}`}
+            onClick={() => setFilterStatus('pending')}
+          >
+            <h4>بانتظار المراجعة</h4>
+            <p>{pending}</p>
+          </div>
+          <div
+            className={`small-stat-card card-purple ${filterStatus === 'approved' ? 'active-stat' : ''}`}
+            onClick={() => setFilterStatus('approved')}
+          >
+            <h4>قيد التنفيذ</h4>
+            <p>{approved}</p>
+          </div>
+          <div
+            className={`small-stat-card card-green ${filterStatus === 'completed' ? 'active-stat' : ''}`}
+            onClick={() => setFilterStatus('completed')}
+          >
+            <h4>الطلبات المكتملة</h4>
+            <p>{completed}</p>
+          </div>
+        </div>
+
+        {/* Status Filter Navigation Bar */}
+        <div className="booking-filter-tabs-row">
+          <button
+            type="button"
+            className={`booking-filter-tab ${filterStatus === 'all' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('all')}
+          >
+            📋 جميع الطلبات ({total})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-pending ${filterStatus === 'pending' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('pending')}
+          >
+            ⏳ بانتظار المراجعة ({pending})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-approved ${filterStatus === 'approved' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('approved')}
+          >
+            ⚙️ قيد العمل ({approved})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-completed ${filterStatus === 'completed' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('completed')}
+          >
+            ✅ مكتمل ({completed})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-rejected ${filterStatus === 'rejected' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('rejected')}
+          >
+            ❌ مرفوض ({rejected})
+          </button>
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px' }}>⏳ جاري تحميل الطلبات...</div>
+          <div className="empty-state">
+            <div className="spinner-loader" style={{ margin: '0 auto 12px auto' }} />
+            <h3>جاري تحميل طلبات الطباعة...</h3>
+          </div>
         ) : filteredOrders.length === 0 ? (
-          <div className="admin-empty-state" style={{ background: '#fff', padding: '40px', borderRadius: '12px', textAlign: 'center' }}>
-            <h3>لا توجد طلبات طباعة في هذا التصنيف.</h3>
+          <div className="empty-state">
+            <div className="empty-icon">🖨️</div>
+            <h3>لا توجد طلبات طباعة في هذا القسم حالياً</h3>
+            <p>عند وصول طلبات جديدة مطابقة لهذا القسم ستظهر هنا فورياً.</p>
+            {filterStatus !== 'all' && (
+              <button
+                type="button"
+                className="empty-btn"
+                onClick={() => setFilterStatus('all')}
+              >
+                عرض جميع الطلبات
+              </button>
+            )}
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="admin-bookings-mobile-cards" style={{ display: 'flex' }}>
             {filteredOrders.map((ord) => {
-              // Parse image URLs
               let imagesList = [];
               if (Array.isArray(ord.image_urls)) {
                 imagesList = ord.image_urls;
@@ -149,119 +208,144 @@ const AdminPrintingOrders = () => {
               const details = parseNotes(ord.notes);
 
               return (
-                <div
-                  key={ord.id}
-                  style={{
-                    background: '#fff',
-                    borderRadius: '12px',
-                    border: '1px solid #eee',
-                    padding: '20px',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 250px',
-                    gap: '20px'
-                  }}
-                  className="printing-order-row-card"
-                >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                      <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--iris-purple, #6F246F)' }}>
-                        {ord.product_name}
-                      </h3>
-                      <span
-                        style={{
-                          fontSize: '0.75rem',
-                          fontWeight: 'bold',
-                          padding: '4px 10px',
-                          borderRadius: '20px',
-                          background:
-                            ord.status === 'pending' ? '#fff9db' :
-                            ord.status === 'approved' ? '#e3faf2' :
-                            ord.status === 'completed' ? '#d0ebff' : '#ffe3e3',
-                          color:
-                            ord.status === 'pending' ? '#f08c00' :
-                            ord.status === 'approved' ? '#0ca678' :
-                            ord.status === 'completed' ? '#1c7ed6' : '#f03e3e'
-                        }}
-                      >
-                        {ord.status === 'pending' ? 'بانتظار المراجعة' :
-                         ord.status === 'approved' ? 'مقبول / قيد التنفيذ' :
-                         ord.status === 'completed' ? 'مكتمل' : 'مرفوض'}
-                      </span>
-                    </div>
+                <div key={ord.id} className={`booking-card-item ${ord.status === 'completed' ? 'card-completed' : ''}`}>
+                  <div className="card-header-top">
+                    <div className="card-id-badge">#{ord.id}</div>
+                    <div className="card-time-tag">⏱️ {ord.created_at ? new Date(ord.created_at).toLocaleString('ar-EG') : '-'}</div>
+                    <span
+                      className={`badge ${
+                        ord.status === 'pending' ? 'badge-pending' :
+                        ord.status === 'approved' ? 'badge-approved' :
+                        ord.status === 'completed' ? 'badge-completed' : 'badge-rejected'
+                      }`}
+                    >
+                      {ord.status === 'pending' ? 'بانتظار المراجعة' :
+                       ord.status === 'approved' ? 'مقبول / قيد التنفيذ' :
+                       ord.status === 'completed' ? 'مكتمل' : 'مرفوض'}
+                    </span>
+                  </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.95rem' }}>
-                      <div>العميل: <strong>{ord.customer_name}</strong></div>
-                      <div>رقم الهاتف: <strong>{ord.phone}</strong></div>
-                      <div>نوع الاستلام: <strong style={{ color: details.isDelivery ? 'var(--color-purple, #6E267B)' : '#777' }}>{details.isDelivery ? 'توصيل للمنزل 🚚' : 'الاستلام من الاستوديو 🏬'}</strong></div>
-                      {details.isDelivery && <div>هاتف بديل للتوصيل: <strong>{details.alternativePhone || 'لا يوجد'}</strong></div>}
-                      {details.isDelivery && details.address && <div style={{ gridColumn: 'span 2' }}>عنوان التوصيل بالتفصيل: <strong>{details.address}</strong></div>}
-                      {details.isDelivery && details.googleMaps && details.googleMaps !== 'لا يوجد' && (
-                        <div style={{ gridColumn: 'span 2' }}>
-                          خرائط جوجل: <a href={details.googleMaps} target="_blank" rel="noreferrer" style={{ color: 'var(--color-purple, #6E267B)', textDecoration: 'underline' }}>{details.googleMaps}</a>
-                        </div>
+                  <div className="card-customer-row">
+                    <div className="customer-info-box">
+                      <span className="customer-name">{ord.customer_name || 'عميل مخصص'}</span>
+                      <span className="customer-phone">{ord.phone || '-'}</span>
+                    </div>
+                    <div className="customer-contact-actions">
+                      {ord.phone && (
+                        <>
+                          <a
+                            href={`https://wa.me/${ord.phone.replace(/[^0-9]/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-card-icon whatsapp-btn"
+                            title="تواصل واتساب"
+                          >
+                            💬 واتساب
+                          </a>
+                          <a
+                            href={`tel:${ord.phone}`}
+                            className="btn-card-icon call-btn"
+                            title="اتصال مباشر"
+                          >
+                            📞 اتصال
+                          </a>
+                        </>
                       )}
-                      <div>الكمية المطلوبة: <strong>{ord.quantity}</strong></div>
-                      {ord.selected_color && <div>اللون المختار: <strong style={{ color: 'var(--color-green, #0F5A47)' }}>{ord.selected_color}</strong></div>}
                     </div>
+                  </div>
 
-                    {details.cleanNotes && (
-                      <div style={{ background: '#fcfcfc', border: '1px solid #eee', padding: '10px 14px', borderRadius: '8px', fontSize: '0.9rem', color: '#555', whiteSpace: 'pre-wrap' }}>
-                        <strong>ملاحظات العميل وتعليمات الطباعة:</strong>
-                        <div style={{ marginTop: '4px' }}>{details.cleanNotes}</div>
-                      </div>
-                    )}
-
-                    {/* Image thumbnails for custom designs */}
-                    {imagesList.length > 0 && (
-                      <div style={{ marginTop: '10px' }}>
-                        <span style={{ fontSize: '0.9rem', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>الصور المرفقة للطباعة:</span>
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                          {imagesList.map((url, i) => (
-                            <a key={i} href={url} target="_blank" rel="noreferrer">
-                              <img
-                                src={url}
-                                alt={`custom-${i}`}
-                                style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #ddd', cursor: 'zoom-in' }}
-                              />
-                            </a>
-                          ))}
-                        </div>
+                  <div className="card-info-grid">
+                    <div className="card-info-item">
+                      <span className="info-label">المنتج المطلوب:</span>
+                      <span className="info-val highlight-gold">{ord.product_name || 'خدمة طباعة'}</span>
+                    </div>
+                    <div className="card-info-item">
+                      <span className="info-label">طريقة الاستلام:</span>
+                      <span className="info-val">{details.isDelivery ? 'توصيل للمنزل 🚚' : 'استلام من الاستوديو 🏬'}</span>
+                    </div>
+                    <div className="card-info-item">
+                      <span className="info-label">الكمية المطلوبة:</span>
+                      <span className="info-val">{ord.quantity || 1} قطعة</span>
+                    </div>
+                    {ord.selected_color && (
+                      <div className="card-info-item">
+                        <span className="info-label">اللون المختار:</span>
+                        <span className="info-val">{ord.selected_color}</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Actions Column */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'center', borderRight: '1px solid #eee', paddingRight: '20px' }}>
+                  {details.isDelivery && details.address && (
+                    <div className="card-extras-box">
+                      <span className="info-label">عنوان التوصيل:</span>
+                      <span className="extras-list">{details.address}</span>
+                      {details.googleMaps && details.googleMaps !== 'لا يوجد' && (
+                        <div style={{ marginTop: '4px' }}>
+                          <a href={details.googleMaps} target="_blank" rel="noreferrer" style={{ color: '#F5BD1A', textDecoration: 'underline', fontSize: '0.82rem' }}>
+                            📍 موقع التوصيل على خرائط قوقل
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {details.cleanNotes && (
+                    <div className="card-extras-box" style={{ background: 'rgba(18, 9, 17, 0.8)' }}>
+                      <span className="info-label">ملاحظات العميل:</span>
+                      <span className="extras-list" style={{ color: '#ECEBE7' }}>{details.cleanNotes}</span>
+                    </div>
+                  )}
+
+                  {imagesList.length > 0 && (
+                    <div className="card-receipt-box" style={{ background: 'transparent', padding: 0 }}>
+                      <span className="info-label" style={{ marginBottom: '6px', display: 'block' }}>الصور والمستندات المرفقة ({imagesList.length}):</span>
+                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                        {imagesList.map((url, i) => (
+                          <a key={i} href={url} target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+                            <img
+                              src={url}
+                              alt={`custom-${i}`}
+                              style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '10px', border: '1.5px solid #F5BD1A', cursor: 'zoom-in' }}
+                            />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="card-action-bar">
                     {ord.status === 'pending' && (
-                      <>
+                      <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
                         <button
+                          type="button"
                           onClick={() => handleUpdateStatus(ord.id, 'approved')}
                           className="btn-action confirm"
-                          style={{ padding: '8px 16px', fontSize: '0.88rem' }}
+                          style={{ flex: 1, padding: '10px' }}
                         >
-                          قبول وبدء العمل
+                          ✓ قبول وبدء العمل
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleUpdateStatus(ord.id, 'rejected')}
                           className="btn-action reject"
-                          style={{ padding: '8px 16px', fontSize: '0.88rem' }}
+                          style={{ padding: '10px 16px' }}
                         >
-                          رفض الطلب
+                          ✕ رفض
                         </button>
-                      </>
+                      </div>
                     )}
                     {ord.status === 'approved' && (
                       <button
+                        type="button"
                         onClick={() => handleUpdateStatus(ord.id, 'completed')}
                         className="btn-action confirm"
-                        style={{ padding: '8px 16px', fontSize: '0.88rem', background: '#339af0' }}
+                        style={{ width: '100%', padding: '10px', background: '#339af0' }}
                       >
-                        تعليم كمكتمل ✓
+                        ✓ تعليم كمكتمل
                       </button>
                     )}
                     {ord.status !== 'pending' && ord.status !== 'approved' && (
-                      <div style={{ textAlign: 'center', color: '#888', fontSize: '0.85rem' }}>لا توجد إجراءات إضافية</div>
+                      <span className="info-label" style={{ margin: 'auto' }}>حالة الطلب نهائية ({ord.status})</span>
                     )}
                   </div>
                 </div>
