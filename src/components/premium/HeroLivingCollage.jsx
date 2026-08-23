@@ -155,13 +155,13 @@ export const HeroLivingCollage = () => {
           const config = channelConfigs[index % channelConfigs.length];
 
           // Unidirectional stream flow guarantees zero head-on collisions
-          const startX = isRtl ? '-110vw' : '110vw';
+          const startX = isRtl ? '-105vw' : '105vw';
           const midX = '0vw';
-          const endX = isRtl ? '110vw' : '-110vw';
+          const endX = isRtl ? '105vw' : '-105vw';
 
           const duration = 16;
-          // Negative delay ensures cards are pre-filled and visible across the screen on second 0 of page load!
-          const delay = -(index * (duration / Math.max(1, pool.length)));
+          // Rapid sequential staggered entry starting immediately upon site load (0.1s, 0.32s, 0.54s...)
+          const delay = 0.1 + (index * 0.22);
 
           return (
             <motion.div
@@ -175,7 +175,8 @@ export const HeroLivingCollage = () => {
                 translateX: '-50%'
               }}
               initial={{
-                opacity: 1
+                opacity: 0,
+                x: startX
               }}
               animate={
                 isPaused
@@ -184,8 +185,8 @@ export const HeroLivingCollage = () => {
                       x: [startX, midX, endX],
                       y: config.floatY,
                       rotateZ: config.rotateZ,
-                      opacity: [0.4, 1, 1, 0.4],
-                      filter: ['blur(8px)', 'blur(0px)', 'blur(0px)', 'blur(8px)']
+                      opacity: [0, 1, 1, 0],
+                      filter: ['blur(12px)', 'blur(0px)', 'blur(0px)', 'blur(12px)']
                     }
               }
               transition={{
