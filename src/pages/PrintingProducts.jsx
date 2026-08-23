@@ -164,58 +164,63 @@ const ProductStoreCard = ({ prod, onOrder, viewMode = 'grid' }) => {
   const [activeIdx, setActiveIdx] = useState(0);
   const currentImg = imagesList[activeIdx] || imagesList[0] || '';
 
-  // LIST VIEW LAYOUT (تصميم القائمة الأفقي: الصورة صغيرة والوصف بجانبها)
+  // LIST VIEW LAYOUT (تصميم القائمة الأفقي: الصورة ع اليمين، الاسم والوصف بالوسط، السعر وتحته زر الطلب ع اليسار)
   if (viewMode === 'list') {
     return (
-      <div className="grad-pkg-card-list" style={{ background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.92) 0%, rgba(18, 9, 17, 0.96) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '16px', overflow: 'hidden', display: 'flex', gap: '14px', padding: '12px', alignItems: 'stretch', boxShadow: '0 6px 20px rgba(0,0,0,0.4)', minHeight: '130px' }}>
-        {/* Thumbnail on Right */}
-        <div style={{ position: 'relative', width: '125px', height: '125px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden', background: '#000' }}>
+      <div className="grad-pkg-card-list" style={{ width: '100%', boxSizing: 'border-box', background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.92) 0%, rgba(18, 9, 17, 0.96) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '16px', overflow: 'hidden', display: 'flex', gap: '12px', padding: '12px', alignItems: 'center', boxShadow: '0 6px 20px rgba(0,0,0,0.4)', flexWrap: 'wrap' }}>
+        {/* 1. RIGHT SIDE: Product Image */}
+        <div style={{ position: 'relative', width: '110px', height: '110px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden', background: '#000' }}>
           {currentImg ? (
             <img src={currentImg} alt={prod.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
-            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontSize: '1.5rem' }}>🖼️</div>
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontSize: '1.4rem' }}>🖼️</div>
           )}
 
-          {/* Multi-Image indicator */}
           {imagesList.length > 1 && (
-            <span style={{ position: 'absolute', bottom: '4px', right: '4px', background: 'rgba(0, 0, 0, 0.8)', color: '#FFFFFF', padding: '2px 6px', borderRadius: '50px', fontSize: '0.68rem', fontWeight: '800' }}>
+            <span style={{ position: 'absolute', bottom: '4px', right: '4px', background: 'rgba(0, 0, 0, 0.85)', color: '#FFFFFF', padding: '2px 6px', borderRadius: '50px', fontSize: '0.65rem', fontWeight: '800' }}>
               📸 {imagesList.length}
             </span>
           )}
         </div>
 
-        {/* Content & Description on Left */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-              <h3 style={{ fontSize: '1.02rem', fontWeight: '900', color: '#FFFFFF', margin: 0, lineHeight: '1.3' }}>
-                {prod.name}
-              </h3>
-              <span style={{ fontSize: '1.15rem', color: '#F5BD1A', fontWeight: '900', whiteSpace: 'nowrap' }}>
-                {prod.price} JOD
-              </span>
-            </div>
+        {/* 2. MIDDLE: Name, Category, Description */}
+        <div style={{ flex: 1, minWidth: '160px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <h3 style={{ fontSize: '1.05rem', fontWeight: '900', color: '#FFFFFF', margin: 0, lineHeight: '1.3' }}>
+            {prod.name}
+          </h3>
 
-            {prod.category && (
-              <span style={{ display: 'inline-block', color: 'rgba(245, 189, 26, 0.85)', fontSize: '0.74rem', fontWeight: '800', marginTop: '3px' }}>
-                🏷️ {prod.category}
-              </span>
-            )}
+          {prod.category && (
+            <span style={{ display: 'inline-block', color: '#F5BD1A', fontSize: '0.74rem', fontWeight: '800' }}>
+              🏷️ {prod.category}
+            </span>
+          )}
 
-            {prod.description && (
-              <p style={{ fontSize: '0.82rem', color: 'rgba(236, 235, 231, 0.75)', margin: '6px 0', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                {prod.description}
-              </p>
-            )}
+          {prod.description && (
+            <p style={{ fontSize: '0.8rem', color: 'rgba(236, 235, 231, 0.75)', margin: '2px 0 0', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+              {prod.description}
+            </p>
+          )}
+
+          {prod.custom_notes && (
+            <span style={{ fontSize: '0.72rem', color: 'rgba(245, 189, 26, 0.85)' }}>
+              💡 {prod.custom_notes}
+            </span>
+          )}
+        </div>
+
+        {/* 3. LEFT SIDE: Price + Order Button underneath */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: '8px', flexShrink: 0, minWidth: '110px' }}>
+          <div style={{ fontSize: '1.25rem', color: '#F5BD1A', fontWeight: '900' }}>
+            {prod.price} JOD
           </div>
 
           <button
             type="button"
             className="grad-pkg-btn"
             onClick={() => onOrder(prod)}
-            style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '7px 16px', fontSize: '0.82rem', cursor: 'pointer', width: 'fit-content', marginTop: '6px' }}
+            style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '7px 14px', fontSize: '0.8rem', cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(245, 189, 26, 0.25)' }}
           >
-            طلب وتصميم المنتج 🛒
+            طلب المنتج 🛒
           </button>
         </div>
       </div>
