@@ -134,23 +134,33 @@ const AdminSettings = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (type === 'logo') {
-      setLogoFile(file);
-      setLogoPreview(URL.createObjectURL(file));
-    } else if (type === 'desktop_video') {
+    if (type === 'desktop_video') {
       setDesktopVideoFile(file);
-    } else if (type === 'mobile_video') {
-      setMobileVideoFile(file);
-    } else if (type === 'division_media') {
-      setDivisionMediaImageFile(file);
-      setDivisionMediaImagePreview(URL.createObjectURL(file));
-    } else if (type === 'division_studio') {
-      setDivisionStudioImageFile(file);
-      setDivisionStudioImagePreview(URL.createObjectURL(file));
-    } else if (type === 'division_print') {
-      setDivisionPrintImageFile(file);
-      setDivisionPrintImagePreview(URL.createObjectURL(file));
+      return;
     }
+    if (type === 'mobile_video') {
+      setMobileVideoFile(file);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target.result;
+      if (type === 'logo') {
+        setLogoFile(file);
+        setLogoPreview(dataUrl);
+      } else if (type === 'division_media') {
+        setDivisionMediaImageFile(file);
+        setDivisionMediaImagePreview(dataUrl);
+      } else if (type === 'division_studio') {
+        setDivisionStudioImageFile(file);
+        setDivisionStudioImagePreview(dataUrl);
+      } else if (type === 'division_print') {
+        setDivisionPrintImageFile(file);
+        setDivisionPrintImagePreview(dataUrl);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSaveSettings = async (e) => {
@@ -189,30 +199,38 @@ const AdminSettings = () => {
         const path = `branding/logo-${Date.now()}-${logoFile.name}`;
         const logoUrl = await uploadFile('packages', path, logoFile);
         updates.logo_url = logoUrl;
+      } else if (logoPreview) {
+        updates.logo_url = logoPreview;
       }
 
-      // Upload Division Media Image if provided
+      // 1. Upload Division Media Image if provided
       if (divisionMediaImageFile) {
         setUploadProgress('جاري رفع غلاف قسم الميديا...');
         const path = `divisions/media-${Date.now()}-${divisionMediaImageFile.name}`;
         const mediaImgUrl = await uploadFile('packages', path, divisionMediaImageFile);
         updates.division_media_image = mediaImgUrl;
+      } else if (divisionMediaImagePreview) {
+        updates.division_media_image = divisionMediaImagePreview;
       }
 
-      // Upload Division Studio Image if provided
+      // 2. Upload Division Studio Image if provided
       if (divisionStudioImageFile) {
         setUploadProgress('جاري رفع غلاف قسم الاستوديو...');
         const path = `divisions/studio-${Date.now()}-${divisionStudioImageFile.name}`;
         const studioImgUrl = await uploadFile('packages', path, divisionStudioImageFile);
         updates.division_studio_image = studioImgUrl;
+      } else if (divisionStudioImagePreview) {
+        updates.division_studio_image = divisionStudioImagePreview;
       }
 
-      // Upload Division Print Image if provided
+      // 3. Upload Division Print Image if provided
       if (divisionPrintImageFile) {
         setUploadProgress('جاري رفع غلاف قسم المطبوعات...');
         const path = `divisions/print-${Date.now()}-${divisionPrintImageFile.name}`;
         const printImgUrl = await uploadFile('packages', path, divisionPrintImageFile);
         updates.division_print_image = printImgUrl;
+      } else if (divisionPrintImagePreview) {
+        updates.division_print_image = divisionPrintImagePreview;
       }
 
       // Upload Desktop Video if provided
