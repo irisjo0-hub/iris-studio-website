@@ -621,7 +621,7 @@ ${finalNotes}`;
 
       waMsg += `\n🛒 *تفاصيل المنتجات المطلوب طباعتها:*\n${itemsSummary}\n\n💰 *المجموع الكلي:* ${finalPrice} JOD\n----------------------------------------`;
 
-      const waPhone = '962798627259';
+      const waPhone = '962797303260';
       const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(waMsg)}`;
       window.open(waUrl, '_blank');
 

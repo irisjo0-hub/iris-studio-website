@@ -90,7 +90,7 @@ export const Footer = () => {
           <div className="footer-socials">
             {/* Direct IRIS WhatsApp Button */}
             <a 
-              href={`https://wa.me/${settings.whatsapp_number || '962798627259'}`} 
+              href={`https://wa.me/${settings.whatsapp_number || '962797303260'}`} 
               target="_blank" 
               rel="noreferrer" 
               className="footer-social-icon icon-whatsapp" 
