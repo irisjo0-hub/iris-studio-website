@@ -211,8 +211,8 @@ const ProductStoreCard = ({ prod, onOrder, onAddToCart, viewMode = 'grid' }) => 
           <div style={{ display: 'flex', gap: '4px' }}>
             <button
               type="button"
-              onClick={() => onAddToCart(prod)}
-              title="إضافة منتج للسلة"
+              onClick={() => onOrder(prod)}
+              title="تخصيص وإضافة للسلة"
               style={{ background: 'rgba(245, 189, 26, 0.15)', color: '#F5BD1A', fontWeight: '900', border: '1px solid rgba(245, 189, 26, 0.4)', borderRadius: '50px', padding: '5px 10px', fontSize: '0.74rem', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s ease' }}
             >
               + السلة 🛒
@@ -302,7 +302,7 @@ const ProductStoreCard = ({ prod, onOrder, onAddToCart, viewMode = 'grid' }) => 
         <div style={{ display: 'flex', gap: '6px', marginTop: 'auto' }}>
           <button
             type="button"
-            onClick={() => onAddToCart(prod)}
+            onClick={() => onOrder(prod)}
             style={{ flex: 1, background: 'rgba(245, 189, 26, 0.15)', color: '#F5BD1A', fontWeight: '900', border: '1px solid rgba(245, 189, 26, 0.4)', borderRadius: '50px', padding: '6px 8px', fontSize: '0.76rem', cursor: 'pointer', transition: 'all 0.2s ease' }}
           >
             + السلة 🛒
@@ -1016,23 +1016,52 @@ ${finalNotes}`;
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-                    <button
-                      type="submit"
-                      disabled={submittingOrder}
-                      className="btn-portal-primary print-btn"
-                      style={{ flex: 1, padding: '12px' }}
-                    >
-                      {submittingOrder ? '⏳ جاري تقديم الطلب...' : 'إرسال طلب الطباعة والتأكيد 🚀'}
-                    </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '24px' }}>
                     <button
                       type="button"
-                      onClick={closeOrderModal}
-                      className="btn-portal-secondary"
-                      style={{ flex: 1, padding: '12px' }}
+                      onClick={() => {
+                        handleAddToCart(selectedProduct, selectedColor, quantity);
+                        closeOrderModal();
+                        setIsCartOpen(true);
+                      }}
+                      style={{
+                        width: '100%',
+                        background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
+                        color: '#120911',
+                        fontWeight: '900',
+                        border: 'none',
+                        borderRadius: '50px',
+                        padding: '13px',
+                        fontSize: '0.98rem',
+                        cursor: 'pointer',
+                        boxShadow: '0 6px 20px rgba(245, 189, 26, 0.35)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px'
+                      }}
                     >
-                      إلغاء
+                      <span>إضافة هذا المنتج إلى السلة 🛒</span>
                     </button>
+
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        type="submit"
+                        disabled={submittingOrder}
+                        className="btn-portal-primary print-btn"
+                        style={{ flex: 1, padding: '10px', fontSize: '0.85rem' }}
+                      >
+                        {submittingOrder ? '⏳ جاري تقديم الطلب...' : 'إرسال طلب مباشر ⚡'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={closeOrderModal}
+                        className="btn-portal-secondary"
+                        style={{ flex: 1, padding: '10px', fontSize: '0.85rem' }}
+                      >
+                        إلغاء
+                      </button>
+                    </div>
                   </div>
                 </form>
               )}
