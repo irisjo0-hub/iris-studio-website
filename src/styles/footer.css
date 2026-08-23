@@ -309,8 +309,8 @@
 /* Bottom Copyright Area — Raised Divider Line & Vertically Centered Text */
 .footer-bottom {
   margin-top: auto !important;
-  padding-top: clamp(20px, 2.8vh, 32px) !important;
-  padding-bottom: clamp(20px, 2.8vh, 32px) !important;
+  padding-top: clamp(24px, 3.2vh, 36px) !important;
+  padding-bottom: clamp(24px, 3.2vh, 36px) !important;
   border-top: 1px solid rgba(236, 235, 231, 0.14) !important;
   display: flex !important;
   align-items: center !important;
@@ -325,13 +325,16 @@
   position: relative !important;
   z-index: 5 !important;
   flex-shrink: 0 !important;
+  overflow: hidden !important;
 }
 
 .copyright {
+  position: relative !important;
+  z-index: 2 !important;
   font-family: var(--font-primary, sans-serif);
   font-size: 0.9rem;
   font-weight: 500;
-  color: rgba(236, 235, 231, 0.72);
+  color: rgba(236, 235, 231, 0.82);
   margin: 0 !important;
   text-align: center !important;
   display: inline-flex !important;
@@ -340,19 +343,19 @@
   line-height: 1.2 !important;
 }
 
-/* Giant Logo Image Watermark (Centered strictly inside the copyright box boundary lines) */
+/* Giant Logo Image Watermark (Centered geometrically INSIDE the bottom copyright rectangle) */
 .footer-watermark-logo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: clamp(180px, 26vw, 360px);
-  height: auto;
-  max-height: clamp(38px, 4.8vh, 58px);
-  object-fit: contain;
-  opacity: 0.08;
-  pointer-events: none;
-  user-select: none;
-  filter: brightness(0) invert(1);
-  z-index: 1;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: clamp(200px, 30vw, 420px) !important;
+  height: auto !important;
+  max-height: clamp(38px, 4.8vh, 58px) !important;
+  object-fit: contain !important;
+  opacity: 0.12 !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  filter: brightness(0) invert(1) !important;
+  z-index: 1 !important;
 }

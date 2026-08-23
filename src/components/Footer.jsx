@@ -138,20 +138,20 @@ export const Footer = () => {
         </div>
       </div>
 
-      {/* Copyright */}
+      {/* Copyright Bottom Rectangle with Centered Logo Watermark */}
       <div className="footer-bottom container">
         <p className="copyright">
           &copy; {new Date().getFullYear()} IRIS Agency. {isRtl ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}
         </p>
-      </div>
 
-      {/* Giant Logo Image Watermark */}
-      <img
-        src={settings.hero_logo_url || settings.logo_url || irisLogo}
-        alt=""
-        className="footer-watermark-logo"
-        aria-hidden="true"
-      />
+        {/* Logo Image Watermark centered inside THIS bottom rectangle */}
+        <img
+          src={settings.hero_logo_url || settings.logo_url || irisLogo}
+          alt=""
+          className="footer-watermark-logo"
+          aria-hidden="true"
+        />
+      </div>
     </footer>
   );
 };
