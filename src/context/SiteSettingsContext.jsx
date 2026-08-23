@@ -1,3 +1,5 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import heroMediaImg from '../assets/hero.png';
 
 const SiteSettingsContext = createContext(null);
