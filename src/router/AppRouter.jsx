@@ -22,6 +22,7 @@ import NotFound            from '../pages/NotFound';
 import MediaPortal         from '../pages/MediaPortal';
 import StudioPortal        from '../pages/StudioPortal';
 import PrintPortal         from '../pages/PrintPortal';
+import Checkout            from '../pages/Checkout';
 
 import Admin                   from '../pages/Admin';
 import AdminLogin              from '../pages/AdminLogin';
@@ -86,7 +87,7 @@ const AppRouter = () => (
       <Route path="/print/products"              element={<PrintingProducts />} />
       <Route path="/print/custom"                element={<PrintPortal />} />
       <Route path="/print/cart"                  element={<PrintPortal />} />
-      <Route path="/print/checkout"              element={<PrintPortal />} />
+      <Route path="/print/checkout"              element={<Checkout />} />
       <Route path="/print/track"                 element={<PrintPortal />} />
       <Route path="/print/contact"               element={<PrintPortal />} />
       <Route path="/print/*"                     element={<PrintPortal />} />

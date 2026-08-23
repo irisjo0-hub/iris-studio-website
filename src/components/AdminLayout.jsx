@@ -47,31 +47,41 @@ const AdminLayout = ({ children }) => {
 
   const menuGroups = [
     {
-      title: 'التقارير والمبيعات',
+      title: 'التقارير الرئيسية',
       links: [
-        { to: '/admin/dashboard',         label: 'لوحة التحكم', icon: LayoutDashboard },
-        { to: '/admin/bookings',          label: 'الحجوزات', icon: CalendarCheck },
-        { to: '/admin/schedule',          label: 'جدول المواعيد', icon: CalendarDays },
-        { to: '/admin/graduation-orders', label: 'طلبات دفاتر التخرج', icon: GraduationCap },
-        { to: '/admin/printing-orders',    label: 'طلبات المطبوعات', icon: Printer },
+        { to: '/admin/dashboard',         label: 'لوحة الإحصائيات', icon: LayoutDashboard },
       ]
     },
     {
-      title: 'إدارة المحتوى والخدمات',
+      title: '🎥 قطاع الميديا (MEDIA)',
       links: [
-        { to: '/admin/work',              label: 'معرض الأعمال', icon: Camera },
-        { to: '/admin/packages',          label: 'البكجات والأسعار', icon: Package },
-        { to: '/admin/offers',            label: 'العروض الترويجية', icon: Gift },
-        { to: '/admin/printing-products', label: 'منتجات الطباعة', icon: Printer },
-        { to: '/admin/templates',         label: 'قوالب الدفاتر', icon: Images },
-        { to: '/admin/extras',            label: 'إضافات الجلسات', icon: Layers },
-        { to: '/admin/book-extras',       label: 'إضافات الدفاتر', icon: PlusCircle },
+        { to: '/admin/work',              label: 'معرض أعمال الميديا', icon: Camera },
+        { to: '/admin/packages',          label: 'بكجات الإعلانات والميديا', icon: Package },
+        { to: '/admin/offers',            label: 'العروض والعروض الخاصة', icon: Gift },
+      ]
+    },
+    {
+      title: '📸 قطاع الاستوديو والتخرج (STUDIO)',
+      links: [
+        { to: '/admin/bookings',          label: 'حجوزات الجلسات', icon: CalendarCheck },
+        { to: '/admin/schedule',          label: 'جدول مواعيد الاستوديو', icon: CalendarDays },
+        { to: '/admin/graduation-orders', label: 'طلبات دفاتر التخرج', icon: GraduationCap },
+        { to: '/admin/templates',         label: 'قوالب الأغلفة', icon: Images },
+        { to: '/admin/extras',            label: 'إضافات جلسات التصوير', icon: Layers },
+        { to: '/admin/book-extras',       label: 'إضافات دفاتر التخرج', icon: PlusCircle },
+      ]
+    },
+    {
+      title: '🖨️ قطاع المطبوعات (PRINT)',
+      links: [
+        { to: '/admin/printing-products', label: 'منتجات متجر الطباعة', icon: Printer },
+        { to: '/admin/printing-orders',   label: 'طلبات المطبوعات والتوصيل', icon: Printer },
       ]
     },
     {
       title: 'إعدادات المنصة',
       links: [
-        { to: '/admin/settings',          label: 'إعدادات الموقع', icon: Settings },
+        { to: '/admin/settings',          label: 'إعدادات الموقع الشاملة', icon: Settings },
       ]
     }
   ];
