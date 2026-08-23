@@ -376,7 +376,10 @@ const PrintingProducts = () => {
       const idx = prev.findIndex(item => item.id === prod.id && item.selectedColor === color);
       if (idx > -1) {
         const updated = [...prev];
-        updated[idx].quantity += qty;
+        updated[idx] = {
+          ...updated[idx],
+          quantity: updated[idx].quantity + qty
+        };
         return updated;
       } else {
         return [...prev, {
