@@ -17,6 +17,7 @@ import ProductPhotography  from '../pages/ProductPhotography';
 import OutdoorPhotography  from '../pages/OutdoorPhotography';
 import Events              from '../pages/Events';
 import GraduationPackage   from '../pages/GraduationPackage';
+import NotFound            from '../pages/NotFound';
 // 3 Main Division Portals
 import MediaPortal         from '../pages/MediaPortal';
 import StudioPortal        from '../pages/StudioPortal';
