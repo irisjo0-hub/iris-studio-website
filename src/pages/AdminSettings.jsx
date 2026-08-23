@@ -75,7 +75,7 @@ const AdminSettings = () => {
       setLogoPreview(settings.logo_url || '');
       setPreloaderText(settings.preloader_text || '');
 
-      setHeroImageDisplayCount(settings.hero_image_display_count || 6);
+      setHeroImageDisplayCount(settings.hero_image_display_count || 8);
 
       // Divisions sync
       setDivisionMediaTitleAr(settings.division_media_title_ar || 'ميديا');
@@ -94,18 +94,41 @@ const AdminSettings = () => {
       setDivisionPrintImagePreview(settings.division_print_image || '');
 
       let parsedMotionImages = [];
-      if (Array.isArray(settings.hero_motion_images)) {
+      if (Array.isArray(settings.hero_motion_images) && settings.hero_motion_images.length > 0) {
         parsedMotionImages = settings.hero_motion_images;
       } else if (typeof settings.hero_motion_images === 'string') {
         try {
-          parsedMotionImages = JSON.parse(settings.hero_motion_images);
-        } catch (e) {
-          parsedMotionImages = [];
-        }
+          const p = JSON.parse(settings.hero_motion_images);
+          if (Array.isArray(p) && p.length > 0) parsedMotionImages = p;
+        } catch (e) {}
       }
       setHeroMotionImages(parsedMotionImages);
     }
   }, [settings]);
+
+  const handleMotionItemChange = (idx, field, val) => {
+    const updated = [...heroMotionImages];
+    updated[idx] = { ...updated[idx], [field]: val };
+    setHeroMotionImages(updated);
+  };
+
+  const handleMotionItemReplaceImage = async (idx, file) => {
+    if (!file) return;
+    setLoading(true);
+    setUploadProgress(`جاري رفع واستبدال الصورة رقم ${idx + 1}...`);
+    try {
+      const path = `hero-motion/photo-${Date.now()}-${file.name}`;
+      const newUrl = await uploadFile('packages', path, file);
+      const updated = [...heroMotionImages];
+      updated[idx] = { ...updated[idx], image: newUrl };
+      setHeroMotionImages(updated);
+    } catch (err) {
+      alert('حدث خطأ أثناء رفع الصورة: ' + err.message);
+    } finally {
+      setLoading(false);
+      setUploadProgress('');
+    }
+  };
 
   const handleFileChange = (e, type) => {
     const file = e.target.files[0];
@@ -147,7 +170,8 @@ const AdminSettings = () => {
         location_map_url: locationMapUrl.trim(),
         office_hours: officeHours.trim(),
         preloader_text: preloaderText.trim(),
-        hero_image_display_count: parseInt(heroImageDisplayCount, 10) || 6,
+        hero_image_display_count: parseInt(heroImageDisplayCount, 10) || 8,
+        hero_motion_images: JSON.stringify(heroMotionImages),
         division_media_title_ar: divisionMediaTitleAr.trim(),
         division_media_subtitle_ar: divisionMediaSubtitleAr.trim(),
         division_media_url: divisionMediaUrl.trim(),
@@ -490,31 +514,59 @@ const AdminSettings = () => {
               <div className="divider-line" />
 
               {/* Active Hero Motion Photos List */}
-              <h4 className="form-sub-heading">الصور المتاحة في البول (المجموع: {heroMotionImages.length})</h4>
+              <h4 className="form-sub-heading">الصور المتاحة للتعديل والاستبدال (المجموع: {heroMotionImages.length})</h4>
               
-              {heroMotionImages.length === 0 ? (
-                <p className="empty-hint">يتم استخدام الصور الـ 8 الافتراضية للشركة حالياً. يمكنك رفع صورك الخاصة أعلاه لاستبدالهم ديناميكياً.</p>
-              ) : (
-                <div className="hero-motion-grid">
-                  {heroMotionImages.map((item, idx) => (
-                    <div key={item.id || idx} className="motion-item-card">
-                      <img src={item.image} alt={item.alt_ar} className="motion-item-img" />
-                      <div className="motion-item-info">
-                        <span className="motion-item-title">{item.alt_ar || item.title || 'عمل احترافي'}</span>
-                        <span className="motion-item-link">{item.url_optional || '/work'}</span>
-                      </div>
-                      <button
-                        type="button"
-                        className="btn-delete-small"
-                        onClick={() => handleDeleteMotionImage(item.id)}
-                        title="حذف هذه الصورة"
-                      >
-                        ✕
-                      </button>
+              <div className="hero-motion-grid">
+                {heroMotionImages.map((item, idx) => (
+                  <div key={item.id || idx} className="motion-item-card editable-motion-card">
+                    <div className="motion-card-img-wrap">
+                      <img src={item.image} alt={item.alt_ar || 'صورة الهيرو'} className="motion-item-img" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        id={`replace-motion-img-${idx}`}
+                        className="file-input-hidden"
+                        onChange={(e) => handleMotionItemReplaceImage(idx, e.target.files[0])}
+                      />
+                      <label htmlFor={`replace-motion-img-${idx}`} className="btn-replace-img-badge">
+                        📷 تغيير الصورة
+                      </label>
                     </div>
-                  ))}
-                </div>
-              )}
+
+                    <div className="motion-item-info">
+                      <div className="motion-field">
+                        <label className="as-label-xs">العنوان (بالعربية):</label>
+                        <input
+                          type="text"
+                          value={item.alt_ar || ''}
+                          onChange={(e) => handleMotionItemChange(idx, 'alt_ar', e.target.value)}
+                          placeholder="عنوان العمل..."
+                          className="as-input-xs"
+                        />
+                      </div>
+                      <div className="motion-field">
+                        <label className="as-label-xs">رابط التوجيه:</label>
+                        <input
+                          type="text"
+                          value={item.url_optional || ''}
+                          onChange={(e) => handleMotionItemChange(idx, 'url_optional', e.target.value)}
+                          placeholder="/work"
+                          className="as-input-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="btn-delete-small"
+                      onClick={() => handleDeleteMotionImage(item.id)}
+                      title="حذف هذه الصورة"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

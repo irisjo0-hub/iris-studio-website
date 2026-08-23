@@ -1980,6 +1980,77 @@ body:has(.admin-layout),
   margin-top: 4px;
 }
 
+/* Editable Hero Motion Cards */
+.editable-motion-card {
+  display: flex !important;
+  flex-direction: column !important;
+  background: rgba(18, 9, 17, 0.85) !important;
+  border: 1px solid rgba(245, 189, 26, 0.25) !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.motion-card-img-wrap {
+  position: relative !important;
+  width: 100% !important;
+  height: 140px !important;
+  overflow: hidden !important;
+}
+
+.btn-replace-img-badge {
+  position: absolute !important;
+  bottom: 8px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: rgba(103, 36, 95, 0.88) !important;
+  border: 1px solid rgba(245, 189, 26, 0.5) !important;
+  color: #F5BD1A !important;
+  font-family: var(--font-primary, sans-serif) !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  padding: 4px 10px !important;
+  border-radius: 100px !important;
+  cursor: pointer !important;
+  backdrop-filter: blur(4px) !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important;
+}
+
+.btn-replace-img-badge:hover {
+  background: #F5BD1A !important;
+  color: #120A11 !important;
+}
+
+.as-label-xs {
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  color: #F5BD1A !important;
+  display: block !important;
+  margin-bottom: 3px !important;
+}
+
+.as-input-xs {
+  width: 100% !important;
+  padding: 6px 10px !important;
+  font-size: 0.8rem !important;
+  border-radius: 8px !important;
+  background: rgba(10, 5, 9, 0.8) !important;
+  border: 1px solid rgba(245, 189, 26, 0.25) !important;
+  color: #ECEBE7 !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  direction: rtl !important;
+}
+
+.as-input-xs:focus {
+  border-color: #F5BD1A !important;
+}
+
+.motion-field {
+  margin-bottom: 8px !important;
+}
+
 /* Spinner Loader */
 .settings-progress-box {
   display: flex;
