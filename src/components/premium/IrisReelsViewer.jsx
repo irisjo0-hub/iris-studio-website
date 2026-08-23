@@ -512,22 +512,9 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 <Menu size={20} />
               </button>
 
-              <div className="reels-top-right-actions">
-                <button
-                  type="button"
-                  className="reels-top-skip-btn"
-                  onClick={handleSkipReels}
-                  aria-label={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
-                  title={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
-                >
-                  <span>{isRtl ? 'تخطي' : 'Skip'}</span>
-                  <ChevronDown size={14} className="skip-arrow-anim" />
-                </button>
-
-                <div className="reels-counter-pill-tag">
-                  <span className="gold-accent-line" />
-                  <span className="bidi-isolate" dir="ltr">0{activeIndex + 1} / 08</span>
-                </div>
+              <div className="reels-counter-pill-tag">
+                <span className="gold-accent-line" />
+                <span className="bidi-isolate" dir="ltr">0{activeIndex + 1} / 08</span>
               </div>
             </div>
 

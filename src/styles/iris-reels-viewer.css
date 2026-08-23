@@ -242,7 +242,7 @@
 /* ===== INSTAGRAM-STYLE PROFILE IDENTITY CLUSTER ===== */
 .reel-profile-cluster {
   position: absolute;
-  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(46px + env(safe-area-inset-bottom, 0px));
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -591,66 +591,39 @@
   margin-right: auto;
 }
 
-/* Top Bar Micro Skip Button */
-.reels-top-skip-btn {
+/* Floating Bottom Skip Reels Pill */
+.reels-floating-skip-pill {
+  position: absolute;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  pointer-events: auto;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
+  gap: 5px;
+  padding: 5px 14px;
   border-radius: 100px;
-  background: rgba(26, 13, 24, 0.85);
+  background: rgba(18, 9, 17, 0.88);
   border: 1px solid rgba(245, 189, 26, 0.45);
   color: #F5BD1A;
   font-family: var(--font-hero, "DegularDisplay", sans-serif);
   font-size: 0.74rem;
   font-weight: 700;
   cursor: pointer;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all 0.25s ease;
-  pointer-events: auto;
-}
-
-.reels-top-skip-btn:hover {
-  background: rgba(245, 189, 26, 0.25);
-  border-color: #F5BD1A;
-  color: #FFFFFF;
-  transform: translateY(-1px);
-}
-
-/* Floating Bottom Skip Reels Pill */
-.reels-floating-skip-pill {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 45;
-  pointer-events: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 18px;
-  border-radius: 100px;
-  background: rgba(18, 9, 17, 0.88);
-  border: 1.5px solid rgba(245, 189, 26, 0.5);
-  color: #F5BD1A;
-  font-family: var(--font-hero, "DegularDisplay", sans-serif);
-  font-size: 0.82rem;
-  font-weight: 800;
-  cursor: pointer;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 0 16px rgba(245, 189, 26, 0.2);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(245, 189, 26, 0.15);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
 }
 
 .reels-floating-skip-pill:hover {
-  background: rgba(245, 189, 26, 0.22);
+  background: rgba(245, 189, 26, 0.25);
   border-color: #F5BD1A;
   color: #FFFFFF;
-  transform: translateX(-50%) translateY(-2px) scale(1.05);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 24px rgba(245, 189, 26, 0.4);
+  transform: translateX(-50%) translateY(-2px) scale(1.04);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.8), 0 0 18px rgba(245, 189, 26, 0.3);
 }
 
 .skip-arrow-anim {
