@@ -2628,3 +2628,38 @@ body:has(.admin-layout),
     gap: 0;
   }
 }
+
+/* Explicit High-Contrast Input Text Color System (When Typing & Focus) */
+.admin-input,
+.as-input,
+input[type="text"].admin-input,
+input[type="number"].admin-input,
+input[type="tel"].admin-input,
+input[type="url"].admin-input,
+textarea.admin-input,
+select.admin-input {
+  background: rgba(18, 9, 17, 0.95) !important;
+  border: 1.5px solid rgba(245, 189, 26, 0.35) !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  padding: 10px 14px !important;
+  border-radius: 12px !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.admin-input::placeholder,
+.as-input::placeholder {
+  color: rgba(236, 235, 231, 0.4) !important;
+  font-weight: 500 !important;
+}
+
+.admin-input:focus,
+.as-input:focus {
+  background: rgba(36, 18, 34, 0.98) !important;
+  border-color: #F5BD1A !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 0 3px rgba(245, 189, 26, 0.25) !important;
+}
