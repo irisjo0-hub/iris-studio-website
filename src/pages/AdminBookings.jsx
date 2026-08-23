@@ -7,6 +7,8 @@ import '../styles/admin.css';
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [receiptModal, setReceiptModal] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
