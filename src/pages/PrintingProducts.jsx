@@ -150,6 +150,8 @@ const PrintingProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null); // Product for ordering modal
+  const [selectedCategory, setSelectedCategory] = useState('الكل');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Order Form State
   const [customerName, setCustomerName] = useState('');
@@ -321,28 +323,89 @@ ${notes}`;
     }
   };
 
+  const categoriesList = ['الكل', ...new Set(products.map(p => p.category).filter(Boolean))];
+
+  const filteredProducts = products.filter(p => {
+    const matchesCategory = selectedCategory === 'الكل' || p.category === selectedCategory;
+    const matchesSearch = !searchQuery.trim() || p.name?.toLowerCase().includes(searchQuery.toLowerCase()) || p.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   return (
     <main className="grad-page" dir="rtl" style={{ minHeight: '100vh', paddingBottom: '60px' }}>
-      {/* Hero */}
-      <section className="grad-hero">
+      {/* Hero Banner */}
+      <section className="grad-hero" style={{ paddingBottom: '30px' }}>
         <div className="grad-hero-badge">🎁 IRIS Studio</div>
         <h1>منتجات الطباعة والتصميم المخصصة</h1>
         <p>استكشف منتجات المطبوعات والهدايا ووشاحات التخرج، وارفع تصميمك الخاص لنقوم بطباعته لك.</p>
       </section>
 
+      {/* Category Pills & Search Filter Control Bar */}
+      <section className="portal-section" style={{ paddingTop: '0', paddingBottom: '30px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '1150px', margin: '0 auto' }}>
+          
+          {/* Search & Counter Row */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', background: 'rgba(24, 12, 23, 0.95)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '50px', padding: '10px 22px', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '220px' }}>
+              <span style={{ fontSize: '1.2rem', color: '#F5BD1A' }}>🔍</span>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="ابحث عن اسم المنتج، وشاح، بوستر..."
+                style={{ background: 'none', border: 'none', color: '#FFFFFF', outline: 'none', width: '100%', fontSize: '0.94rem', fontWeight: '700' }}
+              />
+            </div>
+            <div style={{ fontSize: '0.88rem', color: '#F5BD1A', fontWeight: '900', background: 'rgba(245, 189, 26, 0.15)', padding: '4px 14px', borderRadius: '50px' }}>
+              عرض {filteredProducts.length} منتج مطبوع
+            </div>
+          </div>
+
+          {/* Category Pills Bar */}
+          <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '6px', scrollbarWidth: 'none' }}>
+            {categoriesList.map(cat => {
+              const isActive = selectedCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat)}
+                  style={{
+                    padding: '10px 24px',
+                    borderRadius: '50px',
+                    border: isActive ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.18)',
+                    background: isActive ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'rgba(42, 18, 38, 0.85)',
+                    color: isActive ? '#120911' : '#FFFFFF',
+                    fontWeight: '900',
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.25s ease',
+                    boxShadow: isActive ? '0 6px 20px rgba(245, 189, 26, 0.35)' : 'none'
+                  }}
+                >
+                  {cat === 'الكل' ? '🛒 جميع المنتجات' : cat}
+                </button>
+              );
+            })}
+          </div>
+
+        </div>
+      </section>
+
       {/* Grid of products */}
-      <section className="grad-section">
+      <section className="grad-section" style={{ paddingTop: 0 }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', fontSize: '1.2rem' }}>⏳ جاري تحميل المنتجات...</div>
-        ) : products.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px', fontSize: '1.2rem', color: '#F5BD1A' }}>⏳ جاري تحميل الكتالوج...</div>
+        ) : filteredProducts.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 24px', background: 'rgba(18, 9, 17, 0.95)', border: '1px solid rgba(245, 189, 26, 0.3)', borderRadius: '20px' }}>
             <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🛍️</div>
-            <h3 style={{ fontWeight: 'bold', color: '#FFFFFF' }}>جاري تجهيز منتجات إضافية لهذا القسم...</h3>
-            <p style={{ color: '#F5BD1A' }}>استكشف المنتجات المميزة المتاحة أعلاه أو طلب طباعة مخصصة.</p>
+            <h3 style={{ fontWeight: 'bold', color: '#FFFFFF' }}>لا تتوفر منتجات مطابقة لهذا البحث/التصنيف حالياً.</h3>
+            <p style={{ color: '#F5BD1A' }}>جرب التصفح ضمن تصنيف آخر أو طلب طباعة مخصصة.</p>
           </div>
         ) : (
           <div className="grad-packages-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '28px' }}>
-            {products.map((prod) => {
+            {filteredProducts.map((prod) => {
               let firstImg = '';
               if (Array.isArray(prod.image_urls) && prod.image_urls.length > 0) {
                 firstImg = prod.image_urls[0];
@@ -356,12 +419,19 @@ ${notes}`;
               }
 
               return (
-                <div key={prod.id} className="grad-pkg-card" style={{ background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.92) 0%, rgba(18, 9, 17, 0.96) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '20px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 12px 30px rgba(0,0,0,0.5)' }}>
-                  {firstImg ? (
-                    <img src={firstImg} alt={prod.name} style={{ width: '100%', height: '210px', objectFit: 'cover' }} />
-                  ) : (
-                    <div style={{ width: '100%', height: '210px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '2rem' }}>🖼️</div>
-                  )}
+                <div key={prod.id} className="grad-pkg-card" style={{ background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.92) 0%, rgba(18, 9, 17, 0.96) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '22px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 12px 30px rgba(0,0,0,0.5)' }}>
+                  <div style={{ position: 'relative' }}>
+                    {firstImg ? (
+                      <img src={firstImg} alt={prod.name} style={{ width: '100%', height: '220px', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '100%', height: '220px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '2rem' }}>🖼️</div>
+                    )}
+                    {prod.category && (
+                      <span style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(18, 9, 17, 0.85)', backdropFilter: 'blur(8px)', color: '#F5BD1A', border: '1px solid rgba(245, 189, 26, 0.4)', padding: '4px 12px', borderRadius: '50px', fontSize: '0.78rem', fontWeight: '900' }}>
+                        🏷️ {prod.category}
+                      </span>
+                    )}
+                  </div>
 
                   <div className="grad-pkg-body" style={{ padding: '22px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
