@@ -1090,67 +1090,71 @@ ${finalNotes}`;
                       </div>
                     )}
 
-                    <div className="grad-field">
-                      <label className="as-label">صور وتصاميم للطباعة (اختياري)</label>
-                      <div
-                        className="grad-upload-zone"
-                        style={{ padding: '16px', textAlign: 'center', border: '1px dashed #F5BD1A', borderRadius: '12px', cursor: 'pointer', background: 'rgba(245, 189, 26, 0.05)' }}
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        <span style={{ color: '#F5BD1A', fontWeight: 'bold' }}>📎 انقر هنا لرفع الصور المخصصة للطباعة</span>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          onChange={handleUploadImages}
-                          style={{ display: 'none' }}
+                    {selectedProduct.id !== 'cart_checkout' && (
+                      <div className="grad-field">
+                        <label className="as-label">صور وتصاميم للطباعة (اختياري)</label>
+                        <div
+                          className="grad-upload-zone"
+                          style={{ padding: '16px', textAlign: 'center', border: '1px dashed #F5BD1A', borderRadius: '12px', cursor: 'pointer', background: 'rgba(245, 189, 26, 0.05)' }}
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <span style={{ color: '#F5BD1A', fontWeight: 'bold' }}>📎 انقر هنا لرفع الصور المخصصة للطباعة</span>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleUploadImages}
+                            style={{ display: 'none' }}
+                          />
+                        </div>
+
+                        {imagesPreviews.length > 0 && (
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+                            {imagesPreviews.map((src, i) => (
+                              <div key={i} style={{ position: 'relative', width: '60px', height: '60px' }}>
+                                <img src={src} alt="uploaded-preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(245, 189, 26, 0.4)' }} />
+                                <button
+                                  type="button"
+                                  onClick={() => removeImage(i)}
+                                  style={{
+                                    position: 'absolute',
+                                    top: '-4px',
+                                    right: '-4px',
+                                    background: 'red',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: '18px',
+                                    height: '18px',
+                                    fontSize: '10px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {selectedProduct.id !== 'cart_checkout' && (
+                      <div className="grad-field">
+                        <label className="as-label">ملاحظات وتعليمات الطباعة والتطريز</label>
+                        <textarea
+                          className="admin-input"
+                          style={{ minHeight: '80px' }}
+                          placeholder="مثال: يرجى كتابة اسم الطالب: (أحمد) على الوشاح وتطريزه باللون الذهبي..."
+                          value={notes}
+                          onChange={(e) => setNotes(e.target.value)}
                         />
                       </div>
-
-                      {imagesPreviews.length > 0 && (
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
-                          {imagesPreviews.map((src, i) => (
-                            <div key={i} style={{ position: 'relative', width: '60px', height: '60px' }}>
-                              <img src={src} alt="uploaded-preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(245, 189, 26, 0.4)' }} />
-                              <button
-                                type="button"
-                                onClick={() => removeImage(i)}
-                                style={{
-                                  position: 'absolute',
-                                  top: '-4px',
-                                  right: '-4px',
-                                  background: 'red',
-                                  color: '#fff',
-                                  border: 'none',
-                                  borderRadius: '50%',
-                                  width: '18px',
-                                  height: '18px',
-                                  fontSize: '10px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="grad-field">
-                      <label className="as-label">ملاحظات وتعليمات الطباعة والتطريز</label>
-                      <textarea
-                        className="admin-input"
-                        style={{ minHeight: '80px' }}
-                        placeholder="مثال: يرجى كتابة اسم الطالب: (أحمد) على الوشاح وتطريزه باللون الذهبي..."
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                      />
-                    </div>
+                    )}
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '24px' }}>
