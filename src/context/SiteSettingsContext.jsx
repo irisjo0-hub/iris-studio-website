@@ -100,6 +100,14 @@ export const SiteSettingsProvider = ({ children }) => {
   const fetchSettings = async () => {
     try {
       setLoading(true);
+      const cached = localStorage.getItem('cached_site_settings');
+      let baseSettings = DEFAULT_SETTINGS;
+      if (cached) {
+        try {
+          baseSettings = { ...DEFAULT_SETTINGS, ...JSON.parse(cached) };
+        } catch {}
+      }
+
       const { data, error } = await supabase
         .from('site_settings')
         .select('*');
@@ -115,20 +123,20 @@ export const SiteSettingsProvider = ({ children }) => {
         });
 
         const merged = {
-          ...DEFAULT_SETTINGS,
+          ...baseSettings,
           ...dbSettings
         };
         setSettings(merged);
         localStorage.setItem('cached_site_settings', JSON.stringify(merged));
       } else {
-        setSettings(DEFAULT_SETTINGS);
+        setSettings(baseSettings);
       }
     } catch (err) {
-      console.warn("Could not load settings from database. Using default fallback settings.", err.message);
+      console.warn("Could not load settings from database. Using cached local settings.", err.message);
       const cached = localStorage.getItem('cached_site_settings');
       if (cached) {
         try {
-          setSettings(JSON.parse(cached));
+          setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(cached) });
         } catch {
           setSettings(DEFAULT_SETTINGS);
         }

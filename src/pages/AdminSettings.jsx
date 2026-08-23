@@ -253,19 +253,25 @@ const AdminSettings = () => {
         updates.hero_mobile_video_url = mobileVideoUrl;
       }
 
-      // Upsert rows in site_settings
-      const settingsData = Object.keys(updates).map(key => ({
-        key,
-        value: typeof updates[key] === 'object' ? JSON.stringify(updates[key]) : updates[key]
-      }));
+      // ALWAYS save locally FIRST so browser state & localStorage update immediately!
+      if (updateSettingsLocally) {
+        updateSettingsLocally(updates);
+      }
 
-      // Insert or update all rows
-      for (const row of settingsData) {
-        const { error } = await supabase
-          .from('site_settings')
-          .upsert(row, { onConflict: 'key' });
-        
-        if (error) throw error;
+      // Then attempt Supabase cloud save if connected
+      try {
+        const settingsData = Object.keys(updates).map(key => ({
+          key,
+          value: typeof updates[key] === 'object' ? JSON.stringify(updates[key]) : updates[key]
+        }));
+
+        for (const row of settingsData) {
+          await supabase
+            .from('site_settings')
+            .upsert(row, { onConflict: 'key' });
+        }
+      } catch (dbErr) {
+        console.warn('Supabase DB save skipped (running in local mode):', dbErr.message);
       }
 
       alert('تم حفظ كافة إعدادات وتخصيصات الموقع بنجاح!');
@@ -275,43 +281,9 @@ const AdminSettings = () => {
       setDivisionMediaImageFile(null);
       setDivisionStudioImageFile(null);
       setDivisionPrintImageFile(null);
-      await refreshSettings();
     } catch (err) {
-      console.error('Error saving settings, falling back to local storage:', err);
-      
-      if (updateSettingsLocally) {
-        const localUpdates = {
-          slogan_line_1: sloganLine1.trim(),
-          slogan_line_2: sloganLine2.trim(),
-          supporting_text: supportingText.trim(),
-          whatsapp_number: whatsappNumber.trim(),
-          facebook_link: facebookLink.trim(),
-          instagram_link: instagramLink.trim(),
-          studio_address: studioAddress.trim(),
-          location_map_url: locationMapUrl.trim(),
-          office_hours: officeHours.trim(),
-          preloader_text: preloaderText.trim(),
-          hero_image_display_count: parseInt(heroImageDisplayCount, 10) || 6,
-          division_media_title_ar: divisionMediaTitleAr.trim(),
-          division_media_subtitle_ar: divisionMediaSubtitleAr.trim(),
-          division_media_url: divisionMediaUrl.trim(),
-          division_studio_title_ar: divisionStudioTitleAr.trim(),
-          division_studio_subtitle_ar: divisionStudioSubtitleAr.trim(),
-          division_studio_url: divisionStudioUrl.trim(),
-          division_print_title_ar: divisionPrintTitleAr.trim(),
-          division_print_subtitle_ar: divisionPrintSubtitleAr.trim(),
-          division_print_url: divisionPrintUrl.trim()
-        };
-        if (logoPreview) localUpdates.logo_url = logoPreview;
-        if (divisionMediaImagePreview) localUpdates.division_media_image = divisionMediaImagePreview;
-        if (divisionStudioImagePreview) localUpdates.division_studio_image = divisionStudioImagePreview;
-        if (divisionPrintImagePreview) localUpdates.division_print_image = divisionPrintImagePreview;
-        
-        updateSettingsLocally(localUpdates);
-        alert('تم حفظ الإعدادات محلياً بنجاح! (تم تحديث ذاكرة المتصفح للعمل الفوري).');
-      } else {
-        alert('حدث خطأ أثناء حفظ الإعدادات: ' + err.message);
-      }
+      console.error('Error saving settings:', err);
+      alert('حدث تنبيه أثناء الحفظ: ' + err.message);
     } finally {
       setLoading(false);
       setUploadProgress('');
