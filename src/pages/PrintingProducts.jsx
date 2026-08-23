@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Grid, List } from 'lucide-react';
+import { Grid, List, ShoppingCart, Plus, Minus, Trash2, X, CheckCircle, ArrowRight } from 'lucide-react';
 import { supabase, uploadFile } from '../lib/supabase';
 import '../styles/graduation.css'; // Leverage shared premium styling variables
 
@@ -147,7 +147,7 @@ const DEFAULT_PRODUCTS = [
   }
 ];
 
-const ProductStoreCard = ({ prod, onOrder, viewMode = 'grid' }) => {
+const ProductStoreCard = ({ prod, onOrder, onAddToCart, viewMode = 'grid' }) => {
   let imagesList = [];
   if (Array.isArray(prod.image_urls)) {
     imagesList = prod.image_urls.filter(Boolean);
@@ -164,7 +164,7 @@ const ProductStoreCard = ({ prod, onOrder, viewMode = 'grid' }) => {
   const [activeIdx, setActiveIdx] = useState(0);
   const currentImg = imagesList[activeIdx] || imagesList[0] || '';
 
-  // LIST VIEW LAYOUT (أفقي مدمج: الصورة ع اليمين، الاسم والوصف بالوسط، السعر وتحته الزر ع أقصى اليسار)
+  // LIST VIEW LAYOUT (أفقي مدمج: الصورة ع اليمين، الاسم والوصف بالوسط، السعر وأزرار السلة/الطلب ع أقصى اليسار)
   if (viewMode === 'list') {
     return (
       <div className="grad-pkg-card-list" style={{ width: '100%', boxSizing: 'border-box', background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.92) 0%, rgba(18, 9, 17, 0.96) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '16px', overflow: 'hidden', display: 'flex', gap: '10px', padding: '10px 12px', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 6px 20px rgba(0,0,0,0.4)' }}>
@@ -202,20 +202,31 @@ const ProductStoreCard = ({ prod, onOrder, viewMode = 'grid' }) => {
           )}
         </div>
 
-        {/* 3. FAR LEFT SIDE: Price + Order Button directly underneath */}
+        {/* 3. FAR LEFT SIDE: Price + Add to Cart & Direct Order Buttons */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', flexShrink: 0 }}>
           <div style={{ fontSize: '1.1rem', color: '#F5BD1A', fontWeight: '900', lineHeight: '1' }}>
             {prod.price} JOD
           </div>
 
-          <button
-            type="button"
-            className="grad-pkg-btn"
-            onClick={() => onOrder(prod)}
-            style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '6px 12px', fontSize: '0.76rem', cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(245, 189, 26, 0.25)' }}
-          >
-            طلب المنتج 🛒
-          </button>
+          <div style={{ display: 'flex', gap: '4px' }}>
+            <button
+              type="button"
+              onClick={() => onAddToCart(prod)}
+              title="إضافة منتج للسلة"
+              style={{ background: 'rgba(245, 189, 26, 0.15)', color: '#F5BD1A', fontWeight: '900', border: '1px solid rgba(245, 189, 26, 0.4)', borderRadius: '50px', padding: '5px 10px', fontSize: '0.74rem', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s ease' }}
+            >
+              + السلة 🛒
+            </button>
+            <button
+              type="button"
+              className="grad-pkg-btn"
+              onClick={() => onOrder(prod)}
+              title="طلب مباشر مخصص"
+              style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '5px 10px', fontSize: '0.74rem', cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(245, 189, 26, 0.25)' }}
+            >
+              طلب ⚡
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -273,7 +284,7 @@ const ProductStoreCard = ({ prod, onOrder, viewMode = 'grid' }) => {
       )}
 
       {/* Compact Card Content */}
-      <div className="grad-pkg-body" style={{ padding: '12px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div className="grad-pkg-body" style={{ padding: '10px 12px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div>
           <h3 style={{ fontSize: '0.96rem', fontWeight: '900', color: '#FFFFFF', margin: '0 0 4px', lineHeight: '1.3' }}>
             {prod.name}
@@ -288,14 +299,23 @@ const ProductStoreCard = ({ prod, onOrder, viewMode = 'grid' }) => {
           )}
         </div>
 
-        <button
-          type="button"
-          className="grad-pkg-btn"
-          onClick={() => onOrder(prod)}
-          style={{ marginTop: 'auto', background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '8px 12px', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(245, 189, 26, 0.25)' }}
-        >
-          طلب المنتج 🛒
-        </button>
+        <div style={{ display: 'flex', gap: '6px', marginTop: 'auto' }}>
+          <button
+            type="button"
+            onClick={() => onAddToCart(prod)}
+            style={{ flex: 1, background: 'rgba(245, 189, 26, 0.15)', color: '#F5BD1A', fontWeight: '900', border: '1px solid rgba(245, 189, 26, 0.4)', borderRadius: '50px', padding: '6px 8px', fontSize: '0.76rem', cursor: 'pointer', transition: 'all 0.2s ease' }}
+          >
+            + السلة 🛒
+          </button>
+          <button
+            type="button"
+            className="grad-pkg-btn"
+            onClick={() => onOrder(prod)}
+            style={{ flex: 1, background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '6px 8px', fontSize: '0.76rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(245, 189, 26, 0.25)' }}
+          >
+            طلب ⚡
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -308,6 +328,91 @@ const PrintingProducts = () => {
   const [selectedCategory, setSelectedCategory] = useState('الكل');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' (2 per row) | 'list' (horizontal cards)
+
+  // Shopping Cart State
+  const [cart, setCart] = useState(() => {
+    try {
+      const saved = localStorage.getItem('iris_print_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCartCheckoutOpen, setIsCartCheckoutOpen] = useState(false);
+  const [toast, setToast] = useState('');
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('iris_print_cart', JSON.stringify(cart));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [cart]);
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 3000);
+  };
+
+  // Cart Functions
+  const handleAddToCart = (prod, chosenColor = '', qty = 1) => {
+    let firstImg = '';
+    if (Array.isArray(prod.image_urls) && prod.image_urls.length > 0) {
+      firstImg = prod.image_urls[0];
+    } else if (typeof prod.image_urls === 'string') {
+      try {
+        const parsed = JSON.parse(prod.image_urls);
+        if (Array.isArray(parsed) && parsed.length > 0) firstImg = parsed[0];
+        else firstImg = prod.image_urls;
+      } catch {
+        firstImg = prod.image_urls;
+      }
+    }
+
+    const color = chosenColor || (Array.isArray(prod.available_colors) && prod.available_colors.length > 0 ? prod.available_colors[0] : '');
+
+    setCart(prev => {
+      const idx = prev.findIndex(item => item.id === prod.id && item.selectedColor === color);
+      if (idx > -1) {
+        const updated = [...prev];
+        updated[idx].quantity += qty;
+        return updated;
+      } else {
+        return [...prev, {
+          cartItemId: `${prod.id}-${color || 'def'}-${Date.now()}`,
+          id: prod.id,
+          name: prod.name,
+          price: Number(prod.price) || 0,
+          image: firstImg,
+          category: prod.category || '',
+          selectedColor: color,
+          quantity: qty
+        }];
+      }
+    });
+
+    showToast(`✅ تم إضافة "${prod.name}" إلى السلة!`);
+  };
+
+  const updateCartQty = (cartItemId, delta) => {
+    setCart(prev => prev.map(item => {
+      if (item.cartItemId === cartItemId) {
+        const newQty = item.quantity + delta;
+        return newQty > 0 ? { ...item, quantity: newQty } : null;
+      }
+      return item;
+    }).filter(Boolean));
+  };
+
+  const removeFromCart = (cartItemId) => {
+    setCart(prev => prev.filter(item => item.cartItemId !== cartItemId));
+  };
+
+  const clearCart = () => setCart([]);
+
+  const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalCartPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   // Order Form State
   const [customerName, setCustomerName] = useState('');
@@ -444,16 +549,21 @@ const PrintingProducts = () => {
       }
 
       let finalNotes = notes.trim();
+      if (selectedProduct.id === 'cart_checkout') {
+        const itemsStr = cart.map((item, i) => `${i + 1}. ${item.name} (عدد ${item.quantity}) ${item.selectedColor ? `[لون: ${item.selectedColor}]` : ''}`).join(' | ');
+        finalNotes = `[طلب سلة شريحة متعددة (${totalCartCount} منتجات)]\nعناصر السلة: ${itemsStr}\n${finalNotes}`;
+      }
+
       if (deliverySelected) {
         finalNotes = `[طلب توصيل]
 العنوان: ${deliveryAddress}
 هاتف بديل: ${alternativePhone || 'لا يوجد'}
 خرائط قوقل: ${googleMapsLink || 'لا يوجد'}
 
-${notes}`;
+${finalNotes}`;
       } else {
         finalNotes = `[استلام من الاستوديو]
-${notes}`;
+${finalNotes}`;
       }
 
       const { error } = await supabase
@@ -465,12 +575,13 @@ ${notes}`;
           phone: phone.trim(),
           notes: finalNotes,
           image_urls: uploadedUrls,
-          quantity: quantity,
-          selected_color: selectedColor,
+          quantity: selectedProduct.id === 'cart_checkout' ? totalCartCount : quantity,
+          selected_color: selectedColor || (selectedProduct.id === 'cart_checkout' ? 'سلة متعددة' : ''),
           status: 'pending'
         });
 
       if (error) throw error;
+      if (selectedProduct.id === 'cart_checkout') clearCart();
       setOrderPlaced(true);
     } catch (err) {
       alert('حدث خطأ أثناء تقديم الطلب: ' + err.message);
@@ -605,7 +716,7 @@ ${notes}`;
         ) : (
           <div className={`grad-packages-grid ${viewMode === 'list' ? 'list-mode' : ''}`} style={{ display: viewMode === 'list' ? 'flex' : 'grid', flexDirection: viewMode === 'list' ? 'column' : undefined, gridTemplateColumns: viewMode === 'grid' ? 'repeat(auto-fill, minmax(165px, 1fr))' : undefined, gap: viewMode === 'grid' ? '14px' : '16px', width: '100%' }}>
             {filteredProducts.map((prod) => (
-              <ProductStoreCard key={prod.id} prod={prod} onOrder={openOrderModal} viewMode={viewMode} />
+              <ProductStoreCard key={prod.id} prod={prod} onOrder={openOrderModal} onAddToCart={handleAddToCart} viewMode={viewMode} />
             ))}
           </div>
         )}
@@ -926,6 +1037,149 @@ ${notes}`;
           </div>
         );
       })()}
+      {toast && (
+        <div style={{ position: 'fixed', top: '24px', left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', padding: '12px 24px', borderRadius: '50px', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', zIndex: 99999, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.92rem' }}>
+          {toast}
+        </div>
+      )}
+
+      {/* Floating Cart Trigger Button */}
+      {totalCartCount > 0 && (
+        <div
+          onClick={() => setIsCartOpen(true)}
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            left: '24px',
+            zIndex: 9999,
+            background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
+            color: '#120911',
+            fontWeight: '900',
+            padding: '12px 20px',
+            borderRadius: '50px',
+            boxShadow: '0 8px 30px rgba(245, 189, 26, 0.45)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            border: '2px solid #FFFFFF',
+            transition: 'all 0.25s ease'
+          }}
+        >
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <ShoppingCart size={22} />
+            <span style={{ position: 'absolute', top: '-8px', right: '-10px', background: '#120911', color: '#F5BD1A', borderRadius: '50%', width: '20px', height: '20px', fontSize: '0.75rem', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {totalCartCount}
+            </span>
+          </div>
+          <span style={{ fontSize: '0.95rem' }}>سلة التسوق ({totalCartCount})</span>
+          <span style={{ background: 'rgba(18, 9, 17, 0.2)', padding: '3px 10px', borderRadius: '50px', fontSize: '0.88rem' }}>
+            {totalCartPrice} JOD
+          </span>
+        </div>
+      )}
+
+      {/* Cart Drawer Modal */}
+      {isCartOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', justifyContent: 'flex-end' }} onClick={() => setIsCartOpen(false)}>
+          <div style={{ width: '100%', maxWidth: '440px', background: 'linear-gradient(180deg, rgba(32, 14, 30, 0.98) 0%, rgba(18, 9, 17, 0.99) 100%)', height: '100%', borderRight: '1.5px solid rgba(245, 189, 26, 0.35)', display: 'flex', flexDirection: 'column', padding: '24px', boxShadow: '-10px 0 40px rgba(0,0,0,0.8)', boxSizing: 'border-box' }} onClick={(e) => e.stopPropagation()}>
+            
+            {/* Drawer Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(245, 189, 26, 0.2)', paddingBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <ShoppingCart size={24} color="#F5BD1A" />
+                <h2 style={{ color: '#FFFFFF', margin: 0, fontSize: '1.3rem', fontWeight: '900' }}>سلة التسوق ({totalCartCount})</h2>
+              </div>
+              <button type="button" onClick={() => setIsCartOpen(false)} style={{ background: 'none', border: 'none', color: '#FFFFFF', cursor: 'pointer' }}>
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Cart Items List */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {cart.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.6)' }}>
+                  <ShoppingCart size={48} color="#F5BD1A" style={{ marginBottom: '16px', opacity: 0.5 }} />
+                  <h3 style={{ color: '#FFFFFF', fontWeight: '800' }}>سلة التسوق فارغة حالياً</h3>
+                  <p style={{ fontSize: '0.88rem' }}>تصفح منتجاتنا وأضف ما يعجبك إلى السلة!</p>
+                </div>
+              ) : (
+                cart.map((item) => (
+                  <div key={item.cartItemId} style={{ display: 'flex', gap: '12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(245, 189, 26, 0.2)', borderRadius: '14px', padding: '12px', alignItems: 'center' }}>
+                    {item.image ? (
+                      <img src={item.image} alt={item.name} style={{ width: '60px', height: '60px', borderRadius: '10px', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '60px', height: '60px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🖼️</div>
+                    )}
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <h4 style={{ color: '#FFFFFF', margin: '0 0 4px', fontSize: '0.92rem', fontWeight: '800', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.name}
+                      </h4>
+                      {item.selectedColor && (
+                        <span style={{ fontSize: '0.72rem', color: '#F5BD1A', background: 'rgba(245, 189, 26, 0.12)', padding: '2px 8px', borderRadius: '50px', display: 'inline-block', marginBottom: '4px' }}>
+                          اللون: {item.selectedColor}
+                        </span>
+                      )}
+                      <div style={{ color: '#F5BD1A', fontWeight: '900', fontSize: '0.9rem' }}>
+                        {item.price * item.quantity} JOD
+                      </div>
+                    </div>
+
+                    {/* Quantity Controls */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(0,0,0,0.5)', borderRadius: '50px', padding: '3px 8px', border: '1px solid rgba(255,255,255,0.15)' }}>
+                      <button type="button" onClick={() => updateCartQty(item.cartItemId, -1)} style={{ background: 'none', border: 'none', color: '#F5BD1A', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                        <Minus size={14} />
+                      </button>
+                      <span style={{ color: '#FFFFFF', fontWeight: '900', fontSize: '0.85rem', minWidth: '16px', textAlign: 'center' }}>
+                        {item.quantity}
+                      </span>
+                      <button type="button" onClick={() => updateCartQty(item.cartItemId, 1)} style={{ background: 'none', border: 'none', color: '#F5BD1A', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                        <Plus size={14} />
+                      </button>
+                    </div>
+
+                    {/* Delete Button */}
+                    <button type="button" onClick={() => removeFromCart(item.cartItemId)} style={{ background: 'rgba(231, 76, 60, 0.15)', border: 'none', color: '#E74C3C', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Drawer Footer */}
+            {cart.length > 0 && (
+              <div style={{ borderTop: '1px solid rgba(245, 189, 26, 0.2)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1rem', fontWeight: '700' }}>المجموع الكلي:</span>
+                  <span style={{ color: '#F5BD1A', fontSize: '1.4rem', fontWeight: '900' }}>{totalCartPrice} JOD</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCartOpen(false);
+                    setSelectedProduct({ id: 'cart_checkout', name: `سلة التسوق (${totalCartCount} منتجات)`, price: totalCartPrice });
+                  }}
+                  style={{ width: '100%', background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '14px', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 6px 20px rgba(245, 189, 26, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                >
+                  <span>إتمام طلب السلة ({totalCartCount} منتجات) 🚀</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={clearCart}
+                  style={{ background: 'none', border: 'none', color: 'rgba(231, 76, 60, 0.8)', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  تفريغ السلة بالكامل 🗑️
+                </button>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
     </main>
   );
 };
