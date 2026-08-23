@@ -31,7 +31,7 @@ export const IrisDivisionsExperience = ({ id = "iris-divisions-section" }) => {
       subtitle_ar: settings.division_media_subtitle_ar || 'صناعة المحتوى والحملات الإبداعية',
       subtitle_en: settings.division_media_subtitle_en || 'Content Creation & Creative Campaigns',
       image: settings.division_media_image || settings.hero_division_media_image || heroMediaImg,
-      route: settings.division_media_url || '/work',
+      route: '/media',
       themeClass: 'theme-media',
       color: '#67245F'
     },
@@ -42,7 +42,7 @@ export const IrisDivisionsExperience = ({ id = "iris-divisions-section" }) => {
       subtitle_ar: settings.division_studio_subtitle_ar || 'التصوير الاحترافي ورواية القصة البصرية',
       subtitle_en: settings.division_studio_subtitle_en || 'Professional Photography & Visual Storytelling',
       image: settings.division_studio_image || settings.hero_division_studio_image || heroMediaImg,
-      route: settings.division_studio_url || '/booking',
+      route: '/studio',
       themeClass: 'theme-studio',
       color: '#044630'
     },
@@ -53,7 +53,7 @@ export const IrisDivisionsExperience = ({ id = "iris-divisions-section" }) => {
       subtitle_ar: settings.division_print_subtitle_ar || 'المطبوعات الفاخرة والتغليف الراقي',
       subtitle_en: settings.division_print_subtitle_en || 'Luxury Print & Premium Packaging',
       image: settings.division_print_image || settings.hero_division_print_image || heroMediaImg,
-      route: settings.division_print_url || '/printing-products',
+      route: '/print',
       themeClass: 'theme-print',
       color: '#F5BD1A'
     }

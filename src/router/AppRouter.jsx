@@ -17,7 +17,10 @@ import ProductPhotography  from '../pages/ProductPhotography';
 import OutdoorPhotography  from '../pages/OutdoorPhotography';
 import Events              from '../pages/Events';
 import GraduationPackage   from '../pages/GraduationPackage';
-import NotFound            from '../pages/NotFound';
+// 3 Main Division Portals
+import MediaPortal         from '../pages/MediaPortal';
+import StudioPortal        from '../pages/StudioPortal';
+import PrintPortal         from '../pages/PrintPortal';
 
 import Admin                   from '../pages/Admin';
 import AdminLogin              from '../pages/AdminLogin';
@@ -56,6 +59,36 @@ const AppRouter = () => (
       <Route path="/outdoor-photography"  element={<OutdoorPhotography />} />
       <Route path="/events"               element={<Events />} />
       <Route path="/graduation-package"   element={<GraduationPackage />} />
+
+      {/* 3 Main Division Portals & Sub-routes */}
+      <Route path="/media"                       element={<MediaPortal />} />
+      <Route path="/media/*"                     element={<MediaPortal />} />
+
+      <Route path="/studio"                      element={<StudioPortal />} />
+      <Route path="/studio/sessions"             element={<Booking />} />
+      <Route path="/studio/packages"             element={<Packages />} />
+      <Route path="/studio/events"               element={<Events />} />
+      <Route path="/studio/graduation"           element={<StudioPortal />} />
+      <Route path="/studio/graduation/sessions"  element={<GraduationPackage />} />
+      <Route path="/studio/graduation/notebooks" element={<GraduationBooks />} />
+      <Route path="/studio/graduation/templates" element={<TemplatesGallery />} />
+      <Route path="/studio/graduation/inner-pages" element={<TemplatesGallery />} />
+      <Route path="/studio/graduation/order"     element={<GraduationBookOrder />} />
+      <Route path="/studio/work"                 element={<Work />} />
+      <Route path="/studio/faq"                  element={<StudioPortal />} />
+      <Route path="/studio/contact"              element={<StudioPortal />} />
+      <Route path="/studio/*"                    element={<StudioPortal />} />
+
+      <Route path="/print"                       element={<PrintPortal />} />
+      <Route path="/print/shop"                  element={<PrintingProducts />} />
+      <Route path="/print/categories"            element={<PrintPortal />} />
+      <Route path="/print/products"              element={<PrintingProducts />} />
+      <Route path="/print/custom"                element={<PrintPortal />} />
+      <Route path="/print/cart"                  element={<PrintPortal />} />
+      <Route path="/print/checkout"              element={<PrintPortal />} />
+      <Route path="/print/track"                 element={<PrintPortal />} />
+      <Route path="/print/contact"               element={<PrintPortal />} />
+      <Route path="/print/*"                     element={<PrintPortal />} />
 
       <Route path="*"                      element={<NotFound />} />
     </Route>

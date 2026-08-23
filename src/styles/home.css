@@ -1454,3 +1454,417 @@ body.scroll-lock {
     font-size: 1.05rem;
   }
 }
+
+/* ==========================================================================
+   DIVISION PORTAL HUB PAGES STYLING (MEDIA | STUDIO | PRINT)
+   ========================================================================== */
+
+.division-portal-page {
+  min-height: 100vh;
+  background-color: #180C17;
+  color: #FFFFFF;
+  font-family: inherit;
+  padding-bottom: 80px;
+}
+
+.portal-hero-banner {
+  position: relative;
+  padding: 140px 24px 70px;
+  background: radial-gradient(circle at 50% 20%, rgba(111, 36, 111, 0.45) 0%, rgba(24, 12, 23, 0.95) 80%);
+  border-bottom: 1px solid rgba(245, 189, 26, 0.2);
+}
+
+.portal-hero-banner.theme-media-bg {
+  background: radial-gradient(circle at 50% 20%, rgba(103, 36, 95, 0.6) 0%, rgba(24, 12, 23, 0.98) 80%);
+}
+
+.portal-hero-banner.theme-studio-bg {
+  background: radial-gradient(circle at 50% 20%, rgba(4, 70, 48, 0.6) 0%, rgba(24, 12, 23, 0.98) 80%);
+}
+
+.portal-hero-banner.theme-print-bg {
+  background: radial-gradient(circle at 50% 20%, rgba(245, 189, 26, 0.25) 0%, rgba(24, 12, 23, 0.98) 80%);
+}
+
+.portal-hero-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.portal-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245, 189, 26, 0.15);
+  border: 1px solid rgba(245, 189, 26, 0.4);
+  color: #F5BD1A;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background: #F5BD1A;
+  border-radius: 50%;
+}
+
+.portal-hero-title {
+  font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+  font-weight: 900;
+  color: #FFFFFF;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.portal-hero-sub {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 720px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+
+.portal-hero-ctas {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-portal-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%);
+  color: #120911;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 1rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-portal-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245, 189, 26, 0.4);
+}
+
+.btn-portal-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.btn-portal-secondary:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Sticky Sub Nav Anchor Links Bar */
+.portal-sub-nav-bar {
+  position: sticky;
+  top: 70px;
+  z-index: 90;
+  background: rgba(24, 12, 23, 0.94);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(245, 189, 26, 0.2);
+  padding: 14px 20px;
+  overflow-x: auto;
+}
+
+.portal-nav-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  gap: 16px;
+  white-space: nowrap;
+}
+
+.portal-nav-container a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+.portal-nav-container a:hover {
+  background: #F5BD1A;
+  color: #120911;
+}
+
+/* Portal Content Sections */
+.portal-section {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+
+.portal-section.theme-alt-bg {
+  background: rgba(255, 255, 255, 0.02);
+  border-y: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.portal-section-header {
+  text-align: center;
+  margin-bottom: 44px;
+}
+
+.section-eyebrow {
+  color: #F5BD1A;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.portal-section-header h2 {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 800;
+  margin: 8px 0 12px;
+  color: #FFFFFF;
+}
+
+.portal-section-header p {
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.portal-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.portal-card-box {
+  background: linear-gradient(145deg, rgba(42, 18, 38, 0.85) 0%, rgba(18, 9, 17, 0.95) 100%);
+  border: 1px solid rgba(245, 189, 26, 0.25);
+  border-radius: 18px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.portal-card-box:hover {
+  transform: translateY(-4px);
+  border-color: #F5BD1A;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.card-top-icon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #F5BD1A;
+  margin-bottom: 16px;
+}
+
+.card-tag {
+  background: rgba(245, 189, 26, 0.12);
+  color: #F5BD1A;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.portal-card-box h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 10px;
+  color: #FFFFFF;
+}
+
+.portal-card-box p {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.card-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #F5BD1A;
+  font-weight: 800;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: gap 0.2s ease;
+}
+
+.card-link-btn:hover {
+  gap: 12px;
+}
+
+/* Feature Banner Card */
+.portal-banner-feature {
+  background: linear-gradient(135deg, rgba(103, 36, 95, 0.5) 0%, rgba(24, 12, 23, 0.95) 100%);
+  border: 1px solid rgba(245, 189, 26, 0.3);
+  border-radius: 24px;
+  padding: 40px;
+
+}
+
+.feature-tag {
+  display: inline-block;
+  background: #F5BD1A;
+  color: #120911;
+  padding: 4px 14px;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  margin-bottom: 14px;
+}
+
+.feature-info h3 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 0 0 12px;
+  color: #FFFFFF;
+}
+
+.feature-info p {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.05rem;
+  max-width: 650px;
+  line-height: 1.6;
+}
+
+/* Process Step Card */
+.process-step-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+}
+
+.step-badge-num {
+  font-size: 2rem;
+  font-weight: 900;
+  color: rgba(245, 189, 26, 0.3);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.process-step-card h4 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0 0 8px;
+}
+
+.process-step-card p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Quote Form Container */
+.portal-quote-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: linear-gradient(145deg, rgba(42, 18, 38, 0.95) 0%, rgba(18, 9, 17, 0.98) 100%);
+  border: 1px solid rgba(245, 189, 26, 0.3);
+  border-radius: 24px;
+  padding: 36px;
+}
+
+.portal-quote-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .form-group-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-submit-full {
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+  font-size: 1.05rem;
+  margin-top: 10px;
+}
+
+.quote-success-box {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.success-icon {
+  color: #27AE60;
+  margin-bottom: 16px;
+}
+
+/* Contact Box */
+.portal-contact-box {
+  background: linear-gradient(135deg, rgba(111, 36, 111, 0.4) 0%, rgba(24, 12, 23, 0.95) 100%);
+  border: 1px solid rgba(245, 189, 26, 0.3);
+  border-radius: 24px;
+  padding: 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.contact-info h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: #FFFFFF;
+}
+
+.contact-info p {
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.whatsapp-bg {
+  background: #25D366 !important;
+  color: #FFFFFF !important;
+}
