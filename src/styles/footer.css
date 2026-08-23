@@ -340,14 +340,15 @@
   line-height: 1.2 !important;
 }
 
-/* Giant Logo Image Watermark (Extracted from actual Logo image asset) */
+/* Giant Logo Image Watermark (Centered strictly inside the copyright box boundary lines) */
 .footer-watermark-logo {
   position: absolute;
-  bottom: 12px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  width: clamp(280px, 40vw, 560px);
+  transform: translate(-50%, -50%);
+  width: clamp(180px, 26vw, 360px);
   height: auto;
+  max-height: clamp(38px, 4.8vh, 58px);
   object-fit: contain;
   opacity: 0.08;
   pointer-events: none;
