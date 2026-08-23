@@ -434,6 +434,28 @@ const PrintingProducts = () => {
   const [alternativePhone, setAlternativePhone] = useState('');
   const [googleMapsLink, setGoogleMapsLink] = useState('');
   
+  // Payment State
+  const [paymentMethod, setPaymentMethod] = useState('card'); // 'card' | 'cliq' | 'cod'
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardHolder, setCardHolder] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvc, setCardCvc] = useState('');
+
+  const handleCardNumberChange = (val) => {
+    const clean = val.replace(/\D/g, '').slice(0, 16);
+    const formatted = clean.match(/.{1,4}/g)?.join(' ') || clean;
+    setCardNumber(formatted);
+  };
+
+  const handleExpiryChange = (val) => {
+    const clean = val.replace(/\D/g, '').slice(0, 4);
+    if (clean.length >= 3) {
+      setCardExpiry(`${clean.slice(0, 2)}/${clean.slice(2)}`);
+    } else {
+      setCardExpiry(clean);
+    }
+  };
+
   // Custom design uploads
   const [imagesPreviews, setImagesPreviews] = useState([]);
   const [imagesFiles, setImagesFiles] = useState([]);
@@ -501,6 +523,11 @@ const PrintingProducts = () => {
     setPlacedInvoiceData(null);
     setOrderPlaced(false);
     setShowDirectOrderFields(false);
+    setPaymentMethod('card');
+    setCardNumber('');
+    setCardHolder('');
+    setCardExpiry('');
+    setCardCvc('');
   };
 
   const closeOrderModal = () => {
@@ -548,6 +575,25 @@ const PrintingProducts = () => {
       return;
     }
 
+    if (paymentMethod === 'card') {
+      if (cardNumber.replace(/\s/g, '').length < 16) {
+        alert('الرجاء إدخال رقم بطاقة الفيزا / الماستركارد بشكل صحيح (16 رقم)');
+        return;
+      }
+      if (!cardHolder.trim()) {
+        alert('الرجاء إدخال اسم حامل البطاقة كما يظهر عليها');
+        return;
+      }
+      if (!cardExpiry || cardExpiry.length < 5) {
+        alert('الرجاء إدخال تاريخ انتهاء البطاقة (MM/YY)');
+        return;
+      }
+      if (!cardCvc || cardCvc.length < 3) {
+        alert('الرجاء إدخال رمز الأمان CVC (3 أرقام)');
+        return;
+      }
+    }
+
     setSubmittingOrder(true);
     try {
       // Upload design images to storage
@@ -575,6 +621,11 @@ const PrintingProducts = () => {
       } else {
         finalNotes = `[استلام من الاستوديو]\n${finalNotes}`;
       }
+
+      const payLabel = paymentMethod === 'card' 
+        ? `[دفع بالبطاقة 💳 - Visa/MC (•••• ${cardNumber.replace(/\s/g, '').slice(-4)})]` 
+        : (paymentMethod === 'cliq' ? '[دفع عبر CliQ 📱]' : '[الدفع عند الاستلام 💵]');
+      finalNotes = `${payLabel}\n${finalNotes}`;
 
       const newOrderObj = {
         id: `ord_${Date.now()}`,
@@ -629,6 +680,9 @@ const PrintingProducts = () => {
         phone: phone.trim(),
         deliverySelected,
         deliveryAddress: deliveryAddress.trim(),
+        paymentMethod,
+        paymentStatus: paymentMethod === 'card' ? '✅ مدفوع بالفيزا / MasterCard (مؤكد 🔒)' : (paymentMethod === 'cliq' ? '📱 تم الدفع عبر CliQ' : '💵 الدفع نقداً عند الاستلام'),
+        cardMasked: paymentMethod === 'card' ? `•••• •••• •••• ${cardNumber.replace(/\s/g, '').slice(-4)}` : '',
         items: selectedProduct.id === 'cart_checkout' ? [...cart] : [{
           cartItemId: selectedProduct.id,
           name: selectedProduct.name,
@@ -869,6 +923,9 @@ const PrintingProducts = () => {
                     <div>
                       🚚 <strong>طريقة التسليم:</strong> {placedInvoiceData.deliverySelected ? `توصيل للمنزل (${placedInvoiceData.deliveryAddress})` : 'استلام من الاستوديو / المحل'}
                     </div>
+                    <div>
+                      💳 <strong>وسيلة الدفع:</strong> <span style={{ color: '#F5BD1A', fontWeight: 'bold' }}>{placedInvoiceData.paymentStatus}</span> {placedInvoiceData.cardMasked ? <span style={{ fontSize: '0.8rem', opacity: 0.85 }}>({placedInvoiceData.cardMasked})</span> : ''}
+                    </div>
                     {placedInvoiceData.uploadedImagesCount > 0 && (
                       <div>🖼️ <strong>مرفقات التصميم:</strong> تم رفع {placedInvoiceData.uploadedImagesCount} صور مخصصة للطباعة</div>
                     )}
@@ -915,25 +972,27 @@ const PrintingProducts = () => {
                     <button
                       type="button"
                       onClick={closeOrderModal}
-                      style={{ flex: 1, background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', border: 'none', borderRadius: '50px', padding: '10px', fontWeight: '900', cursor: 'pointer', fontSize: '0.88rem' }}
+                      style={{ flex: 1, background: 'rgba(255,255,255,0.1)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50px', padding: '10px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.88rem' }}
                     >
-                      إغلاق والعودة للمتجر 🛍️
+                      إغلاق
                     </button>
                   </div>
                 </div>
               ) : (
                 <form onSubmit={handlePlaceOrder}>
-                  <h3 style={{ fontSize: '1.3rem', color: '#F5BD1A', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(245,189,26,0.2)', fontWeight: '900' }}>
-                    {selectedProduct.id === 'cart_checkout' ? `إتمام طلب سلة التسوق (${totalCartCount} منتجات) 🛒` : `طلب منتج: ${selectedProduct.name}`}
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#F5BD1A', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>🛍️</span>
+                    <span>{selectedProduct.id === 'cart_checkout' ? 'إتمام طلب سلة التسوق' : `طلب منتج: ${selectedProduct.name}`}</span>
                   </h3>
 
+                  {/* Cart Items Summary List inside Checkout Modal */}
                   {selectedProduct.id === 'cart_checkout' && (
-                    <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(245, 189, 26, 0.2)', borderRadius: '12px', padding: '12px', marginBottom: '16px' }}>
-                      <div style={{ fontSize: '0.85rem', color: '#F5BD1A', fontWeight: '800', marginBottom: '8px' }}>🛍️ المنتجات في السلة:</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        {cart.map((item, i) => (
-                          <div key={item.cartItemId} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#FFFFFF' }}>
-                            <span>{i + 1}. {item.name} (عدد {item.quantity}) {item.selectedColor ? `[${item.selectedColor}]` : ''}</span>
+                    <div style={{ background: 'rgba(18, 9, 17, 0.95)', border: '1px solid rgba(245, 189, 26, 0.3)', borderRadius: '14px', padding: '12px 14px', marginBottom: '16px' }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: 'bold', color: '#F5BD1A', marginBottom: '8px' }}>المنتجات في السلة ({totalCartCount}):</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '120px', overflowY: 'auto' }}>
+                        {cart.map((item, idx) => (
+                          <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#E0E0E0', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '4px' }}>
+                            <span>{item.name} (×{item.quantity}) {item.selectedColor ? `[${item.selectedColor}]` : ''}</span>
                             <span style={{ color: '#F5BD1A', fontWeight: '800' }}>{item.price * item.quantity} JOD</span>
                           </div>
                         ))}
@@ -1158,6 +1217,153 @@ const PrintingProducts = () => {
                                   dir="ltr"
                                 />
                               </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Electronic Payment Method Selection */}
+                        <div style={{ marginTop: '6px', borderTop: '1px dashed rgba(245, 189, 26, 0.3)', paddingTop: '14px' }}>
+                          <label className="as-label" style={{ marginBottom: '10px', display: 'block', fontWeight: 'bold', color: '#F5BD1A' }}>اختر طريقة الدفع الإلكتروني *</label>
+                          
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '14px' }}>
+                            {/* Card Option */}
+                            <div
+                              onClick={() => setPaymentMethod('card')}
+                              style={{
+                                background: paymentMethod === 'card' ? 'rgba(245, 189, 26, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+                                border: paymentMethod === 'card' ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.12)',
+                                borderRadius: '12px',
+                                padding: '10px 6px',
+                                cursor: 'pointer',
+                                textAlign: 'center',
+                                boxShadow: paymentMethod === 'card' ? '0 4px 15px rgba(245, 189, 26, 0.25)' : 'none'
+                              }}
+                            >
+                              <div style={{ fontSize: '1.3rem' }}>💳</div>
+                              <div style={{ fontWeight: 'bold', fontSize: '0.78rem', color: '#FFFFFF', marginTop: '2px' }}>بطاقة ائتمان</div>
+                              <div style={{ fontSize: '0.68rem', color: '#F5BD1A' }}>Visa / MasterCard</div>
+                            </div>
+
+                            {/* CliQ Option */}
+                            <div
+                              onClick={() => setPaymentMethod('cliq')}
+                              style={{
+                                background: paymentMethod === 'cliq' ? 'rgba(245, 189, 26, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+                                border: paymentMethod === 'cliq' ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.12)',
+                                borderRadius: '12px',
+                                padding: '10px 6px',
+                                cursor: 'pointer',
+                                textAlign: 'center',
+                                boxShadow: paymentMethod === 'cliq' ? '0 4px 15px rgba(245, 189, 26, 0.25)' : 'none'
+                              }}
+                            >
+                              <div style={{ fontSize: '1.3rem' }}>📱</div>
+                              <div style={{ fontWeight: 'bold', fontSize: '0.78rem', color: '#FFFFFF', marginTop: '2px' }}>تحويل CliQ</div>
+                              <div style={{ fontSize: '0.68rem', color: '#F5BD1A' }}>محافظ إلكترونية</div>
+                            </div>
+
+                            {/* COD Option */}
+                            <div
+                              onClick={() => setPaymentMethod('cod')}
+                              style={{
+                                background: paymentMethod === 'cod' ? 'rgba(245, 189, 26, 0.2)' : 'rgba(255, 255, 255, 0.04)',
+                                border: paymentMethod === 'cod' ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.12)',
+                                borderRadius: '12px',
+                                padding: '10px 6px',
+                                cursor: 'pointer',
+                                textAlign: 'center',
+                                boxShadow: paymentMethod === 'cod' ? '0 4px 15px rgba(245, 189, 26, 0.25)' : 'none'
+                              }}
+                            >
+                              <div style={{ fontSize: '1.3rem' }}>💵</div>
+                              <div style={{ fontWeight: 'bold', fontSize: '0.78rem', color: '#FFFFFF', marginTop: '2px' }}>عند الاستلام</div>
+                              <div style={{ fontSize: '0.68rem', color: '#F5BD1A' }}>دفع نقدي</div>
+                            </div>
+                          </div>
+
+                          {/* Card Form */}
+                          {paymentMethod === 'card' && (
+                            <div style={{ background: 'linear-gradient(135deg, rgba(28, 16, 31, 0.95) 0%, rgba(16, 8, 19, 0.95) 100%)', border: '1px solid rgba(245, 189, 26, 0.35)', borderRadius: '14px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '8px' }}>
+                                <span style={{ fontSize: '0.82rem', fontWeight: 'bold', color: '#F5BD1A', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span>🔒</span> بوابة الدفع الآمن (256-Bit SSL)
+                                </span>
+                                <div style={{ display: 'flex', gap: '4px' }}>
+                                  <span style={{ fontSize: '0.68rem', background: '#1A1F71', color: '#FFF', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>VISA</span>
+                                  <span style={{ fontSize: '0.68rem', background: '#EB001B', color: '#FFF', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>MC</span>
+                                </div>
+                              </div>
+
+                              <div className="grad-field">
+                                <label className="as-label">رقم البطاقة (Card Number) *</label>
+                                <input
+                                  type="text"
+                                  className="admin-input"
+                                  required={paymentMethod === 'card'}
+                                  maxLength={19}
+                                  placeholder="4000 0000 0000 0000"
+                                  value={cardNumber}
+                                  onChange={(e) => handleCardNumberChange(e.target.value)}
+                                  dir="ltr"
+                                  style={{ letterSpacing: '2px', fontWeight: 'bold' }}
+                                />
+                              </div>
+
+                              <div className="grad-field">
+                                <label className="as-label">اسم حامل البطاقة (Cardholder Name) *</label>
+                                <input
+                                  type="text"
+                                  className="admin-input"
+                                  required={paymentMethod === 'card'}
+                                  placeholder="الاسم كما يظهر على البطاقة"
+                                  value={cardHolder}
+                                  onChange={(e) => setCardHolder(e.target.value)}
+                                />
+                              </div>
+
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                <div className="grad-field">
+                                  <label className="as-label">الانتهاء (MM/YY) *</label>
+                                  <input
+                                    type="text"
+                                    className="admin-input"
+                                    required={paymentMethod === 'card'}
+                                    maxLength={5}
+                                    placeholder="08/28"
+                                    value={cardExpiry}
+                                    onChange={(e) => handleExpiryChange(e.target.value)}
+                                    dir="ltr"
+                                    style={{ textAlign: 'center', fontWeight: 'bold' }}
+                                  />
+                                </div>
+                                <div className="grad-field">
+                                  <label className="as-label">رمز الأمان (CVC) *</label>
+                                  <input
+                                    type="password"
+                                    className="admin-input"
+                                    required={paymentMethod === 'card'}
+                                    maxLength={4}
+                                    placeholder="•••"
+                                    value={cardCvc}
+                                    onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, ''))}
+                                    dir="ltr"
+                                    style={{ textAlign: 'center', fontWeight: 'bold' }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* CliQ Form */}
+                          {paymentMethod === 'cliq' && (
+                            <div style={{ background: 'rgba(245, 189, 26, 0.08)', border: '1px solid rgba(245, 189, 26, 0.3)', borderRadius: '14px', padding: '14px', textAlign: 'center' }}>
+                              <div style={{ fontWeight: 'bold', color: '#F5BD1A', fontSize: '0.9rem' }}>📱 تفاصيل التحويل عبر CliQ</div>
+                              <div style={{ fontSize: '0.84rem', color: '#FFFFFF', margin: '8px 0', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                الاسم المستعار (Alias): <strong style={{ color: '#F5BD1A', fontSize: '0.98rem' }}>IRISSTUDIO</strong>
+                                <br />
+                                أو رقم الهاتف: <strong style={{ color: '#F5BD1A' }}>0797303260</strong>
+                              </div>
+                              <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.7)', margin: 0 }}>يرجى التحويل بقيمة المبلغ وحفظ رقم المرجع أو الصورة لتأكيد الطلب.</p>
                             </div>
                           )}
                         </div>
