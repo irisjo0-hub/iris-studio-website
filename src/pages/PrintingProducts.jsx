@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { Grid, List } from 'lucide-react';
 import { supabase, uploadFile } from '../lib/supabase';
 import '../styles/graduation.css'; // Leverage shared premium styling variables
 
@@ -546,49 +547,45 @@ ${notes}`;
               })}
             </div>
 
-            {/* Layout Mode Toggle */}
-            <div style={{ display: 'flex', gap: '4px', background: 'rgba(18, 9, 17, 0.95)', padding: '3px', borderRadius: '50px', border: '1px solid rgba(245, 189, 26, 0.3)', flexShrink: 0 }}>
+            {/* Layout Mode Toggle (Icon Only) */}
+            <div style={{ display: 'inline-flex', gap: '2px', background: 'rgba(18, 9, 17, 0.95)', padding: '3px', borderRadius: '50px', border: '1.5px solid rgba(245, 189, 26, 0.35)', flexShrink: 0 }}>
               <button
                 type="button"
                 onClick={() => setViewMode('grid')}
-                title="عرض منتجين جنب بعض"
+                title="عرض شبكي (منتجين جنب بعض)"
                 style={{
-                  padding: '6px 12px',
+                  padding: '7px 14px',
                   borderRadius: '50px',
                   border: 'none',
                   background: viewMode === 'grid' ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'transparent',
                   color: viewMode === 'grid' ? '#120911' : '#FFFFFF',
-                  fontWeight: '800',
-                  fontSize: '0.78rem',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px'
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease'
                 }}
               >
-                <span>📱</span>
-                <span>2 جنب بعض</span>
+                <Grid size={18} />
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode('list')}
                 title="عرض قائمة أفقي"
                 style={{
-                  padding: '6px 12px',
+                  padding: '7px 14px',
                   borderRadius: '50px',
                   border: 'none',
                   background: viewMode === 'list' ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'transparent',
                   color: viewMode === 'list' ? '#120911' : '#FFFFFF',
-                  fontWeight: '800',
-                  fontSize: '0.78rem',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px'
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease'
                 }}
               >
-                <span>☰</span>
-                <span>قائمة</span>
+                <List size={18} />
               </button>
             </div>
           </div>
