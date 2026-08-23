@@ -3,6 +3,57 @@ import { Link } from 'react-router-dom';
 import { supabase, uploadFile } from '../lib/supabase';
 import '../styles/graduation.css'; // Leverage shared premium styling variables
 
+const DEFAULT_PRODUCTS = [
+  {
+    id: 'default-1',
+    name: 'وشاح تخرج مطرز فاخر 2026',
+    price: 15,
+    category: 'أوشحة وطواقي',
+    description: 'وشاح تخرج ستان فاخر مع تطريز اسم الطالب وسنة التخرج بأرقام وخيوط قصب ذهبية متينة.',
+    available_colors: ['أسود', 'كحلي', 'عنابي', 'أبيض'],
+    color_selection_enabled: true,
+    custom_notes: 'يرجى كتابة الاسم المراد تطريزه والسنة في ملاحظات الطلب.',
+    image_urls: ['https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80'],
+    is_hidden: false
+  },
+  {
+    id: 'default-2',
+    name: 'بوستر أكريليك شفاف عالي الدقة A3',
+    price: 22,
+    category: 'بوسترات',
+    description: 'طباعة حرارية مباشرة على لوح أكريليك شفاف فاخر مقاس A3 مع قواعد تثبيت معدنية.',
+    available_colors: [],
+    color_selection_enabled: false,
+    custom_notes: 'قم برفع صورتك بدقة عالية لضمان أفضل جودة طباعة.',
+    image_urls: ['https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80'],
+    is_hidden: false
+  },
+  {
+    id: 'default-3',
+    name: 'كوب سيراميك مطبوع مخصص',
+    price: 6,
+    category: 'هدايا ومطبوعات',
+    description: 'كوب سيراميك فاخر مقاوم لغسالات الصحون مع طباعة حرارية ملونة لصورتك أو تصميمك.',
+    available_colors: ['أبيض', 'أسود حراري'],
+    color_selection_enabled: true,
+    custom_notes: 'يرجى ارفاق التصميم المطلوب طباعته على الكوب.',
+    image_urls: ['https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=800&q=80'],
+    is_hidden: false
+  },
+  {
+    id: 'default-4',
+    name: 'لوحة كانفاس مشدودة على خشب سويدي',
+    price: 35,
+    category: 'بوسترات',
+    description: 'قماش كانفاس إيطالي فاخر مطبوع بألوان زيتية زاهية ومشدود يدويًا على إطار خشب سويدي.',
+    available_colors: [],
+    color_selection_enabled: false,
+    custom_notes: 'تأتي جاهزة للتعليق الفوري على الحائط.',
+    image_urls: ['https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80'],
+    is_hidden: false
+  }
+];
+
 const PrintingProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,11 +87,33 @@ const PrintingProducts = () => {
         const { data, error } = await supabase
           .from('printing_products')
           .select('*')
-          .eq('is_hidden', false);
+          .eq('is_hidden', false)
+          .order('created_at', { ascending: false });
         if (error) throw error;
-        if (data) setProducts(data);
+        if (data && data.length > 0) {
+          setProducts(data);
+        } else {
+          const local = localStorage.getItem('iris_printing_products');
+          if (local) {
+            const parsed = JSON.parse(local).filter(p => !p.is_hidden);
+            if (parsed.length > 0) {
+              setProducts(parsed);
+              return;
+            }
+          }
+          setProducts(DEFAULT_PRODUCTS);
+        }
       } catch (e) {
         console.error('Failed to load printing products:', e);
+        const local = localStorage.getItem('iris_printing_products');
+        if (local) {
+          const parsed = JSON.parse(local).filter(p => !p.is_hidden);
+          if (parsed.length > 0) {
+            setProducts(parsed);
+            return;
+          }
+        }
+        setProducts(DEFAULT_PRODUCTS);
       } finally {
         setLoading(false);
       }
@@ -170,10 +243,10 @@ ${notes}`;
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px', fontSize: '1.2rem' }}>⏳ جاري تحميل المنتجات...</div>
         ) : products.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 24px', background: '#fff', borderRadius: '16px' }}>
+          <div style={{ textAlign: 'center', padding: '60px 24px', background: 'rgba(18, 9, 17, 0.95)', border: '1px solid rgba(245, 189, 26, 0.3)', borderRadius: '20px' }}>
             <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🛍️</div>
-            <h3 style={{ fontWeight: 'bold', color: '#333' }}>لا تتوفر منتجات حالياً في هذا القسم.</h3>
-            <p style={{ color: '#777' }}>يرجى زيارتنا لاحقاً.</p>
+            <h3 style={{ fontWeight: 'bold', color: '#FFFFFF' }}>جاري تجهيز منتجات إضافية لهذا القسم...</h3>
+            <p style={{ color: '#F5BD1A' }}>استكشف المنتجات المميزة المتاحة أعلاه أو طلب طباعة مخصصة.</p>
           </div>
         ) : (
           <div className="grad-packages-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '28px' }}>
@@ -191,25 +264,25 @@ ${notes}`;
               }
 
               return (
-                <div key={prod.id} className="grad-pkg-card" style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <div key={prod.id} className="grad-pkg-card" style={{ background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.92) 0%, rgba(18, 9, 17, 0.96) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '20px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 12px 30px rgba(0,0,0,0.5)' }}>
                   {firstImg ? (
-                    <img src={firstImg} alt={prod.name} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
+                    <img src={firstImg} alt={prod.name} style={{ width: '100%', height: '210px', objectFit: 'cover' }} />
                   ) : (
-                    <div style={{ width: '100%', height: '200px', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', fontSize: '2rem' }}>🖼️</div>
+                    <div style={{ width: '100%', height: '210px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '2rem' }}>🖼️</div>
                   )}
 
-                  <div className="grad-pkg-body" style={{ padding: '20px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifycontent: 'space-between' }}>
+                  <div className="grad-pkg-body" style={{ padding: '22px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
-                      <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--g-purple, #6F246F)', margin: '0 0 8px' }}>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: '900', color: '#FFFFFF', margin: '0 0 8px' }}>
                         {prod.name}
                       </h3>
-                      <div style={{ fontSize: '1.4rem', color: 'var(--g-green, #0F5A46)', fontWeight: '900', marginBottom: '10px' }}>
+                      <div style={{ fontSize: '1.4rem', color: '#F5BD1A', fontWeight: '900', marginBottom: '10px' }}>
                         {prod.price} JOD
                       </div>
-                      <p style={{ fontSize: '0.9rem', color: '#555', lineHeight: '1.6', marginBottom: '16px' }}>{prod.description}</p>
+                      <p style={{ fontSize: '0.9rem', color: 'rgba(236, 235, 231, 0.8)', lineHeight: '1.6', marginBottom: '16px' }}>{prod.description}</p>
                       
                       {prod.custom_notes && (
-                        <div style={{ fontSize: '0.82rem', background: '#fcf8e3', color: '#8a6d3b', padding: '8px 12px', borderRadius: '6px', marginBottom: '16px', borderRight: '3px solid #f0ad4e' }}>
+                        <div style={{ fontSize: '0.82rem', background: 'rgba(245, 189, 26, 0.1)', color: '#F5BD1A', padding: '10px 14px', borderRadius: '10px', marginBottom: '16px', border: '1px solid rgba(245, 189, 26, 0.3)' }}>
                           💡 {prod.custom_notes}
                         </div>
                       )}
@@ -219,9 +292,9 @@ ${notes}`;
                       type="button"
                       className="grad-pkg-btn"
                       onClick={() => openOrderModal(prod)}
-                      style={{ marginTop: 'auto', background: 'var(--g-purple, #6F246F)' }}
+                      style={{ marginTop: 'auto', background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '800', border: 'none', borderRadius: '50px', padding: '12px 20px', cursor: 'pointer' }}
                     >
-                      طلب المنتج الآن
+                      طلب المنتج والطباعة 🛒
                     </button>
                   </div>
                 </div>
