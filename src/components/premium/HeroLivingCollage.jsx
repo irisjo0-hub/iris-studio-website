@@ -155,13 +155,12 @@ export const HeroLivingCollage = () => {
           const config = channelConfigs[index % channelConfigs.length];
 
           // Unidirectional stream flow guarantees zero head-on collisions
-          const startX = isRtl ? '-105vw' : '105vw';
+          const startX = isRtl ? '-130vw' : '130vw';
           const midX = '0vw';
-          const endX = isRtl ? '105vw' : '-105vw';
+          const endX = isRtl ? '130vw' : '-130vw';
 
-          const duration = 16;
-          // Rapid sequential staggered entry starting immediately upon site load (0.1s, 0.32s, 0.54s...)
-          const delay = 0.1 + (index * 0.22);
+          const duration = 24;
+          const delay = index * (duration / pool.length);
 
           return (
             <motion.div
@@ -174,10 +173,6 @@ export const HeroLivingCollage = () => {
                 left: '50%',
                 translateX: '-50%'
               }}
-              initial={{
-                opacity: 0,
-                x: startX
-              }}
               animate={
                 isPaused
                   ? {}
@@ -186,7 +181,7 @@ export const HeroLivingCollage = () => {
                       y: config.floatY,
                       rotateZ: config.rotateZ,
                       opacity: [0, 1, 1, 0],
-                      filter: ['blur(12px)', 'blur(0px)', 'blur(0px)', 'blur(12px)']
+                      filter: ['blur(16px)', 'blur(0px)', 'blur(0px)', 'blur(16px)']
                     }
               }
               transition={{
@@ -208,7 +203,6 @@ export const HeroLivingCollage = () => {
                 alt={isRtl ? work.alt_ar : work.alt_en}
                 className="stream-card-img"
                 loading="eager"
-                decoding="async"
               />
             </motion.div>
           );
