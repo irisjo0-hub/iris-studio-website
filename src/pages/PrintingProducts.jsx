@@ -609,7 +609,7 @@ ${notes}`;
             <p style={{ color: '#F5BD1A' }}>جرب التصفح ضمن تصنيف آخر أو طلب طباعة مخصصة.</p>
           </div>
         ) : (
-          <div className="grad-packages-grid" style={{ display: 'grid', gridTemplateColumns: viewMode === 'grid' ? 'repeat(auto-fill, minmax(165px, 1fr))' : '1fr', gap: viewMode === 'grid' ? '14px' : '16px' }}>
+          <div className={`grad-packages-grid ${viewMode === 'list' ? 'list-mode' : ''}`} style={{ display: viewMode === 'list' ? 'flex' : 'grid', flexDirection: viewMode === 'list' ? 'column' : undefined, gridTemplateColumns: viewMode === 'grid' ? 'repeat(auto-fill, minmax(165px, 1fr))' : undefined, gap: viewMode === 'grid' ? '14px' : '16px', width: '100%' }}>
             {filteredProducts.map((prod) => (
               <ProductStoreCard key={prod.id} prod={prod} onOrder={openOrderModal} viewMode={viewMode} />
             ))}

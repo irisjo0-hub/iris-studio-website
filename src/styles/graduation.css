@@ -1383,18 +1383,22 @@
   .grad-order-card {
     padding: 16px 12px !important;
   }
-  .grad-packages-grid {
+  .grad-packages-grid:not(.list-mode) {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
-  .grad-pkg-card {
-    flex: unset !important;
+  .grad-packages-grid.list-mode {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
     width: 100% !important;
-    border-radius: var(--uds-radius-md) !important;
-    border-width: 1.5px !important;
+    box-sizing: border-box !important;
+  }
+  .grad-pkg-card-list {
+    width: 100% !important;
     box-sizing: border-box !important;
   }
   .grad-pkg-header {
