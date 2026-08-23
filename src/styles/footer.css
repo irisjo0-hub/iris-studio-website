@@ -338,13 +338,13 @@
 /* Giant Logo Image Watermark (Extracted from actual Logo image asset) */
 .footer-watermark-logo {
   position: absolute;
-  bottom: -20px;
+  bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
-  width: clamp(280px, 42vw, 600px);
+  width: clamp(260px, 38vw, 540px);
   height: auto;
   object-fit: contain;
-  opacity: 0.05;
+  opacity: 0.08;
   pointer-events: none;
   user-select: none;
   filter: brightness(0) invert(1);
