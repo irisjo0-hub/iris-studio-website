@@ -20,6 +20,18 @@ const AdminProducts = () => {
   
   // Images state: [{ id: string, type: 'existing' | 'new', url: string, file?: File }]
   const [images, setImages] = useState([]);
+  const [imageUrlInput, setImageUrlInput] = useState('');
+
+  const handleAddUrlImage = () => {
+    if (!imageUrlInput.trim()) return;
+    const newImg = {
+      id: `url-${Date.now()}-${images.length}`,
+      type: 'existing',
+      url: imageUrlInput.trim()
+    };
+    setImages(prev => [...prev, newImg]);
+    setImageUrlInput('');
+  };
 
   const fetchItems = async () => {
     try {
@@ -324,20 +336,41 @@ const AdminProducts = () => {
               </div>
 
               <div className="form-group full-width-group">
-                <label className="as-label">صورة المنتج (اختيار متعدد)</label>
-                <label htmlFor="product-image" className="admin-upload-box" style={{ padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #F5BD1A', borderRadius: '8px', cursor: 'pointer', background: 'rgba(245, 189, 26, 0.05)' }}>
-                  <span className="upload-icon">📸</span>
-                  <span className="upload-text" style={{ marginRight: '8px', color: '#F5BD1A', fontWeight: 'bold' }}>اختر صور للمنتج</span>
-                  <input
-                    id="product-image"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageChange}
-                    style={{ display: 'none' }}
-                    disabled={loading}
-                  />
-                </label>
+                <label className="as-label">صور المنتج (إضافة متعددة - رفع أو روابط)</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <label htmlFor="product-image" className="admin-upload-box" style={{ padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #F5BD1A', borderRadius: '10px', cursor: 'pointer', background: 'rgba(245, 189, 26, 0.08)' }}>
+                    <span className="upload-icon" style={{ fontSize: '1.2rem' }}>📸</span>
+                    <span className="upload-text" style={{ marginRight: '8px', color: '#F5BD1A', fontWeight: 'bold' }}>اختر صور من جهازك (اختيار متعدد)</span>
+                    <input
+                      id="product-image"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChange}
+                      style={{ display: 'none' }}
+                      disabled={loading}
+                    />
+                  </label>
+
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      type="text"
+                      className="admin-input"
+                      placeholder="أو ألصق رابط صورة مباشر هنا (https://...)"
+                      value={imageUrlInput}
+                      onChange={(e) => setImageUrlInput(e.target.value)}
+                      disabled={loading}
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddUrlImage}
+                      style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', border: 'none', borderRadius: '8px', padding: '0 16px', fontWeight: '800', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    >
+                      + إضافة الصورة
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 

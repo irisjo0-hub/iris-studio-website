@@ -146,6 +146,108 @@ const DEFAULT_PRODUCTS = [
   }
 ];
 
+const ProductStoreCard = ({ prod, onOrder }) => {
+  let imagesList = [];
+  if (Array.isArray(prod.image_urls)) {
+    imagesList = prod.image_urls.filter(Boolean);
+  } else if (typeof prod.image_urls === 'string') {
+    try {
+      const parsed = JSON.parse(prod.image_urls);
+      if (Array.isArray(parsed)) imagesList = parsed.filter(Boolean);
+      else if (prod.image_urls) imagesList = [prod.image_urls];
+    } catch {
+      if (prod.image_urls) imagesList = [prod.image_urls];
+    }
+  }
+
+  const [activeIdx, setActiveIdx] = useState(0);
+  const currentImg = imagesList[activeIdx] || imagesList[0] || '';
+
+  return (
+    <div className="grad-pkg-card" style={{ background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.92) 0%, rgba(18, 9, 17, 0.96) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '18px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+      {/* Image Display */}
+      <div style={{ position: 'relative', width: '100%', background: '#000' }}>
+        {currentImg ? (
+          <img src={currentImg} alt={prod.name} style={{ width: '100%', height: '175px', objectFit: 'cover', display: 'block', transition: 'all 0.3s ease' }} />
+        ) : (
+          <div style={{ width: '100%', height: '175px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '2rem' }}>🖼️</div>
+        )}
+
+        {/* Category Tag Badge */}
+        {prod.category && (
+          <span style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(18, 9, 17, 0.88)', backdropFilter: 'blur(8px)', color: '#F5BD1A', border: '1px solid rgba(245, 189, 26, 0.4)', padding: '3px 10px', borderRadius: '50px', fontSize: '0.74rem', fontWeight: '900' }}>
+            🏷️ {prod.category}
+          </span>
+        )}
+
+        {/* Multi-Image Indicator Counter Badge */}
+        {imagesList.length > 1 && (
+          <span style={{ position: 'absolute', top: '10px', left: '10px', background: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(6px)', color: '#FFFFFF', padding: '3px 8px', borderRadius: '50px', fontSize: '0.72rem', fontWeight: '800' }}>
+            📸 {activeIdx + 1} / {imagesList.length}
+          </span>
+        )}
+      </div>
+
+      {/* Multi-Image Interactive Thumbnails Swatch Bar */}
+      {imagesList.length > 1 && (
+        <div style={{ display: 'flex', gap: '6px', padding: '6px 12px', background: 'rgba(18, 9, 17, 0.95)', borderBottom: '1px solid rgba(245, 189, 26, 0.15)', overflowX: 'auto' }}>
+          {imagesList.map((imgUrl, i) => (
+            <img
+              key={i}
+              src={imgUrl}
+              alt={`thumb-${i}`}
+              onClick={() => setActiveIdx(i)}
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '6px',
+                objectFit: 'cover',
+                cursor: 'pointer',
+                border: activeIdx === i ? '2px solid #F5BD1A' : '1px solid rgba(255,255,255,0.2)',
+                opacity: activeIdx === i ? 1 : 0.65,
+                transition: 'all 0.2s ease',
+                flexShrink: 0
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Compact Card Content */}
+      <div className="grad-pkg-body" style={{ padding: '16px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div>
+          <h3 style={{ fontSize: '1.08rem', fontWeight: '900', color: '#FFFFFF', margin: '0 0 6px', lineHeight: '1.3' }}>
+            {prod.name}
+          </h3>
+          <div style={{ fontSize: '1.25rem', color: '#F5BD1A', fontWeight: '900', marginBottom: '8px' }}>
+            {prod.price} JOD
+          </div>
+          {prod.description && (
+            <p style={{ fontSize: '0.84rem', color: 'rgba(236, 235, 231, 0.75)', lineHeight: '1.5', marginBottom: '12px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+              {prod.description}
+            </p>
+          )}
+          
+          {prod.custom_notes && (
+            <div style={{ fontSize: '0.78rem', background: 'rgba(245, 189, 26, 0.1)', color: '#F5BD1A', padding: '8px 10px', borderRadius: '8px', marginBottom: '12px', border: '1px solid rgba(245, 189, 26, 0.3)' }}>
+              💡 {prod.custom_notes}
+            </div>
+          )}
+        </div>
+
+        <button
+          type="button"
+          className="grad-pkg-btn"
+          onClick={() => onOrder(prod)}
+          style={{ marginTop: 'auto', background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '10px 16px', fontSize: '0.88rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(245, 189, 26, 0.25)' }}
+        >
+          طلب وتصميم المنتج 🛒
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const PrintingProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -404,64 +506,10 @@ ${notes}`;
             <p style={{ color: '#F5BD1A' }}>جرب التصفح ضمن تصنيف آخر أو طلب طباعة مخصصة.</p>
           </div>
         ) : (
-          <div className="grad-packages-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '28px' }}>
-            {filteredProducts.map((prod) => {
-              let firstImg = '';
-              if (Array.isArray(prod.image_urls) && prod.image_urls.length > 0) {
-                firstImg = prod.image_urls[0];
-              } else if (typeof prod.image_urls === 'string') {
-                try {
-                  const parsed = JSON.parse(prod.image_urls);
-                  if (parsed.length > 0) firstImg = parsed[0];
-                } catch {
-                  firstImg = prod.image_urls;
-                }
-              }
-
-              return (
-                <div key={prod.id} className="grad-pkg-card" style={{ background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.92) 0%, rgba(18, 9, 17, 0.96) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '22px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 12px 30px rgba(0,0,0,0.5)' }}>
-                  <div style={{ position: 'relative' }}>
-                    {firstImg ? (
-                      <img src={firstImg} alt={prod.name} style={{ width: '100%', height: '220px', objectFit: 'cover' }} />
-                    ) : (
-                      <div style={{ width: '100%', height: '220px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '2rem' }}>🖼️</div>
-                    )}
-                    {prod.category && (
-                      <span style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(18, 9, 17, 0.85)', backdropFilter: 'blur(8px)', color: '#F5BD1A', border: '1px solid rgba(245, 189, 26, 0.4)', padding: '4px 12px', borderRadius: '50px', fontSize: '0.78rem', fontWeight: '900' }}>
-                        🏷️ {prod.category}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="grad-pkg-body" style={{ padding: '22px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <div>
-                      <h3 style={{ fontSize: '1.25rem', fontWeight: '900', color: '#FFFFFF', margin: '0 0 8px' }}>
-                        {prod.name}
-                      </h3>
-                      <div style={{ fontSize: '1.4rem', color: '#F5BD1A', fontWeight: '900', marginBottom: '10px' }}>
-                        {prod.price} JOD
-                      </div>
-                      <p style={{ fontSize: '0.9rem', color: 'rgba(236, 235, 231, 0.8)', lineHeight: '1.6', marginBottom: '16px' }}>{prod.description}</p>
-                      
-                      {prod.custom_notes && (
-                        <div style={{ fontSize: '0.82rem', background: 'rgba(245, 189, 26, 0.1)', color: '#F5BD1A', padding: '10px 14px', borderRadius: '10px', marginBottom: '16px', border: '1px solid rgba(245, 189, 26, 0.3)' }}>
-                          💡 {prod.custom_notes}
-                        </div>
-                      )}
-                    </div>
-
-                    <button
-                      type="button"
-                      className="grad-pkg-btn"
-                      onClick={() => openOrderModal(prod)}
-                      style={{ marginTop: 'auto', background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '800', border: 'none', borderRadius: '50px', padding: '12px 20px', cursor: 'pointer' }}
-                    >
-                      طلب المنتج والطباعة 🛒
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="grad-packages-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '20px' }}>
+            {filteredProducts.map((prod) => (
+              <ProductStoreCard key={prod.id} prod={prod} onOrder={openOrderModal} />
+            ))}
           </div>
         )}
       </section>
