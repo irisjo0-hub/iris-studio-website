@@ -228,6 +228,11 @@
   flex-shrink: 0;
 }
 
+.contact-icon-whatsapp {
+  color: #25D366;
+  flex-shrink: 0;
+}
+
 /* Prominent Maps Location Button */
 .footer-location-btn {
   display: inline-flex;
