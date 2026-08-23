@@ -65,51 +65,43 @@ export const Footer = () => {
         <div className="footer-contact-section">
           <h4 className="footer-heading">{isRtl ? 'تواصل معنا' : 'Contact & Location'}</h4>
           
-          {settings.whatsapp_number && (
-            <a 
-              href={`https://wa.me/${settings.whatsapp_number}`} 
-              target="_blank" 
-              rel="noreferrer" 
-              className="footer-contact-link" 
-            >
-              <MessageSquare size={16} className="contact-icon" />
-              <span>{isRtl ? 'واتساب الإدارة' : 'WhatsApp Support'}</span>
-            </a>
-          )}
+          {/* Management WhatsApp Link */}
+          <a 
+            href="https://wa.me/962798627259" 
+            target="_blank" 
+            rel="noreferrer" 
+            className="footer-contact-link" 
+          >
+            <MessageSquare size={16} className="contact-icon" />
+            <span>{isRtl ? 'واتساب الإدارة: 00962798627259' : 'Management WhatsApp: 00962798627259'}</span>
+          </a>
 
-          {settings.phone && (
-            <a 
-              href={`tel:${settings.phone}`} 
-              className="footer-contact-link" 
-            >
-              <Phone size={16} className="contact-icon" />
-              <span>{settings.phone}</span>
-            </a>
-          )}
+          {/* Prominent Maps Location Button */}
+          <a 
+            href={settings.location_map_url || 'https://maps.google.com/?q=Irbid+Jordan'} 
+            target="_blank" 
+            rel="noreferrer" 
+            className="footer-location-btn" 
+          >
+            <MapPin size={18} className="location-btn-icon" />
+            <span>{settings.studio_address || (isRtl ? 'إربد – إشارة المحافظة' : 'Irbid – Governorate Signal')}</span>
+          </a>
 
-          {settings.email && (
-            <a 
-              href={`mailto:${settings.email}`} 
-              className="footer-contact-link" 
-            >
-              <Mail size={16} className="contact-icon" />
-              <span>{settings.email}</span>
-            </a>
-          )}
-
-          {settings.studio_address && (
-            <a 
-              href={settings.location_map_url || '#'} 
-              target="_blank" 
-              rel="noreferrer" 
-              className="footer-contact-link" 
-            >
-              <MapPin size={16} className="contact-icon" />
-              <span>{settings.studio_address}</span>
-            </a>
-          )}
-
+          {/* Social Icons Row (Instagram, Facebook, and Direct IRIS WhatsApp) */}
           <div className="footer-socials">
+            {/* Direct IRIS WhatsApp Button */}
+            <a 
+              href={`https://wa.me/${settings.whatsapp_number || '962798627259'}`} 
+              target="_blank" 
+              rel="noreferrer" 
+              className="footer-social-icon icon-whatsapp" 
+              aria-label="IRIS WhatsApp"
+              title={isRtl ? 'واتساب آيرس المباشر' : 'IRIS Direct WhatsApp'}
+            >
+              <MessageSquare size={18} />
+            </a>
+
+            {/* Instagram */}
             {settings.instagram_link && (
               <a 
                 href={settings.instagram_link} 
@@ -123,6 +115,8 @@ export const Footer = () => {
                 </svg>
               </a>
             )}
+
+            {/* Facebook */}
             {settings.facebook_link && (
               <a 
                 href={settings.facebook_link} 
