@@ -138,19 +138,31 @@ export const Footer = () => {
         </div>
       </div>
 
-      {/* Copyright Bottom Rectangle with Centered Logo Watermark */}
+      {/* 4. Bottom Copyright Stage — Ultra-Luxury Studio Seal & Glassmorphic Capsule */}
       <div className="footer-bottom container">
-        <p className="copyright">
-          &copy; {new Date().getFullYear()} IRIS Agency. {isRtl ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}
-        </p>
+        {/* Ambient Gold Halo Field */}
+        <div className="footer-bottom-glow" />
 
-        {/* Logo Image Watermark centered inside THIS bottom rectangle */}
-        <img
-          src={settings.hero_logo_url || settings.logo_url || irisLogo}
-          alt=""
-          className="footer-watermark-logo"
-          aria-hidden="true"
-        />
+        {/* Studio Crest Seal */}
+        <div className="footer-studio-seal">
+          <img
+            src={settings.hero_logo_url || settings.logo_url || irisLogo}
+            alt="IRIS"
+            className="footer-seal-logo"
+          />
+        </div>
+
+        {/* Sleek Golden Accent Line */}
+        <div className="footer-bottom-accent-line" />
+
+        {/* Glassmorphic Copyright Capsule */}
+        <div className="footer-copyright-capsule">
+          <span className="copyright-brand">IRIS Agency</span>
+          <span className="copyright-sep">•</span>
+          <span className="copyright-year">&copy; {new Date().getFullYear()}</span>
+          <span className="copyright-sep">•</span>
+          <span className="copyright-text">{isRtl ? 'جميع الحقوق محفوظة' : 'All rights reserved'}</span>
+        </div>
       </div>
     </footer>
   );

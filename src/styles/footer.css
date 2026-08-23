@@ -306,57 +306,113 @@
   box-shadow: 0 0 24px rgba(37, 211, 102, 0.45);
 }
 
-/* Bottom Copyright Area — Raised Divider Line & Vertically Centered Text */
+/* ==========================================================================
+   4. ULTRA-LUXURY BOTTOM COPYRIGHT STAGE (100% Theme Harmonious Studio Seal)
+   ========================================================================== */
 .footer-bottom {
+  position: relative !important;
   margin-top: auto !important;
-  padding-top: clamp(28px, 3.5vh, 40px) !important;
-  padding-bottom: clamp(28px, 3.5vh, 40px) !important;
-  border-top: 1px solid rgba(236, 235, 231, 0.14) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
   width: 100% !important;
   max-width: 1360px !important;
   margin-left: auto !important;
   margin-right: auto !important;
+  padding-top: clamp(20px, 2.5vh, 32px) !important;
+  padding-bottom: clamp(20px, 2.5vh, 32px) !important;
   padding-left: 28px !important;
   padding-right: 28px !important;
-  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 14px !important;
+  box-sizing: border-box !important;
   z-index: 5 !important;
   flex-shrink: 0 !important;
   overflow: hidden !important;
 }
 
-.copyright {
-  position: relative !important;
-  z-index: 2 !important;
-  font-family: var(--font-primary, sans-serif);
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: rgba(236, 235, 231, 0.85);
-  margin: 0 !important;
-  text-align: center !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 1.4 !important;
-}
-
-/* Subdued Logo Image Watermark (Scaled to fit comfortably inside rectangle) */
-.footer-watermark-logo {
+.footer-bottom-glow {
   position: absolute !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
-  width: auto !important;
-  height: clamp(26px, 3.5vh, 36px) !important;
-  max-width: 220px !important;
-  object-fit: contain !important;
-  opacity: 0.07 !important;
+  width: 320px !important;
+  height: 100px !important;
+  background: radial-gradient(circle, rgba(245, 189, 26, 0.14) 0%, rgba(103, 36, 95, 0.1) 50%, transparent 70%) !important;
   pointer-events: none !important;
-  user-select: none !important;
-  filter: brightness(0) invert(1) !important;
-  z-index: 1 !important;
+  filter: blur(22px) !important;
+}
+
+.footer-studio-seal {
+  position: relative !important;
+  z-index: 2 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 4px 14px !important;
+}
+
+.footer-seal-logo {
+  height: clamp(24px, 3.2vh, 30px) !important;
+  width: auto !important;
+  object-fit: contain !important;
+  filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(245, 189, 26, 0.35)) !important;
+  opacity: 0.88 !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease !important;
+}
+
+.footer-studio-seal:hover .footer-seal-logo {
+  transform: scale(1.06) !important;
+  opacity: 1 !important;
+}
+
+.footer-bottom-accent-line {
+  position: relative !important;
+  z-index: 2 !important;
+  width: clamp(120px, 18vw, 240px) !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent 0%, rgba(245, 189, 26, 0.45) 50%, transparent 100%) !important;
+}
+
+.footer-copyright-capsule {
+  position: relative !important;
+  z-index: 2 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  padding: 8px 22px !important;
+  border-radius: 100px !important;
+  background: rgba(26, 13, 24, 0.6) !important;
+  border: 1px solid rgba(236, 235, 231, 0.12) !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+.copyright-brand {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif) !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.5px !important;
+  color: #F5BD1A !important;
+  text-transform: uppercase !important;
+}
+
+.copyright-year {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif) !important;
+  font-size: 0.84rem !important;
+  font-weight: 600 !important;
+  color: rgba(236, 235, 231, 0.88) !important;
+}
+
+.copyright-sep {
+  color: rgba(245, 189, 26, 0.6) !important;
+  font-size: 0.75rem !important;
+}
+
+.copyright-text {
+  font-family: var(--font-primary, sans-serif) !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  color: rgba(236, 235, 231, 0.8) !important;
 }
