@@ -11,6 +11,12 @@ import GraduationBookOrder from '../pages/GraduationBookOrder';
 import TemplatesGallery    from '../pages/TemplatesGallery';
 import Booking             from '../pages/Booking';
 import PrintingProducts    from '../pages/PrintingProducts';
+
+// Flow Destination Minimal Placeholders
+import ProductPhotography  from '../pages/ProductPhotography';
+import OutdoorPhotography  from '../pages/OutdoorPhotography';
+import Events              from '../pages/Events';
+import GraduationPackage   from '../pages/GraduationPackage';
 import NotFound            from '../pages/NotFound';
 
 import Admin                   from '../pages/Admin';
@@ -28,10 +34,12 @@ import AdminOffers             from '../pages/AdminOffers';
 import AdminProducts           from '../pages/AdminProducts';
 import AdminPrintingOrders     from '../pages/AdminPrintingOrders';
 import AdminSettings           from '../pages/AdminSettings';
+import AdminFlow               from '../pages/AdminFlow';
+import AdminFlowFeedback       from '../pages/AdminFlowFeedback';
 
 const AppRouter = () => (
   <Routes>
-    {/* Customer routes (RTL) wrapped in layout route to enable transition animations */}
+    {/* Customer routes wrapped in layout route */}
     <Route element={<Layout />}>
       <Route path="/"                      element={<Home />} />
       <Route path="/work"                  element={<Work />} />
@@ -42,6 +50,13 @@ const AppRouter = () => (
       <Route path="/templates"             element={<TemplatesGallery />} />
       <Route path="/booking"               element={<Booking />} />
       <Route path="/printing-products"     element={<PrintingProducts />} />
+
+      {/* IRIS Flow Destination Routes */}
+      <Route path="/product-photography"  element={<ProductPhotography />} />
+      <Route path="/outdoor-photography"  element={<OutdoorPhotography />} />
+      <Route path="/events"               element={<Events />} />
+      <Route path="/graduation-package"   element={<GraduationPackage />} />
+
       <Route path="*"                      element={<NotFound />} />
     </Route>
 
@@ -63,6 +78,8 @@ const AppRouter = () => (
       <Route path="/admin/templates"              element={<AdminTemplates />} />
       <Route path="/admin/extras"                 element={<AdminExtras />} />
       <Route path="/admin/book-extras"            element={<AdminBookExtras />} />
+      <Route path="/admin/flow"                   element={<AdminFlow />} />
+      <Route path="/admin/flow-feedback"          element={<AdminFlowFeedback />} />
       <Route path="/admin/settings"               element={<AdminSettings />} />
     </Route>
   </Routes>

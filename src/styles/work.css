@@ -5,7 +5,8 @@
 .work-page {
   min-height: 100vh;
   padding: 2rem 1.5rem 4rem;
-  background: #f8f6fb;
+  background: #180C17;
+  color: #ECEBE7;
   direction: rtl;
 }
 
@@ -19,14 +20,16 @@
 .work-hero h1 {
   font-size: var(--uds-h1-size);
   font-weight: 900;
-  color: var(--color-purple, #6F2477);
+  color: #F5BD1A;
   margin-bottom: var(--uds-margin-sm);
   letter-spacing: -0.5px;
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-synthesis: none;
 }
 
 .work-hero p {
   font-size: var(--uds-text-lg);
-  color: #7a6a80;
+  color: rgba(236, 235, 231, 0.85);
   max-width: 560px;
   margin: 0 auto;
   line-height: 1.8;

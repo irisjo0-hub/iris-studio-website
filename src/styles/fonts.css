@@ -28,7 +28,7 @@
 @font-face {
   font-family: 'DegularDisplay';
   src: url('../assets/fonts/DegularDisplay-Bold.otf') format('opentype');
-  font-weight: 700;
+  font-weight: 600 700;
   font-style: normal;
   font-display: swap;
 }

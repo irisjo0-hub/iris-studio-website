@@ -1,0 +1,138 @@
+/* src/styles/hero-living-collage.css
+ * IRIS HERO LOWER VIEWPORT LIVING STREAM ENGINE
+ * Restricted strictly to the empty lower Hero space below the CTA button (0 text/CTA overlap).
+ * Larger portrait cards (240-340px wide) with 3 entry directions (Left, Right, Bottom; 0 from Top).
+ */
+
+.iris-hero-lower-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 10;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Outer Container - Edge to Edge Unstructured Stream Container */
+.lower-stage-container.edge-to-edge-stream-container {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: calc(100% - 20px);
+  overflow: visible;
+  pointer-events: auto;
+}
+
+/* Individual Edge Floating Stream Card */
+.lower-stream-card.edge-floating-stream-card {
+  position: absolute !important;
+  border-radius: 22px !important;
+  border: 1.5px solid rgba(245, 189, 26, 0.45) !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(103, 36, 95, 0.35) !important;
+  cursor: pointer;
+  pointer-events: auto;
+  will-change: transform, opacity, filter;
+}
+
+.lower-stream-card.edge-floating-stream-card:hover {
+  border-color: #F5BD1A !important;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95), 0 0 50px rgba(245, 189, 26, 0.6) !important;
+}
+
+/* Individual Floating Card inside Stream */
+.lower-stream-card.floating-stream-loop-card {
+  position: relative !important;
+  flex-shrink: 0;
+  border-radius: 22px !important;
+  border: 1.5px solid rgba(245, 189, 26, 0.45) !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(103, 36, 95, 0.35) !important;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.lower-stream-card.role-focal-card:hover,
+.lower-stream-card.floating-collage-card:hover,
+.lower-stream-card.floating-stream-loop-card:hover {
+  border-color: #F5BD1A !important;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95), 0 0 50px rgba(245, 189, 26, 0.6) !important;
+}
+
+/* Card Image Element */
+.stream-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.98) contrast(1.02);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lower-stream-card:hover .stream-card-img {
+  transform: scale(1.04);
+}
+
+/* Division Badge */
+.card-division-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  background: rgba(26, 13, 24, 0.85);
+  border: 1px solid #F5BD1A;
+  color: #F5BD1A;
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+}
+
+.dir-rtl .card-division-badge {
+  right: auto;
+  left: 14px;
+}
+
+/* Focal Card Caption Overlay */
+.focal-card-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 28px 20px 16px;
+  background: linear-gradient(180deg, transparent 0%, rgba(18, 9, 17, 0.95) 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.caption-badge {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #F5BD1A;
+  text-transform: uppercase;
+}
+
+.caption-title {
+  font-family: var(--font-primary, sans-serif);
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+  font-weight: 700;
+  color: #ECEBE7;
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  .lower-stream-card {
+    transition: opacity 0.3s ease !important;
+  }
+}

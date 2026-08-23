@@ -6,21 +6,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  --iris-purple: #6F2477;
-  --iris-purple-gradient: #6F2477;
-  --iris-green: #0B5B4B;
-  --iris-gold: #F4C21D;
-  --iris-bg: #ECEBE7;
-  --iris-white: #FFFFFF;
+  --iris-purple: #67245F;
+  --iris-purple-gradient: #67245F;
+  --iris-green: #044630;
+  --iris-gold: #F5BD1A;
+  --iris-bg: #180C17;
+  --iris-white: rgba(26, 13, 24, 0.85);
 
-  --text-dark: #2C3E50;
+  --text-dark: #ECEBE7;
   --text-light: #FFFFFF;
-  --text-muted: #7F8C8D;
-  --border-color: #BDC3C7;
+  --text-muted: rgba(236, 235, 231, 0.7);
+  --border-color: rgba(236, 235, 231, 0.12);
 
-  --shadow-soft: var(--uds-shadow-sm);
-  --shadow-medium: var(--uds-shadow-md);
-  --shadow-header: var(--uds-shadow-sm);
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-medium: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --shadow-header: 0 10px 30px rgba(0, 0, 0, 0.5);
   --border-radius: var(--uds-radius-md);
 }
 

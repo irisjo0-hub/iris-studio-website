@@ -1,114 +1,70 @@
-/* src/styles/navbar.css */
+/* src/styles/navbar.css
+ * IRIS Agency — Bilingual Navbar System & Navigation Styling
+ */
 
-/* Navbar general layout */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(236, 235, 231, 0.85);
+  background: rgba(24, 12, 23, 0.90);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(111, 36, 119, 0.06);
-  box-shadow: var(--uds-shadow-sm);
-  transition: var(--transition-smooth);
+  border-bottom: 1px solid rgba(236, 235, 231, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  transition: all 0.3s ease;
   width: 100%;
 }
 
-/* Scrolled state — more opaque, tighter */
 .navbar.scrolled {
-  background: rgba(236, 235, 231, 0.95);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: var(--uds-shadow-md);
-  border-bottom-color: rgba(111, 36, 119, 0.1);
+  background: rgba(24, 12, 23, 0.96);
+  border-bottom-color: rgba(245, 189, 26, 0.3);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
 }
 
-/* Container limits */
 .navbar-container {
-  max-width: 1400px;
+  max-width: 1360px;
   margin: 0 auto;
-  padding: var(--uds-space-sm) var(--uds-space-md);
+  padding: 10px clamp(16px, 4vw, 32px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: var(--transition-smooth);
+  gap: 16px;
 }
 
-.navbar.scrolled .navbar-container {
-  padding: var(--uds-space-xs) var(--uds-space-md);
-}
-
-/* Logo container styling */
-.logo-container {
-  display: flex;
+/* Logo */
+.nav-logo-link {
+  display: inline-flex;
   align-items: center;
+  text-decoration: none;
   flex-shrink: 0;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  opacity: 1;
 }
 
 .logo {
-  height: 85px;
+  height: 42px;
   width: auto;
   object-fit: contain;
-  flex-shrink: 0;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: brightness(0) invert(1);
+  transition: transform 0.25s ease;
 }
 
 .logo:hover {
-  transform: scale(1.05);
-  filter: drop-shadow(0 4px 12px rgba(111, 36, 119, 0.15));
-}
-
-/* Scroll transition behavior — shrink logo */
-.navbar.scrolled .logo {
-  height: 50px;
-}
-
-.navbar.scrolled .logo-container {
-  opacity: 1;
-  visibility: visible;
-  height: auto;
-  width: auto;
+  transform: scale(1.04);
 }
 
 /* Nav scroll wrapper */
 .nav-scroll-wrapper {
   position: relative;
-  overflow: hidden;
+  overflow-x: auto;
   display: flex;
   align-items: center;
   flex: 1;
   justify-content: center;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
-.navbar.scrolled .nav-scroll-wrapper {
-  justify-content: center;
-}
-
-/* Fade gradients on edges */
-.nav-scroll-wrapper::before,
-.nav-scroll-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 24px;
-  z-index: 5;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.nav-scroll-wrapper::before {
-  left: 0;
-  background: linear-gradient(to right, rgba(236, 235, 231, 0.85), transparent);
-}
-
-.nav-scroll-wrapper::after {
-  right: 0;
-  background: linear-gradient(to left, rgba(236, 235, 231, 0.85), transparent);
+.nav-scroll-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 /* Nav links styling */
@@ -122,105 +78,104 @@
 }
 
 .nav-item {
-  padding: 8px 18px;
-  color: var(--color-purple);
+  padding: 8px 16px;
+  color: rgba(236, 235, 231, 0.8);
   text-decoration: none;
   font-family: var(--font-primary);
-  font-weight: 700;
-  font-size: var(--uds-text-base);
-  transition: var(--transition-smooth);
-  border-radius: var(--uds-radius-round);
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: all 0.25s ease;
+  border-radius: 100px;
   white-space: nowrap;
-  border: 1.5px solid transparent;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Hover underline animation */
-.nav-item::after {
-  content: '';
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%) scaleX(0);
-  width: 60%;
-  height: 2px;
-  background: var(--color-gold);
-  border-radius: 2px;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.nav-item:hover::after {
-  transform: translateX(-50%) scaleX(1);
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .nav-item:hover {
-  color: var(--color-green);
-  background: rgba(111, 36, 119, 0.04);
+  color: #F5BD1A;
+  background: rgba(103, 36, 95, 0.35);
 }
 
-/* Active navigation link: Purple Pill */
 .nav-item.active {
-  background: var(--color-purple) !important;
-  color: #ffffff !important;
-  box-shadow: var(--uds-shadow-sm);
-  border-color: transparent;
+  background: #67245F !important;
+  color: #ECEBE7 !important;
+  box-shadow: 0 4px 14px rgba(103, 36, 95, 0.4);
 }
 
-.nav-item.active::after {
-  display: none;
+/* Action Controls (Language Switcher + Back Button) */
+.nav-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
-/* Mobile Responsive */
-@media (max-width: 991px) {
-  .navbar-container {
-    flex-direction: column;
-    padding: 12px 16px;
-    gap: 8px;
-  }
+/* Minimal Language Switcher Button (EN / ع) */
+.navbar-lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: 100px;
+  background: rgba(26, 13, 24, 0.85);
+  border: 1px solid rgba(236, 235, 231, 0.18);
+  color: #ECEBE7;
+  font-family: var(--font-primary, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  touch-action: manipulation;
+}
 
-  .logo {
-    height: 70px;
-  }
+.navbar-lang-toggle-btn:hover {
+  border-color: #F5BD1A;
+  color: #F5BD1A;
+  transform: scale(1.03);
+}
 
-  .navbar.scrolled .logo {
-    height: 40px;
-  }
+.lang-code-text {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-weight: 800;
+}
 
-  .navbar.scrolled .navbar-container {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    gap: 4px;
-  }
+/* Contextual Back Button */
+.navbar-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 16px;
+  min-height: 44px;
+  border-radius: 100px;
+  background: rgba(103, 36, 95, 0.35);
+  border: 1px solid rgba(245, 189, 26, 0.4);
+  color: #ECEBE7;
+  font-family: var(--font-primary, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  touch-action: manipulation;
+}
 
-  /* Force swiping navigation */
-  .nav-scroll-wrapper {
-    width: 100%;
-    justify-content: flex-start;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-  }
+.navbar-back-btn:hover {
+  background: rgba(103, 36, 95, 0.6);
+  border-color: #F5BD1A;
+  color: #F5BD1A;
+}
 
-  .nav-scroll-wrapper::-webkit-scrollbar {
+@media (max-width: 600px) {
+  .back-btn-label {
     display: none;
   }
-
-  .nav-scroll-wrapper::before,
-  .nav-scroll-wrapper::after {
-    opacity: 1;
-  }
-
-  .nav-links {
-    width: auto;
-    padding: 6px 12px;
-    gap: 8px;
-  }
-
-  .nav-item {
-    scroll-snap-align: start;
-    font-size: 0.9rem;
-    padding: 6px 14px;
+  .navbar-back-btn {
+    padding: 6px;
+    width: 44px;
+    border-radius: 50%;
   }
 }

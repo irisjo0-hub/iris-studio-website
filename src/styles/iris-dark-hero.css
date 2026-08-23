@@ -1,0 +1,716 @@
+/* src/styles/iris-dark-hero.css
+ * HERO V6 — IRIS Visual Identity & Layered Cinematic Atmosphere
+ * Colors: #67245F (Purple), #044630 (Deep Green), #F5BD1A (Gold), #ECEBE7 (Off-White)
+ * Multi-layered atmospheric fields: Top-Right Purple, Bottom-Left Green, Gold CTA Energy
+ */
+
+.iris-dark-hero-v2-wrapper {
+  position: relative;
+  width: 100vw;
+  max-width: 100vw;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: #180C17;
+  color: #ECEBE7;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 20px) !important;
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  padding-left: max(5vw, env(safe-area-inset-left));
+  padding-right: max(5vw, env(safe-area-inset-right));
+  z-index: 1;
+  transition: background-color 0.6s ease;
+}
+
+@media (min-width: 1024px) {
+  .iris-dark-hero-v2-wrapper {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 32px) !important;
+  }
+}
+
+.iris-dark-hero-v2-wrapper.theme-media {
+  background-color: #180C17;
+}
+
+.iris-dark-hero-v2-wrapper.theme-studio {
+  background-color: #0A1410;
+}
+
+.iris-dark-hero-v2-wrapper.theme-print {
+  background-color: #1A0D18;
+}
+
+/* Texture Grain Overlay — Optimized 0.025 Opacity Fixed Noise */
+.hero-v2-grain-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* ===== ATMOSPHERIC COLOR FIELDS (50% PURPLE #67245F + 30% GREEN #044630 + 5% GOLD #F5BD1A) ===== */
+.hero-v2-ambient-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition: transform 0.3s ease-out;
+}
+
+/* Zone 1 — Prominent IRIS PURPLE (#67245F) Top-Left Atmosphere Behind Logo & Headline */
+.glow-purple-topleft {
+  top: -40px;
+  left: -110px;
+  width: clamp(600px, 55vw, 850px);
+  height: clamp(520px, 48vw, 750px);
+  filter: blur(45px);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(103, 36, 95, 0.65) 0%,
+    rgba(103, 36, 95, 0.42) 32%,
+    rgba(103, 36, 95, 0.22) 58%,
+    transparent 85%
+  );
+  animation: purpleLogoGlowFloat 10s ease-in-out infinite alternate;
+  z-index: 2;
+}
+
+.glow-purple-topright {
+  top: -8vw;
+  right: -8vw;
+  width: clamp(550px, 60vw, 900px);
+  height: clamp(550px, 60vw, 900px);
+  filter: blur(75px);
+  background: radial-gradient(
+    circle,
+    rgba(103, 36, 95, 0.62) 0%,
+    rgba(103, 36, 95, 0.35) 45%,
+    transparent 75%
+  );
+  animation: purpleAtmosphereFloat 16s ease-in-out infinite alternate;
+}
+
+/* Zone 2 — Prominent IRIS DEEP GREEN (#044630) Lower-Left & Lower-Center Atmosphere */
+.glow-green-bottomleft {
+  bottom: -8vw;
+  left: -8vw;
+  width: clamp(580px, 65vw, 950px);
+  height: clamp(580px, 65vw, 950px);
+  filter: blur(80px);
+  background: radial-gradient(
+    circle,
+    rgba(4, 70, 48, 0.65) 0%,
+    rgba(4, 70, 48, 0.35) 50%,
+    transparent 75%
+  );
+  animation: greenAtmosphereFloat 20s ease-in-out infinite alternate;
+}
+
+.glow-green-bottomright {
+  bottom: -6vw;
+  right: 5%;
+  width: clamp(450px, 52vw, 800px);
+  height: clamp(450px, 52vw, 800px);
+  filter: blur(70px);
+  background: radial-gradient(
+    circle,
+    rgba(4, 70, 48, 0.52) 0%,
+    rgba(4, 70, 48, 0.22) 50%,
+    transparent 75%
+  );
+}
+
+/* Zone 3 — Restrained Warm IRIS GOLD (#F5BD1A) CTA Energy Glow */
+.glow-gold-accent {
+  bottom: 5%;
+  right: 15%;
+  width: clamp(300px, 40vw, 550px);
+  height: clamp(300px, 40vw, 550px);
+  filter: blur(75px);
+  background: radial-gradient(
+    circle,
+    rgba(245, 189, 26, 0.12) 0%,
+    rgba(245, 189, 26, 0.04) 45%,
+    transparent 75%
+  );
+  animation: yellowBottomGlowFloat 12s ease-in-out infinite alternate;
+}
+
+/* Mobile Specific Atmospheric Art-Direction (390px Viewport) */
+@media (max-width: 767px) {
+  .glow-purple-topleft {
+    top: 0;
+    left: -60px;
+    width: 420px;
+    height: 380px;
+    filter: blur(30px);
+    background: radial-gradient(
+      ellipse at center,
+      rgba(103, 36, 95, 0.62) 0%,
+      rgba(103, 36, 95, 0.38) 32%,
+      rgba(103, 36, 95, 0.18) 60%,
+      transparent 80%
+    );
+  }
+
+  .glow-purple-topright {
+    top: -12vw;
+    right: -15vw;
+    width: 95vw;
+    height: 95vw;
+    filter: blur(55px);
+  }
+
+  .glow-green-bottomleft {
+    bottom: -10vw;
+    left: -10vw;
+    width: 110vw;
+    height: 110vw;
+    filter: blur(65px);
+    background: radial-gradient(
+      circle,
+      rgba(4, 70, 48, 0.68) 0%,
+      rgba(4, 70, 48, 0.35) 50%,
+      transparent 75%
+    );
+  }
+
+  .glow-gold-accent {
+    bottom: 8%;
+    right: 5%;
+    width: 320px;
+    height: 320px;
+    filter: blur(45px);
+    background: radial-gradient(
+      circle,
+      rgba(245, 189, 26, 0.12) 0%,
+      rgba(245, 189, 26, 0.03) 45%,
+      transparent 75%
+    );
+  }
+}
+
+/* Keyframes for Organic Un-synchronized Atmospheric Drift & Slow Breathing */
+@keyframes purpleLogoGlowFloat {
+  0% { opacity: 0.85; transform: scale(1) translate(0, 0); }
+  50% { opacity: 1; transform: scale(1.03) translate(12px, 8px); }
+  100% { opacity: 0.85; transform: scale(0.97) translate(-8px, 10px); }
+}
+
+@keyframes yellowBottomGlowFloat {
+  0% { opacity: 0.75; transform: scale(1) translate(0, 0); }
+  50% { opacity: 1; transform: scale(1.04) translate(-10px, -8px); }
+  100% { opacity: 0.75; transform: scale(0.96) translate(8px, -5px); }
+}
+
+@keyframes purpleAtmosphereFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, 20px) scale(1.06); }
+  100% { transform: translate(-20px, 25px) scale(0.96); }
+}
+
+@keyframes greenAtmosphereFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-25px, -30px) scale(1.07); }
+  100% { transform: translate(20px, -15px) scale(0.95); }
+}
+
+@keyframes goldAtmosphereFloat {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.85; }
+  50% { transform: translate(20px, -16px) scale(1.08); opacity: 1; }
+  100% { transform: translate(-12px, 14px) scale(0.94); opacity: 0.8; }
+}
+
+/* Main Container — Zero Top Gap */
+.hero-v2-main-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1360px;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2vh, 26px);
+}
+
+/* Top Header Bar — Strictly Physical LTR Layout for Fixed Left Logo & Right Controls */
+.hero-v2-top-bar {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  direction: ltr !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Admin-Controlled Pure White IRIS Logo (PHYSICAL TOP LEFT ON ALL SIZES & LANGUAGES) */
+.hero-v2-logo-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  order: 1 !important;
+  margin-right: auto !important;
+  margin-left: 0 !important;
+  direction: ltr !important;
+  z-index: 15 !important;
+}
+
+/* Dedicated Lower Floating Images Area Container (Positioned closely below CTA button) */
+.hero-v2-lower-animation-area {
+  position: absolute !important;
+  top: clamp(340px, 44vh, 460px) !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+}
+
+@media (max-width: 1023px) {
+  .hero-v2-lower-animation-area {
+    top: clamp(310px, 42vh, 410px) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-v2-lower-animation-area {
+    top: clamp(280px, 38vh, 370px) !important;
+  }
+}
+
+.hero-v2-logo-img {
+  width: clamp(160px, 16vw, 220px) !important;
+  height: auto !important;
+  max-height: 85px !important;
+  object-fit: contain !important;
+  filter: brightness(0) invert(1) !important;
+  opacity: 1 !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease !important;
+}
+
+.hero-v2-logo-link:hover .hero-v2-logo-img {
+  transform: scale(1.04) !important;
+}
+
+@media (max-width: 1023px) {
+  .hero-v2-logo-img {
+    width: clamp(150px, 22vw, 190px) !important;
+    max-height: 75px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-v2-logo-img {
+    width: clamp(140px, 32vw, 170px) !important;
+    max-height: 65px !important;
+  }
+}
+
+@media (max-width: 479px) {
+  .hero-v2-logo-img {
+    width: clamp(130px, 35vw, 155px) !important;
+    max-height: 55px !important;
+  }
+}
+
+.hero-v2-top-right-group {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+  order: 2 !important;
+  margin-left: auto !important;
+  margin-right: 0 !important;
+  direction: ltr !important;
+}
+
+/* Top Row Homepage Hamburger Control (Directly Left of WE BREAK THE BOX Badge) */
+.hero-v2-hamburger-btn {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 50% !important;
+  background: rgba(26, 13, 24, 0.78) !important;
+  border: 1px solid rgba(236, 235, 231, 0.16) !important;
+  box-shadow: 0 0 18px rgba(103, 36, 95, 0.16) !important;
+  color: #ECEBE7 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+@media (min-width: 768px) {
+  .hero-v2-hamburger-btn {
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
+
+.hero-v2-hamburger-btn:hover {
+  border-color: rgba(245, 189, 26, 0.55) !important;
+  transform: scale(1.04) !important;
+  box-shadow: 0 0 25px rgba(245, 189, 26, 0.25) !important;
+}
+
+.hero-v2-hamburger-btn:active {
+  transform: scale(0.96) !important;
+}
+
+/* Fullscreen React Portal Navigation Overlay */
+.iris-portal-fullscreen-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  z-index: 9999 !important;
+  background-color: #180C17 !important;
+  background-image: radial-gradient(circle at 85% 15%, rgba(103, 36, 95, 0.45) 0%, rgba(103, 36, 95, 0.12) 50%, transparent 75%),
+                    radial-gradient(circle at 15% 85%, rgba(4, 70, 48, 0.40) 0%, rgba(4, 70, 48, 0.12) 55%, transparent 80%) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.overlay-top-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: max(28px, env(safe-area-inset-top)) 28px 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.overlay-brand-logo {
+  width: 95px !important;
+  height: auto !important;
+  object-fit: contain !important;
+  filter: brightness(0) invert(1) !important;
+}
+
+.overlay-close-btn {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50% !important;
+  background: rgba(26, 13, 24, 0.85) !important;
+  border: 1px solid rgba(236, 235, 231, 0.18) !important;
+  color: #ECEBE7 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+}
+
+.overlay-close-btn:hover {
+  border-color: rgba(245, 189, 26, 0.55) !important;
+  color: #F5BD1A !important;
+  transform: rotate(90deg) scale(1.04) !important;
+}
+
+.overlay-vertical-menu {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  margin-top: clamp(36px, 10vh, 70px) !important;
+  padding: 0 32px !important;
+  max-width: 600px !important;
+  box-sizing: border-box !important;
+}
+
+.dir-rtl .overlay-vertical-menu {
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+.dir-ltr .overlay-vertical-menu {
+  text-align: left !important;
+  direction: ltr !important;
+}
+
+.overlay-nav-item {
+  display: block !important;
+  width: 100% !important;
+  font-family: var(--font-hero, "DegularDisplay", sans-serif) !important;
+  font-size: clamp(24px, 7vw, 32px) !important;
+  font-weight: 500 !important;
+  color: #ECEBE7 !important;
+  text-decoration: none !important;
+  min-height: 52px !important;
+  line-height: 1.35 !important;
+  padding: 6px 0 !important;
+  border-bottom: 1px solid rgba(236, 235, 231, 0.08) !important;
+  transition: color 0.2s ease, border-color 0.2s ease !important;
+  font-synthesis: none !important;
+}
+
+@media (min-width: 768px) {
+  .overlay-nav-item {
+    font-size: clamp(32px, 5vw, 44px) !important;
+  }
+}
+
+.overlay-nav-item.active,
+.overlay-nav-item:hover {
+  color: #F5BD1A !important;
+  border-bottom-color: rgba(245, 189, 26, 0.35) !important;
+}
+
+.overlay-bottom-bar {
+  position: absolute !important;
+  bottom: max(28px, env(safe-area-inset-bottom)) !important;
+  left: 32px !important;
+  right: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+}
+
+.overlay-lang-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 18px !important;
+  max-height: 44px !important;
+  border-radius: 100px !important;
+  background: rgba(26, 13, 24, 0.85) !important;
+  border: 1px solid rgba(236, 235, 231, 0.2) !important;
+  color: #ECEBE7 !important;
+  font-family: inherit !important;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+}
+
+.overlay-lang-btn:hover {
+  border-color: #F5BD1A !important;
+  color: #F5BD1A !important;
+}
+
+.overlay-brand-signature {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(236, 235, 231, 0.6) !important;
+  text-transform: uppercase !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-synthesis: none !important;
+}
+
+.overlay-brand-signature .gold-dot {
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 50% !important;
+  background-color: #F5BD1A !important;
+}
+
+/* Premium Pill Eyebrow: [ WE BREAK THE BOX ● ] (Translucent Dark Purple Surface + Gold Dot) */
+.hero-v2-eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 100px;
+  background: rgba(103, 36, 95, 0.48);
+  border: 1px solid rgba(245, 189, 26, 0.45);
+  backdrop-filter: blur(16px);
+  max-width: max-content;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-v2-eyebrow-pill:hover {
+  border-color: rgba(245, 189, 26, 0.85);
+  box-shadow: 0 0 25px rgba(245, 189, 26, 0.3);
+  transform: translateY(-1px);
+}
+
+.pill-text {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: clamp(0.78rem, 1.1vw, 0.88rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #ECEBE7;
+  text-transform: uppercase;
+  transition: transform 0.3s ease;
+  font-synthesis: none;
+}
+
+.hero-v2-eyebrow-pill:hover .pill-text {
+  transform: translateX(1px);
+}
+
+.pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #F5BD1A;
+  box-shadow: 0 0 10px #F5BD1A;
+  flex-shrink: 0;
+  animation: pillDotBreathing 3s ease-in-out infinite alternate;
+}
+
+@keyframes pillDotBreathing {
+  0% { box-shadow: 0 0 6px #F5BD1A, 0 0 12px rgba(245, 189, 26, 0.6); opacity: 0.85; }
+  100% { box-shadow: 0 0 14px #F5BD1A, 0 0 22px rgba(245, 189, 26, 0.95); opacity: 1; }
+}
+
+/* Stage & Content Layout */
+.hero-v2-content-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 0;
+}
+
+/* Primary Hero Headline: "من زهرة نادرة إلى علامة تجارية لا تُنسى" */
+.hero-v2-primary-headline-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 900px;
+}
+
+.hero-v2-editorial-title {
+  font-family: var(--font-primary, sans-serif);
+  font-size: clamp(2.2rem, 5.2vw, 4.2rem);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: -0.5px;
+  color: #ECEBE7;
+  margin: 0;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.dir-ltr .hero-v2-editorial-title {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-weight: 600;
+  line-height: 0.96;
+  letter-spacing: 0em;
+  font-synthesis: none;
+}
+
+.headline-line-1 {
+  display: block;
+  color: #ECEBE7;
+}
+
+.headline-line-2 {
+  display: block;
+  color: #F5BD1A;
+  text-shadow: 0 0 25px rgba(245, 189, 26, 0.35);
+}
+
+.hero-v2-supporting-desc {
+  font-family: var(--font-primary, sans-serif);
+  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  font-weight: 500;
+  line-height: 1.6;
+  color: rgba(236, 235, 231, 0.78);
+  margin: 0;
+  max-width: 780px;
+}
+
+/* Primary Action CTA — Living Magnetic IRIS Button (#F5BD1A Gold Surface + #044630 Green Text) */
+.hero-v2-action-wrapper {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.hero-v2-discover-cta,
+.hero-discover-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 38px;
+  border-radius: 100px;
+  background: #F5BD1A;
+  color: #044630 !important;
+  font-family: var(--font-primary, sans-serif);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  font-weight: 800;
+  text-decoration: none;
+  border: 1px solid rgba(245, 189, 26, 0.85);
+  box-shadow: 0 10px 30px rgba(245, 189, 26, 0.38);
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.3s ease;
+  will-change: transform;
+  outline: none;
+}
+
+.hero-v2-discover-cta:hover,
+.hero-discover-btn:hover {
+  background: #f7ca45;
+  box-shadow: 0 16px 45px rgba(245, 189, 26, 0.6), 0 0 30px rgba(245, 189, 26, 0.45);
+}
+
+.hero-v2-discover-cta:active,
+.hero-discover-btn:active {
+  transform: scale(0.97) !important;
+  box-shadow: 0 6px 20px rgba(245, 189, 26, 0.3);
+}
+
+.hero-v2-discover-cta .cta-arrow-icon,
+.hero-discover-btn .btn-arrow-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #044630;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-v2-discover-cta:hover .cta-arrow-icon,
+.hero-discover-btn:hover .btn-arrow-icon {
+  transform: translateY(4px);
+}
+
+/* Reduced Motion Override (Pauses Drift Animation while Preserving Complete Static Atmosphere) */
+@media (prefers-reduced-motion: reduce) {
+  .glow-purple-topright,
+  .glow-green-bottomleft,
+  .glow-gold-accent,
+  .pill-dot {
+    animation: none !important;
+  }
+}
+
+/* Fullscreen Portal Overlay */
+.iris-portal-fullscreen-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  z-index: 9999 !important;
+  background-color: #120A11 !important;
+  overflow: hidden !important;
+  display: flex !important;
+}

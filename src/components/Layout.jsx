@@ -1,9 +1,10 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, Outlet } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { PremiumCursorGlow } from './motion';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import '../styles/global.css';
 
 /**
@@ -36,6 +37,8 @@ const pageVariants = {
 const Layout = () => {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const { lang } = useSiteSettings();
+  const isRtl = lang === 'ar';
 
   // Automatically scroll to top on every page navigation
   useEffect(() => {
@@ -43,7 +46,7 @@ const Layout = () => {
   }, [location.pathname]);
 
   return (
-    <div dir="rtl" lang="ar" className="customer-layout">
+    <div dir={isRtl ? 'rtl' : 'ltr'} lang={lang} className={`customer-layout dir-${isRtl ? 'rtl' : 'ltr'}`}>
       <PremiumCursorGlow />
       <Navbar />
       {isHome ? (
@@ -51,20 +54,22 @@ const Layout = () => {
           <Outlet />
         </main>
       ) : (
-        <AnimatePresence mode="wait">
-          <motion.main
-            key={location.pathname}
-            className="content-wrapper subpage-layout-content"
-            variants={pageVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            <Outlet />
-          </motion.main>
-        </AnimatePresence>
+        <>
+          <AnimatePresence mode="wait">
+            <motion.main
+              key={location.pathname}
+              className="content-wrapper subpage-layout-content"
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <Outlet />
+            </motion.main>
+          </AnimatePresence>
+          <Footer />
+        </>
       )}
-      <Footer />
     </div>
   );
 };

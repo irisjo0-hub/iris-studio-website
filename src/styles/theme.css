@@ -1,14 +1,40 @@
+/* src/styles/theme.css
+ * IRIS Agency — Global Theme Tokens & Utilities
+ */
+
 :root {
-  --color-purple: #6F2477;
-  --color-gold: #F4C21D;
-  --color-dark-green: #0B5B4B;
+  --color-purple: #67245F;
+  --color-gold: #F5BD1A;
+  --color-dark-green: #044630;
   --color-light-gray: #ECEBE7;
-  --font-primary: 'Cairo', 'Inter', sans-serif;
+  --font-primary: 'Cairo', 'Juman', sans-serif;
+
+  /* Centralized Semantic Dark System Tokens */
+  --iris-purple: #67245F;
+  --iris-offwhite: #ECEBE7;
+  --iris-gold: #F5BD1A;
+  --iris-green: #044630;
+
+  --iris-bg-primary: #120A11;
+  --iris-bg-secondary: #0A1410;
+  --iris-surface: #1A1018;
+  --iris-surface-alt: #0B1A14;
+  --iris-surface-glass: rgba(26, 13, 24, 0.85);
+
+  --iris-text-primary: #ECEBE7;
+  --iris-text-secondary: rgba(236, 235, 231, 0.72);
+  --iris-text-muted: rgba(236, 235, 231, 0.50);
+  --iris-text-disabled: rgba(236, 235, 231, 0.32);
+
+  --iris-accent: #F5BD1A;
+  --iris-border: rgba(236, 235, 231, 0.14);
+  --iris-border-gold: rgba(245, 189, 26, 0.35);
 }
 
 body {
   font-family: var(--font-primary);
-  background-color: var(--color-light-gray);
+  background-color: var(--iris-bg-primary);
+  color: var(--iris-text-primary);
   direction: rtl;
   margin: 0;
   padding: 0;
@@ -16,17 +42,18 @@ body {
 
 /* Glassmorphism utility */
 .glass {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(26, 13, 24, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--iris-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 /* Button utilities */
 .btn-primary {
-  background: var(--color-gold);
-  color: #fff;
+  background: var(--iris-gold);
+  color: #044630;
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
@@ -37,13 +64,13 @@ body {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 16px rgba(245, 189, 26, 0.4);
 }
 
 .btn-secondary {
   background: transparent;
-  color: var(--color-purple);
-  border: 2px solid var(--color-purple);
+  color: var(--iris-purple);
+  border: 2px solid var(--iris-purple);
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   cursor: pointer;
@@ -52,6 +79,6 @@ body {
 }
 
 .btn-secondary:hover {
-  background: var(--color-purple);
-  color: #fff;
+  background: var(--iris-purple);
+  color: var(--iris-offwhite);
 }

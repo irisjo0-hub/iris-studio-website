@@ -1,0 +1,439 @@
+/* src/styles/iris-flow-stage.css
+ * IRIS FLOW — FULL-SCREEN IMAGE STORIES + FUNCTIONAL ACTIONS
+ * Features: 100dvh full-screen static image stage, 3-action side rail,
+ * Feedback bottom sheet (mobile) / drawer (desktop), Web Share API toast,
+ * IRIS HOME mark, and 2px thin gold progress indicator.
+ */
+
+.iris-flow-section-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  background: #120911;
+  color: #ECEBE7;
+  overflow: hidden;
+  touch-action: pan-y;
+  user-select: none;
+  z-index: 10;
+}
+
+/* Container Bounds (Desktop max-width stage) */
+.flow-stage-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .flow-stage-viewport {
+    width: clamp(380px, 35vw, 550px);
+    height: 100%;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 0 100px rgba(0, 0, 0, 0.9);
+    border-left: 1px solid rgba(236, 235, 231, 0.1);
+    border-right: 1px solid rgba(236, 235, 231, 0.1);
+  }
+}
+
+@media (max-width: 1023px) {
+  .flow-stage-viewport {
+    width: 100vw;
+    height: 100dvh;
+    position: relative;
+  }
+}
+
+/* Full-Screen Static Image Container */
+.flow-image-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.flow-static-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.02);
+  transition: transform 12s ease-out;
+  will-change: transform;
+}
+
+.flow-image-layer:hover .flow-static-img {
+  transform: scale(1.04);
+}
+
+/* Ambient Darkness Mask for Text Legibility */
+.flow-darkness-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(18, 9, 17, 0.5) 0%,
+    transparent 30%,
+    transparent 65%,
+    rgba(18, 9, 17, 0.88) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 2px Thin Vertical Progress Rail */
+.flow-progress-rail {
+  position: absolute;
+  top: 15%;
+  bottom: 15%;
+  left: 12px;
+  width: 2px;
+  background: rgba(236, 235, 231, 0.18);
+  border-radius: 10px;
+  z-index: 25;
+  pointer-events: none;
+}
+
+.dir-rtl .flow-progress-rail {
+  left: auto;
+  right: 12px;
+}
+
+.flow-progress-bar {
+  width: 100%;
+  background: #F5BD1A;
+  box-shadow: 0 0 10px #F5BD1A;
+  border-radius: 10px;
+  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== FIXED TOP BAR UI ===== */
+.flow-top-bar {
+  position: absolute;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 30;
+  pointer-events: auto;
+}
+
+/* Top Right Hamburger Control (Min 48x48 Target) */
+.flow-hamburger-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(26, 13, 24, 0.82);
+  border: 1px solid rgba(236, 235, 231, 0.2);
+  color: #ECEBE7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+}
+
+.flow-hamburger-btn:hover {
+  border-color: #F5BD1A;
+  color: #F5BD1A;
+  transform: scale(1.05);
+}
+
+/* Category Badge (Top Left) */
+.flow-category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  background: rgba(103, 36, 95, 0.65);
+  border: 1px solid rgba(245, 189, 26, 0.4);
+  backdrop-filter: blur(12px);
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #F5BD1A;
+  text-transform: uppercase;
+  font-synthesis: none;
+}
+
+/* ===== RIGHT ACTION RAIL (3 CIRCULAR CONTROLS) ===== */
+.flow-action-rail {
+  position: absolute;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 18px;
+  z-index: 30;
+}
+
+.dir-rtl .flow-action-rail {
+  right: auto;
+  left: calc(16px + env(safe-area-inset-left, 0px));
+  align-items: flex-start;
+}
+
+/* Circular Floating Control Base */
+.flow-action-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.flow-action-circle-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(26, 13, 24, 0.85);
+  border: 1px solid rgba(236, 235, 231, 0.22);
+  color: #ECEBE7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.flow-action-circle-btn:hover {
+  border-color: #F5BD1A;
+  color: #F5BD1A;
+  transform: scale(1.06);
+  box-shadow: 0 14px 35px rgba(245, 189, 26, 0.35);
+}
+
+.flow-action-circle-btn.primary-action-btn {
+  background: #F5BD1A;
+  border-color: #F5BD1A;
+  color: #044630;
+}
+
+.flow-action-circle-btn.primary-action-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 16px 40px rgba(245, 189, 26, 0.6);
+}
+
+/* Floating CTA Label Next to Primary Button */
+.flow-floating-cta-label {
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: rgba(26, 13, 24, 0.88);
+  border: 1px solid rgba(245, 189, 26, 0.45);
+  color: #ECEBE7;
+  font-family: var(--font-primary, sans-serif);
+  font-size: 0.88rem;
+  font-weight: 600;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.flow-floating-cta-label:hover {
+  color: #F5BD1A;
+  border-color: #F5BD1A;
+}
+
+/* ===== FLOATING EDITORIAL COPY OVERLAY ===== */
+.flow-editorial-overlay {
+  position: absolute;
+  left: calc(20px + env(safe-area-inset-left, 0px));
+  right: 90px;
+  bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 650px;
+  pointer-events: none;
+}
+
+.dir-rtl .flow-editorial-overlay {
+  right: calc(20px + env(safe-area-inset-right, 0px));
+  left: auto;
+  max-width: 58%;
+}
+
+.flow-item-number {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #F5BD1A;
+  font-synthesis: none;
+}
+
+.flow-headline-text {
+  font-family: var(--font-primary, sans-serif);
+  font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.3;
+  color: #ECEBE7;
+  margin: 0;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+.flow-secondary-text {
+  font-family: var(--font-primary, sans-serif);
+  font-size: clamp(0.88rem, 1.4vw, 1.05rem);
+  font-weight: 500;
+  line-height: 1.5;
+  color: rgba(236, 235, 231, 0.8);
+  margin: 0;
+}
+
+/* ===== IRIS HOME IDENTITY MARK (BOTTOM LEFT) ===== */
+.flow-iris-home-mark {
+  position: absolute;
+  left: calc(20px + env(safe-area-inset-left, 0px));
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 8px;
+  border-radius: 100px;
+  background: rgba(26, 13, 24, 0.85);
+  border: 1px solid rgba(236, 235, 231, 0.2);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  z-index: 30;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.dir-rtl .flow-iris-home-mark {
+  left: auto;
+  right: calc(20px + env(safe-area-inset-right, 0px));
+  padding: 6px 8px 6px 14px;
+}
+
+.flow-iris-home-mark:hover {
+  border-color: #F5BD1A;
+  transform: translateY(-2px);
+}
+
+.home-mark-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #67245F;
+  border: 1px solid #F5BD1A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.home-mark-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.home-mark-text {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #ECEBE7;
+  font-synthesis: none;
+}
+
+/* ===== FIRST-USE SWIPE HINT ===== */
+.flow-swipe-hint-banner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 20px;
+  border-radius: 100px;
+  background: rgba(26, 13, 24, 0.9);
+  border: 1px solid #F5BD1A;
+  color: #F5BD1A;
+  font-size: 0.85rem;
+  font-weight: 700;
+  backdrop-filter: blur(16px);
+  z-index: 40;
+  pointer-events: none;
+  animation: hintPulse 2.5s ease infinite;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+/* ===== FEEDBACK BOTTOM SHEET / DESKTOP DRAWER ===== */
+.flow-feedback-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 767px) {
+  .flow-feedback-drawer-overlay {
+    align-items: flex-end;
+  }
+
+  .flow-feedback-sheet {
+    width: 100%;
+    max-height: 80dvh;
+    border-radius: 28px 28px 0 0;
+    background: #1A0D18;
+    border-top: 1px solid rgba(245, 189, 26, 0.4);
+    padding: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .flow-feedback-sheet {
+    width: 420px;
+    height: 100%;
+    background: #1A0D18;
+    border-left: 1px solid rgba(245, 189, 26, 0.4);
+    padding: 32px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+  
+  .dir-rtl .flow-feedback-sheet {
+    border-left: none;
+    border-right: 1px solid rgba(245, 189, 26, 0.4);
+  }
+}
+
+/* ===== TOAST NOTIFICATION ===== */
+.flow-toast-notification {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 22px;
+  border-radius: 100px;
+  background: #F5BD1A;
+  color: #044630;
+  font-family: var(--font-primary, sans-serif);
+  font-size: 0.9rem;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 120;
+}

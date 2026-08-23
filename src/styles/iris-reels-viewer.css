@@ -1,0 +1,814 @@
+/* src/styles/iris-reels-viewer.css
+ * IRIS REELS VIEWER — BILINGUAL SPATIAL OVERLAY GRID & TRUE 9:16 CANVAS GEOMETRY
+ * Explicit layout rules for [data-locale="ar"] and [data-locale="en"]
+ */
+
+.iris-reels-viewer-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  background: #120A11;
+  color: #ECEBE7;
+  overflow: hidden;
+  touch-action: pan-y;
+  user-select: none;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Stage Container (Full Viewport Area) */
+.reels-stage-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ===== TRUE 9:16 REEL FRAME CANVAS GEOMETRY ===== */
+.reel-frame {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  width: min(100vw, calc(100dvh * 9 / 16));
+  height: calc(min(100vw, calc(100dvh * 9 / 16)) * 16 / 9);
+  max-height: 100dvh;
+  margin: 0 auto;
+  overflow: hidden;
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.95);
+  border-radius: 0px;
+}
+
+@media (min-width: 1024px) {
+  .reel-frame {
+    height: calc(100dvh - 32px);
+    width: calc((100dvh - 32px) * 9 / 16);
+    max-width: 520px;
+    border-radius: 20px;
+    border: 1px solid rgba(236, 235, 231, 0.12);
+  }
+}
+
+/* Full-Screen 9:16 Background Image */
+.reel-canvas-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.reel-static-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transform: scale(1.02);
+  transition: transform 12s ease-out;
+  will-change: transform;
+}
+
+.reel-canvas-layer:hover .reel-static-img {
+  transform: scale(1.04);
+}
+
+/* Darkness Gradient Mask for Text Readability */
+.reel-darkness-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(18, 10, 17, 0.45) 0%,
+    transparent 28%,
+    transparent 58%,
+    rgba(18, 10, 17, 0.88) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ===== BIDI STRING ISOLATION UTILITY ===== */
+.bidi-isolate {
+  unicode-bidi: isolate !important;
+  direction: ltr !important;
+  display: inline-block;
+}
+
+/* ===== PERSISTENT SPATIAL OVERLAYS INSIDE 9:16 FRAME ===== */
+.reels-persistent-ui-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.reels-top-bar {
+  position: absolute;
+  top: calc(14px + env(safe-area-inset-top, 0px));
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+  z-index: 35;
+}
+
+/* Hamburger Button */
+.reels-hamburger-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(26, 13, 24, 0.85);
+  border: 1px solid rgba(236, 235, 231, 0.2);
+  color: #ECEBE7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  transition: all 0.25s ease;
+  position: absolute;
+}
+
+.reels-hamburger-btn:hover {
+  border-color: #F5BD1A;
+  color: #F5BD1A;
+  transform: scale(1.05);
+}
+
+/* Progress Counter Micro Pill */
+.reels-counter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  background: rgba(103, 36, 95, 0.65);
+  border: 1px solid rgba(245, 189, 26, 0.4);
+  backdrop-filter: blur(14px);
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #F5BD1A;
+  font-synthesis: none;
+  position: absolute;
+}
+
+/* ===== ACTION RAIL ===== */
+.reels-action-rail {
+  position: absolute;
+  bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  pointer-events: auto;
+  z-index: 35;
+}
+
+.reels-action-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reels-action-circle-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(26, 13, 24, 0.85);
+  border: 1px solid rgba(236, 235, 231, 0.22);
+  color: #ECEBE7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  flex-shrink: 0;
+}
+
+.reels-action-circle-btn:hover {
+  border-color: #F5BD1A;
+  color: #F5BD1A;
+  transform: scale(1.06);
+  box-shadow: 0 12px 30px rgba(245, 189, 26, 0.35);
+}
+
+.reels-action-circle-btn.primary-action-btn {
+  background: #F5BD1A;
+  border-color: #F5BD1A;
+  color: #044630;
+}
+
+.reels-action-circle-btn.primary-action-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 14px 35px rgba(245, 189, 26, 0.55);
+}
+
+/* Floating CTA Label Next to Primary Action */
+.reels-floating-cta-label {
+  padding: 6px 14px;
+  border-radius: 100px;
+  background: rgba(26, 13, 24, 0.88);
+  border: 1px solid rgba(245, 189, 26, 0.45);
+  color: #ECEBE7;
+  font-family: var(--font-primary, sans-serif);
+  font-size: 0.82rem;
+  font-weight: 600;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reels-floating-cta-label:hover {
+  color: #F5BD1A;
+  border-color: #F5BD1A;
+}
+
+/* ===== INSTAGRAM-STYLE PROFILE IDENTITY CLUSTER ===== */
+.reel-profile-cluster {
+  position: absolute;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  z-index: 35;
+  pointer-events: auto;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-decoration: none;
+}
+
+.reel-avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #67245F;
+  border: 2px solid #ECEBE7;
+  box-shadow: 0 0 0 2px rgba(245, 189, 26, 0.6), 0 4px 15px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.reel-profile-cluster:hover .reel-avatar-circle {
+  transform: scale(1.05);
+}
+
+.reel-avatar-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.reel-profile-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.reel-profile-name {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #ECEBE7;
+  line-height: 1.2;
+  font-synthesis: none;
+}
+
+.reel-profile-handle {
+  font-family: var(--font-primary, sans-serif);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(236, 235, 231, 0.70);
+  line-height: 1.2;
+}
+
+/* Progress Counter Micro Pill (Mockup Accent Line) */
+.reels-counter-pill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  background: rgba(26, 13, 24, 0.75);
+  border: 1px solid rgba(245, 189, 26, 0.3);
+  backdrop-filter: blur(14px);
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #F5BD1A;
+  letter-spacing: 0.5px;
+  position: absolute;
+}
+
+.gold-accent-line {
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: #F5BD1A;
+  border-radius: 2px;
+}
+
+/* ===== DYNAMIC REEL EDITORIAL OVERLAY ===== */
+.reel-editorial-overlay {
+  position: absolute;
+  bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.reel-item-number {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #F5BD1A;
+  font-synthesis: none;
+}
+
+.reel-headline-text {
+  font-family: var(--font-primary, sans-serif);
+  font-size: clamp(1.2rem, 2.5vw, 1.85rem);
+  font-weight: 700;
+  line-height: 1.35;
+  color: #ECEBE7;
+  margin: 0;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.8);
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.reel-secondary-text {
+  font-family: var(--font-primary, sans-serif);
+  font-size: 0.88rem;
+  color: rgba(236, 235, 231, 0.75);
+  margin: 0;
+  line-height: 1.4;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ===== INSTAGRAM REEL CAPTION BLOCK (NATIVE OVERLAY - NO RECTANGLE BOX) ===== */
+.instagram-reel-caption-block {
+  position: absolute;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: auto;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* ===== 1. EXPLICIT ARABIC OVERLAY GRID (data-locale="ar") ===== */
+.reel-frame[data-locale="ar"] .reels-hamburger-btn {
+  left: 20px;
+  right: auto;
+  top: 18px;
+}
+
+.reel-frame[data-locale="ar"] .reels-counter-pill-tag {
+  right: 20px;
+  left: auto;
+  top: 18px;
+}
+
+/* Action Rail Pinned strictly to LEFT SIDE for Arabic */
+.reel-frame[data-locale="ar"] .reels-action-rail {
+  left: 20px;
+  right: auto;
+  bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+  align-items: center;
+  width: 68px;
+  gap: 18px;
+}
+
+/* Caption Block Pinned strictly to RIGHT SIDE for Arabic */
+.reel-frame[data-locale="ar"] .instagram-reel-caption-block {
+  right: 20px;
+  left: 105px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  text-align: right;
+}
+
+/* ===== 2. EXPLICIT ENGLISH OVERLAY GRID (data-locale="en") ===== */
+.reel-frame[data-locale="en"] .reels-hamburger-btn {
+  right: 20px;
+  left: auto;
+  top: 18px;
+}
+
+.reel-frame[data-locale="en"] .reels-counter-pill-tag {
+  left: 20px;
+  right: auto;
+  top: 18px;
+}
+
+/* Action Rail Pinned strictly to RIGHT SIDE for English */
+.reel-frame[data-locale="en"] .reels-action-rail {
+  right: 20px;
+  left: auto;
+  bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+  align-items: center;
+  width: 68px;
+  gap: 18px;
+}
+
+/* Caption Block Pinned strictly to LEFT SIDE for English */
+.reel-frame[data-locale="en"] .instagram-reel-caption-block {
+  left: 20px;
+  right: 105px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  text-align: left;
+}
+
+/* ===== FEEDBACK BOTTOM SHEET / DESKTOP DRAWER ===== */
+.reels-feedback-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 767px) {
+  .reels-feedback-drawer-overlay {
+    align-items: flex-end;
+  }
+
+  .reels-feedback-sheet {
+    width: 100%;
+    max-height: 80dvh;
+    border-radius: 28px 28px 0 0;
+    background: #1A0D18;
+    border-top: 1px solid rgba(245, 189, 26, 0.4);
+    padding: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .reels-feedback-sheet {
+    width: 420px;
+    height: 100%;
+    background: #1A0D18;
+    border-left: 1px solid rgba(245, 189, 26, 0.4);
+    padding: 32px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+}
+
+/* ===== TOAST NOTIFICATION ===== */
+.reels-toast-notification {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 22px;
+  border-radius: 100px;
+  background: #F5BD1A;
+  color: #044630;
+  font-family: var(--font-primary, sans-serif);
+  font-size: 0.9rem;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 120;
+}
+
+/* ===== INSTAGRAM REELS TOP SEGMENTED PROGRESS BARS ===== */
+.instagram-segmented-progress {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  gap: 4px;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.progress-segment-track {
+  flex: 1;
+  height: 2.5px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-segment-fill {
+  height: 100%;
+  width: 0%;
+  background: rgba(255, 255, 255, 0.9);
+  transition: width 0.3s ease;
+}
+
+.progress-segment-fill.completed {
+  width: 100%;
+  background: #F5BD1A;
+}
+
+.progress-segment-fill.active {
+  width: 100%;
+  background: #F5BD1A;
+  box-shadow: 0 0 8px #F5BD1A;
+  animation: pulseBar 2s ease-in-out infinite;
+}
+
+@keyframes pulseBar {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ===== TOP BAR BRAND HEADER & SOUND CONTROLS ===== */
+.reels-brand-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reels-title-text {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #ECEBE7;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+}
+
+.reels-counter-pill-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #F5BD1A;
+  background: rgba(103, 36, 95, 0.7);
+  padding: 2px 8px;
+  border-radius: 100px;
+  border: 1px solid rgba(245, 189, 26, 0.35);
+}
+
+.reels-top-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.reel-frame[data-locale="ar"] .reels-top-right-actions {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.reels-sound-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(26, 13, 24, 0.82);
+  border: 1px solid rgba(236, 235, 231, 0.2);
+  color: #ECEBE7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: all 0.2s ease;
+}
+
+.reels-sound-btn:hover {
+  border-color: #F5BD1A;
+  color: #F5BD1A;
+  transform: scale(1.06);
+}
+
+/* ===== DOUBLE TAP HEART BURST ===== */
+.instagram-heart-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 38;
+  pointer-events: none;
+  filter: drop-shadow(0 0 25px rgba(239, 68, 68, 0.8));
+}
+
+/* ===== INSTAGRAM CAPTION PROFILE ROW ===== */
+.instagram-caption-profile-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  pointer-events: auto;
+}
+
+.instagram-avatar-ring {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.instagram-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #67245F;
+}
+
+.instagram-user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.instagram-username {
+  font-family: var(--font-hero, "DegularDisplay", sans-serif);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ECEBE7;
+  line-height: 1.1;
+}
+
+.instagram-handle {
+  font-size: 0.72rem;
+  color: rgba(236, 235, 231, 0.7);
+  line-height: 1.1;
+}
+
+.instagram-follow-btn {
+  padding: 4px 12px;
+  border-radius: 100px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #ECEBE7;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-left: 6px;
+}
+
+.reel-frame[data-locale="ar"] .instagram-follow-btn {
+  margin-left: 0;
+  margin-right: 6px;
+}
+
+.instagram-follow-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #F5BD1A;
+  color: #F5BD1A;
+}
+
+.instagram-follow-btn.following {
+  background: rgba(245, 189, 26, 0.2);
+  border-color: #F5BD1A;
+  color: #F5BD1A;
+}
+
+/* ===== INSTAGRAM AUDIO TICKER ===== */
+.instagram-audio-ticker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: rgba(236, 235, 231, 0.85);
+  font-size: 0.75rem;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.ticker-icon {
+  color: #F5BD1A;
+  flex-shrink: 0;
+  animation: pulseAudio 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseAudio {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+.ticker-text-wrapper {
+  overflow: hidden;
+  white-space: nowrap;
+  mask-image: linear-gradient(90deg, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%);
+}
+
+.ticker-text {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(236, 235, 231, 0.85);
+}
+
+/* ===== ACTION RAIL SINGLE ITEM GROUPS (WITH COUNTERS & TEXT BELOW ICON) ===== */
+.reels-action-btn-group-single {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+}
+
+.reels-action-counter {
+  font-family: var(--font-primary, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #ECEBE7;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.reels-action-cta-text {
+  color: #F5BD1A;
+  font-weight: 700;
+  font-size: 0.68rem;
+  cursor: pointer;
+  max-width: 78px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.15;
+  transition: all 0.2s ease;
+  word-break: break-word;
+}
+
+.reels-action-cta-text:hover {
+  color: #FFFFFF;
+  text-shadow: 0 0 8px rgba(245, 189, 26, 0.8);
+}
+
+/* ===== ROTATING VINYL AUDIO DISC ===== */
+.instagram-vinyl-wrapper {
+  margin-top: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.instagram-vinyl-disc {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #1A0D18;
+  border: 3px solid #2B1627;
+  box-shadow: 0 0 0 2px rgba(245, 189, 26, 0.5), 0 4px 12px rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.instagram-vinyl-disc.spinning {
+  animation: spinVinyl 6s linear infinite;
+}
+
+@keyframes spinVinyl {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.instagram-vinyl-disc img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: contain;
+}

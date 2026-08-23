@@ -5,15 +5,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  --g-purple:  var(--color-purple);
-  --g-green:   var(--color-green);
-  --g-gold:    var(--color-gold);
-  --g-bg:      var(--color-bg-light);
-  --g-white:   var(--color-bg-white);
-  --g-shadow:  var(--uds-shadow-lg);
+  --g-purple:  #F5BD1A;
+  --g-green:   #044630;
+  --g-gold:    #F5BD1A;
+  --g-bg:      #180C17;
+  --g-white:   rgba(26, 13, 24, 0.85);
+  --g-shadow:  0 16px 40px rgba(0, 0, 0, 0.6);
   --g-radius:  var(--uds-radius-lg);
-  --g-muted:   var(--color-text-muted);
-  --g-border:  #D5D2CA;
+  --g-muted:   rgba(236, 235, 231, 0.7);
+  --g-border:  rgba(236, 235, 231, 0.12);
 }
 
 /* Font overrides for native controls to ensure font unification */
@@ -36,16 +36,16 @@
 .grad-page {
   direction: rtl;
   font-family: var(--font-primary);
-  background: var(--g-bg);
+  background: #180C17;
   min-height: 100vh;
-  color: #2C3E50;
+  color: #ECEBE7;
 }
 
 /* ─── Hero Banner ────────────────────────────────────────────── */
 .grad-hero {
-  background: var(--g-white);
-  border-bottom: 1px solid var(--g-border);
-  color: var(--g-purple);
+  background: rgba(26, 13, 24, 0.85);
+  border-bottom: 1px solid rgba(236, 235, 231, 0.12);
+  color: #ECEBE7;
   padding: 80px 24px 64px;
   text-align: center;
   position: relative;

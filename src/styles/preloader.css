@@ -1,0 +1,216 @@
+/* src/styles/preloader.css
+ * IRIS LUXURY PRELOADER SYSTEM — EXACT HERO ATMOSPHERIC MATCH & TAGLINE BADGE
+ * Colors: #180C17 (Dark Violet), #67245F (Iris Purple), #044630 (Iris Green), #F5BD1A (Iris Gold)
+ */
+
+.preloader-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #180C17;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Texture Grain Overlay — Identical 0.025 Opacity Hero Noise */
+.preloader-grain-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* ===== ATMOSPHERIC COLOR FIELDS (100% IDENTICAL TO HERO PAGE) ===== */
+.preloader-ambient-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Zone 1 — Top-Left IRIS Purple Glow */
+.preloader-glow-purple-topleft {
+  position: absolute;
+  top: -40px;
+  left: -110px;
+  width: clamp(600px, 55vw, 850px);
+  height: clamp(520px, 48vw, 750px);
+  filter: blur(45px);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(103, 36, 95, 0.65) 0%,
+    rgba(103, 36, 95, 0.42) 32%,
+    rgba(103, 36, 95, 0.22) 58%,
+    transparent 85%
+  );
+}
+
+/* Zone 2 — Top-Right IRIS Purple Atmosphere */
+.preloader-glow-purple-topright {
+  position: absolute;
+  top: -8vw;
+  right: -8vw;
+  width: clamp(550px, 60vw, 900px);
+  height: clamp(550px, 60vw, 900px);
+  filter: blur(75px);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(103, 36, 95, 0.62) 0%,
+    rgba(103, 36, 95, 0.35) 45%,
+    transparent 75%
+  );
+}
+
+/* Zone 3 — Bottom-Left IRIS Deep Green Atmosphere */
+.preloader-glow-green-bottomleft {
+  position: absolute;
+  bottom: -8vw;
+  left: -8vw;
+  width: clamp(580px, 65vw, 950px);
+  height: clamp(580px, 65vw, 950px);
+  filter: blur(80px);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(4, 70, 48, 0.65) 0%,
+    rgba(4, 70, 48, 0.35) 50%,
+    transparent 75%
+  );
+}
+
+/* Zone 4 — Bottom-Right IRIS Deep Green Atmosphere */
+.preloader-glow-green-bottomright {
+  position: absolute;
+  bottom: -6vw;
+  right: 5%;
+  width: clamp(450px, 52vw, 800px);
+  height: clamp(450px, 52vw, 800px);
+  filter: blur(70px);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(4, 70, 48, 0.58) 0%,
+    rgba(4, 70, 48, 0.28) 45%,
+    transparent 75%
+  );
+}
+
+/* Zone 5 — Gold Center Energy Accent */
+.preloader-glow-gold-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(300px, 35vw, 500px);
+  height: clamp(300px, 35vw, 500px);
+  filter: blur(50px);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(245, 189, 26, 0.22) 0%,
+    rgba(245, 189, 26, 0.08) 45%,
+    transparent 70%
+  );
+}
+
+/* Central Artistic Layout Box */
+.preloader-artistic-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 10;
+}
+
+/* Centered Golden Halo Ring Container */
+.preloader-halo-wrapper {
+  position: relative;
+  width: clamp(180px, 22vw, 240px);
+  height: clamp(180px, 22vw, 240px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preloader-halo-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 20px rgba(245, 189, 26, 0.65));
+}
+
+/* Center White IRIS Logo (Nested Inside Golden Halo Ring) */
+.preloader-logo-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.preloader-logo {
+  width: clamp(110px, 14vw, 150px);
+  height: auto;
+  max-height: 85px;
+  object-fit: contain;
+  filter: brightness(0) invert(1) !important;
+  opacity: 0.98;
+}
+
+/* Slogan Typography */
+.preloader-brand-text {
+  font-family: var(--font-primary, sans-serif);
+  color: #F5BD1A;
+  font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-shadow: 0 0 25px rgba(245, 189, 26, 0.45);
+  margin-top: 4px;
+}
+
+/* Luxury Tagline Badge for "ثلاثة عوالم، مكان واحد" */
+.preloader-tagline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(245, 189, 26, 0.08);
+  border: 1px solid rgba(245, 189, 26, 0.35);
+  border-radius: 50px;
+  padding: 7px 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(245, 189, 26, 0.1);
+  backdrop-filter: blur(10px);
+  margin-top: 4px;
+}
+
+.tagline-sparkle {
+  color: #F5BD1A;
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.tagline-text {
+  color: #ECEBE7;
+  font-size: clamp(0.82rem, 1.1vw, 0.95rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-shadow: 0 0 15px rgba(236, 235, 231, 0.3);
+}

@@ -49,8 +49,8 @@
   width: 100%;
   min-height: 100vh;
   direction: rtl;
-  background: #ecebe7;
-  color: #1d1d1d;
+  background: #180C17;
+  color: #ECEBE7;
 }
 
 /* ===== Wave SVG Dividers ===== */
@@ -1356,17 +1356,8 @@ body.scroll-lock {
 .white-content-page {
   position: relative;
   z-index: 20;
-  background-color: #ffffff;
+  background-color: #180C17;
   width: 100%;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.4s ease, visibility 0.4s ease;
-}
-
-.customer-layout:has(.home-page) .footer,
-.customer-layout:has(.opening-sequence-overlay) .footer {
-  opacity: 0;
-  visibility: hidden;
 }
 
 /* ==========================================================================
