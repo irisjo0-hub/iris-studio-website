@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import irisLogo from '../assets/iris_logo.png';
-import { MessageSquare, MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { MessageSquare, MapPin, Phone, Mail, ArrowUp } from 'lucide-react';
 import '../styles/footer.css';
 
 export const Footer = () => {
@@ -17,15 +17,28 @@ export const Footer = () => {
     { path: '/packages', label_ar: 'البكجات والعروض', label_en: 'Packages & Offers' },
   ];
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <footer id="iris-footer-root" className={`footer dir-${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Premium Gradient Divider */}
       <div className="footer-gradient-divider" />
       
+      {/* 3 Creative Pillars Glassmorphic Badge Bar */}
+      <div className="footer-pillars-bar container">
+        <span className="pillar-item">01. MEDIA</span>
+        <span className="pillar-bullet">•</span>
+        <span className="pillar-item">02. STUDIO</span>
+        <span className="pillar-bullet">•</span>
+        <span className="pillar-item">03. PRINT</span>
+      </div>
+
       <div className="footer-content container">
         {/* Brand & Slogan */}
         <div className="footer-brand">
-          <Link to="/" aria-label="IRIS Agency">
+          <Link to="/" aria-label="IRIS Agency" className="footer-logo-link">
             <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS Studio" className="footer-logo" />
           </Link>
           <p className="footer-tagline">
@@ -45,7 +58,8 @@ export const Footer = () => {
           <nav className="footer-nav">
             {footerLinks.map((item) => (
               <Link key={item.path} to={item.path} className="footer-link">
-                {isRtl ? item.label_ar : item.label_en}
+                <span className="link-hover-dot" />
+                <span>{isRtl ? item.label_ar : item.label_en}</span>
               </Link>
             ))}
           </nav>
@@ -130,11 +144,21 @@ export const Footer = () => {
         </div>
       </div>
 
-      {/* Copyright */}
-      <div className="footer-bottom">
+      {/* Copyright & Back To Top Action */}
+      <div className="footer-bottom container">
         <p className="copyright">
           &copy; {new Date().getFullYear()} IRIS Agency. {isRtl ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}
         </p>
+
+        <button type="button" className="footer-back-to-top" onClick={scrollToTop} aria-label="Back to Top">
+          <span>{isRtl ? 'الأعلى' : 'Top'}</span>
+          <ArrowUp size={16} />
+        </button>
+      </div>
+
+      {/* Giant Studio Watermark */}
+      <div className="footer-giant-watermark" aria-hidden="true">
+        IRIS
       </div>
     </footer>
   );
