@@ -639,6 +639,26 @@
   color: #F5BD1A !important;
 }
 
+.preview-site-item {
+  background: rgba(245, 189, 26, 0.15) !important;
+  color: #F5BD1A !important;
+  border: 1px solid rgba(245, 189, 26, 0.35) !important;
+  font-weight: 800 !important;
+}
+
+.preview-site-item .link-icon {
+  color: #F5BD1A !important;
+}
+
+.preview-site-item:hover {
+  background: #F5BD1A !important;
+  color: #120A11 !important;
+}
+
+.preview-site-item:hover .link-icon {
+  color: #120A11 !important;
+}
+
 .logout-button {
   background: rgba(235, 59, 90, 0.15) !important;
   color: #ff6b81 !important;

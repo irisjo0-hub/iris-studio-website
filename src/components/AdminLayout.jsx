@@ -100,11 +100,6 @@ const AdminLayout = ({ children }) => {
         <div className="header-center-logo">
           <img src={settings.logo_url || irisLogo} alt="IRIS Studio" className="admin-header-logo-img" />
         </div>
-        
-        <NavLink to="/" className="header-back-link">
-          <Eye size={16} className="eye-icon" />
-          <span>معاينة الموقع</span>
-        </NavLink>
       </header>
 
       {/* Content Wrapper */}
@@ -125,10 +120,22 @@ const AdminLayout = ({ children }) => {
         {/* Fixed Right Sidebar */}
         <aside className={`admin-sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
           <div className="sidebar-brand">
-            <span className="brand-subtitle">ADMIN</span>
+            <span className="brand-subtitle">ADMIN PANEL</span>
           </div>
 
           <nav className="sidebar-nav">
+            <div className="sidebar-group">
+              <span className="group-title">المنصة العامة</span>
+              <ul>
+                <li>
+                  <NavLink to="/" className="sidebar-link preview-site-item">
+                    <Eye className="link-icon" size={17} strokeWidth={2} />
+                    <span className="link-label">معاينة الموقع الرئيسي</span>
+                  </NavLink>
+                </li>
+              </ul>
+            </div>
+
             {menuGroups.map((group, groupIdx) => (
               <div key={groupIdx} className="sidebar-group">
                 <span className="group-title">{group.title}</span>
