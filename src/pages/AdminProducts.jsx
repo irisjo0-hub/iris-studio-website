@@ -419,22 +419,22 @@ const AdminProducts = () => {
                 }
               }
               return (
-                <div key={it.id} className="admin-item-card" style={{ background: '#fff', borderRadius: '12px', border: '1px solid #eee', overflow: 'hidden', padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div key={it.id} className="admin-item-card" style={{ background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.95) 0%, rgba(18, 9, 17, 0.98) 100%)', borderRadius: '18px', border: '1.5px solid rgba(245, 189, 26, 0.35)', overflow: 'hidden', padding: '18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
                   <div>
                     {firstImg ? (
-                      <img src={firstImg} alt={it.name} style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px' }} />
+                      <img src={firstImg} alt={it.name} style={{ width: '100%', height: '160px', objectFit: 'cover', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }} />
                     ) : (
-                      <div style={{ width: '100%', height: '140px', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', color: '#aaa' }}>بدون صورة</div>
+                      <div style={{ width: '100%', height: '160px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: 'bold' }}>بدون صورة</div>
                     )}
-                    <h3 style={{ marginTop: '12px', fontSize: '1.15rem' }}>{it.name}</h3>
-                    <div style={{ color: 'var(--iris-green)', fontWeight: 'bold', fontSize: '1.2rem', margin: '4px 0' }}>{it.price} JOD</div>
-                    <div style={{ fontSize: '0.85rem', color: '#666' }}>التصنيف: {it.category}</div>
-                    {it.color_selection_enabled && <div style={{ fontSize: '0.8rem', color: 'blue' }}>[اختيار اللون مفعل]</div>}
-                    {it.is_hidden && <span style={{ color: 'red', fontSize: '0.8rem', fontWeight: 'bold' }}>[مخفي]</span>}
+                    <h3 style={{ marginTop: '14px', fontSize: '1.2rem', fontWeight: '900', color: '#FFFFFF', margin: '12px 0 4px 0' }}>{it.name}</h3>
+                    <div style={{ color: '#F5BD1A', fontWeight: '900', fontSize: '1.3rem', margin: '4px 0' }}>{it.price} JOD</div>
+                    <div style={{ fontSize: '0.85rem', color: 'rgba(236, 235, 231, 0.7)', margin: '4px 0' }}>التصنيف: {it.category}</div>
+                    {it.color_selection_enabled && <div style={{ fontSize: '0.8rem', color: '#2ECC71', fontWeight: 'bold', marginTop: '4px' }}>✓ [اختيار اللون مفعل]</div>}
+                    {it.is_hidden && <span style={{ color: '#E74C3C', fontSize: '0.8rem', fontWeight: 'bold', display: 'block', marginTop: '4px' }}>🔒 [مخفي من المتجر]</span>}
                   </div>
-                  <div className="card-actions" style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-                    <button className="btn-action edit" onClick={() => handleEdit(it)} style={{ flex: 1, background: '#f1f1f1', border: 'none', borderRadius: '6px', padding: '8px', cursor: 'pointer' }}>تعديل</button>
-                    <button className="btn-action reject" onClick={() => handleDelete(it.id, it.image_urls)} style={{ flex: 1, background: '#fee', color: 'red', border: 'none', borderRadius: '6px', padding: '8px', cursor: 'pointer' }}>حذف</button>
+                  <div className="card-actions" style={{ display: 'flex', gap: '10px', marginTop: '18px' }}>
+                    <button className="btn-action edit" onClick={() => handleEdit(it)} style={{ flex: 1, background: 'rgba(245, 189, 26, 0.15)', color: '#F5BD1A', border: '1px solid #F5BD1A', borderRadius: '50px', padding: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s ease' }}>تعديل 📝</button>
+                    <button className="btn-action reject" onClick={() => handleDelete(it.id, it.image_urls)} style={{ flex: 1, background: 'rgba(231, 76, 60, 0.2)', color: '#E74C3C', border: '1px solid #E74C3C', borderRadius: '50px', padding: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s ease' }}>حذف 🗑️</button>
                   </div>
                 </div>
               );
