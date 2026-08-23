@@ -305,291 +305,315 @@ ${notes}`;
       </section>
 
       {/* Modal Backdrop / Dialog */}
-      {selectedProduct && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000,
-            padding: '16px'
-          }}
-          onClick={closeOrderModal}
-        >
+      {selectedProduct && (() => {
+        const colorsList = Array.isArray(selectedProduct.available_colors)
+          ? selectedProduct.available_colors.flatMap(c => typeof c === 'string' ? c.split(',') : c).map(c => String(c).trim()).filter(Boolean)
+          : (typeof selectedProduct.available_colors === 'string' 
+              ? selectedProduct.available_colors.split(',').map(c => c.trim()).filter(Boolean) 
+              : []);
+
+        return (
           <div
             style={{
-              background: '#fff',
-              borderRadius: '16px',
-              width: '100%',
-              maxWidth: '520px',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              padding: '24px',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
-              position: 'relative'
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0,0,0,0.85)',
+              backdropFilter: 'blur(12px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 10000,
+              padding: '16px'
             }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={closeOrderModal}
           >
-            <button
-              onClick={closeOrderModal}
+            <div
               style={{
-                position: 'absolute',
-                top: '16px',
-                left: '16px',
-                background: 'none',
-                border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer',
-                color: '#aaa'
+                background: 'rgba(24, 12, 23, 0.98)',
+                border: '1.5px solid #F5BD1A',
+                borderRadius: '24px',
+                width: '100%',
+                maxWidth: '520px',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                padding: '28px',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+                position: 'relative',
+                color: '#FFFFFF'
               }}
+              onClick={(e) => e.stopPropagation()}
             >
-              ✕
-            </button>
+              <button
+                type="button"
+                onClick={closeOrderModal}
+                style={{
+                  position: 'absolute',
+                  top: '18px',
+                  left: '18px',
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  fontSize: '1.1rem',
+                  cursor: 'pointer',
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                ✕
+              </button>
 
-            {orderPlaced ? (
-              <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                <span style={{ fontSize: '4rem' }}>✅</span>
-                <h3 style={{ fontSize: '1.4rem', color: 'var(--g-green, #0F5A46)', margin: '16px 0 8px' }}>تم تقديم طلبك بنجاح!</h3>
-                <p style={{ color: '#555', marginBottom: '24px' }}>سيتواصل معك فريق استديو آيرس عبر الواتساب لمراجعة طلبك وإتمام التوصيل أو الاستلام.</p>
-                <button
-                  onClick={closeOrderModal}
-                  className="grad-pkg-btn"
-                  style={{ background: 'var(--g-purple, #6F246F)', width: 'auto', padding: '10px 32px' }}
-                >
-                  حسناً
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handlePlaceOrder}>
-                <h3 style={{ fontSize: '1.3rem', color: 'var(--g-purple, #6F246F)', marginBottom: '16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>
-                  طلب منتج: {selectedProduct.name}
-                </h3>
-
-                <div className="grad-form-grid" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div className="grad-field">
-                    <label className="grad-label">الاسم بالكامل *</label>
-                    <input
-                      type="text"
-                      className="grad-input"
-                      required
-                      placeholder="أدخل اسمك بالكامل للتسليم"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="grad-field">
-                    <label className="grad-label">رقم الهاتف / واتساب *</label>
-                    <input
-                      type="tel"
-                      className="grad-input"
-                      required
-                      placeholder="07xxxxxxxx"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-                  </div>
-
-                  {/* Delivery Selection */}
-                  <div style={{ marginTop: '10px' }}>
-                    <label className="grad-label" style={{ marginBottom: '8px', display: 'block' }}>طريقة الاستلام والتوصيل</label>
-                    <div className="delivery-cards-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
-                      <div
-                        className={`delivery-card ${!deliverySelected ? 'selected' : ''}`}
-                        onClick={() => setDeliverySelected(false)}
-                        style={{
-                          background: '#fff',
-                          border: !deliverySelected ? '2px solid var(--g-purple, #6E267B)' : '1px solid #ccc',
-                          borderRadius: '8px',
-                          padding: '10px',
-                          cursor: 'pointer',
-                          textAlign: 'center'
-                        }}
-                      >
-                        <div style={{ fontSize: '1.2rem' }}>🏬</div>
-                        <div style={{ fontWeight: 'bold', fontSize: '0.85rem' }}>الاستلام من الاستوديو</div>
-                        <div style={{ fontSize: '0.75rem', color: '#666' }}>مجاناً</div>
-                      </div>
-                      <div
-                        className={`delivery-card ${deliverySelected ? 'selected' : ''}`}
-                        onClick={() => setDeliverySelected(true)}
-                        style={{
-                          background: '#fff',
-                          border: deliverySelected ? '2px solid var(--g-purple, #6E267B)' : '1px solid #ccc',
-                          borderRadius: '8px',
-                          padding: '10px',
-                          cursor: 'pointer',
-                          textAlign: 'center'
-                        }}
-                      >
-                        <div style={{ fontSize: '1.2rem' }}>🚚</div>
-                        <div style={{ fontWeight: 'bold', fontSize: '0.85rem' }}>توصيل للمنزل</div>
-                        <div style={{ fontSize: '0.75rem', color: '#666' }}>+2 JOD</div>
-                      </div>
-                    </div>
-
-                    {deliverySelected && (
-                      <div className="delivery-info-group" style={{ display: 'flex', flexDirection: 'column', gap: '10px', background: '#fcfcfc', padding: '12px', borderRadius: '8px', border: '1px solid #eee' }}>
-                        <div className="grad-field">
-                          <label className="grad-label">عنوان التوصيل بالتفصيل *</label>
-                          <textarea
-                            className="grad-textarea"
-                            style={{ minHeight: '60px' }}
-                            required
-                            placeholder="المحافظة، المنطقة، اسم الشارع، وأي معالم قريبة..."
-                            value={deliveryAddress}
-                            onChange={(e) => setDeliveryAddress(e.target.value)}
-                          />
-                        </div>
-                        <div className="grad-field">
-                          <label className="grad-label">رقم هاتف بديل (اختياري)</label>
-                          <input
-                            type="tel"
-                            className="grad-input"
-                            placeholder="رقم للتواصل عند التوصيل..."
-                            value={alternativePhone}
-                            onChange={(e) => setAlternativePhone(e.target.value)}
-                          />
-                        </div>
-                        <div className="grad-field">
-                          <label className="grad-label">موقع خرائط جوجل (اختياري)</label>
-                          <input
-                            type="text"
-                            className="grad-input"
-                            placeholder="رابط موقعك على خرائط جوجل..."
-                            value={googleMapsLink}
-                            onChange={(e) => setGoogleMapsLink(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {selectedProduct.color_selection_enabled && selectedProduct.available_colors && selectedProduct.available_colors.length > 0 && (
-                    <div className="grad-field">
-                      <label className="grad-label">اختر اللون</label>
-                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '6px' }}>
-                        {selectedProduct.available_colors.map((color) => (
-                          <button
-                            key={color}
-                            type="button"
-                            onClick={() => setSelectedColor(color)}
-                            style={{
-                              padding: '6px 14px',
-                              borderRadius: '20px',
-                              border: selectedColor === color ? 'none' : '1px solid #ccc',
-                              background: selectedColor === color ? 'var(--g-green, #0F5A46)' : '#fff',
-                              color: selectedColor === color ? '#fff' : '#333',
-                              cursor: 'pointer',
-                              fontWeight: 'bold',
-                              fontSize: '0.85rem'
-                            }}
-                          >
-                            {color}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="grad-field">
-                    <label className="grad-label">الكمية المطلوبة</label>
-                    <div className="qty-control" style={{ display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid #ccc', borderRadius: '8px', overflow: 'hidden' }}>
-                      <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity - 1)} style={{ padding: '6px 14px', background: '#eee', border: 'none', cursor: 'pointer' }}>−</button>
-                      <span style={{ padding: '6px 20px', fontWeight: 'bold', minWidth: '30px', textAlign: 'center' }}>{quantity}</span>
-                      <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity + 1)} style={{ padding: '6px 14px', background: '#eee', border: 'none', cursor: 'pointer' }}>+</button>
-                    </div>
-                  </div>
-
-                  <div className="grad-field">
-                    <label className="grad-label">صور وتصاميم للطباعة (اختياري)</label>
-                    <div
-                      className="grad-upload-zone"
-                      style={{ padding: '14px', textAlign: 'center', border: '1px dashed #ccc', borderRadius: '8px', cursor: 'pointer' }}
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <span>📎 انقر هنا لرفع الصور المخصصة للطباعة</span>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleUploadImages}
-                        style={{ display: 'none' }}
-                      />
-                    </div>
-                    
-                    {imagesPreviews.length > 0 && (
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
-                        {imagesPreviews.map((src, i) => (
-                          <div key={i} style={{ position: 'relative', width: '60px', height: '60px' }}>
-                            <img src={src} alt="uploaded-preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px', border: '1px solid #ddd' }} />
-                            <button
-                              type="button"
-                              onClick={() => removeImage(i)}
-                              style={{
-                                position: 'absolute',
-                                top: '-4px',
-                                right: '-4px',
-                                background: 'red',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '50%',
-                                width: '16px',
-                                height: '16px',
-                                fontSize: '10px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer'
-                              }}
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="grad-field">
-                    <label className="grad-label">ملاحظات وتعليمات الطباعة</label>
-                    <textarea
-                      className="grad-textarea"
-                      style={{ minHeight: '80px' }}
-                      placeholder="مثال: يرجى كتابة اسم الطالب: (أحمد) على الوشاح وتطريزه باللون الذهبي..."
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-                  <button
-                    type="submit"
-                    className="grad-pkg-btn"
-                    disabled={submittingOrder}
-                    style={{ background: 'var(--g-green, #0F5A46)', flex: 1 }}
-                  >
-                    {submittingOrder ? '⏳ جاري تقديم الطلب...' : 'إرسال الطلب الآن'}
-                  </button>
+              {orderPlaced ? (
+                <div style={{ textAlign: 'center', padding: '24px 0' }}>
+                  <span style={{ fontSize: '4rem' }}>✅</span>
+                  <h3 style={{ fontSize: '1.4rem', color: '#F5BD1A', margin: '16px 0 8px', fontWeight: '900' }}>تم تقديم طلبك بنجاح!</h3>
+                  <p style={{ color: 'rgba(236,235,231,0.8)', marginBottom: '24px' }}>سيتواصل معك فريق استديو آيرس عبر الواتساب لمراجعة طلبك وإتمام التوصيل أو الاستلام.</p>
                   <button
                     type="button"
                     onClick={closeOrderModal}
-                    className="grad-pkg-btn"
-                    style={{ background: '#f5f5f5', color: '#333', flex: 1 }}
+                    className="btn-portal-primary print-btn"
+                    style={{ width: 'auto', padding: '10px 32px' }}
                   >
-                    إلغاء
+                    حسناً
                   </button>
                 </div>
-              </form>
-            )}
+              ) : (
+                <form onSubmit={handlePlaceOrder}>
+                  <h3 style={{ fontSize: '1.3rem', color: '#F5BD1A', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(245,189,26,0.2)', fontWeight: '900' }}>
+                    طلب منتج: {selectedProduct.name}
+                  </h3>
+
+                  <div className="grad-form-grid" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div className="grad-field">
+                      <label className="as-label">الاسم بالكامل *</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        required
+                        placeholder="أدخل اسمك بالكامل للتسليم"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="grad-field">
+                      <label className="as-label">رقم الهاتف / واتساب *</label>
+                      <input
+                        type="tel"
+                        className="admin-input"
+                        required
+                        placeholder="07xxxxxxxx"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        dir="ltr"
+                      />
+                    </div>
+
+                    {/* Delivery Selection */}
+                    <div style={{ marginTop: '6px' }}>
+                      <label className="as-label" style={{ marginBottom: '8px', display: 'block' }}>طريقة الاستلام والتوصيل</label>
+                      <div className="delivery-cards-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                        <div
+                          className={`delivery-card ${!deliverySelected ? 'selected' : ''}`}
+                          onClick={() => setDeliverySelected(false)}
+                          style={{
+                            background: !deliverySelected ? 'rgba(245, 189, 26, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                            border: !deliverySelected ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.15)',
+                            borderRadius: '12px',
+                            padding: '12px',
+                            cursor: 'pointer',
+                            textAlign: 'center'
+                          }}
+                        >
+                          <div style={{ fontSize: '1.3rem' }}>🏬</div>
+                          <div style={{ fontWeight: 'bold', fontSize: '0.88rem', color: '#FFFFFF' }}>الاستلام من الاستوديو</div>
+                          <div style={{ fontSize: '0.78rem', color: '#F5BD1A' }}>مجاناً</div>
+                        </div>
+                        <div
+                          className={`delivery-card ${deliverySelected ? 'selected' : ''}`}
+                          onClick={() => setDeliverySelected(true)}
+                          style={{
+                            background: deliverySelected ? 'rgba(245, 189, 26, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                            border: deliverySelected ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.15)',
+                            borderRadius: '12px',
+                            padding: '12px',
+                            cursor: 'pointer',
+                            textAlign: 'center'
+                          }}
+                        >
+                          <div style={{ fontSize: '1.3rem' }}>🚚</div>
+                          <div style={{ fontWeight: 'bold', fontSize: '0.88rem', color: '#FFFFFF' }}>توصيل للمنزل</div>
+                          <div style={{ fontSize: '0.78rem', color: '#F5BD1A' }}>+2 JOD</div>
+                        </div>
+                      </div>
+
+                      {deliverySelected && (
+                        <div className="delivery-info-group" style={{ display: 'flex', flexDirection: 'column', gap: '10px', background: 'rgba(18, 9, 17, 0.8)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(245, 189, 26, 0.2)' }}>
+                          <div className="grad-field">
+                            <label className="as-label">عنوان التوصيل بالتفصيل *</label>
+                            <textarea
+                              className="admin-input"
+                              style={{ minHeight: '60px' }}
+                              required
+                              placeholder="المحافظة، المنطقة، اسم الشارع، وأي معالم قريبة..."
+                              value={deliveryAddress}
+                              onChange={(e) => setDeliveryAddress(e.target.value)}
+                            />
+                          </div>
+                          <div className="grad-field">
+                            <label className="as-label">رقم هاتف بديل (اختياري)</label>
+                            <input
+                              type="tel"
+                              className="admin-input"
+                              placeholder="رقم للتواصل عند التوصيل..."
+                              value={alternativePhone}
+                              onChange={(e) => setAlternativePhone(e.target.value)}
+                              dir="ltr"
+                            />
+                          </div>
+                          <div className="grad-field">
+                            <label className="as-label">موقع خرائط جوجل (اختياري)</label>
+                            <input
+                              type="text"
+                              className="admin-input"
+                              placeholder="رابط موقعك على خرائط جوجل..."
+                              value={googleMapsLink}
+                              onChange={(e) => setGoogleMapsLink(e.target.value)}
+                              dir="ltr"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {colorsList.length > 0 && (
+                      <div className="grad-field">
+                        <label className="as-label">اختر اللون المطلوب *</label>
+                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '8px' }}>
+                          {colorsList.map((color) => (
+                            <button
+                              key={color}
+                              type="button"
+                              onClick={() => setSelectedColor(color)}
+                              style={{
+                                padding: '8px 18px',
+                                borderRadius: '50px',
+                                border: selectedColor === color ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.2)',
+                                background: selectedColor === color ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'rgba(255, 255, 255, 0.08)',
+                                color: selectedColor === color ? '#120911' : '#FFFFFF',
+                                cursor: 'pointer',
+                                fontWeight: '800',
+                                fontSize: '0.88rem',
+                                transition: 'all 0.2s ease',
+                                boxShadow: selectedColor === color ? '0 4px 14px rgba(245, 189, 26, 0.3)' : 'none'
+                              }}
+                            >
+                              {color}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="grad-field">
+                      <label className="as-label">الكمية المطلوبة</label>
+                      <div className="qty-control" style={{ display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgba(245, 189, 26, 0.4)', borderRadius: '50px', overflow: 'hidden', background: 'rgba(18, 9, 17, 0.9)' }}>
+                        <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity - 1)} style={{ padding: '8px 16px', background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}>−</button>
+                        <span style={{ padding: '8px 24px', fontWeight: '900', color: '#FFFFFF', minWidth: '30px', textAlign: 'center' }}>{quantity}</span>
+                        <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity + 1)} style={{ padding: '8px 16px', background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}>+</button>
+                      </div>
+                    </div>
+
+                    <div className="grad-field">
+                      <label className="as-label">صور وتصاميم للطباعة (اختياري)</label>
+                      <div
+                        className="grad-upload-zone"
+                        style={{ padding: '16px', textAlign: 'center', border: '1px dashed #F5BD1A', borderRadius: '12px', cursor: 'pointer', background: 'rgba(245, 189, 26, 0.05)' }}
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <span style={{ color: '#F5BD1A', fontWeight: 'bold' }}>📎 انقر هنا لرفع الصور المخصصة للطباعة</span>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handleUploadImages}
+                          style={{ display: 'none' }}
+                        />
+                      </div>
+
+                      {imagesPreviews.length > 0 && (
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+                          {imagesPreviews.map((src, i) => (
+                            <div key={i} style={{ position: 'relative', width: '60px', height: '60px' }}>
+                              <img src={src} alt="uploaded-preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(245, 189, 26, 0.4)' }} />
+                              <button
+                                type="button"
+                                onClick={() => removeImage(i)}
+                                style={{
+                                  position: 'absolute',
+                                  top: '-4px',
+                                  right: '-4px',
+                                  background: 'red',
+                                  color: '#fff',
+                                  border: 'none',
+                                  borderRadius: '50%',
+                                  width: '18px',
+                                  height: '18px',
+                                  fontSize: '10px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grad-field">
+                      <label className="as-label">ملاحظات وتعليمات الطباعة والتطريز</label>
+                      <textarea
+                        className="admin-input"
+                        style={{ minHeight: '80px' }}
+                        placeholder="مثال: يرجى كتابة اسم الطالب: (أحمد) على الوشاح وتطريزه باللون الذهبي..."
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+                    <button
+                      type="submit"
+                      disabled={submittingOrder}
+                      className="btn-portal-primary print-btn"
+                      style={{ flex: 1, padding: '12px' }}
+                    >
+                      {submittingOrder ? '⏳ جاري تقديم الطلب...' : 'إرسال طلب الطباعة والتأكيد 🚀'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={closeOrderModal}
+                      className="btn-portal-secondary"
+                      style={{ flex: 1, padding: '12px' }}
+                    >
+                      إلغاء
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </main>
   );
 };
