@@ -140,8 +140,9 @@ export const IrisDarkHero = () => {
 
       {/* 3. Main Hero Content Container */}
       <div className="hero-v2-main-container">
-        {/* Top Header Bar: Logo (Left) ... Hamburger + WE BREAK THE BOX (Right) */}
+        {/* Top Header Bar: Logo (Left) ... Equal-Distance Mid Wrapper (WE BREAK THE BOX) ... Menu (Right) */}
         <header className="hero-v2-top-bar">
+          {/* 1. IRIS Logo (Left Edge) */}
           <Link to="/" className="hero-v2-logo-link" aria-label="IRIS Agency">
             <motion.img
               src={settings.hero_logo_url || settings.logo_url || irisLogo}
@@ -153,23 +154,23 @@ export const IrisDarkHero = () => {
             />
           </Link>
 
-          <div className="hero-v2-top-right-group">
-            {/* Premium Pill Eyebrow: [ WE BREAK THE BOX ● ] */}
+          {/* 2. Equal-Distance Middle Space Container for WE BREAK THE BOX */}
+          <div className="hero-v2-nav-mid-wrapper">
             <div className="hero-v2-eyebrow-pill">
               <span className="pill-text">WE BREAK THE BOX</span>
               <span className="pill-dot" />
             </div>
-
-            {/* Top Row Hamburger Menu Control (Far Right Edge) */}
-            <button
-              type="button"
-              className="hero-v2-hamburger-btn"
-              onClick={() => setHeroMenuOpen(true)}
-              aria-label="Open Navigation Menu"
-            >
-              <Menu size={18} />
-            </button>
           </div>
+
+          {/* 3. Hamburger Menu Control (Right Edge) */}
+          <button
+            type="button"
+            className="hero-v2-hamburger-btn"
+            onClick={() => setHeroMenuOpen(true)}
+            aria-label="Open Navigation Menu"
+          >
+            <Menu size={20} />
+          </button>
         </header>
 
         {/* 4. Main Hero Content Stage (Simplified & Confident) */}

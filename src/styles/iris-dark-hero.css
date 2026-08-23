@@ -250,7 +250,7 @@
   gap: clamp(14px, 2vh, 26px);
 }
 
-/* Top Header Bar — Strictly Physical LTR Layout for Fixed Left Logo & Right Controls */
+/* Top Header Bar — Flexbox Layout with Mathematically Equal Spacing around WE BREAK THE BOX Badge */
 .hero-v2-top-bar {
   display: flex !important;
   flex-direction: row !important;
@@ -260,6 +260,7 @@
   direction: ltr !important;
   margin-top: 0 !important;
   padding-top: 0 !important;
+  box-sizing: border-box !important;
 }
 
 /* Admin-Controlled Pure White IRIS Logo (PHYSICAL TOP LEFT ON ALL SIZES & LANGUAGES) */
@@ -267,11 +268,22 @@
   display: inline-flex !important;
   align-items: center !important;
   text-decoration: none !important;
-  order: 1 !important;
-  margin-right: auto !important;
-  margin-left: 0 !important;
   direction: ltr !important;
   z-index: 15 !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Middle Equal-Distance Space Wrapper between Logo & Menu */
+.hero-v2-nav-mid-wrapper {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Dedicated Lower Floating Images Area Container (Positioned closely below CTA button) */
@@ -298,39 +310,47 @@
   }
 }
 
+/* 1 & 3. IRIS LOGO SIZING (Half of Previous Size: 75px Mobile, 80px-110px Desktop) */
+.hero-v2-logo-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  z-index: 15 !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .hero-v2-logo-img {
-  width: clamp(160px, 16vw, 220px) !important;
+  width: 75px !important; /* Half of 150px size */
+  min-width: 75px !important;
+  max-width: 75px !important;
   height: auto !important;
-  max-height: 85px !important;
+  max-height: 26px !important;
   object-fit: contain !important;
-  filter: brightness(0) invert(1) !important;
   opacity: 1 !important;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease !important;
+  display: block !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.hero-v2-logo-link:hover .hero-v2-logo-img {
-  transform: scale(1.04) !important;
-}
-
-@media (max-width: 1023px) {
+@media (min-width: 768px) {
   .hero-v2-logo-img {
-    width: clamp(150px, 22vw, 190px) !important;
-    max-height: 75px !important;
+    width: clamp(80px, 8vw, 110px) !important;
+    min-width: 80px !important;
+    max-width: 110px !important;
+    max-height: 36px !important;
   }
 }
 
 @media (max-width: 767px) {
   .hero-v2-logo-img {
-    width: clamp(140px, 32vw, 170px) !important;
-    max-height: 65px !important;
+    width: 75px !important;
+    max-height: 26px !important;
   }
 }
 
-@media (max-width: 479px) {
-  .hero-v2-logo-img {
-    width: clamp(130px, 35vw, 155px) !important;
-    max-height: 55px !important;
-  }
+.hero-v2-logo-link:hover .hero-v2-logo-img {
+  transform: scale(1.04) !important;
 }
 
 .hero-v2-top-right-group {
