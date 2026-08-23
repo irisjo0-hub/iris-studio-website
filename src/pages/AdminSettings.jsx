@@ -6,21 +6,45 @@ import '../styles/admin.css';
 
 const AdminSettings = () => {
   const { settings, refreshSettings, updateSettingsLocally } = useSiteSettings();
-  const [activeTab, setActiveTab] = useState('branding');
+  const [activeTab, setActiveTab] = useState('hero_motion');
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState('');
 
-  // Form Fields State
+  // Form Fields State — Branding & Slogans
   const [sloganLine1, setSloganLine1] = useState('');
   const [sloganLine2, setSloganLine2] = useState('');
   const [supportingText, setSupportingText] = useState('');
+  const [preloaderText, setPreloaderText] = useState('');
+
+  // Form Fields State — Contact & Socials
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [facebookLink, setFacebookLink] = useState('');
   const [instagramLink, setInstagramLink] = useState('');
   const [studioAddress, setStudioAddress] = useState('');
   const [locationMapUrl, setLocationMapUrl] = useState('');
   const [officeHours, setOfficeHours] = useState('');
-  const [preloaderText, setPreloaderText] = useState('');
+
+  // Hero Display Count Control
+  const [heroImageDisplayCount, setHeroImageDisplayCount] = useState(6);
+
+  // 3 Divisions Customization State
+  const [divisionMediaTitleAr, setDivisionMediaTitleAr] = useState('');
+  const [divisionMediaSubtitleAr, setDivisionMediaSubtitleAr] = useState('');
+  const [divisionMediaUrl, setDivisionMediaUrl] = useState('');
+  const [divisionMediaImageFile, setDivisionMediaImageFile] = useState(null);
+  const [divisionMediaImagePreview, setDivisionMediaImagePreview] = useState('');
+
+  const [divisionStudioTitleAr, setDivisionStudioTitleAr] = useState('');
+  const [divisionStudioSubtitleAr, setDivisionStudioSubtitleAr] = useState('');
+  const [divisionStudioUrl, setDivisionStudioUrl] = useState('');
+  const [divisionStudioImageFile, setDivisionStudioImageFile] = useState(null);
+  const [divisionStudioImagePreview, setDivisionStudioImagePreview] = useState('');
+
+  const [divisionPrintTitleAr, setDivisionPrintTitleAr] = useState('');
+  const [divisionPrintSubtitleAr, setDivisionPrintSubtitleAr] = useState('');
+  const [divisionPrintUrl, setDivisionPrintUrl] = useState('');
+  const [divisionPrintImageFile, setDivisionPrintImageFile] = useState(null);
+  const [divisionPrintImagePreview, setDivisionPrintImagePreview] = useState('');
 
   // Brand Asset Files State
   const [logoFile, setLogoFile] = useState(null);
@@ -51,6 +75,24 @@ const AdminSettings = () => {
       setLogoPreview(settings.logo_url || '');
       setPreloaderText(settings.preloader_text || '');
 
+      setHeroImageDisplayCount(settings.hero_image_display_count || 6);
+
+      // Divisions sync
+      setDivisionMediaTitleAr(settings.division_media_title_ar || 'ميديا');
+      setDivisionMediaSubtitleAr(settings.division_media_subtitle_ar || 'صناعة المحتوى والحملات الإبداعية');
+      setDivisionMediaUrl(settings.division_media_url || '/work');
+      setDivisionMediaImagePreview(settings.division_media_image || '');
+
+      setDivisionStudioTitleAr(settings.division_studio_title_ar || 'استوديو');
+      setDivisionStudioSubtitleAr(settings.division_studio_subtitle_ar || 'التصوير الاحترافي ورواية القصة البصرية');
+      setDivisionStudioUrl(settings.division_studio_url || '/booking');
+      setDivisionStudioImagePreview(settings.division_studio_image || '');
+
+      setDivisionPrintTitleAr(settings.division_print_title_ar || 'مطبوعات');
+      setDivisionPrintSubtitleAr(settings.division_print_subtitle_ar || 'المطبوعات الفاخرة والتغليف الراقي');
+      setDivisionPrintUrl(settings.division_print_url || '/printing-products');
+      setDivisionPrintImagePreview(settings.division_print_image || '');
+
       let parsedMotionImages = [];
       if (Array.isArray(settings.hero_motion_images)) {
         parsedMotionImages = settings.hero_motion_images;
@@ -76,13 +118,22 @@ const AdminSettings = () => {
       setDesktopVideoFile(file);
     } else if (type === 'mobile_video') {
       setMobileVideoFile(file);
+    } else if (type === 'division_media') {
+      setDivisionMediaImageFile(file);
+      setDivisionMediaImagePreview(URL.createObjectURL(file));
+    } else if (type === 'division_studio') {
+      setDivisionStudioImageFile(file);
+      setDivisionStudioImagePreview(URL.createObjectURL(file));
+    } else if (type === 'division_print') {
+      setDivisionPrintImageFile(file);
+      setDivisionPrintImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleSaveSettings = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setUploadProgress('جاري معالجة وحفظ البيانات...');
+    setUploadProgress('جاري معالجة وحفظ البيانات الإدارية...');
 
     try {
       const updates = {
@@ -96,6 +147,16 @@ const AdminSettings = () => {
         location_map_url: locationMapUrl.trim(),
         office_hours: officeHours.trim(),
         preloader_text: preloaderText.trim(),
+        hero_image_display_count: parseInt(heroImageDisplayCount, 10) || 6,
+        division_media_title_ar: divisionMediaTitleAr.trim(),
+        division_media_subtitle_ar: divisionMediaSubtitleAr.trim(),
+        division_media_url: divisionMediaUrl.trim(),
+        division_studio_title_ar: divisionStudioTitleAr.trim(),
+        division_studio_subtitle_ar: divisionStudioSubtitleAr.trim(),
+        division_studio_url: divisionStudioUrl.trim(),
+        division_print_title_ar: divisionPrintTitleAr.trim(),
+        division_print_subtitle_ar: divisionPrintSubtitleAr.trim(),
+        division_print_url: divisionPrintUrl.trim()
       };
 
       // Upload Logo if provided
@@ -104,6 +165,30 @@ const AdminSettings = () => {
         const path = `branding/logo-${Date.now()}-${logoFile.name}`;
         const logoUrl = await uploadFile('packages', path, logoFile);
         updates.logo_url = logoUrl;
+      }
+
+      // Upload Division Media Image if provided
+      if (divisionMediaImageFile) {
+        setUploadProgress('جاري رفع غلاف قسم الميديا...');
+        const path = `divisions/media-${Date.now()}-${divisionMediaImageFile.name}`;
+        const mediaImgUrl = await uploadFile('packages', path, divisionMediaImageFile);
+        updates.division_media_image = mediaImgUrl;
+      }
+
+      // Upload Division Studio Image if provided
+      if (divisionStudioImageFile) {
+        setUploadProgress('جاري رفع غلاف قسم الاستوديو...');
+        const path = `divisions/studio-${Date.now()}-${divisionStudioImageFile.name}`;
+        const studioImgUrl = await uploadFile('packages', path, divisionStudioImageFile);
+        updates.division_studio_image = studioImgUrl;
+      }
+
+      // Upload Division Print Image if provided
+      if (divisionPrintImageFile) {
+        setUploadProgress('جاري رفع غلاف قسم المطبوعات...');
+        const path = `divisions/print-${Date.now()}-${divisionPrintImageFile.name}`;
+        const printImgUrl = await uploadFile('packages', path, divisionPrintImageFile);
+        updates.division_print_image = printImgUrl;
       }
 
       // Upload Desktop Video if provided
@@ -125,7 +210,7 @@ const AdminSettings = () => {
       // Upsert rows in site_settings
       const settingsData = Object.keys(updates).map(key => ({
         key,
-        value: updates[key]
+        value: typeof updates[key] === 'object' ? JSON.stringify(updates[key]) : updates[key]
       }));
 
       // Insert or update all rows
@@ -137,10 +222,13 @@ const AdminSettings = () => {
         if (error) throw error;
       }
 
-      alert('تم حفظ إعدادات الموقع بنجاح!');
+      alert('تم حفظ كافة إعدادات وتخصيصات الموقع بنجاح!');
       setLogoFile(null);
       setDesktopVideoFile(null);
       setMobileVideoFile(null);
+      setDivisionMediaImageFile(null);
+      setDivisionStudioImageFile(null);
+      setDivisionPrintImageFile(null);
       await refreshSettings();
     } catch (err) {
       console.error('Error saving settings, falling back to local storage:', err);
@@ -157,11 +245,24 @@ const AdminSettings = () => {
           location_map_url: locationMapUrl.trim(),
           office_hours: officeHours.trim(),
           preloader_text: preloaderText.trim(),
+          hero_image_display_count: parseInt(heroImageDisplayCount, 10) || 6,
+          division_media_title_ar: divisionMediaTitleAr.trim(),
+          division_media_subtitle_ar: divisionMediaSubtitleAr.trim(),
+          division_media_url: divisionMediaUrl.trim(),
+          division_studio_title_ar: divisionStudioTitleAr.trim(),
+          division_studio_subtitle_ar: divisionStudioSubtitleAr.trim(),
+          division_studio_url: divisionStudioUrl.trim(),
+          division_print_title_ar: divisionPrintTitleAr.trim(),
+          division_print_subtitle_ar: divisionPrintSubtitleAr.trim(),
+          division_print_url: divisionPrintUrl.trim()
         };
         if (logoPreview) localUpdates.logo_url = logoPreview;
+        if (divisionMediaImagePreview) localUpdates.division_media_image = divisionMediaImagePreview;
+        if (divisionStudioImagePreview) localUpdates.division_studio_image = divisionStudioImagePreview;
+        if (divisionPrintImagePreview) localUpdates.division_print_image = divisionPrintImagePreview;
         
         updateSettingsLocally(localUpdates);
-        alert('تم حفظ الإعدادات محلياً في المتصفح بنجاح! (تنبيه: خادم قاعدة البيانات السحابية غير متصل حالياً، لذا تم الحفظ في ذاكرة هذا الجهاز فقط لتشغيل الموقع بمحتواه الجديد).');
+        alert('تم حفظ الإعدادات محلياً بنجاح! (تم تحديث ذاكرة المتصفح للعمل الفوري).');
       } else {
         alert('حدث خطأ أثناء حفظ الإعدادات: ' + err.message);
       }
@@ -245,19 +346,26 @@ const AdminSettings = () => {
       <section className="admin-dashboard admin-settings-page">
         <div className="section-header-row">
           <div>
-            <h2 className="section-title">إعدادات الموقع العامة</h2>
-            <p className="section-subtitle">قم بتحديث وتغيير محتوى صفحات الزبون والشعار وصور الهيرو ديناميكياً.</p>
+            <h2 className="section-title">مركز تخصيص وإعدادات الموقع</h2>
+            <p className="section-subtitle">إدارة ومزامنة الشعار، صور الهيرو، الأقسام الثلاثة، والهوية البصرية ديناميكياً.</p>
           </div>
         </div>
 
-        {/* Custom Tabs Navigation */}
+        {/* Custom Glassmorphic Tabs Navigation */}
         <div className="settings-tabs">
           <button
             type="button"
             className={`tab-btn ${activeTab === 'hero_motion' ? 'active' : ''}`}
             onClick={() => setActiveTab('hero_motion')}
           >
-            صور حركة الهيرو ({heroMotionImages.length})
+            صور الهيرو والعدد ({heroMotionImages.length})
+          </button>
+          <button
+            type="button"
+            className={`tab-btn ${activeTab === 'divisions' ? 'active' : ''}`}
+            onClick={() => setActiveTab('divisions')}
+          >
+            الأقسام الـ 3 (ميديا • استوديو • مطبوعات)
           </button>
           <button
             type="button"
@@ -284,99 +392,122 @@ const AdminSettings = () => {
 
         {/* Forms Content */}
         <form className="admin-form settings-form" onSubmit={handleSaveSettings}>
+          
+          {/* TAB 1: HERO MOTION IMAGES & DISPLAY COUNT CONTROL */}
           {activeTab === 'hero_motion' && (
             <div className="tab-pane">
-              <h3 className="tab-pane-title">إدارة صور حركة الهيرو الديناميكية</h3>
-              <p className="tab-pane-desc" style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '20px' }}>
-                يمكنك إضافة أو رفع أي عدد من الصور (8، 10، 15+ صورة) لتتحرك وتطفو ديناميكياً في شاشة الهيرو للزبون.
-              </p>
+              <h3 className="tab-pane-title">إدارة وتحديد صور حركة الهيرو (Hero Living Stream)</h3>
+              
+              {/* Display Count Selector Card */}
+              <div className="admin-sub-card count-control-card">
+                <div className="count-control-header">
+                  <h4 className="card-sub-title">🎯 عدد الصور المعروضة في الهيرو</h4>
+                  <p className="tab-pane-desc">حدد عدد الصور التي تريد عرضها وتدويرها ديناميكياً للزائر في شاشة الهيرو.</p>
+                </div>
+                <div className="count-selector-box">
+                  <label className="as-label">عدد الصور المعروضة حالياً:</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="30"
+                    value={heroImageDisplayCount}
+                    onChange={(e) => setHeroImageDisplayCount(e.target.value)}
+                    className="as-input count-number-input"
+                  />
+                  <span className="count-badge">من أصل {heroMotionImages.length || 8} صورة متوفرة</span>
+                </div>
+              </div>
 
               {/* Add New Motion Photo Box */}
-              <div className="admin-sub-card" style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(245,189,26,0.3)', marginBottom: '30px' }}>
-                <h4 className="card-sub-title" style={{ color: '#F5BD1A', marginTop: 0, marginBottom: '16px' }}>+ إضافة صورة جديدة لقائمة حركة الهيرو</h4>
+              <div className="admin-sub-card add-motion-card">
+                <h4 className="card-sub-title">+ إضافة صورة جديدة لـشريط الهيرو</h4>
+                
                 <div className="form-group-row">
                   <div className="form-group">
-                    <label>رفع صورة من الجهاز</label>
+                    <label className="as-label">رفع صورة جديدة من جهازك</label>
                     <input
                       type="file"
                       accept="image/*"
                       onChange={(e) => setNewMotionFile(e.target.files[0])}
+                      className="as-file-input"
                     />
                   </div>
                   <div className="form-group">
-                    <label>أو إدخال رابط صورة مباشر (Image URL)</label>
+                    <label className="as-label">أو إدخال رابط صورة مباشر (Image URL)</label>
                     <input
                       type="url"
                       value={newMotionUrl}
                       onChange={(e) => setNewMotionUrl(e.target.value)}
                       placeholder="https://..."
+                      className="as-input"
                     />
                   </div>
                 </div>
 
-                <div className="form-group-row" style={{ marginTop: '12px' }}>
+                <div className="form-group-row" style={{ marginTop: '14px' }}>
                   <div className="form-group">
-                    <label>عنوان العمل (بالعربية)</label>
+                    <label className="as-label">عنوان العمل (بالعربية)</label>
                     <input
                       type="text"
                       value={newMotionTitleAr}
                       onChange={(e) => setNewMotionTitleAr(e.target.value)}
-                      placeholder="مثال: تصوير حفلات تخرج"
+                      placeholder="مثال: تصوير جلسات تخرج"
+                      className="as-input"
                     />
                   </div>
                   <div className="form-group">
-                    <label>عنوان العمل (بالإنجليزية)</label>
+                    <label className="as-label">عنوان العمل (بالإنجليزية)</label>
                     <input
                       type="text"
                       value={newMotionTitleEn}
                       onChange={(e) => setNewMotionTitleEn(e.target.value)}
                       placeholder="Example: Graduation Coverage"
+                      className="as-input"
                     />
                   </div>
                   <div className="form-group">
-                    <label>رابط الصفحة (اختياري)</label>
+                    <label className="as-label">رابط التوجيه عند الضغط</label>
                     <input
                       type="text"
                       value={newMotionLink}
                       onChange={(e) => setNewMotionLink(e.target.value)}
                       placeholder="/work أو /booking"
+                      className="as-input"
                     />
                   </div>
                 </div>
 
                 <button
                   type="button"
-                  className="btn btn-purple"
+                  className="btn btn-gold-action"
                   onClick={handleAddMotionImage}
                   disabled={loading}
-                  style={{ marginTop: '16px', background: '#F5BD1A', color: '#044630', fontWeight: 'bold' }}
                 >
-                  + إضافة الصورة لقائمة الهيرو
+                  + حفظ وإضافة الصورة لشريط الهيرو
                 </button>
               </div>
 
-              <div className="divider-line" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', margin: '24px 0' }} />
+              <div className="divider-line" />
 
               {/* Active Hero Motion Photos List */}
-              <h4 className="form-sub-heading" style={{ color: '#ECEBE7', marginBottom: '16px' }}>الصور الحالية المفعّلة في حركة الهيرو ({heroMotionImages.length})</h4>
+              <h4 className="form-sub-heading">الصور المتاحة في البول (المجموع: {heroMotionImages.length})</h4>
               
               {heroMotionImages.length === 0 ? (
-                <p style={{ color: '#888', fontStyle: 'italic' }}>يتم استخدام الـ 8 صور الافتراضية للشركة حالياً. يمكنك إضافة صورك الخاصة أعلاه لاستبدالهم ديناميكياً.</p>
+                <p className="empty-hint">يتم استخدام الصور الـ 8 الافتراضية للشركة حالياً. يمكنك رفع صورك الخاصة أعلاه لاستبدالهم ديناميكياً.</p>
               ) : (
-                <div className="hero-motion-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
+                <div className="hero-motion-grid">
                   {heroMotionImages.map((item, idx) => (
-                    <div key={item.id || idx} className="motion-item-card" style={{ position: 'relative', background: '#1A0D18', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden' }}>
-                      <img src={item.image} alt={item.alt_ar} className="motion-item-img" style={{ width: '100%', height: '130px', objectFit: 'cover', display: 'block' }} />
-                      <div className="motion-item-info" style={{ padding: '10px' }}>
-                        <span className="motion-item-title" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: '#ECEBE7' }}>{item.alt_ar || item.title || 'عمل احترافي'}</span>
-                        <span className="motion-item-link" style={{ display: 'block', fontSize: '0.75rem', color: '#F5BD1A', marginTop: '4px' }}>{item.url_optional || '/work'}</span>
+                    <div key={item.id || idx} className="motion-item-card">
+                      <img src={item.image} alt={item.alt_ar} className="motion-item-img" />
+                      <div className="motion-item-info">
+                        <span className="motion-item-title">{item.alt_ar || item.title || 'عمل احترافي'}</span>
+                        <span className="motion-item-link">{item.url_optional || '/work'}</span>
                       </div>
                       <button
                         type="button"
                         className="btn-delete-small"
                         onClick={() => handleDeleteMotionImage(item.id)}
                         title="حذف هذه الصورة"
-                        style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(235,59,90,0.9)', color: '#fff', border: 'none', borderRadius: '50%', width: '26px', height: '26px', cursor: 'pointer', fontWeight: 'bold' }}
                       >
                         ✕
                       </button>
@@ -387,48 +518,238 @@ const AdminSettings = () => {
             </div>
           )}
 
+          {/* TAB 2: THREE DIVISIONS (MEDIA • STUDIO • PRINT) */}
+          {activeTab === 'divisions' && (
+            <div className="tab-pane">
+              <h3 className="tab-pane-title">تخصيص الأقسام الثلاثة الرئيسية (MEDIA • STUDIO • PRINT)</h3>
+              <p className="tab-pane-desc">تعديل صور الغلاف والعناوين والنصوص الفرعية لأقسام الميديا والاسـتوديـو والمطبوعات ديناميكياً.</p>
+
+              {/* Division 1: MEDIA */}
+              <div className="admin-sub-card division-card">
+                <div className="division-card-header">
+                  <span className="division-badge">01</span>
+                  <h4>قسم الميديا (MEDIA)</h4>
+                </div>
+                <div className="form-group-row">
+                  <div className="form-group">
+                    <label className="as-label">عنوان القسم (بالعربية)</label>
+                    <input
+                      type="text"
+                      value={divisionMediaTitleAr}
+                      onChange={(e) => setDivisionMediaTitleAr(e.target.value)}
+                      className="as-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="as-label">الوصف الفرعي (Subtitle)</label>
+                    <input
+                      type="text"
+                      value={divisionMediaSubtitleAr}
+                      onChange={(e) => setDivisionMediaSubtitleAr(e.target.value)}
+                      className="as-input"
+                    />
+                  </div>
+                </div>
+                <div className="form-group-row">
+                  <div className="form-group">
+                    <label className="as-label">رابط التوجيه (Route Link)</label>
+                    <input
+                      type="text"
+                      value={divisionMediaUrl}
+                      onChange={(e) => setDivisionMediaUrl(e.target.value)}
+                      className="as-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="as-label">صورة غلاف قسم الميديا</label>
+                    <div className="file-upload-wrapper">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileChange(e, 'division_media')}
+                        id="media-cover-upload"
+                        className="file-input-hidden"
+                      />
+                      <label htmlFor="media-cover-upload" className="file-upload-label">
+                        <span>تغيير صورة الميديا...</span>
+                      </label>
+                      {divisionMediaImagePreview && (
+                        <div className="preview-division-box">
+                          <img src={divisionMediaImagePreview} alt="Media preview" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Division 2: STUDIO */}
+              <div className="admin-sub-card division-card">
+                <div className="division-card-header">
+                  <span className="division-badge">02</span>
+                  <h4>قسم الاسـتوديـو (STUDIO)</h4>
+                </div>
+                <div className="form-group-row">
+                  <div className="form-group">
+                    <label className="as-label">عنوان القسم (بالعربية)</label>
+                    <input
+                      type="text"
+                      value={divisionStudioTitleAr}
+                      onChange={(e) => setDivisionStudioTitleAr(e.target.value)}
+                      className="as-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="as-label">الوصف الفرعي (Subtitle)</label>
+                    <input
+                      type="text"
+                      value={divisionStudioSubtitleAr}
+                      onChange={(e) => setDivisionStudioSubtitleAr(e.target.value)}
+                      className="as-input"
+                    />
+                  </div>
+                </div>
+                <div className="form-group-row">
+                  <div className="form-group">
+                    <label className="as-label">رابط التوجيه (Route Link)</label>
+                    <input
+                      type="text"
+                      value={divisionStudioUrl}
+                      onChange={(e) => setDivisionStudioUrl(e.target.value)}
+                      className="as-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="as-label">صورة غلاف قسم الاستوديو</label>
+                    <div className="file-upload-wrapper">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileChange(e, 'division_studio')}
+                        id="studio-cover-upload"
+                        className="file-input-hidden"
+                      />
+                      <label htmlFor="studio-cover-upload" className="file-upload-label">
+                        <span>تغيير صورة الاستوديو...</span>
+                      </label>
+                      {divisionStudioImagePreview && (
+                        <div className="preview-division-box">
+                          <img src={divisionStudioImagePreview} alt="Studio preview" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Division 3: PRINT */}
+              <div className="admin-sub-card division-card">
+                <div className="division-card-header">
+                  <span className="division-badge">03</span>
+                  <h4>قسم المطبوعات (PRINT)</h4>
+                </div>
+                <div className="form-group-row">
+                  <div className="form-group">
+                    <label className="as-label">عنوان القسم (بالعربية)</label>
+                    <input
+                      type="text"
+                      value={divisionPrintTitleAr}
+                      onChange={(e) => setDivisionPrintTitleAr(e.target.value)}
+                      className="as-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="as-label">الوصف الفرعي (Subtitle)</label>
+                    <input
+                      type="text"
+                      value={divisionPrintSubtitleAr}
+                      onChange={(e) => setDivisionPrintSubtitleAr(e.target.value)}
+                      className="as-input"
+                    />
+                  </div>
+                </div>
+                <div className="form-group-row">
+                  <div className="form-group">
+                    <label className="as-label">رابط التوجيه (Route Link)</label>
+                    <input
+                      type="text"
+                      value={divisionPrintUrl}
+                      onChange={(e) => setDivisionPrintUrl(e.target.value)}
+                      className="as-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="as-label">صورة غلاف قسم المطبوعات</label>
+                    <div className="file-upload-wrapper">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileChange(e, 'division_print')}
+                        id="print-cover-upload"
+                        className="file-input-hidden"
+                      />
+                      <label htmlFor="print-cover-upload" className="file-upload-label">
+                        <span>تغيير صورة المطبوعات...</span>
+                      </label>
+                      {divisionPrintImagePreview && (
+                        <div className="preview-division-box">
+                          <img src={divisionPrintImagePreview} alt="Print preview" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: BRANDING & LOGO & VIDEOS */}
           {activeTab === 'branding' && (
             <div className="tab-pane">
-              <h3 className="tab-pane-title">تخصيص الهوية البصرية والهيرو</h3>
+              <h3 className="tab-pane-title">تخصيص الهوية البصرية وشاشة الترحيب</h3>
 
               <div className="form-group-row">
                 <div className="form-group">
-                  <label>السطر الأول من السلوجان (سوسنة الهيرو)</label>
+                  <label className="as-label">السطر الأول من السلوجان</label>
                   <input
                     type="text"
                     value={sloganLine1}
                     onChange={(e) => setSloganLine1(e.target.value)}
                     placeholder="مثال: من زهرة نادرة"
+                    className="as-input"
                   />
                 </div>
                 <div className="form-group">
-                  <label>السطر الثاني من السلوجان</label>
+                  <label className="as-label">السطر الثاني من السلوجان</label>
                   <input
                     type="text"
                     value={sloganLine2}
                     onChange={(e) => setSloganLine2(e.target.value)}
                     placeholder="مثال: إلى علامة تجارية لا تُنسى"
+                    className="as-input"
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label>النص التعريفي المساعد (Supporting Text)</label>
+                <label className="as-label">النص التعريفي المساعد (Supporting Text)</label>
                 <textarea
                   value={supportingText}
                   onChange={(e) => setSupportingText(e.target.value)}
                   placeholder="نص يظهر تحت السلوجان بالهيرو..."
                   rows={3}
+                  className="as-textarea"
                 />
               </div>
 
               <div className="form-group">
-                <label>نص الشاشة الافتتاحية (Preloader Slogan Text)</label>
+                <label className="as-label">نص الشاشة الافتتاحية (Preloader Slogan Text)</label>
                 <input
                   type="text"
                   value={preloaderText}
                   onChange={(e) => setPreloaderText(e.target.value)}
                   placeholder="مثال: آيـرس • اسـتـوديـو إبـداعـي"
+                  className="as-input"
                 />
               </div>
 
@@ -437,7 +758,7 @@ const AdminSettings = () => {
               <h4 className="form-sub-heading">رفع الوسائط والشعار</h4>
 
               <div className="form-group">
-                <label>شعار الاستوديو (IRIS Logo)</label>
+                <label className="as-label">شعار الاستوديو (IRIS Logo)</label>
                 <div className="file-upload-wrapper">
                   <input
                     type="file"
@@ -459,7 +780,7 @@ const AdminSettings = () => {
 
               <div className="form-group-row">
                 <div className="form-group">
-                  <label>فيديو الخلفية للديسكتوب (Desktop Video)</label>
+                  <label className="as-label">فيديو الخلفية للديسكتوب (Desktop Video)</label>
                   <div className="file-upload-wrapper">
                     <input
                       type="file"
@@ -480,7 +801,7 @@ const AdminSettings = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>فيديو الخلفية للجوال (Mobile Video)</label>
+                  <label className="as-label">فيديو الخلفية للجوال (Mobile Video)</label>
                   <div className="file-upload-wrapper">
                     <input
                       type="file"
@@ -503,75 +824,83 @@ const AdminSettings = () => {
             </div>
           )}
 
+          {/* TAB 4: SOCIALS & CONTACT */}
           {activeTab === 'socials' && (
             <div className="tab-pane">
               <h3 className="tab-pane-title">إعدادات وسائل الاتصال والشبكات</h3>
 
               <div className="form-group">
-                <label>رقم الواتساب الخاص بالاستوديو (بدون إشارات أو أصفار دولية)</label>
+                <label className="as-label">رقم الواتساب المباشر للعميل (بدون إشارات أو أصفار دولية)</label>
                 <input
                   type="text"
                   value={whatsappNumber}
                   onChange={(e) => setWhatsappNumber(e.target.value)}
                   placeholder="مثال: 962797303260"
+                  className="as-input"
                 />
                 <span className="field-hint">يرجى كتابة الرقم بالصيغة الدولية المباشرة لتشغيل رابط الدردشة الفوري.</span>
               </div>
 
               <div className="form-group-row">
                 <div className="form-group">
-                  <label>رابط صفحة إنستغرام (Instagram Page Link)</label>
+                  <label className="as-label">رابط صفحة إنستغرام (Instagram Page Link)</label>
                   <input
                     type="url"
                     value={instagramLink}
                     onChange={(e) => setInstagramLink(e.target.value)}
                     placeholder="https://instagram.com/..."
+                    className="as-input"
                   />
                 </div>
                 <div className="form-group">
-                  <label>رابط صفحة فيسبوك (Facebook Page Link)</label>
+                  <label className="as-label">رابط صفحة فيسبوك (Facebook Page Link)</label>
                   <input
                     type="url"
                     value={facebookLink}
                     onChange={(e) => setFacebookLink(e.target.value)}
                     placeholder="https://facebook.com/..."
+                    className="as-input"
                   />
                 </div>
               </div>
             </div>
           )}
 
+          {/* TAB 5: STUDIO DETAILS */}
           {activeTab === 'studio' && (
             <div className="tab-pane">
               <h3 className="tab-pane-title">تفاصيل الاستوديو والدوام</h3>
 
               <div className="form-group">
-                <label>العنوان الجغرافي للاستوديو (يكتب باللغة العربية)</label>
+                <label className="as-label">العنوان الجغرافي للاستوديو (يكتب باللغة العربية)</label>
                 <input
                   type="text"
                   value={studioAddress}
                   onChange={(e) => setStudioAddress(e.target.value)}
                   placeholder="مثال: إربد – إشارة المحافظة"
+                  className="as-input"
                 />
               </div>
 
               <div className="form-group">
-                <label>رابط موقع جوجل مابز (Google Maps URL)</label>
+                <label className="as-label">رابط موقع جوجل مابز (Google Maps URL)</label>
                 <input
                   type="url"
                   value={locationMapUrl}
                   onChange={(e) => setLocationMapUrl(e.target.value)}
                   placeholder="https://maps.app.goo.gl/..."
+                  className="as-input"
                 />
               </div>
 
               <div className="form-group">
-                <label>أوقات وساعات الدوام الرسمية</label>
+                <label className="as-label">أوقات وساعات الدوام الرسمية</label>
                 <input
                   type="text"
                   value={officeHours}
                   onChange={(e) => setOfficeHours(e.target.value)}
                   placeholder="مثال: السبت - الخميس: 10:00 ص - 8:00 م"
+                  className="as-input"
                 />
               </div>
             </div>
@@ -585,8 +914,8 @@ const AdminSettings = () => {
           )}
 
           <div className="form-actions">
-            <button type="submit" className="btn btn-purple" disabled={loading}>
-              {loading ? 'جاري الحفظ...' : 'حفظ الإعدادات بالكامل'}
+            <button type="submit" className="btn btn-save-main" disabled={loading}>
+              {loading ? 'جاري الحفظ والتفعيل...' : 'حفظ ونشر جميع التعديلات'}
             </button>
           </div>
         </form>

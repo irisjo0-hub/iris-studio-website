@@ -36,6 +36,7 @@ export const DEFAULT_SETTINGS = {
   hero_motion_studio_image: "",
   hero_motion_print_image: "",
   hero_motion_images: [],
+  hero_image_display_count: 6,
   division_media_image: "",
   division_studio_image: "",
   division_print_image: "",

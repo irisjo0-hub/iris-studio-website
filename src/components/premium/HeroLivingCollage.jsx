@@ -43,7 +43,14 @@ export const HeroLivingCollage = () => {
     ? settings.hero_motion_images
     : default8Works;
 
-  const pool = rawPool.map((item, idx) => ({
+  // Respect hero_image_display_count if specified by Admin
+  const displayCount = settings.hero_image_display_count 
+    ? Math.max(1, parseInt(settings.hero_image_display_count, 10))
+    : rawPool.length;
+
+  const limitedPool = rawPool.slice(0, displayCount);
+
+  const pool = limitedPool.map((item, idx) => ({
     id: item.id || `item-${idx}`,
     image: item.image || item.url || heroMediaImg,
     alt_ar: item.alt_ar || item.title || 'أعمال آيرس الاحترافية',
