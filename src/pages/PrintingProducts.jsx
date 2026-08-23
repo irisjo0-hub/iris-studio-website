@@ -3,6 +3,98 @@ import { Link } from 'react-router-dom';
 import { supabase, uploadFile } from '../lib/supabase';
 import '../styles/graduation.css'; // Leverage shared premium styling variables
 
+const getColorStyle = (colorName, isSelected) => {
+  const name = String(colorName || '').trim().toLowerCase();
+
+  let bgGradient = 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)';
+  let textColor = '#120911';
+  let borderColor = '#F5BD1A';
+  let dotColor = '#F5BD1A';
+
+  if (name.includes('أحمر') || name.includes('red') || name.includes('عنابي') || name.includes('نبيذي') || name.includes('خمري')) {
+    bgGradient = 'linear-gradient(135deg, #E74C3C 0%, #C0392B 100%)';
+    textColor = '#FFFFFF';
+    borderColor = '#FF6B6B';
+    dotColor = '#E74C3C';
+  } else if (name.includes('أسود') || name.includes('black') || name.includes('فاخر')) {
+    bgGradient = 'linear-gradient(135deg, #2B1828 0%, #000000 100%)';
+    textColor = '#FFFFFF';
+    borderColor = '#F5BD1A';
+    dotColor = '#000000';
+  } else if (name.includes('أبيض') || name.includes('white')) {
+    bgGradient = 'linear-gradient(135deg, #FFFFFF 0%, #E0E0E0 100%)';
+    textColor = '#120911';
+    borderColor = '#FFFFFF';
+    dotColor = '#FFFFFF';
+  } else if (name.includes('كحلي') || name.includes('أزرق') || name.includes('blue') || name.includes('navy')) {
+    bgGradient = 'linear-gradient(135deg, #1B3A4B 0%, #061A23 100%)';
+    textColor = '#FFFFFF';
+    borderColor = '#4EA8DE';
+    dotColor = '#4EA8DE';
+  } else if (name.includes('أخضر') || name.includes('green') || name.includes('زيتي')) {
+    bgGradient = 'linear-gradient(135deg, #2ECC71 0%, #1E824C 100%)';
+    textColor = '#FFFFFF';
+    borderColor = '#2ECC71';
+    dotColor = '#2ECC71';
+  } else if (name.includes('أصفر') || name.includes('ذهب') || name.includes('gold') || name.includes('yellow')) {
+    bgGradient = 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)';
+    textColor = '#120911';
+    borderColor = '#F5BD1A';
+    dotColor = '#F5BD1A';
+  } else if (name.includes('وردي') || name.includes('زهري') || name.includes('pink')) {
+    bgGradient = 'linear-gradient(135deg, #FF75A0 0%, #D63447 100%)';
+    textColor = '#FFFFFF';
+    borderColor = '#FF75A0';
+    dotColor = '#FF75A0';
+  } else if (name.includes('رمادي') || name.includes('فضي') || name.includes('grey') || name.includes('silver')) {
+    bgGradient = 'linear-gradient(135deg, #7F8C8D 0%, #34495E 100%)';
+    textColor = '#FFFFFF';
+    borderColor = '#BDC3C7';
+    dotColor = '#7F8C8D';
+  }
+
+  if (isSelected) {
+    return {
+      style: {
+        padding: '8px 18px',
+        borderRadius: '50px',
+        border: `2px solid ${borderColor}`,
+        background: bgGradient,
+        color: textColor,
+        cursor: 'pointer',
+        fontWeight: '900',
+        fontSize: '0.9rem',
+        transition: 'all 0.25s ease',
+        boxShadow: `0 6px 20px rgba(0,0,0,0.6), 0 0 12px ${borderColor}80`,
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '8px',
+        transform: 'scale(1.04)'
+      },
+      dotColor
+    };
+  }
+
+  return {
+    style: {
+      padding: '8px 18px',
+      borderRadius: '50px',
+      border: `1.5px solid ${borderColor}60`,
+      background: 'rgba(255, 255, 255, 0.07)',
+      color: '#FFFFFF',
+      cursor: 'pointer',
+      fontWeight: '700',
+      fontSize: '0.88rem',
+      transition: 'all 0.25s ease',
+      boxShadow: 'none',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px'
+    },
+    dotColor
+  };
+};
+
 const DEFAULT_PRODUCTS = [
   {
     id: 'default-1',
@@ -493,27 +585,32 @@ ${notes}`;
                       <div className="grad-field">
                         <label className="as-label">اختر اللون المطلوب *</label>
                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '8px' }}>
-                          {colorsList.map((color) => (
-                            <button
-                              key={color}
-                              type="button"
-                              onClick={() => setSelectedColor(color)}
-                              style={{
-                                padding: '8px 18px',
-                                borderRadius: '50px',
-                                border: selectedColor === color ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.2)',
-                                background: selectedColor === color ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'rgba(255, 255, 255, 0.08)',
-                                color: selectedColor === color ? '#120911' : '#FFFFFF',
-                                cursor: 'pointer',
-                                fontWeight: '800',
-                                fontSize: '0.88rem',
-                                transition: 'all 0.2s ease',
-                                boxShadow: selectedColor === color ? '0 4px 14px rgba(245, 189, 26, 0.3)' : 'none'
-                              }}
-                            >
-                              {color}
-                            </button>
-                          ))}
+                          {colorsList.map((color) => {
+                            const isSelected = selectedColor === color;
+                            const colorObj = getColorStyle(color, isSelected);
+
+                            return (
+                              <button
+                                key={color}
+                                type="button"
+                                onClick={() => setSelectedColor(color)}
+                                style={colorObj.style}
+                              >
+                                <span 
+                                  style={{ 
+                                    width: '10px', 
+                                    height: '10px', 
+                                    borderRadius: '50%', 
+                                    background: colorObj.dotColor, 
+                                    border: '1px solid rgba(255,255,255,0.6)', 
+                                    flexShrink: 0,
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)' 
+                                  }} 
+                                />
+                                <span>{color}</span>
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
