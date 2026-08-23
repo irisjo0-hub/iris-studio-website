@@ -177,11 +177,16 @@ const MediaPortal = () => {
 
         <div className="portal-grid-4">
           {projectTypes.map((pt, idx) => (
-            <div key={idx} className="project-type-card">
-              <div className="pt-num">0{idx + 1}</div>
-              <h4>{isRtl ? pt.name_ar : pt.name_en}</h4>
-              <Link to="/work" className="pt-link">
-                <span>{isRtl ? 'مشاهدة الأعمال' : 'View Work'}</span>
+            <div key={idx} className="portal-card-box project-type-card">
+              <div className="card-top-icon">
+                <span className="step-badge-num" style={{ fontSize: '1.6rem', margin: 0 }}>0{idx + 1}</span>
+                <span className="card-tag">مشاريع آيرس</span>
+              </div>
+              <h3>{isRtl ? pt.name_ar : pt.name_en}</h3>
+              <p style={{ fontSize: '0.85rem' }}>نماذج سابقة مصورة بتقنيات عالية الجودة.</p>
+              <Link to="/work" className="card-link-btn" style={{ marginTop: 'auto' }}>
+                <span>{isRtl ? 'مشاهدة المعرض' : 'View Work'}</span>
+                {isRtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
               </Link>
             </div>
           ))}
