@@ -82,7 +82,7 @@ const MediaPortal = () => {
         <div className="portal-hero-container">
           <div className="portal-hero-badge">
             <span className="badge-dot" />
-            <span>01 MEDIA DIVISION</span>
+            <span>{isRtl ? '01 الدعاية والإعلان' : '01 MEDIA DIVISION'}</span>
           </div>
 
           <h1 className="portal-hero-title">

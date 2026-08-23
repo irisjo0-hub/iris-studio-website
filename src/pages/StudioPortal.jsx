@@ -98,7 +98,7 @@ const StudioPortal = () => {
         <div className="portal-hero-container">
           <div className="portal-hero-badge studio-badge">
             <span className="badge-dot" />
-            <span>02 STUDIO DIVISION</span>
+            <span>{isRtl ? '02 التصوير والاستوديو' : '02 STUDIO DIVISION'}</span>
           </div>
 
           <h1 className="portal-hero-title">

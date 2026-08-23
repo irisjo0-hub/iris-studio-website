@@ -60,7 +60,7 @@ const PrintPortal = () => {
         <div className="portal-hero-container">
           <div className="portal-hero-badge print-badge">
             <span className="badge-dot" />
-            <span>03 PRINT DIVISION</span>
+            <span>{isRtl ? '03 المطبوعات الفاخرة' : '03 PRINT DIVISION'}</span>
           </div>
 
           <h1 className="portal-hero-title">
