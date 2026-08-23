@@ -146,7 +146,7 @@ const DEFAULT_PRODUCTS = [
   }
 ];
 
-const ProductStoreCard = ({ prod, onOrder }) => {
+const ProductStoreCard = ({ prod, onOrder, viewMode = 'grid' }) => {
   let imagesList = [];
   if (Array.isArray(prod.image_urls)) {
     imagesList = prod.image_urls.filter(Boolean);
@@ -163,34 +163,93 @@ const ProductStoreCard = ({ prod, onOrder }) => {
   const [activeIdx, setActiveIdx] = useState(0);
   const currentImg = imagesList[activeIdx] || imagesList[0] || '';
 
+  // LIST VIEW LAYOUT (تصميم القائمة الأفقي: الصورة صغيرة والوصف بجانبها)
+  if (viewMode === 'list') {
+    return (
+      <div className="grad-pkg-card-list" style={{ background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.92) 0%, rgba(18, 9, 17, 0.96) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '16px', overflow: 'hidden', display: 'flex', gap: '14px', padding: '12px', alignItems: 'stretch', boxShadow: '0 6px 20px rgba(0,0,0,0.4)', minHeight: '130px' }}>
+        {/* Thumbnail on Right */}
+        <div style={{ position: 'relative', width: '125px', height: '125px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden', background: '#000' }}>
+          {currentImg ? (
+            <img src={currentImg} alt={prod.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontSize: '1.5rem' }}>🖼️</div>
+          )}
+
+          {/* Multi-Image indicator */}
+          {imagesList.length > 1 && (
+            <span style={{ position: 'absolute', bottom: '4px', right: '4px', background: 'rgba(0, 0, 0, 0.8)', color: '#FFFFFF', padding: '2px 6px', borderRadius: '50px', fontSize: '0.68rem', fontWeight: '800' }}>
+              📸 {imagesList.length}
+            </span>
+          )}
+        </div>
+
+        {/* Content & Description on Left */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+              <h3 style={{ fontSize: '1.02rem', fontWeight: '900', color: '#FFFFFF', margin: 0, lineHeight: '1.3' }}>
+                {prod.name}
+              </h3>
+              <span style={{ fontSize: '1.15rem', color: '#F5BD1A', fontWeight: '900', whiteSpace: 'nowrap' }}>
+                {prod.price} JOD
+              </span>
+            </div>
+
+            {prod.category && (
+              <span style={{ display: 'inline-block', color: 'rgba(245, 189, 26, 0.85)', fontSize: '0.74rem', fontWeight: '800', marginTop: '3px' }}>
+                🏷️ {prod.category}
+              </span>
+            )}
+
+            {prod.description && (
+              <p style={{ fontSize: '0.82rem', color: 'rgba(236, 235, 231, 0.75)', margin: '6px 0', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                {prod.description}
+              </p>
+            )}
+          </div>
+
+          <button
+            type="button"
+            className="grad-pkg-btn"
+            onClick={() => onOrder(prod)}
+            style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '7px 16px', fontSize: '0.82rem', cursor: 'pointer', width: 'fit-content', marginTop: '6px' }}
+          >
+            طلب وتصميم المنتج 🛒
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // GRID VIEW LAYOUT (منتجين جنب بعض - Compact 2-column grid card)
   return (
-    <div className="grad-pkg-card" style={{ background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.92) 0%, rgba(18, 9, 17, 0.96) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '18px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+    <div className="grad-pkg-card" style={{ background: 'linear-gradient(145deg, rgba(42, 18, 38, 0.92) 0%, rgba(18, 9, 17, 0.96) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 6px 20px rgba(0,0,0,0.5)' }}>
       {/* Image Display */}
       <div style={{ position: 'relative', width: '100%', background: '#000' }}>
         {currentImg ? (
-          <img src={currentImg} alt={prod.name} style={{ width: '100%', height: '175px', objectFit: 'cover', display: 'block', transition: 'all 0.3s ease' }} />
+          <img src={currentImg} alt={prod.name} style={{ width: '100%', height: '145px', objectFit: 'cover', display: 'block', transition: 'all 0.3s ease' }} />
         ) : (
-          <div style={{ width: '100%', height: '175px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '2rem' }}>🖼️</div>
+          <div style={{ width: '100%', height: '145px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '1.8rem' }}>🖼️</div>
         )}
 
         {/* Category Tag Badge */}
         {prod.category && (
-          <span style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(18, 9, 17, 0.88)', backdropFilter: 'blur(8px)', color: '#F5BD1A', border: '1px solid rgba(245, 189, 26, 0.4)', padding: '3px 10px', borderRadius: '50px', fontSize: '0.74rem', fontWeight: '900' }}>
+          <span style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(18, 9, 17, 0.88)', backdropFilter: 'blur(6px)', color: '#F5BD1A', border: '1px solid rgba(245, 189, 26, 0.4)', padding: '2px 8px', borderRadius: '50px', fontSize: '0.68rem', fontWeight: '900' }}>
             🏷️ {prod.category}
           </span>
         )}
 
         {/* Multi-Image Indicator Counter Badge */}
         {imagesList.length > 1 && (
-          <span style={{ position: 'absolute', top: '10px', left: '10px', background: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(6px)', color: '#FFFFFF', padding: '3px 8px', borderRadius: '50px', fontSize: '0.72rem', fontWeight: '800' }}>
-            📸 {activeIdx + 1} / {imagesList.length}
+          <span style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(6px)', color: '#FFFFFF', padding: '2px 6px', borderRadius: '50px', fontSize: '0.68rem', fontWeight: '800' }}>
+            📸 {activeIdx + 1}/{imagesList.length}
           </span>
         )}
       </div>
 
       {/* Multi-Image Interactive Thumbnails Swatch Bar */}
       {imagesList.length > 1 && (
-        <div style={{ display: 'flex', gap: '6px', padding: '6px 12px', background: 'rgba(18, 9, 17, 0.95)', borderBottom: '1px solid rgba(245, 189, 26, 0.15)', overflowX: 'auto' }}>
+        <div style={{ display: 'flex', gap: '4px', padding: '4px 8px', background: 'rgba(18, 9, 17, 0.95)', borderBottom: '1px solid rgba(245, 189, 26, 0.15)', overflowX: 'auto' }}>
           {imagesList.map((imgUrl, i) => (
             <img
               key={i}
@@ -198,9 +257,9 @@ const ProductStoreCard = ({ prod, onOrder }) => {
               alt={`thumb-${i}`}
               onClick={() => setActiveIdx(i)}
               style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '6px',
+                width: '26px',
+                height: '26px',
+                borderRadius: '4px',
                 objectFit: 'cover',
                 cursor: 'pointer',
                 border: activeIdx === i ? '2px solid #F5BD1A' : '1px solid rgba(255,255,255,0.2)',
@@ -214,24 +273,18 @@ const ProductStoreCard = ({ prod, onOrder }) => {
       )}
 
       {/* Compact Card Content */}
-      <div className="grad-pkg-body" style={{ padding: '16px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div className="grad-pkg-body" style={{ padding: '12px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div>
-          <h3 style={{ fontSize: '1.08rem', fontWeight: '900', color: '#FFFFFF', margin: '0 0 6px', lineHeight: '1.3' }}>
+          <h3 style={{ fontSize: '0.96rem', fontWeight: '900', color: '#FFFFFF', margin: '0 0 4px', lineHeight: '1.3' }}>
             {prod.name}
           </h3>
-          <div style={{ fontSize: '1.25rem', color: '#F5BD1A', fontWeight: '900', marginBottom: '8px' }}>
+          <div style={{ fontSize: '1.15rem', color: '#F5BD1A', fontWeight: '900', marginBottom: '6px' }}>
             {prod.price} JOD
           </div>
           {prod.description && (
-            <p style={{ fontSize: '0.84rem', color: 'rgba(236, 235, 231, 0.75)', lineHeight: '1.5', marginBottom: '12px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            <p style={{ fontSize: '0.78rem', color: 'rgba(236, 235, 231, 0.75)', lineHeight: '1.4', marginBottom: '8px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
               {prod.description}
             </p>
-          )}
-          
-          {prod.custom_notes && (
-            <div style={{ fontSize: '0.78rem', background: 'rgba(245, 189, 26, 0.1)', color: '#F5BD1A', padding: '8px 10px', borderRadius: '8px', marginBottom: '12px', border: '1px solid rgba(245, 189, 26, 0.3)' }}>
-              💡 {prod.custom_notes}
-            </div>
           )}
         </div>
 
@@ -239,9 +292,9 @@ const ProductStoreCard = ({ prod, onOrder }) => {
           type="button"
           className="grad-pkg-btn"
           onClick={() => onOrder(prod)}
-          style={{ marginTop: 'auto', background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '10px 16px', fontSize: '0.88rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(245, 189, 26, 0.25)' }}
+          style={{ marginTop: 'auto', background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '8px 12px', fontSize: '0.82rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(245, 189, 26, 0.25)' }}
         >
-          طلب وتصميم المنتج 🛒
+          طلب المنتج 🛒
         </button>
       </div>
     </div>
@@ -254,6 +307,7 @@ const PrintingProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState(null); // Product for ordering modal
   const [selectedCategory, setSelectedCategory] = useState('الكل');
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' (2 per row) | 'list' (horizontal cards)
 
   // Order Form State
   const [customerName, setCustomerName] = useState('');
@@ -446,9 +500,9 @@ ${notes}`;
       <section className="portal-section" style={{ paddingTop: '0', paddingBottom: '30px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '1150px', margin: '0 auto' }}>
           
-          {/* Search & Counter Row */}
+          {/* Search, View Switcher & Counter Row */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', background: 'rgba(24, 12, 23, 0.95)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '50px', padding: '10px 22px', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '220px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '200px' }}>
               <span style={{ fontSize: '1.2rem', color: '#F5BD1A' }}>🔍</span>
               <input
                 type="text"
@@ -458,8 +512,49 @@ ${notes}`;
                 style={{ background: 'none', border: 'none', color: '#FFFFFF', outline: 'none', width: '100%', fontSize: '0.94rem', fontWeight: '700' }}
               />
             </div>
-            <div style={{ fontSize: '0.88rem', color: '#F5BD1A', fontWeight: '900', background: 'rgba(245, 189, 26, 0.15)', padding: '4px 14px', borderRadius: '50px' }}>
-              عرض {filteredProducts.length} منتج مطبوع
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              {/* Layout Mode Toggle */}
+              <div style={{ display: 'flex', gap: '4px', background: 'rgba(255, 255, 255, 0.08)', padding: '3px', borderRadius: '50px', border: '1px solid rgba(245, 189, 26, 0.25)' }}>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('grid')}
+                  style={{
+                    padding: '5px 14px',
+                    borderRadius: '50px',
+                    border: 'none',
+                    background: viewMode === 'grid' ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'transparent',
+                    color: viewMode === 'grid' ? '#120911' : '#FFFFFF',
+                    fontWeight: '900',
+                    fontSize: '0.78rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  📱 شبكة (2 جنب بعض)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('list')}
+                  style={{
+                    padding: '5px 14px',
+                    borderRadius: '50px',
+                    border: 'none',
+                    background: viewMode === 'list' ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'transparent',
+                    color: viewMode === 'list' ? '#120911' : '#FFFFFF',
+                    fontWeight: '900',
+                    fontSize: '0.78rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  ☰ قائمة (الوصف بجانب الصورة)
+                </button>
+              </div>
+
+              <div style={{ fontSize: '0.85rem', color: '#F5BD1A', fontWeight: '900', background: 'rgba(245, 189, 26, 0.15)', padding: '4px 14px', borderRadius: '50px', whiteSpace: 'nowrap' }}>
+                عرض {filteredProducts.length} منتج
+              </div>
             </div>
           </div>
 
@@ -495,7 +590,7 @@ ${notes}`;
         </div>
       </section>
 
-      {/* Grid of products */}
+      {/* Grid / List of products */}
       <section className="grad-section" style={{ paddingTop: 0 }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px', fontSize: '1.2rem', color: '#F5BD1A' }}>⏳ جاري تحميل الكتالوج...</div>
@@ -506,9 +601,9 @@ ${notes}`;
             <p style={{ color: '#F5BD1A' }}>جرب التصفح ضمن تصنيف آخر أو طلب طباعة مخصصة.</p>
           </div>
         ) : (
-          <div className="grad-packages-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '20px' }}>
+          <div className="grad-packages-grid" style={{ display: 'grid', gridTemplateColumns: viewMode === 'grid' ? 'repeat(auto-fill, minmax(165px, 1fr))' : '1fr', gap: viewMode === 'grid' ? '14px' : '16px' }}>
             {filteredProducts.map((prod) => (
-              <ProductStoreCard key={prod.id} prod={prod} onOrder={openOrderModal} />
+              <ProductStoreCard key={prod.id} prod={prod} onOrder={openOrderModal} viewMode={viewMode} />
             ))}
           </div>
         )}
