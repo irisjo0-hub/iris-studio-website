@@ -38,25 +38,44 @@ export const HeroLivingCollage = () => {
     { id: 'h-8', image: 'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=1000&q=80', alt_ar: 'مطبوعات وتغليف البراند', alt_en: 'Brand Print & Packaging', url_optional: '/printing-products' }
   ];
 
-  // Full Dynamic Admin Pool
-  const rawPool = (settings.hero_motion_images && settings.hero_motion_images.length > 0)
-    ? settings.hero_motion_images
-    : default8Works;
+  // Full Dynamic Admin Pool Parsing
+  let parsedPool = [];
+  if (Array.isArray(settings.hero_motion_images)) {
+    parsedPool = settings.hero_motion_images;
+  } else if (typeof settings.hero_motion_images === 'string') {
+    try {
+      const p = JSON.parse(settings.hero_motion_images);
+      if (Array.isArray(p)) parsedPool = p;
+    } catch (e) {}
+  }
+
+  const rawPool = (Array.isArray(parsedPool) && parsedPool.length > 0) ? parsedPool : default8Works;
 
   // Respect hero_image_display_count if specified by Admin
   const displayCount = settings.hero_image_display_count 
     ? Math.max(1, parseInt(settings.hero_image_display_count, 10))
     : rawPool.length;
 
-  const limitedPool = rawPool.slice(0, displayCount);
+  const limitedPool = Array.isArray(rawPool) ? rawPool.slice(0, displayCount) : default8Works;
 
-  const pool = limitedPool.map((item, idx) => ({
-    id: item.id || `item-${idx}`,
-    image: item.image || item.url || heroMediaImg,
-    alt_ar: item.alt_ar || item.title || 'أعمال آيرس الاحترافية',
-    alt_en: item.alt_en || item.title || 'IRIS Professional Work',
-    url_optional: item.url_optional || item.link || '/work'
-  }));
+  const pool = limitedPool.map((item, idx) => {
+    if (typeof item === 'string') {
+      return {
+        id: `item-${idx}`,
+        image: item || heroMediaImg,
+        alt_ar: 'أعمال آيرس الاحترافية',
+        alt_en: 'IRIS Professional Work',
+        url_optional: '/work'
+      };
+    }
+    return {
+      id: item?.id || `item-${idx}`,
+      image: item?.image || item?.url || heroMediaImg,
+      alt_ar: item?.alt_ar || item?.title || 'أعمال آيرس الاحترافية',
+      alt_en: item?.alt_en || item?.title || 'IRIS Professional Work',
+      url_optional: item?.url_optional || item?.link || '/work'
+    };
+  });
 
   // Auto-pause when tab is hidden or element scrolled out of viewport
   useEffect(() => {
