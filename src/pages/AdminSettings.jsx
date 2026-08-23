@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, uploadFile } from '../lib/supabase';
-import { useSiteSettings } from '../context/SiteSettingsContext';
+import { useSiteSettings, DEFAULT_HERO_MOTION_IMAGES } from '../context/SiteSettingsContext';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/admin.css';
 
@@ -25,7 +25,7 @@ const AdminSettings = () => {
   const [officeHours, setOfficeHours] = useState('');
 
   // Hero Display Count Control
-  const [heroImageDisplayCount, setHeroImageDisplayCount] = useState(6);
+  const [heroImageDisplayCount, setHeroImageDisplayCount] = useState(8);
 
   // 3 Divisions Customization State
   const [divisionMediaTitleAr, setDivisionMediaTitleAr] = useState('');
@@ -94,14 +94,18 @@ const AdminSettings = () => {
       setDivisionPrintImagePreview(settings.division_print_image || '');
 
       let parsedMotionImages = [];
-      if (Array.isArray(settings.hero_motion_images) && settings.hero_motion_images.length > 0) {
+      if (Array.isArray(settings.hero_motion_images)) {
         parsedMotionImages = settings.hero_motion_images;
       } else if (typeof settings.hero_motion_images === 'string') {
         try {
-          const p = JSON.parse(settings.hero_motion_images);
-          if (Array.isArray(p) && p.length > 0) parsedMotionImages = p;
+          parsedMotionImages = JSON.parse(settings.hero_motion_images);
         } catch (e) {}
       }
+
+      if (!Array.isArray(parsedMotionImages) || parsedMotionImages.length === 0) {
+        parsedMotionImages = DEFAULT_HERO_MOTION_IMAGES;
+      }
+
       setHeroMotionImages(parsedMotionImages);
     }
   }, [settings]);
