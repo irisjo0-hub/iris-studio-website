@@ -307,9 +307,9 @@ ${notes}`;
       {/* Modal Backdrop / Dialog */}
       {selectedProduct && (() => {
         const colorsList = Array.isArray(selectedProduct.available_colors)
-          ? selectedProduct.available_colors.flatMap(c => typeof c === 'string' ? c.split(',') : c).map(c => String(c).trim()).filter(Boolean)
+          ? selectedProduct.available_colors.flatMap(c => typeof c === 'string' ? c.split(/[,،/\n]+/) : c).map(c => String(c).trim()).filter(Boolean)
           : (typeof selectedProduct.available_colors === 'string' 
-              ? selectedProduct.available_colors.split(',').map(c => c.trim()).filter(Boolean) 
+              ? selectedProduct.available_colors.split(/[,،/\n]+/).map(c => c.trim()).filter(Boolean) 
               : []);
 
         return (

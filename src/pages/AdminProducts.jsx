@@ -137,7 +137,7 @@ const AdminProducts = () => {
         }
       }
 
-      const parsedColors = availableColors.split(',')
+      const parsedColors = availableColors.split(/[,،/\n]+/)
         .map(c => c.trim())
         .filter(Boolean);
 
