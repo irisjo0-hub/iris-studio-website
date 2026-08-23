@@ -90,15 +90,17 @@ const AdminLayout = ({ children }) => {
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          <div className="header-logo-container">
-            <img src={settings.logo_url || irisLogo} alt="IRIS Studio" className="admin-header-logo-img" />
-          </div>
+        </div>
+
+        {/* Center logo */}
+        <div className="header-center-logo">
+          <img src={settings.logo_url || irisLogo} alt="IRIS Studio" className="admin-header-logo-img" />
         </div>
 
         <div className="header-left-info">
           <div className="header-admin-badge-box">
             <Crown size={14} className="badge-crown-icon" />
-            <span className="header-badge">لوحة التحكم</span>
+            <span className="header-badge header-badge-text">لوحة التحكم</span>
           </div>
         </div>
       </header>

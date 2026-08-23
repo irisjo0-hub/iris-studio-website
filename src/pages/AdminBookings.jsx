@@ -7,8 +7,7 @@ import '../styles/admin.css';
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
-  const [receiptModal, setReceiptModal] = useState(null); // URL string
+  const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -84,35 +83,106 @@ const AdminBookings = () => {
   const statusLabel = { pending: 'بانتظار المراجعة', approved: 'مؤكد', completed: 'مكتمل', rejected: 'مرفوض' };
   const statusClass = { pending: 'badge-pending', approved: 'badge-approved', completed: 'badge-completed', rejected: 'badge-rejected' };
 
-  const total    = bookings.length;
-  const pending  = bookings.filter((b) => b.status === 'pending').length;
-  const approved = bookings.filter((b) => b.status === 'approved').length;
+  const total     = bookings.length;
+  const pending   = bookings.filter((b) => (b.status || 'pending') === 'pending').length;
+  const approved  = bookings.filter((b) => b.status === 'approved').length;
+  const completed = bookings.filter((b) => b.status === 'completed').length;
+  const rejected  = bookings.filter((b) => b.status === 'rejected').length;
+
+  const filteredBookings = filterStatus === 'all'
+    ? bookings
+    : bookings.filter((b) => (b.status || 'pending') === filterStatus);
 
   return (
     <AdminLayout>
       <section className="admin-bookings">
-        <h2 className="section-title">إدارة الحجوزات</h2>
-        <p className="section-subtitle">جميع طلبات الحجز الواردة من صفحة الموقع.</p>
+        <h2 className="section-title">إدارة وأقسام الحجوزات</h2>
+        <p className="section-subtitle">إدارة، فلترة ومتابعة جميع طلبات الحجز الواردة من الموقع.</p>
 
-        {/* Stats */}
+        {/* Interactive Stats Grid */}
         <div className="bookings-stats-row">
-          <div className="small-stat-card card-purple"><h4>إجمالي الحجوزات</h4><p>{total}</p></div>
-          <div className="small-stat-card card-gold"><h4>بانتظار المراجعة</h4><p>{pending}</p></div>
-          <div className="small-stat-card card-green"><h4>الحجوزات المؤكدة</h4><p>{approved}</p></div>
+          <div
+            className={`small-stat-card card-purple ${filterStatus === 'all' ? 'active-stat' : ''}`}
+            onClick={() => setFilterStatus('all')}
+          >
+            <h4>إجمالي الحجوزات</h4>
+            <p>{total}</p>
+          </div>
+          <div
+            className={`small-stat-card card-gold ${filterStatus === 'pending' ? 'active-stat' : ''}`}
+            onClick={() => setFilterStatus('pending')}
+          >
+            <h4>بانتظار المراجعة</h4>
+            <p>{pending}</p>
+          </div>
+          <div
+            className={`small-stat-card card-green ${filterStatus === 'approved' ? 'active-stat' : ''}`}
+            onClick={() => setFilterStatus('approved')}
+          >
+            <h4>الحجوزات المؤكدة</h4>
+            <p>{approved}</p>
+          </div>
         </div>
 
-        {bookings.length === 0 ? (
+        {/* Status Filter Tabs Navigation */}
+        <div className="booking-filter-tabs-row">
+          <button
+            type="button"
+            className={`booking-filter-tab ${filterStatus === 'all' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('all')}
+          >
+            📋 جميع الحجوزات ({total})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-pending ${filterStatus === 'pending' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('pending')}
+          >
+            ⏳ بانتظار المراجعة ({pending})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-approved ${filterStatus === 'approved' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('approved')}
+          >
+            ✅ المؤكدة ({approved})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-completed ${filterStatus === 'completed' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('completed')}
+          >
+            🎯 المكتملة ({completed})
+          </button>
+          <button
+            type="button"
+            className={`booking-filter-tab tab-rejected ${filterStatus === 'rejected' ? 'active' : ''}`}
+            onClick={() => setFilterStatus('rejected')}
+          >
+            ❌ المرفوضة ({rejected})
+          </button>
+        </div>
+
+        {filteredBookings.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">📅</div>
-            <h3>لا توجد طلبات حجز حالية</h3>
-            <p>الحجوزات الجديدة التي يقوم بها العملاء ستظهر هنا تلقائياً.</p>
-            <Link to="/booking" className="empty-btn">ذهاب إلى صفحة الحجز</Link>
+            <h3>لا توجد حجوزات في هذا القسم حالياً</h3>
+            <p>عند وصول حجوزات جديدة مطابقة لهذا القسم ستظهر هنا فورياً.</p>
+            {filterStatus !== 'all' && (
+              <button
+                type="button"
+                className="empty-btn"
+                onClick={() => setFilterStatus('all')}
+              >
+                عرض جميع الحجوزات
+              </button>
+            )}
           </div>
         ) : (
           <>
             {/* 1. Mobile Cards View (< 992px) */}
             <div className="admin-bookings-mobile-cards">
-              {bookings.map((b, index) => (
+              {filteredBookings.map((b, index) => (
                 <div key={b.id} className={`booking-card-item ${b.status === 'completed' ? 'card-completed' : ''}`}>
                   <div className="card-header-top">
                     <div className="card-id-badge">#{index + 1}</div>
@@ -254,7 +324,7 @@ const AdminBookings = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {bookings.map((b, index) => (
+                  {filteredBookings.map((b, index) => (
                     <tr key={b.id} className={b.status === 'completed' ? 'row-completed' : ''}>
                       <td>{index + 1}</td>
                       <td>{formatTime(b.created_at)}</td>
