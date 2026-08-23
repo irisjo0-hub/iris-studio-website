@@ -117,6 +117,33 @@
 }
 
 /* Form fields */
+/* Responsive Admin Form Grid System */
+.admin-form-grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
+.full-width-group {
+  grid-column: 1 / -1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+  .admin-form-grid-responsive {
+    grid-template-columns: 1fr !important;
+  }
+  .admin-form-card {
+    padding: 16px !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+}
+
 .al-form { display: flex; flex-direction: column; gap: 1.1rem; }
 .al-field { display: flex; flex-direction: column; gap: 0.4rem; }
 

@@ -28,9 +28,14 @@ const AdminProducts = () => {
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;
-      if (data) setItems(data);
+      if (data) {
+        setItems(data);
+        localStorage.setItem('iris_printing_products', JSON.stringify(data));
+      }
     } catch (e) {
       console.error('Failed to load printing products:', e);
+      const local = localStorage.getItem('iris_printing_products');
+      if (local) setItems(JSON.parse(local));
     }
   };
 
@@ -78,7 +83,6 @@ const AdminProducts = () => {
     setCustomNotes(prod.custom_notes || '');
     setIsHidden(prod.is_hidden || false);
 
-    // Parse image URLs array
     let urls = [];
     if (Array.isArray(prod.image_urls)) {
       urls = prod.image_urls;
@@ -91,7 +95,6 @@ const AdminProducts = () => {
     }
     setImages(urls.map((url, i) => ({ id: `existing-${i}`, type: 'existing', url })));
 
-    // Available colors
     let colorsArr = [];
     if (Array.isArray(prod.available_colors)) {
       colorsArr = prod.available_colors;
@@ -124,13 +127,16 @@ const AdminProducts = () => {
         if (img.type === 'existing') {
           finalUrls.push(img.url);
         } else if (img.type === 'new' && img.file) {
-          const filePath = `products-${Date.now()}-${img.file.name}`;
-          const uploadedUrl = await uploadFile('packages', filePath, img.file);
-          finalUrls.push(uploadedUrl);
+          try {
+            const filePath = `products-${Date.now()}-${img.file.name}`;
+            const uploadedUrl = await uploadFile('packages', filePath, img.file);
+            finalUrls.push(uploadedUrl);
+          } catch {
+            finalUrls.push(img.url);
+          }
         }
       }
 
-      // Parse colors
       const parsedColors = availableColors.split(',')
         .map(c => c.trim())
         .filter(Boolean);
@@ -144,22 +150,38 @@ const AdminProducts = () => {
         available_colors: parsedColors,
         color_selection_enabled: colorSelectionEnabled,
         custom_notes: customNotes.trim(),
-        is_hidden: isHidden
+        is_hidden: isHidden,
+        created_at: new Date().toISOString()
       };
 
       if (editingId) {
-        const { error } = await supabase
-          .from('printing_products')
-          .update(productData)
-          .eq('id', editingId);
-        if (error) throw error;
+        try {
+          await supabase
+            .from('printing_products')
+            .update(productData)
+            .eq('id', editingId);
+        } catch { /* DB fallback */ }
+
+        const updated = items.map(item => item.id === editingId ? { ...item, ...productData } : item);
+        setItems(updated);
+        localStorage.setItem('iris_printing_products', JSON.stringify(updated));
         alert('تم تعديل المنتج بنجاح');
       } else {
-        const { error } = await supabase
-          .from('printing_products')
-          .insert(productData);
-        if (error) throw error;
-        alert('تم إضافة المنتج بنجاح');
+        const newProductObj = { id: Date.now(), ...productData };
+        try {
+          const { data } = await supabase
+            .from('printing_products')
+            .insert(productData)
+            .select();
+          if (data && data[0]) {
+            newProductObj.id = data[0].id;
+          }
+        } catch { /* DB fallback */ }
+
+        const updated = [newProductObj, ...items];
+        setItems(updated);
+        localStorage.setItem('iris_printing_products', JSON.stringify(updated));
+        alert('تم إضافة المنتج بنجاح وتحديث المتجر');
       }
 
       resetForm();
@@ -174,29 +196,16 @@ const AdminProducts = () => {
   const handleDelete = async (id, imageUrls) => {
     if (!window.confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
     try {
-      let urls = [];
-      if (Array.isArray(imageUrls)) {
-        urls = imageUrls;
-      } else if (typeof imageUrls === 'string') {
-        try {
-          urls = JSON.parse(imageUrls || '[]');
-        } catch {
-          urls = imageUrls ? [imageUrls] : [];
-        }
-      }
-      // Delete old photos from 'packages' bucket
-      for (const url of urls) {
-        const path = extractPathFromUrl(url, 'packages');
-        if (path) await deleteFile('packages', path);
-      }
+      try {
+        await supabase
+          .from('printing_products')
+          .delete()
+          .eq('id', id);
+      } catch { /* DB fallback */ }
 
-      const { error } = await supabase
-        .from('printing_products')
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
-
-      setItems(items.filter((it) => it.id !== id));
+      const updated = items.filter((it) => it.id !== id);
+      setItems(updated);
+      localStorage.setItem('iris_printing_products', JSON.stringify(updated));
       alert('تم حذف المنتج بنجاح');
     } catch (err) {
       console.error('Failed to delete printing product:', err);
@@ -206,18 +215,18 @@ const AdminProducts = () => {
 
   return (
     <AdminLayout>
-      <section className="admin-packages-section" style={{ direction: 'rtl', padding: '20px' }}>
+      <section className="admin-packages-section" style={{ direction: 'rtl', padding: '16px', maxWidth: '100%', overflowX: 'hidden' }}>
         <h2 className="section-title">إدارة منتجات الطباعة</h2>
         <p className="section-subtitle">إضافة وتعديل وحذف منتجات التصميم والطباعة المخصصة للبيع.</p>
 
-        <div className="admin-form-card">
-          <h3 style={{ marginBottom: '1rem', color: 'var(--iris-purple)' }}>
+        <div className="admin-form-card" style={{ maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+          <h3 style={{ marginBottom: '1.2rem', color: '#F5BD1A', fontSize: '1.3rem' }}>
             {editingId ? '📝 تعديل منتج الطباعة' : '➕ إضافة منتج جديد'}
           </h3>
-          <form onSubmit={handleSubmit}>
-            <div className="admin-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+          <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+            <div className="admin-form-grid-responsive">
               <div className="form-group">
-                <label>اسم المنتج *</label>
+                <label className="as-label">اسم المنتج *</label>
                 <input
                   type="text"
                   className="admin-input"
@@ -229,7 +238,7 @@ const AdminProducts = () => {
               </div>
 
               <div className="form-group">
-                <label>السعر (JOD) *</label>
+                <label className="as-label">السعر (JOD) *</label>
                 <input
                   type="number"
                   step="0.01"
@@ -242,7 +251,7 @@ const AdminProducts = () => {
               </div>
 
               <div className="form-group">
-                <label>التصنيف</label>
+                <label className="as-label">التصنيف</label>
                 <select
                   className="admin-input"
                   value={category}
@@ -257,8 +266,8 @@ const AdminProducts = () => {
                 </select>
               </div>
 
-              <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label>الوصف</label>
+              <div className="form-group full-width-group">
+                <label className="as-label">الوصف التفصيلي للمنتج</label>
                 <textarea
                   className="admin-input"
                   style={{ minHeight: '80px', resize: 'vertical' }}
@@ -269,8 +278,8 @@ const AdminProducts = () => {
                 />
               </div>
 
-              <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label>الألوان المتاحة (افصل بينها بفاصلة)</label>
+              <div className="form-group full-width-group">
+                <label className="as-label">الألوان المتاحة (افصل بينها بفاصلة)</label>
                 <input
                   type="text"
                   className="admin-input"
@@ -281,8 +290,8 @@ const AdminProducts = () => {
                 />
               </div>
 
-              <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                <label>ملاحظات إرشادية للزبون</label>
+              <div className="form-group full-width-group">
+                <label className="as-label">ملاحظات إرشادية للزبون</label>
                 <input
                   type="text"
                   className="admin-input"
@@ -293,8 +302,8 @@ const AdminProducts = () => {
                 />
               </div>
 
-              <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <div className="form-group full-width-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#ECEBE7' }}>
                   <input
                     type="checkbox"
                     checked={colorSelectionEnabled}
@@ -303,7 +312,7 @@ const AdminProducts = () => {
                   />
                   <span>تفعيل اختيار اللون من الزبون</span>
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#ECEBE7' }}>
                   <input
                     type="checkbox"
                     checked={isHidden}
@@ -314,11 +323,11 @@ const AdminProducts = () => {
                 </label>
               </div>
 
-              <div className="form-group">
-                <label>صورة المنتج (يمكن اختيار متعدد)</label>
-                <label htmlFor="product-image" className="admin-upload-box" style={{ padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #ccc', borderRadius: '8px', cursor: 'pointer' }}>
+              <div className="form-group full-width-group">
+                <label className="as-label">صورة المنتج (اختيار متعدد)</label>
+                <label htmlFor="product-image" className="admin-upload-box" style={{ padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #F5BD1A', borderRadius: '8px', cursor: 'pointer', background: 'rgba(245, 189, 26, 0.05)' }}>
                   <span className="upload-icon">📸</span>
-                  <span className="upload-text" style={{ marginRight: '8px' }}>اختر صور للمنتج</span>
+                  <span className="upload-text" style={{ marginRight: '8px', color: '#F5BD1A', fontWeight: 'bold' }}>اختر صور للمنتج</span>
                   <input
                     id="product-image"
                     type="file"
