@@ -32,11 +32,8 @@ export const Footer = () => {
       </div>
 
       <div className="footer-content container">
-        {/* Brand & Slogan */}
+        {/* Slogan & Eyebrow Pill */}
         <div className="footer-brand">
-          <Link to="/" aria-label="IRIS Agency" className="footer-logo-link">
-            <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS Studio" className="footer-logo" />
-          </Link>
           <p className="footer-tagline">
             {isRtl
               ? (settings.slogan_line_1_ar || settings.slogan_line_1 || "من زهرة نادرة") + " " + (settings.slogan_line_2_ar || settings.slogan_line_2 || "إلى علامة تجارية لا تُنسى")
