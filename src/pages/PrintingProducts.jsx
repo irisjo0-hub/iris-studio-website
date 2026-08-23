@@ -497,7 +497,7 @@ ${notes}`;
     <main className="grad-page" dir="rtl" style={{ minHeight: '100vh', paddingBottom: '60px' }}>
       {/* Hero Banner */}
       <section className="grad-hero" style={{ paddingBottom: '30px' }}>
-        <div className="grad-hero-badge">🎁 IRIS Studio</div>
+        <div className="grad-hero-badge">🖨️ آيرس — المطبوعات والتطريز</div>
         <h1>منتجات الطباعة والتصميم المخصصة</h1>
         <p>استكشف منتجات المطبوعات والهدايا ووشاحات التخرج، وارفع تصميمك الخاص لنقوم بطباعته لك.</p>
       </section>
