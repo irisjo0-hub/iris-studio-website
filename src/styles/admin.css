@@ -2509,6 +2509,69 @@ body:has(.admin-layout),
   height: 42px !important;
 }
 
+/* Executive Compact 2x2 Grid System for Stat Cards */
+.cards-grid, .bookings-stats-row {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 16px !important;
+  margin-bottom: 20px !important;
+  width: 100% !important;
+}
+
+.dashboard-stat-card {
+  text-decoration: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  padding: 16px 18px !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, rgba(42, 18, 38, 0.94) 0%, rgba(18, 9, 17, 0.96) 100%) !important;
+  border: 1.5px solid rgba(245, 189, 26, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+  transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+}
+
+.dashboard-stat-card:hover {
+  transform: translateY(-4px) !important;
+  border-color: #F5BD1A !important;
+  box-shadow: 0 10px 30px rgba(245, 189, 26, 0.4) !important;
+}
+
+.stat-card-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.stat-icon {
+  font-size: 1.2rem !important;
+}
+
+.dashboard-stat-card h3 {
+  font-size: 0.88rem !important;
+  font-weight: 800 !important;
+  color: #ECEBE7 !important;
+  margin: 0 !important;
+}
+
+.dashboard-stat-card .stat-value {
+  font-size: 2.1rem !important;
+  font-weight: 900 !important;
+  margin: 6px 0 0 0 !important;
+}
+
+.card-purple .stat-value { color: #e056fd !important; }
+.card-gold .stat-value { color: #F5BD1A !important; }
+.card-green .stat-value { color: #2ecc71 !important; }
+.card-magenta .stat-value { color: #ff007f !important; }
+
+@media (max-width: 1023px) {
+  .cards-grid, .bookings-stats-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+}
+
 @media (max-width: 480px) {
   .header-badge-text {
     display: none !important;
@@ -2517,18 +2580,18 @@ body:has(.admin-layout),
     padding: 6px !important;
     border-radius: 50% !important;
   }
-  .bookings-stats-row {
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 6px !important;
+  .cards-grid, .bookings-stats-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
   }
-  .small-stat-card {
-    padding: 10px 8px !important;
+  .dashboard-stat-card, .small-stat-card {
+    padding: 12px 14px !important;
   }
-  .small-stat-card h4 {
-    font-size: 0.72rem !important;
+  .dashboard-stat-card h3, .small-stat-card h4 {
+    font-size: 0.78rem !important;
   }
-  .small-stat-card p {
-    font-size: 1.3rem !important;
+  .dashboard-stat-card .stat-value, .small-stat-card p {
+    font-size: 1.6rem !important;
   }
 }
 
@@ -2536,14 +2599,5 @@ body:has(.admin-layout),
   .form-group-row {
     flex-direction: column;
     gap: 0;
-  }
-  
-  .cards-grid {
-    grid-template-columns: 1fr !important;
-  }
-  
-  .bookings-stats-row {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
   }
 }
