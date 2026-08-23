@@ -51,14 +51,31 @@ const AdminPrintingOrders = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
+      let combined = [];
       const { data, error } = await supabase
         .from('printing_orders')
         .select('*')
         .order('created_at', { ascending: false });
-      if (error) throw error;
-      if (data) setOrders(data);
+      
+      if (!error && data && data.length > 0) {
+        combined = [...data];
+      }
+
+      const localStr = localStorage.getItem('iris_printing_orders');
+      if (localStr) {
+        const localData = JSON.parse(localStr);
+        localData.forEach(lo => {
+          if (!combined.some(o => o.id === lo.id || (o.created_at && o.created_at === lo.created_at))) {
+            combined.push(lo);
+          }
+        });
+      }
+
+      setOrders(combined.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)));
     } catch (e) {
       console.error('Failed to load printing orders:', e);
+      const localStr = localStorage.getItem('iris_printing_orders');
+      if (localStr) setOrders(JSON.parse(localStr));
     } finally {
       setLoading(false);
     }

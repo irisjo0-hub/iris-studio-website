@@ -571,59 +571,56 @@ const PrintingProducts = () => {
       }
 
       if (deliverySelected) {
-        finalNotes = `[طلب توصيل]
-العنوان: ${deliveryAddress}
-هاتف بديل: ${alternativePhone || 'لا يوجد'}
-خرائط قوقل: ${googleMapsLink || 'لا يوجد'}
-
-${finalNotes}`;
+        finalNotes = `[طلب توصيل]\nالعنوان: ${deliveryAddress}\nهاتف بديل: ${alternativePhone || 'لا يوجد'}\nخرائط قوقل: ${googleMapsLink || 'لا يوجد'}\n\n${finalNotes}`;
       } else {
-        finalNotes = `[استلام من الاستوديو]
-${finalNotes}`;
+        finalNotes = `[استلام من الاستوديو]\n${finalNotes}`;
       }
 
-      // Non-blocking database order log
+      const newOrderObj = {
+        id: `ord_${Date.now()}`,
+        product_id: selectedProduct.id,
+        product_name: selectedProduct.id === 'cart_checkout' ? `سلة متعددة (${totalCartCount} منتجات)` : selectedProduct.name,
+        customer_name: customerName.trim(),
+        phone: phone.trim(),
+        notes: finalNotes,
+        image_urls: uploadedUrls,
+        quantity: selectedProduct.id === 'cart_checkout' ? totalCartCount : quantity,
+        selected_color: selectedColor || (selectedProduct.id === 'cart_checkout' ? 'سلة متعددة' : ''),
+        status: 'pending',
+        created_at: new Date().toISOString()
+      };
+
+      // 1. Try Supabase insert
       try {
         await supabase
           .from('printing_orders')
           .insert({
-            product_id: selectedProduct.id,
-            product_name: selectedProduct.name,
-            customer_name: customerName.trim(),
-            phone: phone.trim(),
-            notes: finalNotes,
-            image_urls: uploadedUrls,
-            quantity: selectedProduct.id === 'cart_checkout' ? totalCartCount : quantity,
-            selected_color: selectedColor || (selectedProduct.id === 'cart_checkout' ? 'سلة متعددة' : ''),
-            status: 'pending'
+            product_id: newOrderObj.product_id,
+            product_name: newOrderObj.product_name,
+            customer_name: newOrderObj.customer_name,
+            phone: newOrderObj.phone,
+            notes: newOrderObj.notes,
+            image_urls: newOrderObj.image_urls,
+            quantity: newOrderObj.quantity,
+            selected_color: newOrderObj.selected_color,
+            status: newOrderObj.status
           });
       } catch (dbErr) {
         console.warn('Supabase printing_orders table log warning:', dbErr);
       }
 
-      // WhatsApp Order Link Generation
+      // 2. Always sync to localStorage fallback for Admin Dashboard
+      try {
+        const existingLocal = localStorage.getItem('iris_printing_orders');
+        const parsedLocal = existingLocal ? JSON.parse(existingLocal) : [];
+        localStorage.setItem('iris_printing_orders', JSON.stringify([newOrderObj, ...parsedLocal]));
+      } catch (lErr) {
+        console.error(lErr);
+      }
+
       const finalPrice = selectedProduct.id === 'cart_checkout' 
         ? totalCartPrice + (deliverySelected ? 2 : 0) 
         : (Number(selectedProduct.price) || 0) * quantity + (deliverySelected ? 2 : 0);
-
-      let waMsg = `🛍️ *طلب شراء جديد من متجر آيرس للمطبوعات والتطريز*\n----------------------------------------\n👤 *الاسم:* ${customerName.trim()}\n📞 *الهاتف:* ${phone.trim()}\n`;
-
-      if (deliverySelected) {
-        waMsg += `🚚 *التوصيل:* مطلوب\n📍 *العنوان:* ${deliveryAddress}\n`;
-        if (alternativePhone) waMsg += `📞 *هاتف بديل:* ${alternativePhone}\n`;
-        if (googleMapsLink) waMsg += `🗺️ *رابط الخريطة:* ${googleMapsLink}\n`;
-      } else {
-        waMsg += `🏪 *الاستلام:* من الاستوديو / المحل\n`;
-      }
-
-      if (notes) waMsg += `📝 *ملاحظات:* ${notes}\n`;
-      if (uploadedUrls.length > 0) waMsg += `🖼️ *مرفقات التصاميم (${uploadedUrls.length}):*\n${uploadedUrls.join('\n')}\n`;
-
-      waMsg += `\n🛒 *تفاصيل المنتجات المطلوب طباعتها:*\n${itemsSummary}\n\n💰 *المجموع الكلي:* ${finalPrice} JOD\n----------------------------------------`;
-
-      const waPhone = '962797303260';
-      const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(waMsg)}`;
-      window.open(waUrl, '_blank');
 
       const invoiceData = {
         invoiceNo: `INV-${Date.now().toString().slice(-6)}`,
