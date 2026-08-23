@@ -497,94 +497,100 @@ ${notes}`;
       </section>
 
       {/* Category Pills & Search Filter Control Bar */}
-      <section className="portal-section" style={{ paddingTop: '0', paddingBottom: '30px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '1150px', margin: '0 auto' }}>
+      <section className="portal-section" style={{ paddingTop: '0', paddingBottom: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '1150px', margin: '0 auto' }}>
           
-          {/* Search, View Switcher & Counter Row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', background: 'rgba(24, 12, 23, 0.95)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '50px', padding: '10px 22px', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '200px' }}>
-              <span style={{ fontSize: '1.2rem', color: '#F5BD1A' }}>🔍</span>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ابحث عن اسم المنتج، وشاح، بوستر..."
-                style={{ background: 'none', border: 'none', color: '#FFFFFF', outline: 'none', width: '100%', fontSize: '0.94rem', fontWeight: '700' }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              {/* Layout Mode Toggle */}
-              <div style={{ display: 'flex', gap: '4px', background: 'rgba(255, 255, 255, 0.08)', padding: '3px', borderRadius: '50px', border: '1px solid rgba(245, 189, 26, 0.25)' }}>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('grid')}
-                  style={{
-                    padding: '5px 14px',
-                    borderRadius: '50px',
-                    border: 'none',
-                    background: viewMode === 'grid' ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'transparent',
-                    color: viewMode === 'grid' ? '#120911' : '#FFFFFF',
-                    fontWeight: '900',
-                    fontSize: '0.78rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  📱 شبكة (2 جنب بعض)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('list')}
-                  style={{
-                    padding: '5px 14px',
-                    borderRadius: '50px',
-                    border: 'none',
-                    background: viewMode === 'list' ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'transparent',
-                    color: viewMode === 'list' ? '#120911' : '#FFFFFF',
-                    fontWeight: '900',
-                    fontSize: '0.78rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  ☰ قائمة (الوصف بجانب الصورة)
-                </button>
-              </div>
-
-              <div style={{ fontSize: '0.85rem', color: '#F5BD1A', fontWeight: '900', background: 'rgba(245, 189, 26, 0.15)', padding: '4px 14px', borderRadius: '50px', whiteSpace: 'nowrap' }}>
-                عرض {filteredProducts.length} منتج
-              </div>
-            </div>
+          {/* Search Row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(24, 12, 23, 0.95)', border: '1.5px solid rgba(245, 189, 26, 0.3)', borderRadius: '50px', padding: '8px 20px', boxShadow: '0 6px 20px rgba(0,0,0,0.4)' }}>
+            <span style={{ fontSize: '1.1rem', color: '#F5BD1A' }}>🔍</span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="ابحث عن اسم المنتج، وشاح، بوستر..."
+              style={{ background: 'none', border: 'none', color: '#FFFFFF', outline: 'none', width: '100%', fontSize: '0.92rem', fontWeight: '700' }}
+            />
+            <span style={{ fontSize: '0.8rem', color: '#F5BD1A', fontWeight: '800', background: 'rgba(245, 189, 26, 0.12)', padding: '4px 12px', borderRadius: '50px', whiteSpace: 'nowrap' }}>
+              {filteredProducts.length} منتج
+            </span>
           </div>
 
-          {/* Category Pills Bar */}
-          <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '6px', scrollbarWidth: 'none' }}>
-            {categoriesList.map(cat => {
-              const isActive = selectedCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat)}
-                  style={{
-                    padding: '10px 24px',
-                    borderRadius: '50px',
-                    border: isActive ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.18)',
-                    background: isActive ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'rgba(42, 18, 38, 0.85)',
-                    color: isActive ? '#120911' : '#FFFFFF',
-                    fontWeight: '900',
-                    fontSize: '0.9rem',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    transition: 'all 0.25s ease',
-                    boxShadow: isActive ? '0 6px 20px rgba(245, 189, 26, 0.35)' : 'none'
-                  }}
-                >
-                  {cat === 'الكل' ? '🛒 جميع المنتجات' : cat}
-                </button>
-              );
-            })}
+          {/* Category Bar + View Mode Switcher Row */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            {/* Category Pills Bar */}
+            <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none', flex: 1, minWidth: '240px' }}>
+              {categoriesList.map(cat => {
+                const isActive = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat)}
+                    style={{
+                      padding: '8px 18px',
+                      borderRadius: '50px',
+                      border: isActive ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.18)',
+                      background: isActive ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'rgba(42, 18, 38, 0.85)',
+                      color: isActive ? '#120911' : '#FFFFFF',
+                      fontWeight: '800',
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.25s ease',
+                      boxShadow: isActive ? '0 4px 14px rgba(245, 189, 26, 0.3)' : 'none'
+                    }}
+                  >
+                    {cat === 'الكل' ? '🛒 الجميع' : cat}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Layout Mode Toggle */}
+            <div style={{ display: 'flex', gap: '4px', background: 'rgba(18, 9, 17, 0.95)', padding: '3px', borderRadius: '50px', border: '1px solid rgba(245, 189, 26, 0.3)', flexShrink: 0 }}>
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                title="عرض منتجين جنب بعض"
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '50px',
+                  border: 'none',
+                  background: viewMode === 'grid' ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'transparent',
+                  color: viewMode === 'grid' ? '#120911' : '#FFFFFF',
+                  fontWeight: '800',
+                  fontSize: '0.78rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                <span>📱</span>
+                <span>2 جنب بعض</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('list')}
+                title="عرض قائمة أفقي"
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '50px',
+                  border: 'none',
+                  background: viewMode === 'list' ? 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)' : 'transparent',
+                  color: viewMode === 'list' ? '#120911' : '#FFFFFF',
+                  fontWeight: '800',
+                  fontSize: '0.78rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                <span>☰</span>
+                <span>قائمة</span>
+              </button>
+            </div>
           </div>
 
         </div>
