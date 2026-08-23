@@ -155,12 +155,13 @@ export const HeroLivingCollage = () => {
           const config = channelConfigs[index % channelConfigs.length];
 
           // Unidirectional stream flow guarantees zero head-on collisions
-          const startX = isRtl ? '-130vw' : '130vw';
+          const startX = isRtl ? '-110vw' : '110vw';
           const midX = '0vw';
-          const endX = isRtl ? '130vw' : '-130vw';
+          const endX = isRtl ? '110vw' : '-110vw';
 
-          const duration = 24;
-          const delay = index * (duration / pool.length);
+          const duration = 16;
+          // Negative delay ensures cards are pre-filled and visible across the screen on second 0 of page load!
+          const delay = -(index * (duration / Math.max(1, pool.length)));
 
           return (
             <motion.div
@@ -173,6 +174,9 @@ export const HeroLivingCollage = () => {
                 left: '50%',
                 translateX: '-50%'
               }}
+              initial={{
+                opacity: 1
+              }}
               animate={
                 isPaused
                   ? {}
@@ -180,8 +184,8 @@ export const HeroLivingCollage = () => {
                       x: [startX, midX, endX],
                       y: config.floatY,
                       rotateZ: config.rotateZ,
-                      opacity: [0, 1, 1, 0],
-                      filter: ['blur(16px)', 'blur(0px)', 'blur(0px)', 'blur(16px)']
+                      opacity: [0.4, 1, 1, 0.4],
+                      filter: ['blur(8px)', 'blur(0px)', 'blur(0px)', 'blur(8px)']
                     }
               }
               transition={{
@@ -203,6 +207,7 @@ export const HeroLivingCollage = () => {
                 alt={isRtl ? work.alt_ar : work.alt_en}
                 className="stream-card-img"
                 loading="eager"
+                decoding="async"
               />
             </motion.div>
           );
