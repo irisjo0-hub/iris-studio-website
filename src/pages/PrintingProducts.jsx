@@ -356,9 +356,11 @@ const PrintingProducts = () => {
   };
 
   // Cart Functions
-  const handleAddToCart = (prod, chosenColor = '', qty = 1) => {
+  const handleAddToCart = (prod, chosenColor = '', qty = 1, itemNotes = '', itemPreviews = []) => {
     let firstImg = '';
-    if (Array.isArray(prod.image_urls) && prod.image_urls.length > 0) {
+    if (itemPreviews && itemPreviews.length > 0) {
+      firstImg = itemPreviews[0];
+    } else if (Array.isArray(prod.image_urls) && prod.image_urls.length > 0) {
       firstImg = prod.image_urls[0];
     } else if (typeof prod.image_urls === 'string') {
       try {
@@ -378,7 +380,8 @@ const PrintingProducts = () => {
         const updated = [...prev];
         updated[idx] = {
           ...updated[idx],
-          quantity: updated[idx].quantity + qty
+          quantity: updated[idx].quantity + qty,
+          itemNotes: itemNotes || updated[idx].itemNotes
         };
         return updated;
       } else {
@@ -390,7 +393,8 @@ const PrintingProducts = () => {
           image: firstImg,
           category: prod.category || '',
           selectedColor: color,
-          quantity: qty
+          quantity: qty,
+          itemNotes: itemNotes
         }];
       }
     });
@@ -436,6 +440,7 @@ const PrintingProducts = () => {
   const [submittingOrder, setSubmittingOrder] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedInvoiceData, setPlacedInvoiceData] = useState(null);
+  const [showDirectOrderFields, setShowDirectOrderFields] = useState(false);
 
   const fileInputRef = useRef();
 
@@ -495,6 +500,7 @@ const PrintingProducts = () => {
     setImagesFiles([]);
     setPlacedInvoiceData(null);
     setOrderPlaced(false);
+    setShowDirectOrderFields(false);
   };
 
   const closeOrderModal = () => {
@@ -943,216 +949,221 @@ ${finalNotes}`;
                   )}
 
                   <div className="grad-form-grid" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div className="grad-field">
-                      <label className="as-label">الاسم بالكامل *</label>
-                      <input
-                        type="text"
-                        className="admin-input"
-                        required
-                        placeholder="أدخل اسمك بالكامل للتسليم"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="grad-field">
-                      <label className="as-label">رقم الهاتف / واتساب *</label>
-                      <input
-                        type="tel"
-                        className="admin-input"
-                        required
-                        placeholder="07xxxxxxxx"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        dir="ltr"
-                      />
-                    </div>
-
-                    {/* Delivery Selection */}
-                    <div style={{ marginTop: '6px' }}>
-                      <label className="as-label" style={{ marginBottom: '8px', display: 'block' }}>طريقة الاستلام والتوصيل</label>
-                      <div className="delivery-cards-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
-                        <div
-                          className={`delivery-card ${!deliverySelected ? 'selected' : ''}`}
-                          onClick={() => setDeliverySelected(false)}
-                          style={{
-                            background: !deliverySelected ? 'rgba(245, 189, 26, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                            border: !deliverySelected ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.15)',
-                            borderRadius: '12px',
-                            padding: '12px',
-                            cursor: 'pointer',
-                            textAlign: 'center'
-                          }}
-                        >
-                          <div style={{ fontSize: '1.3rem' }}>🏬</div>
-                          <div style={{ fontWeight: 'bold', fontSize: '0.88rem', color: '#FFFFFF' }}>الاستلام من الاستوديو</div>
-                          <div style={{ fontSize: '0.78rem', color: '#F5BD1A' }}>مجاناً</div>
-                        </div>
-                        <div
-                          className={`delivery-card ${deliverySelected ? 'selected' : ''}`}
-                          onClick={() => setDeliverySelected(true)}
-                          style={{
-                            background: deliverySelected ? 'rgba(245, 189, 26, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                            border: deliverySelected ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.15)',
-                            borderRadius: '12px',
-                            padding: '12px',
-                            cursor: 'pointer',
-                            textAlign: 'center'
-                          }}
-                        >
-                          <div style={{ fontSize: '1.3rem' }}>🚚</div>
-                          <div style={{ fontWeight: 'bold', fontSize: '0.88rem', color: '#FFFFFF' }}>توصيل للمنزل</div>
-                          <div style={{ fontSize: '0.78rem', color: '#F5BD1A' }}>+2 JOD</div>
-                        </div>
-                      </div>
-
-                      {deliverySelected && (
-                        <div className="delivery-info-group" style={{ display: 'flex', flexDirection: 'column', gap: '10px', background: 'rgba(18, 9, 17, 0.8)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(245, 189, 26, 0.2)' }}>
+                    
+                    {/* Single Product Customization Fields */}
+                    {selectedProduct.id !== 'cart_checkout' && (
+                      <>
+                        {colorsList.length > 0 && (
                           <div className="grad-field">
-                            <label className="as-label">عنوان التوصيل بالتفصيل *</label>
-                            <textarea
-                              className="admin-input"
-                              style={{ minHeight: '60px' }}
-                              required
-                              placeholder="المحافظة، المنطقة، اسم الشارع، وأي معالم قريبة..."
-                              value={deliveryAddress}
-                              onChange={(e) => setDeliveryAddress(e.target.value)}
-                            />
+                            <label className="as-label">اختر اللون المطلوب *</label>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '8px' }}>
+                              {colorsList.map((color) => {
+                                const isSelected = selectedColor === color;
+                                const colorObj = getColorStyle(color, isSelected);
+
+                                return (
+                                  <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => setSelectedColor(color)}
+                                    style={colorObj.style}
+                                  >
+                                    <span 
+                                      style={{ 
+                                        width: '10px', 
+                                        height: '10px', 
+                                        borderRadius: '50%', 
+                                        background: colorObj.dotColor, 
+                                        border: '1px solid rgba(255,255,255,0.6)', 
+                                        flexShrink: 0,
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.3)' 
+                                      }} 
+                                    />
+                                    <span>{color}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
-                          <div className="grad-field">
-                            <label className="as-label">رقم هاتف بديل (اختياري)</label>
+                        )}
+
+                        <div className="grad-field">
+                          <label className="as-label">الكمية المطلوبة</label>
+                          <div className="qty-control" style={{ display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgba(245, 189, 26, 0.4)', borderRadius: '50px', overflow: 'hidden', background: 'rgba(18, 9, 17, 0.9)' }}>
+                            <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity - 1)} style={{ padding: '8px 16px', background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}>−</button>
+                            <span style={{ padding: '8px 24px', fontWeight: '900', color: '#FFFFFF', minWidth: '30px', textAlign: 'center' }}>{quantity}</span>
+                            <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity + 1)} style={{ padding: '8px 16px', background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}>+</button>
+                          </div>
+                        </div>
+
+                        <div className="grad-field">
+                          <label className="as-label">صور وتصاميم للطباعة (اختياري)</label>
+                          <div
+                            className="grad-upload-zone"
+                            style={{ padding: '16px', textAlign: 'center', border: '1px dashed #F5BD1A', borderRadius: '12px', cursor: 'pointer', background: 'rgba(245, 189, 26, 0.05)' }}
+                            onClick={() => fileInputRef.current?.click()}
+                          >
+                            <span style={{ color: '#F5BD1A', fontWeight: 'bold' }}>📎 انقر هنا لرفع الصور المخصصة للطباعة</span>
                             <input
-                              type="tel"
-                              className="admin-input"
-                              placeholder="رقم للتواصل عند التوصيل..."
-                              value={alternativePhone}
-                              onChange={(e) => setAlternativePhone(e.target.value)}
-                              dir="ltr"
+                              ref={fileInputRef}
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              onChange={handleUploadImages}
+                              style={{ display: 'none' }}
                             />
                           </div>
-                          <div className="grad-field">
-                            <label className="as-label">موقع خرائط جوجل (اختياري)</label>
-                            <input
-                              type="text"
-                              className="admin-input"
-                              placeholder="رابط موقعك على خرائط جوجل..."
-                              value={googleMapsLink}
-                              onChange={(e) => setGoogleMapsLink(e.target.value)}
-                              dir="ltr"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
 
-                    {selectedProduct.id !== 'cart_checkout' && colorsList.length > 0 && (
-                      <div className="grad-field">
-                        <label className="as-label">اختر اللون المطلوب *</label>
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '8px' }}>
-                          {colorsList.map((color) => {
-                            const isSelected = selectedColor === color;
-                            const colorObj = getColorStyle(color, isSelected);
-
-                            return (
-                              <button
-                                key={color}
-                                type="button"
-                                onClick={() => setSelectedColor(color)}
-                                style={colorObj.style}
-                              >
-                                <span 
-                                  style={{ 
-                                    width: '10px', 
-                                    height: '10px', 
-                                    borderRadius: '50%', 
-                                    background: colorObj.dotColor, 
-                                    border: '1px solid rgba(255,255,255,0.6)', 
-                                    flexShrink: 0,
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)' 
-                                  }} 
-                                />
-                                <span>{color}</span>
-                              </button>
-                            );
-                          })}
+                          {imagesPreviews.length > 0 && (
+                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+                              {imagesPreviews.map((src, i) => (
+                                <div key={i} style={{ position: 'relative', width: '60px', height: '60px' }}>
+                                  <img src={src} alt="uploaded-preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(245, 189, 26, 0.4)' }} />
+                                  <button
+                                    type="button"
+                                    onClick={() => removeImage(i)}
+                                    style={{
+                                      position: 'absolute',
+                                      top: '-4px',
+                                      right: '-4px',
+                                      background: 'red',
+                                      color: '#fff',
+                                      border: 'none',
+                                      borderRadius: '50%',
+                                      width: '18px',
+                                      height: '18px',
+                                      fontSize: '10px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </div>
+
+                        <div className="grad-field">
+                          <label className="as-label">ملاحظات وتعليمات الطباعة والتطريز</label>
+                          <textarea
+                            className="admin-input"
+                            style={{ minHeight: '70px' }}
+                            placeholder="مثال: يرجى كتابة اسم الطالب: (أحمد) على الوشاح وتطريزه باللون الذهبي..."
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                          />
+                        </div>
+                      </>
                     )}
 
-                    {selectedProduct.id !== 'cart_checkout' && (
-                      <div className="grad-field">
-                        <label className="as-label">الكمية المطلوبة</label>
-                        <div className="qty-control" style={{ display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgba(245, 189, 26, 0.4)', borderRadius: '50px', overflow: 'hidden', background: 'rgba(18, 9, 17, 0.9)' }}>
-                          <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity - 1)} style={{ padding: '8px 16px', background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}>−</button>
-                          <span style={{ padding: '8px 24px', fontWeight: '900', color: '#FFFFFF', minWidth: '30px', textAlign: 'center' }}>{quantity}</span>
-                          <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity + 1)} style={{ padding: '8px 16px', background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}>+</button>
-                        </div>
-                      </div>
-                    )}
-
-                    {selectedProduct.id !== 'cart_checkout' && (
-                      <div className="grad-field">
-                        <label className="as-label">صور وتصاميم للطباعة (اختياري)</label>
-                        <div
-                          className="grad-upload-zone"
-                          style={{ padding: '16px', textAlign: 'center', border: '1px dashed #F5BD1A', borderRadius: '12px', cursor: 'pointer', background: 'rgba(245, 189, 26, 0.05)' }}
-                          onClick={() => fileInputRef.current?.click()}
-                        >
-                          <span style={{ color: '#F5BD1A', fontWeight: 'bold' }}>📎 انقر هنا لرفع الصور المخصصة للطباعة</span>
+                    {/* Customer & Delivery Details Fields (Only shown during Cart Checkout OR when customer explicitly requests Direct Order) */}
+                    {(selectedProduct.id === 'cart_checkout' || showDirectOrderFields) && (
+                      <div style={{ borderTop: selectedProduct.id !== 'cart_checkout' ? '1px dashed rgba(245, 189, 26, 0.3)' : 'none', paddingTop: selectedProduct.id !== 'cart_checkout' ? '14px' : '0', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        <div className="grad-field">
+                          <label className="as-label">الاسم بالكامل *</label>
                           <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={handleUploadImages}
-                            style={{ display: 'none' }}
+                            type="text"
+                            className="admin-input"
+                            required
+                            placeholder="أدخل اسمك بالكامل للتسليم"
+                            value={customerName}
+                            onChange={(e) => setCustomerName(e.target.value)}
                           />
                         </div>
 
-                        {imagesPreviews.length > 0 && (
-                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
-                            {imagesPreviews.map((src, i) => (
-                              <div key={i} style={{ position: 'relative', width: '60px', height: '60px' }}>
-                                <img src={src} alt="uploaded-preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(245, 189, 26, 0.4)' }} />
-                                <button
-                                  type="button"
-                                  onClick={() => removeImage(i)}
-                                  style={{
-                                    position: 'absolute',
-                                    top: '-4px',
-                                    right: '-4px',
-                                    background: 'red',
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: '50%',
-                                    width: '18px',
-                                    height: '18px',
-                                    fontSize: '10px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer'
-                                  }}
-                                >
-                                  ✕
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
+                        <div className="grad-field">
+                          <label className="as-label">رقم الهاتف / واتساب *</label>
+                          <input
+                            type="tel"
+                            className="admin-input"
+                            required
+                            placeholder="07xxxxxxxx"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            dir="ltr"
+                          />
+                        </div>
 
-                    {selectedProduct.id !== 'cart_checkout' && (
-                      <div className="grad-field">
-                        <label className="as-label">ملاحظات وتعليمات الطباعة والتطريز</label>
-                        <textarea
-                          className="admin-input"
-                          style={{ minHeight: '80px' }}
-                          placeholder="مثال: يرجى كتابة اسم الطالب: (أحمد) على الوشاح وتطريزه باللون الذهبي..."
-                          value={notes}
-                          onChange={(e) => setNotes(e.target.value)}
-                        />
+                        {/* Delivery Selection */}
+                        <div>
+                          <label className="as-label" style={{ marginBottom: '8px', display: 'block' }}>طريقة الاستلام والتوصيل</label>
+                          <div className="delivery-cards-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                            <div
+                              className={`delivery-card ${!deliverySelected ? 'selected' : ''}`}
+                              onClick={() => setDeliverySelected(false)}
+                              style={{
+                                background: !deliverySelected ? 'rgba(245, 189, 26, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                                border: !deliverySelected ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.15)',
+                                borderRadius: '12px',
+                                padding: '12px',
+                                cursor: 'pointer',
+                                textAlign: 'center'
+                              }}
+                            >
+                              <div style={{ fontSize: '1.3rem' }}>🏬</div>
+                              <div style={{ fontWeight: 'bold', fontSize: '0.88rem', color: '#FFFFFF' }}>الاستلام من الاستوديو</div>
+                              <div style={{ fontSize: '0.78rem', color: '#F5BD1A' }}>مجاناً</div>
+                            </div>
+                            <div
+                              className={`delivery-card ${deliverySelected ? 'selected' : ''}`}
+                              onClick={() => setDeliverySelected(true)}
+                              style={{
+                                background: deliverySelected ? 'rgba(245, 189, 26, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                                border: deliverySelected ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.15)',
+                                borderRadius: '12px',
+                                padding: '12px',
+                                cursor: 'pointer',
+                                textAlign: 'center'
+                              }}
+                            >
+                              <div style={{ fontSize: '1.3rem' }}>🚚</div>
+                              <div style={{ fontWeight: 'bold', fontSize: '0.88rem', color: '#FFFFFF' }}>توصيل للمنزل</div>
+                              <div style={{ fontSize: '0.78rem', color: '#F5BD1A' }}>+2 JOD</div>
+                            </div>
+                          </div>
+
+                          {deliverySelected && (
+                            <div className="delivery-info-group" style={{ display: 'flex', flexDirection: 'column', gap: '10px', background: 'rgba(18, 9, 17, 0.8)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(245, 189, 26, 0.2)' }}>
+                              <div className="grad-field">
+                                <label className="as-label">عنوان التوصيل بالتفصيل *</label>
+                                <textarea
+                                  className="admin-input"
+                                  style={{ minHeight: '60px' }}
+                                  required
+                                  placeholder="المحافظة، المنطقة، اسم الشارع، وأي معالم قريبة..."
+                                  value={deliveryAddress}
+                                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                                />
+                              </div>
+                              <div className="grad-field">
+                                <label className="as-label">رقم هاتف بديل (اختياري)</label>
+                                <input
+                                  type="tel"
+                                  className="admin-input"
+                                  placeholder="رقم للتواصل عند التوصيل..."
+                                  value={alternativePhone}
+                                  onChange={(e) => setAlternativePhone(e.target.value)}
+                                  dir="ltr"
+                                />
+                              </div>
+                              <div className="grad-field">
+                                <label className="as-label">موقع خرائط جوجل (اختياري)</label>
+                                <input
+                                  type="text"
+                                  className="admin-input"
+                                  placeholder="رابط موقعك على خرائط جوجل..."
+                                  value={googleMapsLink}
+                                  onChange={(e) => setGoogleMapsLink(e.target.value)}
+                                  dir="ltr"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1162,7 +1173,7 @@ ${finalNotes}`;
                       <button
                         type="button"
                         onClick={() => {
-                          handleAddToCart(selectedProduct, selectedColor, quantity);
+                          handleAddToCart(selectedProduct, selectedColor, quantity, notes, imagesPreviews);
                           closeOrderModal();
                           setIsCartOpen(true);
                         }}
@@ -1187,27 +1198,39 @@ ${finalNotes}`;
                       </button>
                     )}
 
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <button
-                        type="submit"
-                        disabled={submittingOrder}
-                        className="btn-portal-primary print-btn"
-                        style={{ flex: 1, padding: '12px', fontSize: '0.9rem' }}
-                      >
-                        {submittingOrder 
-                          ? '⏳ جاري إرسال الطلب...' 
-                          : (selectedProduct.id === 'cart_checkout' ? 'تأكيد الطلب وإصدار الفاتورة 🚀' : 'إرسال طلب مباشر ⚡')
-                        }
-                      </button>
+                    {selectedProduct.id !== 'cart_checkout' && !showDirectOrderFields && (
                       <button
                         type="button"
-                        onClick={closeOrderModal}
-                        className="btn-portal-secondary"
-                        style={{ flex: 1, padding: '12px', fontSize: '0.9rem' }}
+                        onClick={() => setShowDirectOrderFields(true)}
+                        style={{ background: 'none', border: 'none', color: '#F5BD1A', fontSize: '0.84rem', fontWeight: '800', cursor: 'pointer', textDecoration: 'underline', margin: '4px 0' }}
                       >
-                        إلغاء
+                        أو طلب مباشر فوراً بدون إضافة للسلة ⚡
                       </button>
-                    </div>
+                    )}
+
+                    {(selectedProduct.id === 'cart_checkout' || showDirectOrderFields) && (
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        <button
+                          type="submit"
+                          disabled={submittingOrder}
+                          className="btn-portal-primary print-btn"
+                          style={{ flex: 1, padding: '12px', fontSize: '0.9rem' }}
+                        >
+                          {submittingOrder 
+                            ? '⏳ جاري إرسال الطلب...' 
+                            : (selectedProduct.id === 'cart_checkout' ? 'تأكيد الطلب وإصدار الفاتورة 🚀' : 'إرسال طلب مباشر ⚡')
+                          }
+                        </button>
+                        <button
+                          type="button"
+                          onClick={closeOrderModal}
+                          className="btn-portal-secondary"
+                          style={{ flex: 1, padding: '12px', fontSize: '0.9rem' }}
+                        >
+                          إلغاء
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </form>
               )}
