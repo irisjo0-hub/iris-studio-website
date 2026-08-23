@@ -80,7 +80,7 @@ const AdminLayout = ({ children }) => {
     <div className="admin-layout" dir="rtl">
       {/* Top Glassmorphic Header */}
       <header className="admin-header">
-        <div className="header-brand-info">
+        <div className="header-right-info">
           {/* Mobile Hamburger Menu Button */}
           <button 
             type="button" 
@@ -90,15 +90,16 @@ const AdminLayout = ({ children }) => {
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
+          <div className="header-logo-container">
+            <img src={settings.logo_url || irisLogo} alt="IRIS Studio" className="admin-header-logo-img" />
+          </div>
+        </div>
+
+        <div className="header-left-info">
           <div className="header-admin-badge-box">
             <Crown size={14} className="badge-crown-icon" />
             <span className="header-badge">لوحة التحكم</span>
           </div>
-        </div>
-
-        {/* Center logo */}
-        <div className="header-center-logo">
-          <img src={settings.logo_url || irisLogo} alt="IRIS Studio" className="admin-header-logo-img" />
         </div>
       </header>
 

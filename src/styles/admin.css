@@ -442,10 +442,29 @@
   flex-shrink: 0 !important;
 }
 
-.header-brand-info {
+/* Header Layout Structure Fix */
+.header-right-info {
   display: flex !important;
   align-items: center !important;
   gap: 12px !important;
+}
+
+.header-left-info {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.header-logo-container {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.admin-header-logo-img {
+  height: 38px !important;
+  width: auto !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 0 10px rgba(245, 189, 26, 0.4)) !important;
 }
 
 .header-admin-badge-box {
@@ -2187,9 +2206,257 @@ body:has(.admin-layout),
   }
   
   .bookings-stats-row {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 1rem;
   }
+}
+
+/* Responsive Booking Cards System (< 992px) */
+.admin-bookings-mobile-cards {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.admin-bookings-table-desktop {
+  display: block;
+}
+
+@media (max-width: 991px) {
+  .admin-bookings-mobile-cards {
+    display: flex !important;
+  }
+  .admin-bookings-table-desktop {
+    display: none !important;
+  }
+}
+
+.booking-card-item {
+  background: rgba(26, 13, 24, 0.85) !important;
+  border: 1px solid rgba(245, 189, 26, 0.25) !important;
+  border-radius: 18px !important;
+  padding: 18px !important;
+  backdrop-filter: blur(14px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+  transition: transform 0.2s ease !important;
+}
+
+.booking-card-item.card-completed {
+  border-color: rgba(4, 70, 48, 0.6) !important;
+  opacity: 0.88 !important;
+}
+
+.card-header-top {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid rgba(245, 189, 26, 0.15) !important;
+  flex-wrap: wrap !important;
+}
+
+.card-id-badge {
+  font-family: var(--font-hero, sans-serif) !important;
+  font-size: 0.95rem !important;
+  font-weight: 900 !important;
+  color: #F5BD1A !important;
+  background: rgba(103, 36, 95, 0.6) !important;
+  padding: 3px 10px !important;
+  border-radius: 100px !important;
+}
+
+.card-time-tag {
+  font-size: 0.78rem !important;
+  color: rgba(236, 235, 231, 0.7) !important;
+}
+
+.card-customer-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  background: rgba(18, 9, 17, 0.6) !important;
+  padding: 12px 14px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(236, 235, 231, 0.08) !important;
+  flex-wrap: wrap !important;
+}
+
+.customer-info-box {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.customer-name {
+  font-size: 1.05rem !important;
+  font-weight: 800 !important;
+  color: #ECEBE7 !important;
+}
+
+.customer-phone {
+  font-size: 0.85rem !important;
+  color: #F5BD1A !important;
+  direction: ltr !important;
+  text-align: right !important;
+}
+
+.customer-contact-actions {
+  display: flex !important;
+  gap: 8px !important;
+}
+
+.btn-card-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 6px 12px !important;
+  border-radius: 100px !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  text-decoration: none !important;
+  transition: transform 0.2s ease !important;
+}
+
+.whatsapp-btn {
+  background: #25D366 !important;
+  color: #120A11 !important;
+}
+
+.call-btn {
+  background: rgba(245, 189, 26, 0.2) !important;
+  color: #F5BD1A !important;
+  border: 1px solid rgba(245, 189, 26, 0.4) !important;
+}
+
+.card-info-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.card-info-item {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.info-label {
+  font-size: 0.75rem !important;
+  color: rgba(236, 235, 231, 0.6) !important;
+  font-weight: 700 !important;
+}
+
+.info-val {
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  color: #ECEBE7 !important;
+}
+
+.highlight-gold {
+  color: #F5BD1A !important;
+}
+
+.card-extras-box {
+  background: rgba(103, 36, 95, 0.25) !important;
+  border: 1px solid rgba(103, 36, 95, 0.4) !important;
+  padding: 10px 12px !important;
+  border-radius: 10px !important;
+}
+
+.extras-list {
+  font-size: 0.84rem !important;
+  color: #F5BD1A !important;
+  font-weight: 700 !important;
+}
+
+.card-financial-box {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background: rgba(18, 9, 17, 0.8) !important;
+  padding: 12px 14px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(245, 189, 26, 0.2) !important;
+}
+
+.fin-item {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.fin-lbl {
+  font-size: 0.72rem !important;
+  color: rgba(236, 235, 231, 0.6) !important;
+}
+
+.fin-val {
+  font-size: 0.92rem !important;
+  font-weight: 800 !important;
+  color: #ECEBE7 !important;
+}
+
+.deposit-paid {
+  color: #27ae60 !important;
+}
+
+.remaining-due {
+  color: #F5BD1A !important;
+}
+
+.btn-view-receipt-card {
+  width: 100% !important;
+  padding: 10px !important;
+  background: rgba(4, 70, 48, 0.5) !important;
+  border: 1px solid rgba(39, 174, 96, 0.4) !important;
+  color: #27ae60 !important;
+  font-family: var(--font-primary, sans-serif) !important;
+  font-weight: 800 !important;
+  font-size: 0.85rem !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-view-receipt-card:hover {
+  background: #27ae60 !important;
+  color: #FFF !important;
+}
+
+.card-action-bar {
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding-top: 10px !important;
+  border-top: 1px solid rgba(245, 189, 26, 0.15) !important;
+}
+
+.status-select-wrap {
+  flex: 1 !important;
+}
+
+.card-status-select {
+  width: 100% !important;
+  padding: 8px 12px !important;
+  border-radius: 100px !important;
+  background: rgba(18, 9, 17, 0.9) !important;
+  border: 1px solid rgba(245, 189, 26, 0.3) !important;
+  color: #F5BD1A !important;
+  font-weight: 800 !important;
+  font-size: 0.85rem !important;
+  outline: none !important;
+  direction: rtl !important;
+}
+
+.btn-card-delete {
+  padding: 8px 16px !important;
+  height: 38px !important;
 }
 
 @media (max-width: 768px) {
