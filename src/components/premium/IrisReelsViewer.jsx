@@ -582,7 +582,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               aria-label={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
               title={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
             >
-              <span>{isRtl ? 'تخطي الريلز' : 'Skip Reels'}</span>
+              <span>{isRtl ? 'تخطي' : 'Skip'}</span>
               <ChevronDown size={16} className="skip-arrow-anim" />
             </button>
           </div>
