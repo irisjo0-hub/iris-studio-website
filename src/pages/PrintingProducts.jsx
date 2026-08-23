@@ -554,9 +554,14 @@ const PrintingProducts = () => {
       }
 
       let finalNotes = notes.trim();
+      let itemsSummary = '';
+
       if (selectedProduct.id === 'cart_checkout') {
         const itemsStr = cart.map((item, i) => `${i + 1}. ${item.name} (عدد ${item.quantity}) ${item.selectedColor ? `[لون: ${item.selectedColor}]` : ''}`).join(' | ');
         finalNotes = `[طلب سلة شريحة متعددة (${totalCartCount} منتجات)]\nعناصر السلة: ${itemsStr}\n${finalNotes}`;
+        itemsSummary = cart.map((item, i) => `${i + 1}️⃣ *${item.name}* (عدد ${item.quantity}) ${item.selectedColor ? `- اللون: ${item.selectedColor}` : ''} - (السعر: ${item.price * item.quantity} JOD)`).join('\n');
+      } else {
+        itemsSummary = `1️⃣ *${selectedProduct.name}* (عدد ${quantity}) ${selectedColor ? `- اللون: ${selectedColor}` : ''} - (السعر: ${(Number(selectedProduct.price) || 0) * quantity} JOD)`;
       }
 
       if (deliverySelected) {
@@ -571,21 +576,48 @@ ${finalNotes}`;
 ${finalNotes}`;
       }
 
-      const { error } = await supabase
-        .from('printing_orders')
-        .insert({
-          product_id: selectedProduct.id,
-          product_name: selectedProduct.name,
-          customer_name: customerName.trim(),
-          phone: phone.trim(),
-          notes: finalNotes,
-          image_urls: uploadedUrls,
-          quantity: selectedProduct.id === 'cart_checkout' ? totalCartCount : quantity,
-          selected_color: selectedColor || (selectedProduct.id === 'cart_checkout' ? 'سلة متعددة' : ''),
-          status: 'pending'
-        });
+      // Non-blocking database order log
+      try {
+        await supabase
+          .from('printing_orders')
+          .insert({
+            product_id: selectedProduct.id,
+            product_name: selectedProduct.name,
+            customer_name: customerName.trim(),
+            phone: phone.trim(),
+            notes: finalNotes,
+            image_urls: uploadedUrls,
+            quantity: selectedProduct.id === 'cart_checkout' ? totalCartCount : quantity,
+            selected_color: selectedColor || (selectedProduct.id === 'cart_checkout' ? 'سلة متعددة' : ''),
+            status: 'pending'
+          });
+      } catch (dbErr) {
+        console.warn('Supabase printing_orders table log warning:', dbErr);
+      }
 
-      if (error) throw error;
+      // WhatsApp Order Link Generation
+      const finalPrice = selectedProduct.id === 'cart_checkout' 
+        ? totalCartPrice + (deliverySelected ? 2 : 0) 
+        : (Number(selectedProduct.price) || 0) * quantity + (deliverySelected ? 2 : 0);
+
+      let waMsg = `🛍️ *طلب شراء جديد من متجر آيرس للمطبوعات والتطريز*\n----------------------------------------\n👤 *الاسم:* ${customerName.trim()}\n📞 *الهاتف:* ${phone.trim()}\n`;
+
+      if (deliverySelected) {
+        waMsg += `🚚 *التوصيل:* مطلوب\n📍 *العنوان:* ${deliveryAddress}\n`;
+        if (alternativePhone) waMsg += `📞 *هاتف بديل:* ${alternativePhone}\n`;
+        if (googleMapsLink) waMsg += `🗺️ *رابط الخريطة:* ${googleMapsLink}\n`;
+      } else {
+        waMsg += `🏪 *الاستلام:* من الاستوديو / المحل\n`;
+      }
+
+      if (notes) waMsg += `📝 *ملاحظات:* ${notes}\n`;
+      if (uploadedUrls.length > 0) waMsg += `🖼️ *مرفقات التصاميم (${uploadedUrls.length}):*\n${uploadedUrls.join('\n')}\n`;
+
+      waMsg += `\n🛒 *تفاصيل المنتجات المطلوب طباعتها:*\n${itemsSummary}\n\n💰 *المجموع الكلي:* ${finalPrice} JOD\n----------------------------------------`;
+
+      const waPhone = '962796123456';
+      const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(waMsg)}`;
+      window.open(waUrl, '_blank');
 
       const invoiceData = {
         invoiceNo: `INV-${Date.now().toString().slice(-6)}`,
@@ -601,7 +633,7 @@ ${finalNotes}`;
           quantity: quantity,
           price: Number(selectedProduct.price) || 0
         }],
-        totalPrice: selectedProduct.id === 'cart_checkout' ? totalCartPrice + (deliverySelected ? 2 : 0) : (Number(selectedProduct.price) || 0) * quantity + (deliverySelected ? 2 : 0),
+        totalPrice: finalPrice,
         uploadedImagesCount: uploadedUrls.length,
         notes: notes.trim()
       };
@@ -889,8 +921,26 @@ ${finalNotes}`;
               ) : (
                 <form onSubmit={handlePlaceOrder}>
                   <h3 style={{ fontSize: '1.3rem', color: '#F5BD1A', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(245,189,26,0.2)', fontWeight: '900' }}>
-                    طلب منتج: {selectedProduct.name}
+                    {selectedProduct.id === 'cart_checkout' ? `إتمام طلب سلة التسوق (${totalCartCount} منتجات) 🛒` : `طلب منتج: ${selectedProduct.name}`}
                   </h3>
+
+                  {selectedProduct.id === 'cart_checkout' && (
+                    <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(245, 189, 26, 0.2)', borderRadius: '12px', padding: '12px', marginBottom: '16px' }}>
+                      <div style={{ fontSize: '0.85rem', color: '#F5BD1A', fontWeight: '800', marginBottom: '8px' }}>🛍️ المنتجات في السلة:</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        {cart.map((item, i) => (
+                          <div key={item.cartItemId} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#FFFFFF' }}>
+                            <span>{i + 1}. {item.name} (عدد {item.quantity}) {item.selectedColor ? `[${item.selectedColor}]` : ''}</span>
+                            <span style={{ color: '#F5BD1A', fontWeight: '800' }}>{item.price * item.quantity} JOD</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '8px', paddingTop: '6px', display: 'flex', justifyContent: 'space-between', fontWeight: '900', fontSize: '0.92rem', color: '#F5BD1A' }}>
+                        <span>المجموع الكلي:</span>
+                        <span>{totalCartPrice} JOD</span>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="grad-form-grid" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div className="grad-field">
@@ -995,7 +1045,7 @@ ${finalNotes}`;
                       )}
                     </div>
 
-                    {colorsList.length > 0 && (
+                    {selectedProduct.id !== 'cart_checkout' && colorsList.length > 0 && (
                       <div className="grad-field">
                         <label className="as-label">اختر اللون المطلوب *</label>
                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '8px' }}>
@@ -1029,14 +1079,16 @@ ${finalNotes}`;
                       </div>
                     )}
 
-                    <div className="grad-field">
-                      <label className="as-label">الكمية المطلوبة</label>
-                      <div className="qty-control" style={{ display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgba(245, 189, 26, 0.4)', borderRadius: '50px', overflow: 'hidden', background: 'rgba(18, 9, 17, 0.9)' }}>
-                        <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity - 1)} style={{ padding: '8px 16px', background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}>−</button>
-                        <span style={{ padding: '8px 24px', fontWeight: '900', color: '#FFFFFF', minWidth: '30px', textAlign: 'center' }}>{quantity}</span>
-                        <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity + 1)} style={{ padding: '8px 16px', background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}>+</button>
+                    {selectedProduct.id !== 'cart_checkout' && (
+                      <div className="grad-field">
+                        <label className="as-label">الكمية المطلوبة</label>
+                        <div className="qty-control" style={{ display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgba(245, 189, 26, 0.4)', borderRadius: '50px', overflow: 'hidden', background: 'rgba(18, 9, 17, 0.9)' }}>
+                          <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity - 1)} style={{ padding: '8px 16px', background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}>−</button>
+                          <span style={{ padding: '8px 24px', fontWeight: '900', color: '#FFFFFF', minWidth: '30px', textAlign: 'center' }}>{quantity}</span>
+                          <button type="button" className="qty-btn" onClick={() => handleSetQuantity(quantity + 1)} style={{ padding: '8px 16px', background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}>+</button>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className="grad-field">
                       <label className="as-label">صور وتصاميم للطباعة (اختياري)</label>
@@ -1102,47 +1154,52 @@ ${finalNotes}`;
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '24px' }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleAddToCart(selectedProduct, selectedColor, quantity);
-                        closeOrderModal();
-                        setIsCartOpen(true);
-                      }}
-                      style={{
-                        width: '100%',
-                        background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
-                        color: '#120911',
-                        fontWeight: '900',
-                        border: 'none',
-                        borderRadius: '50px',
-                        padding: '13px',
-                        fontSize: '0.98rem',
-                        cursor: 'pointer',
-                        boxShadow: '0 6px 20px rgba(245, 189, 26, 0.35)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      <span>إضافة هذا المنتج إلى السلة 🛒</span>
-                    </button>
+                    {selectedProduct.id !== 'cart_checkout' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleAddToCart(selectedProduct, selectedColor, quantity);
+                          closeOrderModal();
+                          setIsCartOpen(true);
+                        }}
+                        style={{
+                          width: '100%',
+                          background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
+                          color: '#120911',
+                          fontWeight: '900',
+                          border: 'none',
+                          borderRadius: '50px',
+                          padding: '13px',
+                          fontSize: '0.98rem',
+                          cursor: 'pointer',
+                          boxShadow: '0 6px 20px rgba(245, 189, 26, 0.35)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px'
+                        }}
+                      >
+                        <span>إضافة هذا المنتج إلى السلة 🛒</span>
+                      </button>
+                    )}
 
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <button
                         type="submit"
                         disabled={submittingOrder}
                         className="btn-portal-primary print-btn"
-                        style={{ flex: 1, padding: '10px', fontSize: '0.85rem' }}
+                        style={{ flex: 1, padding: '12px', fontSize: '0.9rem' }}
                       >
-                        {submittingOrder ? '⏳ جاري تقديم الطلب...' : 'إرسال طلب مباشر ⚡'}
+                        {submittingOrder 
+                          ? '⏳ جاري إرسال الطلب...' 
+                          : (selectedProduct.id === 'cart_checkout' ? 'تأكيد الطلب وإصدار الفاتورة 🚀' : 'إرسال طلب مباشر ⚡')
+                        }
                       </button>
                       <button
                         type="button"
                         onClick={closeOrderModal}
                         className="btn-portal-secondary"
-                        style={{ flex: 1, padding: '10px', fontSize: '0.85rem' }}
+                        style={{ flex: 1, padding: '12px', fontSize: '0.9rem' }}
                       >
                         إلغاء
                       </button>
