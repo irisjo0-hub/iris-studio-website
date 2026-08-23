@@ -7,6 +7,7 @@ import '../styles/admin.css';
 const AdminDashboard = () => {
   const [bookings, setBookings] = useState([]);
   const [graduationOrders, setGraduationOrders] = useState([]);
+  const [printingOrdersCount, setPrintingOrdersCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,6 +28,29 @@ const AdminDashboard = () => {
       } catch (e) {
         console.error('Failed to fetch graduation_orders', e);
       }
+
+      try {
+        let pCount = 0;
+        const { data: pData } = await supabase
+          .from('printing_orders')
+          .select('id');
+        if (pData && pData.length > 0) pCount = pData.length;
+
+        const localP = localStorage.getItem('iris_printing_orders');
+        if (localP) {
+          const parsed = JSON.parse(localP);
+          if (Array.isArray(parsed)) {
+            pCount = Math.max(pCount, parsed.length);
+          }
+        }
+        setPrintingOrdersCount(pCount);
+      } catch (e) {
+        console.error('Failed to fetch printing_orders', e);
+        const localP = localStorage.getItem('iris_printing_orders');
+        if (localP) {
+          try { setPrintingOrdersCount(JSON.parse(localP).length); } catch {}
+        }
+      }
     };
     fetchData();
   }, []);
@@ -41,6 +65,7 @@ const AdminDashboard = () => {
     { label: 'بانتظار المراجعة', value: pending, className: 'card-gold', icon: '⏳', link: '/admin/bookings' },
     { label: 'الحجوزات المؤكدة', value: approved, className: 'card-green', icon: '✅', link: '/admin/bookings' },
     { label: 'دفاتر التخرج', value: totalGraduation, className: 'card-magenta', icon: '🎓', link: '/admin/graduation-orders' },
+    { label: 'طلبات متجر المطبوعات', value: printingOrdersCount, className: 'card-gold', icon: '🛍️', link: '/admin/printing-orders' },
   ];
 
   return (
