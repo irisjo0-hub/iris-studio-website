@@ -162,6 +162,9 @@ const AdminSettings = () => {
       } else if (type === 'division_print') {
         setDivisionPrintImageFile(file);
         setDivisionPrintImagePreview(dataUrl);
+      } else if (type === 'new_hero_motion') {
+        setNewMotionFile(file);
+        setNewMotionUrl(dataUrl);
       }
     };
     reader.readAsDataURL(file);
@@ -443,12 +446,21 @@ const AdminSettings = () => {
                 <div className="form-group-row">
                   <div className="form-group">
                     <label className="as-label">رفع صورة جديدة من جهازك</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setNewMotionFile(e.target.files[0])}
-                      className="as-file-input"
-                    />
+                    <div className="file-upload-wrapper">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileChange(e, 'new_hero_motion')}
+                        id="new-hero-motion-upload"
+                        className="file-input-hidden"
+                      />
+                      <label htmlFor="new-hero-motion-upload" className="file-upload-label">
+                        <span>📷 اختيار صورة من الجهاز...</span>
+                      </label>
+                      {newMotionFile && (
+                        <span className="file-name-badge">✓ {newMotionFile.name}</span>
+                      )}
+                    </div>
                   </div>
                   <div className="form-group">
                     <label className="as-label">أو إدخال رابط صورة مباشر (Image URL)</label>

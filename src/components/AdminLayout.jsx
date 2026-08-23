@@ -16,7 +16,9 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  Eye,
+  Crown
 } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { supabase } from '../lib/supabase';
@@ -76,7 +78,7 @@ const AdminLayout = ({ children }) => {
 
   return (
     <div className="admin-layout" dir="rtl">
-      {/* Top Header */}
+      {/* Top Glassmorphic Header */}
       <header className="admin-header">
         <div className="header-brand-info">
           {/* Mobile Hamburger Menu Button */}
@@ -88,16 +90,20 @@ const AdminLayout = ({ children }) => {
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          <span className="header-badge">Admin</span>
+          <div className="header-admin-badge-box">
+            <Crown size={14} className="badge-crown-icon" />
+            <span className="header-badge">لوحة التحكم</span>
+          </div>
         </div>
 
         {/* Center logo */}
         <div className="header-center-logo">
-          <img src={settings.logo_url || irisLogo} alt="IRIS Studio" />
+          <img src={settings.logo_url || irisLogo} alt="IRIS Studio" className="admin-header-logo-img" />
         </div>
         
         <NavLink to="/" className="header-back-link">
-          معاينة الموقع
+          <Eye size={16} className="eye-icon" />
+          <span>معاينة الموقع</span>
         </NavLink>
       </header>
 
