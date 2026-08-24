@@ -107,7 +107,7 @@ export const AdminFlow = () => {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
               type="button"
               onClick={handleAddNewReel}
@@ -154,21 +154,13 @@ export const AdminFlow = () => {
           {items.map((item, idx) => (
             <div
               key={item.id}
+              className="admin-flow-item-card"
               style={{
-                background: 'linear-gradient(135deg, rgba(26, 13, 24, 0.9) 0%, rgba(18, 9, 17, 0.95) 100%)',
-                border: item.enabled ? '1px solid rgba(245, 189, 26, 0.35)' : '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '16px',
-                padding: '16px 20px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '16px',
-                opacity: item.enabled ? 1 : 0.65,
-                transition: 'all 0.25s ease'
+                opacity: item.enabled ? 1 : 0.65
               }}
             >
               {/* Left Info Cluster */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, minWidth: 0, flexWrap: 'wrap' }}>
                 {/* Index Pill */}
                 <div style={{
                   fontSize: '1.1rem',
@@ -217,7 +209,7 @@ export const AdminFlow = () => {
                     {item.headline_ar || item.headline_en}
                   </h3>
 
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '3px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '3px', flexWrap: 'wrap' }}>
                     <span style={{ fontSize: '0.74rem', background: 'rgba(255, 255, 255, 0.08)', color: '#F5BD1A', padding: '2px 10px', borderRadius: '50px', border: '1px solid rgba(245, 189, 26, 0.25)', fontWeight: 'bold' }}>
                       🔘 {item.cta_label_ar || 'زر التفاعل'} → <span dir="ltr">{item.cta_url}</span>
                     </span>
@@ -226,7 +218,7 @@ export const AdminFlow = () => {
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, flexWrap: 'wrap' }}>
                 {/* Order Up / Down */}
                 <button
                   type="button"
@@ -295,37 +287,29 @@ export const AdminFlow = () => {
 
         {/* Modal Edit Dialog */}
         {editingId && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 9999 }}>
-            <form
-              onSubmit={handleFormSubmit}
-              style={{
-                background: 'linear-gradient(135deg, rgba(26, 13, 24, 0.98) 0%, rgba(18, 9, 17, 0.98) 100%)',
-                border: '1.5px solid #F5BD1A',
-                borderRadius: '24px',
-                padding: '24px',
-                maxWidth: '650px',
-                width: '100%',
-                maxHeight: '90vh',
-                overflowY: 'auto',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.8)'
-              }}
-            >
+          <div className="admin-flow-modal-overlay">
+            <form onSubmit={handleFormSubmit} className="admin-flow-modal-card">
               {/* Modal Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '14px', marginBottom: '18px' }}>
-                <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#F5BD1A', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="admin-flow-modal-header">
+                <h2 className="admin-flow-modal-title">
                   <span>✏️</span>
                   <span>تعديل بيانات الريل ({formData.category_label_ar || 'مخصص'})</span>
                 </h2>
-                <button type="button" onClick={() => setEditingId(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#FFF', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => setEditingId(null)}
+                  className="admin-flow-close-btn"
+                  aria-label="إغلاق النافذة"
+                >
                   <X size={18} />
                 </button>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', boxSizing: 'border-box' }}>
                 {/* 1. Category Labels */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <div className="grad-field">
-                    <label className="as-label">اسم الفئة (عربي) *</label>
+                <div className="admin-flow-grid-2">
+                  <div className="admin-flow-field-group">
+                    <label className="admin-flow-field-label">اسم الفئة (عربي) *</label>
                     <input
                       type="text"
                       className="admin-input"
@@ -335,8 +319,8 @@ export const AdminFlow = () => {
                       onChange={(e) => handleFormChange('category_label_ar', e.target.value)}
                     />
                   </div>
-                  <div className="grad-field">
-                    <label className="as-label">Category Name (English) *</label>
+                  <div className="admin-flow-field-group">
+                    <label className="admin-flow-field-label">Category Name (English) *</label>
                     <input
                       type="text"
                       className="admin-input"
@@ -350,11 +334,11 @@ export const AdminFlow = () => {
                 </div>
 
                 {/* 2. Headline Arabic & English */}
-                <div className="grad-field">
-                  <label className="as-label">العنوان الرئيسي (عربي) *</label>
+                <div className="admin-flow-field-group">
+                  <label className="admin-flow-field-label">العنوان الرئيسي (عربي) *</label>
                   <textarea
                     className="admin-input"
-                    style={{ minHeight: '60px' }}
+                    style={{ minHeight: '60px', width: '100%', boxSizing: 'border-box' }}
                     required
                     placeholder="العنوان الذي يظهر على الريل بالعربية..."
                     value={formData.headline_ar || ''}
@@ -362,11 +346,11 @@ export const AdminFlow = () => {
                   />
                 </div>
 
-                <div className="grad-field">
-                  <label className="as-label">Headline Title (English) *</label>
+                <div className="admin-flow-field-group">
+                  <label className="admin-flow-field-label">Headline Title (English) *</label>
                   <textarea
                     className="admin-input"
-                    style={{ minHeight: '60px' }}
+                    style={{ minHeight: '60px', width: '100%', boxSizing: 'border-box' }}
                     required
                     placeholder="Headline text in English..."
                     value={formData.headline_en || ''}
@@ -376,9 +360,9 @@ export const AdminFlow = () => {
                 </div>
 
                 {/* 3. Subheading Text */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <div className="grad-field">
-                    <label className="as-label">النص الفرعي الداعم (عربي)</label>
+                <div className="admin-flow-grid-2">
+                  <div className="admin-flow-field-group">
+                    <label className="admin-flow-field-label">النص الفرعي الداعم (عربي)</label>
                     <input
                       type="text"
                       className="admin-input"
@@ -387,8 +371,8 @@ export const AdminFlow = () => {
                       onChange={(e) => handleFormChange('secondary_text_ar', e.target.value)}
                     />
                   </div>
-                  <div className="grad-field">
-                    <label className="as-label">Secondary Text (EN)</label>
+                  <div className="admin-flow-field-group">
+                    <label className="admin-flow-field-label">Secondary Text (EN)</label>
                     <input
                       type="text"
                       className="admin-input"
@@ -401,14 +385,14 @@ export const AdminFlow = () => {
                 </div>
 
                 {/* 4. Action Button Customization (CTA Label, URL, Icon Type) */}
-                <div style={{ background: 'rgba(245, 189, 26, 0.06)', border: '1px solid rgba(245, 189, 26, 0.25)', borderRadius: '14px', padding: '14px', marginTop: '4px' }}>
-                  <label style={{ fontSize: '0.86rem', fontWeight: 'bold', color: '#F5BD1A', marginBottom: '10px', display: 'block' }}>
+                <div className="admin-flow-cta-box">
+                  <label style={{ fontSize: '0.88rem', fontWeight: '900', color: '#F5BD1A', marginBottom: '12px', display: 'block' }}>
                     🔘 تخصيص زر التوجيه التفاعلي (CTA Button)
                   </label>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-                    <div className="grad-field">
-                      <label className="as-label">نص الزر (عربي) *</label>
+                  <div className="admin-flow-grid-2" style={{ marginBottom: '10px' }}>
+                    <div className="admin-flow-field-group">
+                      <label className="admin-flow-field-label">نص الزر (عربي) *</label>
                       <input
                         type="text"
                         className="admin-input"
@@ -418,8 +402,8 @@ export const AdminFlow = () => {
                         onChange={(e) => handleFormChange('cta_label_ar', e.target.value)}
                       />
                     </div>
-                    <div className="grad-field">
-                      <label className="as-label">Button Text (English) *</label>
+                    <div className="admin-flow-field-group">
+                      <label className="admin-flow-field-label">Button Text (English) *</label>
                       <input
                         type="text"
                         className="admin-input"
@@ -432,9 +416,9 @@ export const AdminFlow = () => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                    <div className="grad-field">
-                      <label className="as-label">رابط الوجهة (CTA URL) *</label>
+                  <div className="admin-flow-grid-2">
+                    <div className="admin-flow-field-group">
+                      <label className="admin-flow-field-label">رابط الوجهة (CTA URL) *</label>
                       <input
                         type="text"
                         className="admin-input"
@@ -445,8 +429,8 @@ export const AdminFlow = () => {
                         dir="ltr"
                       />
                     </div>
-                    <div className="grad-field">
-                      <label className="as-label">أيقونة الزر (Icon Type)</label>
+                    <div className="admin-flow-field-group">
+                      <label className="admin-flow-field-label">أيقونة الزر (Icon Type)</label>
                       <select
                         className="admin-input"
                         value={formData.cta_icon_type || 'project'}
@@ -464,8 +448,8 @@ export const AdminFlow = () => {
                 </div>
 
                 {/* 5. Media URL / Image Input */}
-                <div className="grad-field">
-                  <label className="as-label">رابط الفيديو أو الصورة الخلفية (Media / Image URL) *</label>
+                <div className="admin-flow-field-group">
+                  <label className="admin-flow-field-label">رابط الفيديو أو الصورة الخلفية (Media / Image URL) *</label>
                   <input
                     type="text"
                     className="admin-input"
@@ -482,17 +466,17 @@ export const AdminFlow = () => {
               </div>
 
               {/* Modal Controls */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: '16px', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => setEditingId(null)}
-                  style={{ background: 'rgba(255,255,255,0.1)', color: '#FFF', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50px', padding: '10px 20px', fontWeight: 'bold', cursor: 'pointer' }}
+                  style={{ background: 'rgba(255,255,255,0.1)', color: '#FFF', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50px', padding: '10px 22px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem' }}
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
-                  style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', border: 'none', borderRadius: '50px', padding: '10px 28px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 15px rgba(245, 189, 26, 0.3)' }}
+                  style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', border: 'none', borderRadius: '50px', padding: '10px 30px', fontWeight: '900', cursor: 'pointer', fontSize: '0.92rem', boxShadow: '0 4px 15px rgba(245, 189, 26, 0.3)' }}
                 >
                   حفظ التعديلات 💾
                 </button>

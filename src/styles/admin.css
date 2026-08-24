@@ -2664,3 +2664,132 @@ select.admin-input {
   color: #FFFFFF !important;
   box-shadow: 0 0 0 3px rgba(245, 189, 26, 0.25) !important;
 }
+
+/* 🎬 IRIS FLOW REELS ADMIN STYLES */
+.admin-flow-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.admin-flow-modal-card {
+  background: linear-gradient(135deg, rgba(26, 13, 24, 0.98) 0%, rgba(18, 9, 17, 0.98) 100%);
+  border: 1.5px solid #F5BD1A;
+  border-radius: 24px;
+  padding: 24px;
+  max-width: 620px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(245, 189, 26, 0.15);
+  box-sizing: border-box;
+  color: #ECEBE7;
+  direction: rtl;
+}
+
+.admin-flow-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+
+.admin-flow-modal-title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #F5BD1A;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-flow-close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFF;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.admin-flow-close-btn:hover {
+  background: rgba(245, 189, 26, 0.2);
+  color: #F5BD1A;
+  border-color: #F5BD1A;
+}
+
+.admin-flow-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-flow-cta-box {
+  background: rgba(245, 189, 26, 0.06);
+  border: 1px solid rgba(245, 189, 26, 0.25);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-flow-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-flow-field-label {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #F5BD1A;
+  margin-bottom: 2px;
+  display: block;
+}
+
+.admin-flow-item-card {
+  background: linear-gradient(135deg, rgba(26, 13, 24, 0.9) 0%, rgba(18, 9, 17, 0.95) 100%);
+  border: 1px solid rgba(245, 189, 26, 0.35);
+  border-radius: 18px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .admin-flow-modal-card {
+    padding: 18px 14px;
+    max-height: 95vh;
+  }
+  .admin-flow-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .admin-flow-item-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
