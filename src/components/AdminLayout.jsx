@@ -18,7 +18,9 @@ import {
   Menu,
   X,
   Eye,
-  Crown
+  Crown,
+  Film,
+  MessageSquare
 } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { supabase } from '../lib/supabase';
@@ -53,9 +55,11 @@ const AdminLayout = ({ children }) => {
       ]
     },
     {
-      title: '🎥 قطاع الميديا (MEDIA)',
+      title: '🎥 قطاع الميديا والريلز (MEDIA)',
       links: [
         { to: '/admin/work',              label: 'معرض أعمال الميديا', icon: Camera },
+        { to: '/admin/flow',              label: 'إدارة وتخصيص الريلز (Flow)', icon: Film },
+        { to: '/admin/flow-feedback',     label: 'آراء وتقييمات الريلز', icon: MessageSquare },
         { to: '/admin/packages',          label: 'بكجات الإعلانات والميديا', icon: Package },
         { to: '/admin/offers',            label: 'العروض والعروض الخاصة', icon: Gift },
       ]
