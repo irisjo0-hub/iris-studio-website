@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { getFlowItems, saveFlowItems } from '../repositories/flowRepository';
+import { uploadFile } from '../lib/supabase';
 import AdminLayout from '../components/AdminLayout';
-import { Plus, Trash2, Edit2, Check, X, ArrowUp, ArrowDown, Eye, EyeOff, Film, Sparkles, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
+import { Plus, Trash2, Edit2, Check, X, ArrowUp, ArrowDown, Eye, EyeOff, Film, Sparkles, Image as ImageIcon, Link as LinkIcon, Upload } from 'lucide-react';
 import '../styles/admin.css';
 
 export const AdminFlow = () => {
   const [items, setItems] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({});
+  const [uploadingMedia, setUploadingMedia] = useState(false);
 
   useEffect(() => {
     setItems(getFlowItems());
@@ -25,6 +27,40 @@ export const AdminFlow = () => {
 
   const handleFormChange = (field, val) => {
     setFormData((prev) => ({ ...prev, [field]: val }));
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingMedia(true);
+    try {
+      let publicUrl = '';
+      try {
+        const filePath = `reels/${Date.now()}-${file.name}`;
+        publicUrl = await uploadFile('portfolio', filePath, file);
+      } catch (err) {
+        console.warn('Supabase storage fallback to Data URL:', err);
+        publicUrl = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+      }
+
+      const isVideo = file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mp4');
+
+      setFormData((prev) => ({
+        ...prev,
+        image: publicUrl,
+        media_url: publicUrl,
+        media_type: isVideo ? 'video' : 'image'
+      }));
+    } catch (err) {
+      alert('حدث خطأ أثناء رفع الملف: ' + err.message);
+    } finally {
+      setUploadingMedia(false);
+    }
   };
 
   const handleAddNewReel = () => {
@@ -446,14 +482,50 @@ export const AdminFlow = () => {
                   </div>
                 </div>
 
-                {/* 5. Media URL / Image Input */}
+                {/* 5. Direct File & Video Upload Box + URL Input */}
                 <div className="admin-flow-field-group">
-                  <label className="admin-flow-field-label">رابط الفيديو أو الصورة الخلفية (Media / Image URL) *</label>
+                  <label className="admin-flow-field-label">إرفاق صورة أو فيديو خلفية للريل (Media Upload) *</label>
+
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '8px' }}>
+                    <label
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px dashed rgba(236, 235, 231, 0.35)',
+                        borderRadius: '12px',
+                        padding: '10px 18px',
+                        color: '#ECEBE7',
+                        fontSize: '0.88rem',
+                        fontWeight: 'bold',
+                        cursor: uploadingMedia ? 'wait' : 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <Upload size={16} />
+                      <span>{uploadingMedia ? '⏳ جاري الرفع والتحميل...' : '📁 اختيار صورة أو فيديو من الجهاز'}</span>
+                      <input
+                        type="file"
+                        accept="image/*,video/*"
+                        onChange={handleFileUpload}
+                        disabled={uploadingMedia}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+
+                    {(formData.image || formData.media_url) && (
+                      <span style={{ fontSize: '0.8rem', color: '#4ADE80', fontWeight: 'bold' }}>
+                        ✓ تم اختيار الميديا بنجاح
+                      </span>
+                    )}
+                  </div>
+
                   <input
                     type="text"
                     className="admin-input"
                     required
-                    placeholder="رابط مباشر للفيديو MP4 أو الصورة..."
+                    placeholder="رابط الميديا المرفقة أو أدخل رابط مباشر MP4 / صورة..."
                     value={formData.image || formData.media_url || ''}
                     onChange={(e) => {
                       handleFormChange('image', e.target.value);
@@ -461,6 +533,17 @@ export const AdminFlow = () => {
                     }}
                     dir="ltr"
                   />
+
+                  {/* Live Media Preview inside Modal */}
+                  {(formData.image || formData.media_url) && (
+                    <div style={{ marginTop: '10px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(236, 235, 231, 0.2)', maxHeight: '160px', background: '#000', textAlign: 'center' }}>
+                      {formData.media_type === 'video' || (formData.media_url && formData.media_url.endsWith('.mp4')) ? (
+                        <video src={formData.media_url || formData.image} controls style={{ maxHeight: '160px', width: '100%', objectFit: 'contain' }} />
+                      ) : (
+                        <img src={formData.image || formData.media_url} alt="معاينة" style={{ maxHeight: '160px', width: '100%', objectFit: 'contain' }} />
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
