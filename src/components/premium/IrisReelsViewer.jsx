@@ -717,30 +717,36 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
-                <Link to="/booking" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
-                  {isRtl ? "حجز السيشنات" : "Book Session"}
+                <Link to="/work" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                  {isRtl ? "ميديا" : "Media"}
                 </Link>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-                <Link to="/work" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
-                  {isRtl ? "أعمالنا والإنتاج" : "Media & Production"}
+                <Link to="/booking" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                  {isRtl ? "الاستديو" : "Studio"}
                 </Link>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
-                <Link to="/graduation-books" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
-                  {isRtl ? "كتب التخرج" : "Graduation Books"}
+                <Link to="/printing-products" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                  {isRtl ? "المطبوعات" : "Print"}
                 </Link>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}>
-                <Link to="/printing-products" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
-                  {isRtl ? "المطبوعات الفاخرة" : "Luxury Print"}
+                <Link to="/work" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                  {isRtl ? "أعمالنا" : "Our Work"}
                 </Link>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}>
+                <Link to="/packages" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                  {isRtl ? "البكجات والعروض" : "Packages & Offers"}
+                </Link>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}>
                 <a
                   href="#iris-footer-root"
                   className="overlay-nav-item"
