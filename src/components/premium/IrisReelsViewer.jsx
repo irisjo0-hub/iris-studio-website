@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -12,6 +12,7 @@ import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { getFlowItems, getApprovedFeedbackForFlow, getAllApprovedFeedback, submitFlowFeedback } from '../../repositories/flowRepository';
 import irisLogo from '../../assets/iris_logo.png';
 import '../../styles/iris-reels-viewer.css';
+import '../../styles/iris-dark-hero.css';
 
 /**
  * IRIS REELS VIEWER — AUTHENTIC INSTAGRAM REELS EXPERIENCE
@@ -691,77 +692,84 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.28 }}
           >
+            {/* Top Bar: IRIS Logo (Left), Close X (Right) */}
             <div className="overlay-top-bar">
               <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" />
-              <div className="overlay-actions-group">
-                <button type="button" className="overlay-lang-toggle-btn" onClick={toggleLanguage}>
-                  <Globe size={16} />
-                  <span>{isRtl ? 'ENGLISH' : 'العربية'}</span>
-                </button>
-                <button type="button" className="overlay-close-btn" onClick={() => setMenuOpen(false)}>
-                  <X size={26} />
-                </button>
-              </div>
+
+              <button
+                type="button"
+                className="overlay-close-btn"
+                onClick={() => setMenuOpen(false)}
+                aria-label="Close Menu"
+              >
+                <X size={24} />
+              </button>
             </div>
 
-            <nav className="overlay-menu-list">
-              <button
-                type="button"
-                className="overlay-nav-link text-left"
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigate('/');
-                }}
-              >
-                {isRtl ? "الرئيسية" : "Home"}
-              </button>
-              <button
-                type="button"
-                className="overlay-nav-link text-left"
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigate('/booking');
-                }}
-              >
-                {isRtl ? "حجز السيشنات" : "Book Session"}
-              </button>
-              <button
-                type="button"
-                className="overlay-nav-link text-left"
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigate('/work');
-                }}
-              >
-                {isRtl ? "أعمالنا والإنتاج" : "Media & Work"}
-              </button>
-              <button
-                type="button"
-                className="overlay-nav-link text-left"
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigate('/graduation-books');
-                }}
-              >
-                {isRtl ? "كتب التخرج" : "Graduation Books"}
-              </button>
-              <button
-                type="button"
-                className="overlay-nav-link text-left"
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigate('/printing-products');
-                }}
-              >
-                {isRtl ? "المطبوعات الفاخرة" : "Luxury Print"}
-              </button>
+            {/* Vertical Menu List (One Item Per Row) */}
+            <nav className="overlay-vertical-menu">
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
+                <Link to="/" className="overlay-nav-item active" onClick={() => setMenuOpen(false)}>
+                  {isRtl ? "الرئيسية" : "Home"}
+                </Link>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
+                <Link to="/booking" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                  {isRtl ? "حجز السيشنات" : "Book Session"}
+                </Link>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+                <Link to="/work" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                  {isRtl ? "أعمالنا والإنتاج" : "Media & Production"}
+                </Link>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
+                <Link to="/graduation-books" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                  {isRtl ? "كتب التخرج" : "Graduation Books"}
+                </Link>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}>
+                <Link to="/printing-products" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                  {isRtl ? "المطبوعات الفاخرة" : "Luxury Print"}
+                </Link>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}>
+                <a
+                  href="#iris-footer-root"
+                  className="overlay-nav-item"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    const footerEl = document.getElementById('iris-footer-root');
+                    if (footerEl) footerEl.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  {isRtl ? "تواصل معنا" : "Contact Us"}
+                </a>
+              </motion.div>
             </nav>
 
+            {/* Bottom Row: Language Control & Brand Signature */}
             <div className="overlay-bottom-bar">
-              <div className="overlay-brand-line">
-                <span className="brand-dot" />
-                <span>IRIS AGENCY — WE BREAK THE BOX</span>
+              <button
+                type="button"
+                className="overlay-lang-btn"
+                onClick={toggleLanguage}
+                aria-label={isRtl ? "Switch to English" : "التحويل إلى العربية"}
+              >
+                <Globe size={16} />
+                <span>{isRtl ? 'EN English' : 'ع العربية'}</span>
+              </button>
+
+              <div className="overlay-brand-signature">
+                <span>WE BREAK THE BOX</span>
+                <span className="gold-dot" />
               </div>
             </div>
           </motion.div>,
