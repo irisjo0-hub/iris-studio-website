@@ -392,14 +392,14 @@
 
 /* ===== 1. EXPLICIT ARABIC OVERLAY GRID (data-locale="ar") ===== */
 .reel-frame[data-locale="ar"] .reels-hamburger-btn {
-  left: 20px;
-  right: auto;
+  right: 20px;
+  left: auto;
   top: 18px;
 }
 
 .reel-frame[data-locale="ar"] .reels-counter-pill-tag {
-  right: 20px;
-  left: auto;
+  left: 20px;
+  right: auto;
   top: 18px;
 }
 
@@ -423,14 +423,14 @@
 
 /* ===== 2. EXPLICIT ENGLISH OVERLAY GRID (data-locale="en") ===== */
 .reel-frame[data-locale="en"] .reels-hamburger-btn {
-  right: 20px;
-  left: auto;
+  left: 20px;
+  right: auto;
   top: 18px;
 }
 
 .reel-frame[data-locale="en"] .reels-counter-pill-tag {
-  left: 20px;
-  right: auto;
+  right: 20px;
+  left: auto;
   top: 18px;
 }
 
