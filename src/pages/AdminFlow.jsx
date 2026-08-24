@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { getFlowItems, saveFlowItems } from '../repositories/flowRepository';
-import { Plus, Trash2, Edit2, Check, X, ArrowUp, ArrowDown } from 'lucide-react';
+import AdminLayout from '../components/AdminLayout';
+import { Plus, Trash2, Edit2, Check, X, ArrowUp, ArrowDown, Eye, EyeOff, Film, Sparkles, Image as ImageIcon, Link as LinkIcon } from 'lucide-react';
+import '../styles/admin.css';
 
 export const AdminFlow = () => {
   const [items, setItems] = useState([]);
@@ -11,9 +13,9 @@ export const AdminFlow = () => {
     setItems(getFlowItems());
   }, []);
 
-  const handleSave = () => {
+  const handleSaveAll = () => {
     saveFlowItems(items);
-    alert('Flow items saved successfully!');
+    alert('✅ تم حفظ جميع تغييرات الريلز بنجاح!');
   };
 
   const handleEditClick = (item) => {
@@ -25,12 +27,51 @@ export const AdminFlow = () => {
     setFormData((prev) => ({ ...prev, [field]: val }));
   };
 
+  const handleAddNewReel = () => {
+    const newId = `flow-${Date.now()}`;
+    const newItem = {
+      id: newId,
+      enabled: true,
+      sort_order: items.length + 1,
+      slug: `reel-${items.length + 1}`,
+      category_key: 'NEW',
+      category_label_ar: 'خدمة جديدة',
+      category_label_en: 'NEW SERVICE',
+      image: '',
+      media_url: '',
+      media_type: 'image',
+      alt_ar: 'ريل جديد',
+      alt_en: 'New Reel',
+      headline_ar: 'عنوان الريل الجديد الخاص بك',
+      headline_en: 'Your New Custom Reel Headline',
+      secondary_text_ar: 'وصف فرعي مختصر ومخصص للخدمة',
+      secondary_text_en: 'Short secondary description for your custom service',
+      cta_label_ar: 'احجز الآن',
+      cta_label_en: 'Book Now',
+      cta_url: '/booking',
+      cta_icon_type: 'calendar',
+      feedback_enabled: true
+    };
+
+    const updated = [...items, newItem];
+    setItems(updated);
+    saveFlowItems(updated);
+    handleEditClick(newItem);
+  };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const updated = items.map((it) => (it.id === editingId ? { ...formData } : it));
     setItems(updated);
     saveFlowItems(updated);
     setEditingId(null);
+  };
+
+  const handleDeleteReel = (id) => {
+    if (!window.confirm('هل أنت تأكد من رغبتك في حذف هذا الريل؟')) return;
+    const updated = items.filter((it) => it.id !== id).map((it, idx) => ({ ...it, sort_order: idx + 1 }));
+    setItems(updated);
+    saveFlowItems(updated);
   };
 
   const toggleEnabled = (id) => {
@@ -52,158 +93,415 @@ export const AdminFlow = () => {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto text-[#ECEBE7] dir-rtl" dir="rtl">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">إدارة IRIS Flow</h1>
-          <p className="text-sm opacity-70">إدارة عناصر القصص التفاعلية في الصفحة الرئيسية</p>
-        </div>
-        <button
-          onClick={handleSave}
-          className="px-6 py-2.5 rounded-full bg-[#F5BD1A] text-[#044630] font-bold hover:opacity-90"
-        >
-          حفظ التغييرات
-        </button>
-      </div>
-
-      <div className="space-y-4">
-        {items.map((item, idx) => (
-          <div key={item.id} className="p-5 rounded-2xl bg-[#1A0D18] border border-[#ECEBE7]/15 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4 flex-1">
-              <span className="text-lg font-bold text-[#F5BD1A]">0{idx + 1}</span>
-              <img src={item.image} alt={item.category_label_ar} className="w-16 h-16 object-cover rounded-xl border border-white/10" />
-              <div>
-                <h3 className="font-bold text-lg">{item.category_label_ar} / {item.category_label_en}</h3>
-                <p className="text-sm opacity-60 line-clamp-1">{item.headline_ar}</p>
-                <span className="inline-block mt-1 text-xs px-2.5 py-0.5 rounded-full bg-white/10 text-[#F5BD1A]">
-                  {item.cta_label_ar} &rarr; {item.cta_url}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => moveOrder(idx, -1)}
-                disabled={idx === 0}
-                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30"
-              >
-                <ArrowUp size={16} />
-              </button>
-              <button
-                onClick={() => moveOrder(idx, 1)}
-                disabled={idx === items.length - 1}
-                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30"
-              >
-                <ArrowDown size={16} />
-              </button>
-              <button
-                onClick={() => toggleEnabled(item.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold ${item.enabled ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}
-              >
-                {item.enabled ? 'مفعل' : 'معطل'}
-              </button>
-              <button
-                onClick={() => handleEditClick(item)}
-                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-[#F5BD1A]"
-              >
-                <Edit2 size={16} />
-              </button>
-            </div>
+    <AdminLayout>
+      <div className="admin-flow-container text-[#ECEBE7] dir-rtl" dir="rtl" style={{ padding: '10px 0' }}>
+        {/* Top Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '14px' }}>
+          <div>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: '900', color: '#FFFFFF', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span>🎬</span>
+              <span>إدارة وتخصيص الريلز (IRIS Flow)</span>
+            </h1>
+            <p style={{ fontSize: '0.88rem', color: 'rgba(236, 235, 231, 0.7)', margin: '4px 0 0' }}>
+              التحكم الكامل بكل سلايد/ريل في الواجهة الرئيسية: الصور، الفيديوهات، العناوين، وأزرار التوجيه.
+            </p>
           </div>
-        ))}
-      </div>
 
-      {editingId && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <form onSubmit={handleFormSubmit} className="bg-[#1A0D18] border border-[#F5BD1A]/40 p-6 rounded-3xl max-w-2xl w-full space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">تعديل عنصر Flow</h2>
-              <button type="button" onClick={() => setEditingId(null)} className="p-2 rounded-full hover:bg-white/10">
-                <X size={20} />
-              </button>
-            </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              type="button"
+              onClick={handleAddNewReel}
+              style={{
+                background: 'rgba(245, 189, 26, 0.15)',
+                color: '#F5BD1A',
+                border: '1.5px solid #F5BD1A',
+                borderRadius: '50px',
+                padding: '10px 20px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <Plus size={18} />
+              <span>إضافة ريل جديد</span>
+            </button>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-bold opacity-70">الفئة (عربي)</label>
-                <input
-                  type="text"
-                  value={formData.category_label_ar || ''}
-                  onChange={(e) => handleFormChange('category_label_ar', e.target.value)}
-                  className="w-full mt-1 p-2.5 rounded-xl bg-white/5 border border-white/10"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-bold opacity-70">Category (EN)</label>
-                <input
-                  type="text"
-                  value={formData.category_label_en || ''}
-                  onChange={(e) => handleFormChange('category_label_en', e.target.value)}
-                  className="w-full mt-1 p-2.5 rounded-xl bg-white/5 border border-white/10"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-bold opacity-70">العنوان الرئيسي (عربي)</label>
-              <textarea
-                value={formData.headline_ar || ''}
-                onChange={(e) => handleFormChange('headline_ar', e.target.value)}
-                className="w-full mt-1 p-2.5 rounded-xl bg-white/5 border border-white/10"
-                rows={2}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-bold opacity-70">نص الزر CTA (عربي)</label>
-                <input
-                  type="text"
-                  value={formData.cta_label_ar || ''}
-                  onChange={(e) => handleFormChange('cta_label_ar', e.target.value)}
-                  className="w-full mt-1 p-2.5 rounded-xl bg-white/5 border border-white/10"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-bold opacity-70">رابط الوجهة CTA URL</label>
-                <input
-                  type="text"
-                  value={formData.cta_url || ''}
-                  onChange={(e) => handleFormChange('cta_url', e.target.value)}
-                  className="w-full mt-1 p-2.5 rounded-xl bg-white/5 border border-white/10"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-bold opacity-70">رابط الصورة الرئيسية</label>
-              <input
-                type="text"
-                value={formData.image || ''}
-                onChange={(e) => handleFormChange('image', e.target.value)}
-                className="w-full mt-1 p-2.5 rounded-xl bg-white/5 border border-white/10"
-              />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4">
-              <button
-                type="button"
-                onClick={() => setEditingId(null)}
-                className="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20"
-              >
-                إلغاء
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2 rounded-xl bg-[#F5BD1A] text-[#044630] font-bold"
-              >
-                حفظ
-              </button>
-            </div>
-          </form>
+            <button
+              type="button"
+              onClick={handleSaveAll}
+              style={{
+                background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
+                color: '#120911',
+                border: 'none',
+                borderRadius: '50px',
+                padding: '10px 24px',
+                fontWeight: '900',
+                cursor: 'pointer',
+                fontSize: '0.92rem',
+                boxShadow: '0 4px 15px rgba(245, 189, 26, 0.3)'
+              }}
+            >
+              حفظ جميع التغييرات 💾
+            </button>
+          </div>
         </div>
-      )}
-    </div>
+
+        {/* Reels List Grid */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {items.map((item, idx) => (
+            <div
+              key={item.id}
+              style={{
+                background: 'linear-gradient(135deg, rgba(26, 13, 24, 0.9) 0%, rgba(18, 9, 17, 0.95) 100%)',
+                border: item.enabled ? '1px solid rgba(245, 189, 26, 0.35)' : '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                padding: '16px 20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '16px',
+                opacity: item.enabled ? 1 : 0.65,
+                transition: 'all 0.25s ease'
+              }}
+            >
+              {/* Left Info Cluster */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, minWidth: 0 }}>
+                {/* Index Pill */}
+                <div style={{
+                  fontSize: '1.1rem',
+                  fontWeight: '900',
+                  color: '#F5BD1A',
+                  background: 'rgba(245, 189, 26, 0.12)',
+                  border: '1px solid rgba(245, 189, 26, 0.3)',
+                  borderRadius: '50%',
+                  width: '42px',
+                  height: '42px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  0{idx + 1}
+                </div>
+
+                {/* Media Preview Box */}
+                <div style={{ width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.15)', flexShrink: 0, position: 'relative', background: '#000' }}>
+                  {item.media_type === 'video' || (item.media_url && item.media_url.endsWith('.mp4')) ? (
+                    <video src={item.media_url || item.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <img src={item.image || item.media_url || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80'} alt={item.category_label_ar} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  )}
+                  {item.media_type === 'video' && (
+                    <span style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(0,0,0,0.8)', color: '#F5BD1A', padding: '1px 4px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 'bold' }}>
+                      🎬 فيديو
+                    </span>
+                  )}
+                </div>
+
+                {/* Meta details */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ color: '#F5BD1A', fontWeight: '900', fontSize: '0.95rem' }}>
+                      {item.category_label_ar || item.category_key}
+                    </span>
+                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>/</span>
+                    <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                      {item.category_label_en}
+                    </span>
+                  </div>
+
+                  <h3 style={{ fontSize: '0.94rem', fontWeight: 'bold', color: '#FFFFFF', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {item.headline_ar || item.headline_en}
+                  </h3>
+
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '3px' }}>
+                    <span style={{ fontSize: '0.74rem', background: 'rgba(255, 255, 255, 0.08)', color: '#F5BD1A', padding: '2px 10px', borderRadius: '50px', border: '1px solid rgba(245, 189, 26, 0.25)', fontWeight: 'bold' }}>
+                      🔘 {item.cta_label_ar || 'زر التفاعل'} → <span dir="ltr">{item.cta_url}</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                {/* Order Up / Down */}
+                <button
+                  type="button"
+                  onClick={() => moveOrder(idx, -1)}
+                  disabled={idx === 0}
+                  style={{ opacity: idx === 0 ? 0.3 : 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: '#FFF', borderRadius: '8px', padding: '6px', cursor: 'pointer' }}
+                  title="تحريك للأعلى"
+                >
+                  <ArrowUp size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveOrder(idx, 1)}
+                  disabled={idx === items.length - 1}
+                  style={{ opacity: idx === items.length - 1 ? 0.3 : 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: '#FFF', borderRadius: '8px', padding: '6px', cursor: 'pointer' }}
+                  title="تحريك لأسفل"
+                >
+                  <ArrowDown size={16} />
+                </button>
+
+                {/* Enable / Disable Status Button */}
+                <button
+                  type="button"
+                  onClick={() => toggleEnabled(item.id)}
+                  style={{
+                    background: item.enabled ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                    color: item.enabled ? '#4ADE80' : '#F87171',
+                    border: item.enabled ? '1px solid rgba(34, 197, 94, 0.4)' : '1px solid rgba(239, 68, 68, 0.4)',
+                    borderRadius: '8px',
+                    padding: '6px 12px',
+                    fontSize: '0.78rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  {item.enabled ? <Eye size={14} /> : <EyeOff size={14} />}
+                  <span>{item.enabled ? 'مفعل' : 'معطل'}</span>
+                </button>
+
+                {/* Edit Button */}
+                <button
+                  type="button"
+                  onClick={() => handleEditClick(item)}
+                  style={{ background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: '1px solid #F5BD1A', borderRadius: '8px', padding: '6px 14px', fontSize: '0.8rem', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <Edit2 size={14} />
+                  <span>تعديل ✏️</span>
+                </button>
+
+                {/* Delete Button */}
+                <button
+                  type="button"
+                  onClick={() => handleDeleteReel(item.id)}
+                  style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', padding: '6px 8px', cursor: 'pointer' }}
+                  title="حذف هذا الريل"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Modal Edit Dialog */}
+        {editingId && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 9999 }}>
+            <form
+              onSubmit={handleFormSubmit}
+              style={{
+                background: 'linear-gradient(135deg, rgba(26, 13, 24, 0.98) 0%, rgba(18, 9, 17, 0.98) 100%)',
+                border: '1.5px solid #F5BD1A',
+                borderRadius: '24px',
+                padding: '24px',
+                maxWidth: '650px',
+                width: '100%',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.8)'
+              }}
+            >
+              {/* Modal Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '14px', marginBottom: '18px' }}>
+                <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#F5BD1A', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>✏️</span>
+                  <span>تعديل بيانات الريل ({formData.category_label_ar || 'مخصص'})</span>
+                </h2>
+                <button type="button" onClick={() => setEditingId(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#FFF', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {/* 1. Category Labels */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div className="grad-field">
+                    <label className="as-label">اسم الفئة (عربي) *</label>
+                    <input
+                      type="text"
+                      className="admin-input"
+                      required
+                      placeholder="مثال: ميديا / تصوير المنتجات..."
+                      value={formData.category_label_ar || ''}
+                      onChange={(e) => handleFormChange('category_label_ar', e.target.value)}
+                    />
+                  </div>
+                  <div className="grad-field">
+                    <label className="as-label">Category Name (English) *</label>
+                    <input
+                      type="text"
+                      className="admin-input"
+                      required
+                      placeholder="e.g. MEDIA / PRODUCT PHOTOGRAPHY"
+                      value={formData.category_label_en || ''}
+                      onChange={(e) => handleFormChange('category_label_en', e.target.value)}
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+
+                {/* 2. Headline Arabic & English */}
+                <div className="grad-field">
+                  <label className="as-label">العنوان الرئيسي (عربي) *</label>
+                  <textarea
+                    className="admin-input"
+                    style={{ minHeight: '60px' }}
+                    required
+                    placeholder="العنوان الذي يظهر على الريل بالعربية..."
+                    value={formData.headline_ar || ''}
+                    onChange={(e) => handleFormChange('headline_ar', e.target.value)}
+                  />
+                </div>
+
+                <div className="grad-field">
+                  <label className="as-label">Headline Title (English) *</label>
+                  <textarea
+                    className="admin-input"
+                    style={{ minHeight: '60px' }}
+                    required
+                    placeholder="Headline text in English..."
+                    value={formData.headline_en || ''}
+                    onChange={(e) => handleFormChange('headline_en', e.target.value)}
+                    dir="ltr"
+                  />
+                </div>
+
+                {/* 3. Subheading Text */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div className="grad-field">
+                    <label className="as-label">النص الفرعي الداعم (عربي)</label>
+                    <input
+                      type="text"
+                      className="admin-input"
+                      placeholder="توضيح مختصر للمحتوى..."
+                      value={formData.secondary_text_ar || ''}
+                      onChange={(e) => handleFormChange('secondary_text_ar', e.target.value)}
+                    />
+                  </div>
+                  <div className="grad-field">
+                    <label className="as-label">Secondary Text (EN)</label>
+                    <input
+                      type="text"
+                      className="admin-input"
+                      placeholder="Short supporting description..."
+                      value={formData.secondary_text_en || ''}
+                      onChange={(e) => handleFormChange('secondary_text_en', e.target.value)}
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+
+                {/* 4. Action Button Customization (CTA Label, URL, Icon Type) */}
+                <div style={{ background: 'rgba(245, 189, 26, 0.06)', border: '1px solid rgba(245, 189, 26, 0.25)', borderRadius: '14px', padding: '14px', marginTop: '4px' }}>
+                  <label style={{ fontSize: '0.86rem', fontWeight: 'bold', color: '#F5BD1A', marginBottom: '10px', display: 'block' }}>
+                    🔘 تخصيص زر التوجيه التفاعلي (CTA Button)
+                  </label>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                    <div className="grad-field">
+                      <label className="as-label">نص الزر (عربي) *</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        required
+                        placeholder="مثال: احجز جلستك / اطلب مشروعك"
+                        value={formData.cta_label_ar || ''}
+                        onChange={(e) => handleFormChange('cta_label_ar', e.target.value)}
+                      />
+                    </div>
+                    <div className="grad-field">
+                      <label className="as-label">Button Text (English) *</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        required
+                        placeholder="e.g. Book Session / Order Print"
+                        value={formData.cta_label_en || ''}
+                        onChange={(e) => handleFormChange('cta_label_en', e.target.value)}
+                        dir="ltr"
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div className="grad-field">
+                      <label className="as-label">رابط الوجهة (CTA URL) *</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        required
+                        placeholder="مثال: /booking أو /printing-products"
+                        value={formData.cta_url || ''}
+                        onChange={(e) => handleFormChange('cta_url', e.target.value)}
+                        dir="ltr"
+                      />
+                    </div>
+                    <div className="grad-field">
+                      <label className="as-label">أيقونة الزر (Icon Type)</label>
+                      <select
+                        className="admin-input"
+                        value={formData.cta_icon_type || 'project'}
+                        onChange={(e) => handleFormChange('cta_icon_type', e.target.value)}
+                      >
+                        <option value="project">🎬 مشروع (Project)</option>
+                        <option value="camera">📸 كاميرا (Camera)</option>
+                        <option value="calendar">📅 تقويم حجز (Calendar)</option>
+                        <option value="printer">🖨️ طابعة ومطبوعات (Printer)</option>
+                        <option value="shopping">🛍️ متجر وسلة (Shopping)</option>
+                        <option value="folder">📁 حافظة أعمال (Folder)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5. Media URL / Image Input */}
+                <div className="grad-field">
+                  <label className="as-label">رابط الفيديو أو الصورة الخلفية (Media / Image URL) *</label>
+                  <input
+                    type="text"
+                    className="admin-input"
+                    required
+                    placeholder="رابط مباشر للفيديو MP4 أو الصورة..."
+                    value={formData.image || formData.media_url || ''}
+                    onChange={(e) => {
+                      handleFormChange('image', e.target.value);
+                      handleFormChange('media_url', e.target.value);
+                    }}
+                    dir="ltr"
+                  />
+                </div>
+              </div>
+
+              {/* Modal Controls */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px' }}>
+                <button
+                  type="button"
+                  onClick={() => setEditingId(null)}
+                  style={{ background: 'rgba(255,255,255,0.1)', color: '#FFF', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50px', padding: '10px 20px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', border: 'none', borderRadius: '50px', padding: '10px 28px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 4px 15px rgba(245, 189, 26, 0.3)' }}
+                >
+                  حفظ التعديلات 💾
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      </div>
+    </AdminLayout>
   );
 };
 
