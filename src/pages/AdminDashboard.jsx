@@ -66,6 +66,7 @@ const AdminDashboard = () => {
     { label: 'الحجوزات المؤكدة', value: approved, className: 'card-green', icon: '✅', link: '/admin/bookings' },
     { label: 'دفاتر التخرج', value: totalGraduation, className: 'card-magenta', icon: '🎓', link: '/admin/graduation-orders' },
     { label: 'طلبات متجر المطبوعات', value: printingOrdersCount, className: 'card-gold', icon: '🛍️', link: '/admin/printing-orders' },
+    { label: 'إدارة وتخصيص الريلز', value: 'التحكم الكامل 🎬', className: 'card-purple', icon: '🎬', link: '/admin/flow' },
   ];
 
   return (
