@@ -98,7 +98,7 @@ export const AdminFlow = () => {
         {/* Top Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '14px' }}>
           <div>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: '900', color: '#FFFFFF', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: '900', color: '#ECEBE7', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span>🎬</span>
               <span>إدارة وتخصيص الريلز (IRIS Flow)</span>
             </h1>
@@ -112,9 +112,9 @@ export const AdminFlow = () => {
               type="button"
               onClick={handleAddNewReel}
               style={{
-                background: 'rgba(245, 189, 26, 0.15)',
-                color: '#F5BD1A',
-                border: '1.5px solid #F5BD1A',
+                background: 'rgba(255, 255, 255, 0.08)',
+                color: '#ECEBE7',
+                border: '1px solid rgba(236, 235, 231, 0.25)',
                 borderRadius: '50px',
                 padding: '10px 20px',
                 fontWeight: 'bold',
@@ -133,15 +133,14 @@ export const AdminFlow = () => {
               type="button"
               onClick={handleSaveAll}
               style={{
-                background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
-                color: '#120911',
-                border: 'none',
+                background: 'rgba(236, 235, 231, 0.15)',
+                color: '#ECEBE7',
+                border: '1px solid rgba(236, 235, 231, 0.3)',
                 borderRadius: '50px',
                 padding: '10px 24px',
                 fontWeight: '900',
                 cursor: 'pointer',
-                fontSize: '0.92rem',
-                boxShadow: '0 4px 15px rgba(245, 189, 26, 0.3)'
+                fontSize: '0.92rem'
               }}
             >
               حفظ جميع التغييرات 💾
@@ -165,9 +164,9 @@ export const AdminFlow = () => {
                 <div style={{
                   fontSize: '1.1rem',
                   fontWeight: '900',
-                  color: '#F5BD1A',
-                  background: 'rgba(245, 189, 26, 0.12)',
-                  border: '1px solid rgba(245, 189, 26, 0.3)',
+                  color: '#ECEBE7',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(236, 235, 231, 0.2)',
                   borderRadius: '50%',
                   width: '42px',
                   height: '42px',
@@ -187,7 +186,7 @@ export const AdminFlow = () => {
                     <img src={item.image || item.media_url || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80'} alt={item.category_label_ar} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   )}
                   {item.media_type === 'video' && (
-                    <span style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(0,0,0,0.8)', color: '#F5BD1A', padding: '1px 4px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 'bold' }}>
+                    <span style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(0,0,0,0.8)', color: '#ECEBE7', padding: '1px 4px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 'bold' }}>
                       🎬 فيديو
                     </span>
                   )}
@@ -196,7 +195,7 @@ export const AdminFlow = () => {
                 {/* Meta details */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ color: '#F5BD1A', fontWeight: '900', fontSize: '0.95rem' }}>
+                    <span style={{ color: '#ECEBE7', fontWeight: '900', fontSize: '0.95rem' }}>
                       {item.category_label_ar || item.category_key}
                     </span>
                     <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>/</span>
@@ -210,7 +209,7 @@ export const AdminFlow = () => {
                   </h3>
 
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '3px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '0.74rem', background: 'rgba(255, 255, 255, 0.08)', color: '#F5BD1A', padding: '2px 10px', borderRadius: '50px', border: '1px solid rgba(245, 189, 26, 0.25)', fontWeight: 'bold' }}>
+                    <span style={{ fontSize: '0.74rem', background: 'rgba(255, 255, 255, 0.08)', color: '#ECEBE7', padding: '2px 10px', borderRadius: '50px', border: '1px solid rgba(236, 235, 231, 0.2)', fontWeight: 'bold' }}>
                       🔘 {item.cta_label_ar || 'زر التفاعل'} → <span dir="ltr">{item.cta_url}</span>
                     </span>
                   </div>
@@ -265,7 +264,7 @@ export const AdminFlow = () => {
                 <button
                   type="button"
                   onClick={() => handleEditClick(item)}
-                  style={{ background: 'rgba(245, 189, 26, 0.2)', color: '#F5BD1A', border: '1px solid #F5BD1A', borderRadius: '8px', padding: '6px 14px', fontSize: '0.8rem', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#ECEBE7', border: '1px solid rgba(236, 235, 231, 0.3)', borderRadius: '8px', padding: '6px 14px', fontSize: '0.8rem', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
                   <Edit2 size={14} />
                   <span>تعديل ✏️</span>
@@ -386,7 +385,7 @@ export const AdminFlow = () => {
 
                 {/* 4. Action Button Customization (CTA Label, URL, Icon Type) */}
                 <div className="admin-flow-cta-box">
-                  <label style={{ fontSize: '0.88rem', fontWeight: '900', color: '#F5BD1A', marginBottom: '12px', display: 'block' }}>
+                  <label style={{ fontSize: '0.88rem', fontWeight: '900', color: '#ECEBE7', marginBottom: '12px', display: 'block' }}>
                     🔘 تخصيص زر التوجيه التفاعلي (CTA Button)
                   </label>
 
@@ -466,17 +465,17 @@ export const AdminFlow = () => {
               </div>
 
               {/* Modal Controls */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: '16px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px', borderTop: '1px solid rgba(236,235,231,0.12)', paddingTop: '16px', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => setEditingId(null)}
-                  style={{ background: 'rgba(255,255,255,0.1)', color: '#FFF', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50px', padding: '10px 22px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem' }}
+                  style={{ background: 'rgba(255,255,255,0.08)', color: '#ECEBE7', border: '1px solid rgba(236,235,231,0.2)', borderRadius: '50px', padding: '10px 22px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem' }}
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
-                  style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', border: 'none', borderRadius: '50px', padding: '10px 30px', fontWeight: '900', cursor: 'pointer', fontSize: '0.92rem', boxShadow: '0 4px 15px rgba(245, 189, 26, 0.3)' }}
+                  style={{ background: '#ECEBE7', color: '#1A0D18', border: 'none', borderRadius: '50px', padding: '10px 30px', fontWeight: '900', cursor: 'pointer', fontSize: '0.92rem' }}
                 >
                   حفظ التعديلات 💾
                 </button>
