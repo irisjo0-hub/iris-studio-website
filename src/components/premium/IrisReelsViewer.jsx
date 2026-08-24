@@ -52,6 +52,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const touchStartY = useRef(0);
   const cooldownRef = useRef(false);
   const activeIndexRef = useRef(0);
+  const isSkippingRef = useRef(false);
 
   // Keep activeIndexRef synced for non-passive listeners
   useEffect(() => {
@@ -113,6 +114,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   // Helper to lock window position to stage top during active Reels browsing
   const lockWindowToStage = () => {
+    if (isSkippingRef.current) return;
     if (stageRef.current) {
       const stageTop = stageRef.current.offsetTop;
       if (Math.abs(window.scrollY - stageTop) > 3) {
@@ -182,7 +184,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     if (!stageEl) return;
 
     const handleWheelNonPassive = (e) => {
-      if (!isStageActive) return;
+      if (!isStageActive || isSkippingRef.current) return;
       if (menuOpen || feedbackOpen) {
         e.preventDefault();
         return;
@@ -235,7 +237,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
             e.preventDefault();
           } else {
             const divisionsSec = document.getElementById('iris-divisions-section') || document.getElementById('iris-footer-root');
-            if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth' });
+            if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         } else {
           e.preventDefault();
@@ -249,7 +251,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     };
 
     const handleTouchMoveNonPassive = (e) => {
-      if (!isStageActive) return;
+      if (!isStageActive || isSkippingRef.current) return;
       if (menuOpen || feedbackOpen) {
         e.preventDefault();
         return;
@@ -294,7 +296,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         navigateToIndex(currIndex + 1, 1);
       } else if (currIndex === 7 && !cooldownRef.current) {
         const divisionsSec = document.getElementById('iris-divisions-section') || document.getElementById('iris-footer-root');
-        if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth' });
+        if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     } else {
       // Swipe DOWN (Upward Intent -> Prev Reel)
@@ -302,7 +304,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         navigateToIndex(currIndex - 1, -1);
       } else if (currIndex === 0 && !cooldownRef.current) {
         const heroSec = document.getElementById('iris-dark-hero-root');
-        if (heroSec) heroSec.scrollIntoView({ behavior: 'smooth' });
+        if (heroSec) heroSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
   };
@@ -317,7 +319,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           navigateToIndex(activeIndex + 1, 1);
         } else if (activeIndex === items.length - 1) {
           const divisionsSec = document.getElementById('iris-divisions-section');
-          if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth' });
+          if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
         e.preventDefault();
@@ -401,21 +403,33 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   };
 
   const handleSkipReels = () => {
-    const nextSection = document.getElementById('iris-divisions-section') || document.getElementById('iris-divisions-switcher') || document.querySelector('.iris-divisions-switcher') || document.querySelector('footer');
+    isSkippingRef.current = true;
+    setIsStageActive(false);
+    const nextSection = document.getElementById('iris-divisions-section') || document.getElementById('iris-divisions-switcher') || document.querySelector('.iris-switcher-wrapper') || document.querySelector('footer');
     if (nextSection) {
-      nextSection.scrollIntoView({ behavior: 'smooth' });
+      const targetY = nextSection.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
     } else {
       window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
     }
+    setTimeout(() => {
+      isSkippingRef.current = false;
+    }, 1000);
   };
 
   const handleSkipUp = () => {
+    isSkippingRef.current = true;
+    setIsStageActive(false);
     const heroSection = document.getElementById('iris-dark-hero-root') || document.querySelector('.hero-section') || document.body;
     if (heroSection) {
-      heroSection.scrollIntoView({ behavior: 'smooth' });
+      const targetY = heroSection.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    setTimeout(() => {
+      isSkippingRef.current = false;
+    }, 1000);
   };
 
   if (items.length === 0) return null;
