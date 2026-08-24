@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Menu, X, MessageSquare, Share2, ArrowUpRight, Globe,
   Camera, Calendar, Printer, ShoppingBag, FolderKanban,
-  Music, Volume2, VolumeX, Sparkles, ChevronDown
+  Music, Volume2, VolumeX, Sparkles, ChevronDown, ChevronUp
 } from 'lucide-react';
 
 import { useSiteSettings } from '../../context/SiteSettingsContext';
@@ -394,7 +394,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       setTimeout(() => setToastMessage(''), 3000);
     }
   };
-
   const handleReturnHome = (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -406,6 +405,15 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       nextSection.scrollIntoView({ behavior: 'smooth' });
     } else {
       window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+    }
+  };
+
+  const handleSkipUp = () => {
+    const heroSection = document.getElementById('iris-dark-hero-root') || document.querySelector('.hero-section') || document.body;
+    if (heroSection) {
+      heroSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -501,6 +509,17 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
           {/* ===== 2. PERSISTENT SPATIAL OVERLAYS INSIDE 9:16 FRAME ===== */}
           <div className="reels-persistent-ui-layer">
+            {/* FLOATING SKIP UP PILL AT TOP CENTER */}
+            <button
+              type="button"
+              className="reels-floating-skip-pill reels-skip-top-pill"
+              onClick={handleSkipUp}
+              aria-label={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
+              title={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
+            >
+              <span>{isRtl ? 'تخطي' : 'Skip'}</span>
+              <ChevronUp size={16} className="skip-up-arrow-anim" />
+            </button>
             {/* Top Bar Controls */}
             <div className="reels-top-bar">
               <button

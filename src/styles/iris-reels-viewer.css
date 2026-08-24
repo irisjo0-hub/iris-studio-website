@@ -630,9 +630,24 @@
   animation: skipArrowBounce 1.6s infinite ease-in-out;
 }
 
+/* Floating Top Skip Reels Pill */
+.reels-skip-top-pill {
+  top: calc(14px + env(safe-area-inset-top, 0px));
+  bottom: auto;
+}
+
+.skip-up-arrow-anim {
+  animation: skipUpArrowBounce 1.6s infinite ease-in-out;
+}
+
 @keyframes skipArrowBounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(3px); }
+}
+
+@keyframes skipUpArrowBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
 .reels-sound-btn {
