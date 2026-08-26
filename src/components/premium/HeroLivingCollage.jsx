@@ -179,8 +179,8 @@ export const HeroLivingCollage = () => {
                       x: [startX, midX, endX],
                       y: config.floatY,
                       rotateZ: config.rotateZ,
-                      opacity: [0, 1, 1, 0],
-                      filter: ['blur(16px)', 'blur(0px)', 'blur(0px)', 'blur(16px)']
+                      opacity: [0, 1, 0],
+                      filter: ['blur(12px)', 'blur(0px)', 'blur(12px)']
                     }
               }
               transition={{
