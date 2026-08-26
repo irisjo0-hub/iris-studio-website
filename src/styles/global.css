@@ -246,3 +246,32 @@ a:hover {
   background-image: radial-gradient(circle at 50% 100%, rgba(4, 70, 48, 0.70) 0%, transparent 70%),
                     radial-gradient(circle at 85% 20%, rgba(103, 36, 95, 0.40) 0%, transparent 60%) !important;
 }
+
+/* ── 4. Global Contrast & Form Controls Normalization ──────────── */
+input,
+select,
+textarea {
+  color-scheme: dark;
+  font-family: var(--font-primary), sans-serif;
+}
+
+select option {
+  background-color: #180C17 !important;
+  color: #ECEBE7 !important;
+}
+
+/* Prevent white-on-white or dark-on-dark text contrast failures in inputs */
+input::placeholder,
+textarea::placeholder {
+  color: rgba(236, 235, 231, 0.55) !important;
+}
+
+/* Gold container contrast enforcement */
+.gold-card,
+.gold-card h1,
+.gold-card h2,
+.gold-card h3,
+.gold-card p,
+.gold-card span {
+  color: #044630 !important;
+}

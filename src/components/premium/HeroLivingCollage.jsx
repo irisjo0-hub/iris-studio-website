@@ -160,7 +160,7 @@ export const HeroLivingCollage = () => {
           const endX = isRtl ? '130vw' : '-130vw';
 
           const duration = 24;
-          const delay = index * (duration / pool.length);
+          const delay = index * 4.2;
 
           return (
             <motion.div

@@ -213,7 +213,7 @@
   margin: 0;
 }
 .grad-pkg-price-block {
-  background: #fcfbfa;
+  background: rgba(38, 19, 36, 0.95);
   border-bottom: 1px solid var(--g-border);
   padding: 12px 18px;
   text-align: center;
@@ -221,12 +221,12 @@
 .grad-pkg-price {
   font-size: 1.8rem;
   font-weight: 900;
-  color: var(--g-green);
+  color: #F5BD1A;
 }
 .grad-pkg-price span {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--g-muted);
+  color: rgba(236, 235, 231, 0.8);
 }
 .grad-pkg-body {
   padding: 16px;
@@ -248,7 +248,7 @@
   padding: 6px 0;
   font-size: 0.88rem;
   border-bottom: 1px solid var(--g-border);
-  color: #2C3E50;
+  color: #ECEBE7;
 }
 .grad-pkg-features li:last-child { border-bottom: none; }
 .grad-pkg-check {
@@ -633,7 +633,7 @@
 .grad-pkg-option-name {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #2C3E50;
+  color: #ECEBE7;
   margin: 6px 0 4px;
 }
 .grad-pkg-option-detail {
@@ -667,13 +667,13 @@
   transition: border-color 0.2s;
 }
 .grad-template-field:focus-within {
-  border-color: var(--g-purple);
-  background: #f8f5fa;
+  border-color: #F5BD1A;
+  background: rgba(38, 19, 36, 0.95);
 }
 .grad-template-field-label {
   font-weight: 700;
   font-size: 0.95rem;
-  color: var(--g-purple);
+  color: #F5BD1A;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -693,7 +693,7 @@
   margin-bottom: 10px;
 }
 .grad-template-link {
-  color: var(--g-purple);
+  color: #F5BD1A;
   font-weight: 700;
   text-decoration: underline;
   font-size: 0.85rem;
@@ -718,7 +718,7 @@
 .grad-label {
   font-weight: 700;
   font-size: 0.92rem;
-  color: #2C3E50;
+  color: #ECEBE7;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -732,8 +732,8 @@
   border-radius: var(--uds-radius-sm);
   font-family: var(--font-primary);
   font-size: 0.95rem;
-  color: #2C3E50;
-  background: var(--g-bg);
+  color: #ECEBE7;
+  background: rgba(26, 13, 24, 0.85);
   outline: none;
   direction: rtl;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -741,9 +741,10 @@
 .grad-input:focus,
 .grad-textarea:focus,
 .grad-select:focus {
-  border-color: var(--g-purple);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(103,36,95,0.08);
+  border-color: #F5BD1A;
+  background: rgba(38, 19, 36, 0.95);
+  color: #ECEBE7;
+  box-shadow: 0 0 0 3px rgba(245, 189, 26, 0.2);
 }
 .grad-textarea { min-height: 96px; resize: vertical; }
 .grad-input.error { border-color: #E74C3C; }
@@ -764,15 +765,16 @@
   background: var(--g-bg);
   cursor: pointer;
   transition: all 0.25s;
+  color: #ECEBE7;
 }
 .grad-extra-toggle.checked {
-  border-color: var(--g-green);
-  background: #f0faf5;
+  border-color: #F5BD1A;
+  background: rgba(4, 70, 48, 0.45);
 }
 .grad-extra-toggle-info { display: flex; align-items: center; gap: 14px; }
 .grad-extra-toggle-icon { font-size: 1.6rem; }
-.grad-extra-toggle-name { font-weight: 700; font-size: 0.97rem; }
-.grad-extra-toggle-price { color: var(--g-purple); font-weight: 800; font-size: 1rem; }
+.grad-extra-toggle-name { font-weight: 700; font-size: 0.97rem; color: #ECEBE7; }
+.grad-extra-toggle-price { color: #F5BD1A; font-weight: 800; font-size: 1rem; }
 .grad-extra-toggle-check {
   width: 26px;
   height: 26px;
@@ -801,17 +803,18 @@
   transition: all 0.25s;
   background: var(--g-bg);
   position: relative;
+  color: #ECEBE7;
 }
 .grad-upload-zone:hover, .grad-upload-zone.drag-over {
-  border-color: var(--g-purple);
-  background: #f8f5fa;
+  border-color: #F5BD1A;
+  background: rgba(103, 36, 95, 0.45);
 }
 .grad-upload-zone.has-file {
-  border-color: var(--g-green);
-  background: #f0faf5;
+  border-color: #F5BD1A;
+  background: rgba(4, 70, 48, 0.45);
 }
 .grad-upload-icon { font-size: 2.5rem; margin-bottom: 10px; }
-.grad-upload-text { font-weight: 700; font-size: 0.97rem; margin-bottom: 4px; color: #2C3E50; }
+.grad-upload-text { font-weight: 700; font-size: 0.97rem; margin-bottom: 4px; color: #ECEBE7; }
 .grad-upload-hint { font-size: 0.82rem; color: var(--g-muted); }
 .grad-upload-preview {
   display: flex;

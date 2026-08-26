@@ -793,7 +793,7 @@
   font-size: 2.2rem;
   /* Larger Arabic headings */
   font-weight: 900;
-  color: var(--iris-purple);
+  color: #F5BD1A;
   margin: 0 0 0.5rem 0;
   line-height: 1.25;
 }
@@ -874,16 +874,16 @@
   font-size: 2.6rem;
   font-weight: 900;
   margin: 0;
-  color: var(--iris-purple);
+  color: #F5BD1A;
   line-height: 1;
 }
 
 .card-gold .stat-value {
-  color: #c4940c;
+  color: #F5BD1A;
 }
 
 .card-green .stat-value {
-  color: var(--iris-green);
+  color: #26d07c;
 }
 
 /* Small Statistics Cards on Admin Bookings Page */
@@ -946,17 +946,17 @@
 .small-stat-card p {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--iris-purple);
+  color: #F5BD1A;
   margin: 0;
   line-height: 1;
 }
 
 .small-stat-card.card-green p {
-  color: var(--iris-green);
+  color: #26d07c;
 }
 
 .small-stat-card.card-gold p {
-  color: #c4940c;
+  color: #F5BD1A;
 }
 
 /* Tables Styling */
@@ -1501,9 +1501,10 @@ body:has(.admin-layout),
   box-sizing: border-box;
 }
 .admin-input:focus {
-  border-color: var(--iris-purple);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(103,36,95,0.08);
+  border-color: #F5BD1A;
+  background: rgba(38, 19, 36, 0.95);
+  color: #ECEBE7;
+  box-shadow: 0 0 0 3px rgba(245, 189, 26, 0.2);
 }
 
 /* New Graduation Order Status Badges */
@@ -1949,9 +1950,12 @@ body:has(.admin-layout),
 
 .motion-item-img {
   width: 100% !important;
-  height: 130px !important;
-  object-fit: cover !important;
+  max-height: 220px !important;
+  height: auto !important;
+  object-fit: contain !important;
+  background: rgba(10, 5, 10, 0.6) !important;
   display: block !important;
+  margin: 0 auto !important;
 }
 
 .motion-item-info {

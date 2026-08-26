@@ -199,14 +199,22 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
                   transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
                 >
                   {activeDivision.image ? (
-                    <img
-                      src={activeDivision.image}
-                      alt={activeDivision.name_en}
-                      className="kinetic-image"
-                      style={{
-                        transform: `translate(${mouseOffset.x}px, ${mouseOffset.y}px)`
-                      }}
-                    />
+                    <>
+                      <img
+                        src={activeDivision.image}
+                        alt=""
+                        aria-hidden="true"
+                        className="kinetic-image-backdrop"
+                      />
+                      <img
+                        src={activeDivision.image}
+                        alt={activeDivision.name_en}
+                        className="kinetic-image"
+                        style={{
+                          transform: `translate(${mouseOffset.x}px, ${mouseOffset.y}px)`
+                        }}
+                      />
+                    </>
                   ) : (
                     <div className="iris-abstract-placeholder">
                       <span className="placeholder-badge">IRIS {activeDivision.name_en}</span>

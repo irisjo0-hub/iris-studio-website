@@ -54,11 +54,10 @@ const AdminSettings = () => {
 
   // Hero Motion Images State
   const [heroMotionImages, setHeroMotionImages] = useState([]);
-  const [newMotionFile, setNewMotionFile] = useState(null);
+  const [newMotionFiles, setNewMotionFiles] = useState([]);
   const [newMotionUrl, setNewMotionUrl] = useState('');
   const [newMotionTitleAr, setNewMotionTitleAr] = useState('');
   const [newMotionTitleEn, setNewMotionTitleEn] = useState('');
-  const [newMotionLink, setNewMotionLink] = useState('/work');
 
   // Sync state with context settings on load
   useEffect(() => {
@@ -135,6 +134,12 @@ const AdminSettings = () => {
   };
 
   const handleFileChange = (e, type) => {
+    if (type === 'new_hero_motion') {
+      const files = Array.from(e.target.files || []);
+      setNewMotionFiles(files);
+      return;
+    }
+
     const file = e.target.files[0];
     if (!file) return;
 
@@ -162,9 +167,6 @@ const AdminSettings = () => {
       } else if (type === 'division_print') {
         setDivisionPrintImageFile(file);
         setDivisionPrintImagePreview(dataUrl);
-      } else if (type === 'new_hero_motion') {
-        setNewMotionFile(file);
-        setNewMotionUrl(dataUrl);
       }
     };
     reader.readAsDataURL(file);
@@ -295,48 +297,74 @@ const AdminSettings = () => {
 
   const handleAddMotionImage = async (e) => {
     e.preventDefault();
-    if (!newMotionFile && !newMotionUrl.trim()) {
-      alert('يرجى اختيار صورة للرفع أو إضافة رابط صورة أولاً');
+    if (newMotionFiles.length === 0 && !newMotionUrl.trim()) {
+      alert('يرجى اختيار صورة أو مجموعة صور للرفع أولاً');
       return;
     }
 
     setLoading(true);
-    setUploadProgress('جاري إضافة الصورة لقائمة الهيرو...');
+    const newItems = [];
 
     try {
-      let finalUrl = newMotionUrl.trim();
-      if (newMotionFile) {
-        const path = `hero-motion/photo-${Date.now()}-${newMotionFile.name}`;
-        finalUrl = await uploadFile('packages', path, newMotionFile);
+      if (newMotionFiles.length > 0) {
+        for (let i = 0; i < newMotionFiles.length; i++) {
+          const file = newMotionFiles[i];
+          setUploadProgress(`جاري رفع الصورة ${i + 1} من أصل ${newMotionFiles.length}...`);
+          let finalUrl = '';
+          try {
+            const path = `hero-motion/photo-${Date.now()}-${i}-${file.name}`;
+            finalUrl = await uploadFile('packages', path, file);
+          } catch (uploadErr) {
+            console.warn('Supabase file upload fallback to DataURL:', uploadErr);
+            finalUrl = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = (e) => resolve(e.target.result);
+              reader.readAsDataURL(file);
+            });
+          }
+
+          newItems.push({
+            id: `hm-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 4)}`,
+            image: finalUrl,
+            alt_ar: newMotionTitleAr.trim() || file.name.replace(/\.[^/.]+$/, ''),
+            alt_en: newMotionTitleEn.trim() || 'IRIS Showcase',
+            url_optional: ''
+          });
+        }
+      } else if (newMotionUrl.trim()) {
+        setUploadProgress('جاري إضافة رابط الصورة...');
+        newItems.push({
+          id: `hm-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+          image: newMotionUrl.trim(),
+          alt_ar: newMotionTitleAr.trim() || 'أعمال آيرس',
+          alt_en: newMotionTitleEn.trim() || 'IRIS Showcase',
+          url_optional: ''
+        });
       }
 
-      const newItem = {
-        id: `hm-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-        image: finalUrl,
-        alt_ar: newMotionTitleAr.trim() || 'أعمال آيرس',
-        alt_en: newMotionTitleEn.trim() || 'IRIS Showcase',
-        url_optional: newMotionLink.trim() || '/work'
-      };
-
-      const updatedList = [...heroMotionImages, newItem];
+      const updatedList = [...heroMotionImages, ...newItems];
       setHeroMotionImages(updatedList);
 
-      await supabase
-        .from('site_settings')
-        .upsert({ key: 'hero_motion_images', value: JSON.stringify(updatedList) }, { onConflict: 'key' });
+      try {
+        await supabase
+          .from('site_settings')
+          .upsert({ key: 'hero_motion_images', value: JSON.stringify(updatedList) }, { onConflict: 'key' });
+      } catch (dbErr) {
+        console.warn('Supabase DB save skipped (local mode):', dbErr);
+      }
 
       if (updateSettingsLocally) {
         updateSettingsLocally({ hero_motion_images: updatedList });
       }
 
-      setNewMotionFile(null);
+      setNewMotionFiles([]);
       setNewMotionUrl('');
       setNewMotionTitleAr('');
       setNewMotionTitleEn('');
-      alert('تمت إضافة الصورة بنجاح لقائمة حركة الهيرو!');
+      alert(`تمت إضافة ${newItems.length} صورة بنجاح لقائمة حركة الهيرو!`);
     } catch (err) {
-      console.error('Error adding motion image:', err);
-      alert('حدث خطأ أثناء إضافة الصورة: ' + err.message);
+      console.error('Error adding motion images:', err);
+      alert('حدث خطأ أثناء إضافة الصور: ' + err.message);
     } finally {
       setLoading(false);
       setUploadProgress('');
@@ -441,24 +469,25 @@ const AdminSettings = () => {
 
               {/* Add New Motion Photo Box */}
               <div className="admin-sub-card add-motion-card">
-                <h4 className="card-sub-title">+ إضافة صورة جديدة لـشريط الهيرو</h4>
+                <h4 className="card-sub-title">+ إضافة مجموعة صور جديدة لـشريط الهيرو</h4>
                 
                 <div className="form-group-row">
                   <div className="form-group">
-                    <label className="as-label">رفع صورة جديدة من جهازك</label>
+                    <label className="as-label">رفع مجموعة صور من جهازك</label>
                     <div className="file-upload-wrapper">
                       <input
                         type="file"
                         accept="image/*"
+                        multiple
                         onChange={(e) => handleFileChange(e, 'new_hero_motion')}
                         id="new-hero-motion-upload"
                         className="file-input-hidden"
                       />
                       <label htmlFor="new-hero-motion-upload" className="file-upload-label">
-                        <span>📷 اختيار صورة من الجهاز...</span>
+                        <span>📷 اختيار صورة أو عدة صور من الجهاز...</span>
                       </label>
-                      {newMotionFile && (
-                        <span className="file-name-badge">✓ {newMotionFile.name}</span>
+                      {newMotionFiles.length > 0 && (
+                        <span className="file-name-badge">✓ تم اختيار {newMotionFiles.length} صورة</span>
                       )}
                     </div>
                   </div>
@@ -495,16 +524,6 @@ const AdminSettings = () => {
                       className="as-input"
                     />
                   </div>
-                  <div className="form-group">
-                    <label className="as-label">رابط التوجيه عند الضغط</label>
-                    <input
-                      type="text"
-                      value={newMotionLink}
-                      onChange={(e) => setNewMotionLink(e.target.value)}
-                      placeholder="/work أو /booking"
-                      className="as-input"
-                    />
-                  </div>
                 </div>
 
                 <button
@@ -513,7 +532,7 @@ const AdminSettings = () => {
                   onClick={handleAddMotionImage}
                   disabled={loading}
                 >
-                  + حفظ وإضافة الصورة لشريط الهيرو
+                  + حفظ وإضافة الصور لشريط الهيرو
                 </button>
               </div>
 
@@ -547,16 +566,6 @@ const AdminSettings = () => {
                           value={item.alt_ar || ''}
                           onChange={(e) => handleMotionItemChange(idx, 'alt_ar', e.target.value)}
                           placeholder="عنوان العمل..."
-                          className="as-input-xs"
-                        />
-                      </div>
-                      <div className="motion-field">
-                        <label className="as-label-xs">رابط التوجيه:</label>
-                        <input
-                          type="text"
-                          value={item.url_optional || ''}
-                          onChange={(e) => handleMotionItemChange(idx, 'url_optional', e.target.value)}
-                          placeholder="/work"
                           className="as-input-xs"
                         />
                       </div>
