@@ -49,14 +49,14 @@ export const HeroLivingCollage = () => {
     } catch (e) {}
   }
 
-  const rawPool = (Array.isArray(parsedPool) && parsedPool.length > 0) ? parsedPool : default8Works;
+  const rawPool = Array.isArray(parsedPool) ? parsedPool : [];
 
   // Respect hero_image_display_count if specified by Admin
   const displayCount = settings.hero_image_display_count 
     ? Math.max(1, parseInt(settings.hero_image_display_count, 10))
     : rawPool.length;
 
-  const limitedPool = Array.isArray(rawPool) ? rawPool.slice(0, displayCount) : default8Works;
+  const limitedPool = rawPool.slice(0, displayCount);
 
   const pool = limitedPool.map((item, idx) => {
     if (typeof item === 'string') {
@@ -75,7 +75,12 @@ export const HeroLivingCollage = () => {
       alt_en: item?.alt_en || item?.title || 'IRIS Professional Work',
       url_optional: item?.url_optional || item?.link || '/work'
     };
-  });
+  }).filter(item => Boolean(item.image));
+
+  // If Admin deleted all photos (pool is empty), render NOTHING
+  if (pool.length === 0) {
+    return null;
+  }
 
   // Auto-pause when tab is hidden or element scrolled out of viewport
   useEffect(() => {
@@ -112,38 +117,34 @@ export const HeroLivingCollage = () => {
     }
   };
 
-  // 4 Non-Colliding Parallel Floating Lanes across Lower Hero Stage
-  // Each lane is strictly height-separated and flows unidirectionally to guarantee 0 card overlaps/collisions
+  // 3 Clean Non-Overlapping Parallel Floating Lanes across Lower Hero Stage
   const channelConfigs = [
     {
-      top: '2%',
-      width: 'clamp(180px, 18vw, 270px)',
-      aspectRatio: '3/4',
-      rotateZ: [-4, 3, -4],
-      floatY: [-8, 8, -8]
+      top: '4%',
+      width: 'clamp(175px, 19vw, 280px)',
+      rotateZ: [-3, 2, -3],
+      floatY: [-6, 6, -6]
     },
     {
-      top: '26%',
-      width: 'clamp(230px, 22vw, 330px)',
-      aspectRatio: '16/10',
-      rotateZ: [3, -4, 3],
-      floatY: [10, -10, 10]
+      top: '36%',
+      width: 'clamp(210px, 22vw, 320px)',
+      rotateZ: [2, -3, 2],
+      floatY: [7, -7, 7]
     },
     {
-      top: '50%',
-      width: 'clamp(200px, 19vw, 290px)',
-      aspectRatio: '1/1',
-      rotateZ: [-3, 4, -3],
-      floatY: [-8, 8, -8]
-    },
-    {
-      top: '72%',
-      width: 'clamp(220px, 21vw, 310px)',
-      aspectRatio: '4/3',
-      rotateZ: [4, -3, 4],
-      floatY: [9, -9, 9]
+      top: '68%',
+      width: 'clamp(185px, 20vw, 290px)',
+      rotateZ: [-2, 3, -2],
+      floatY: [-6, 6, -6]
     }
   ];
+
+  // Dynamic calculations based on exact photo count N
+  const N = pool.length;
+  const travelDuration = 24;
+  const staggerStep = N === 1 ? 24 : 4.5;
+  const totalLoopCycle = N === 1 ? 24 : Math.max(travelDuration + staggerStep, N * staggerStep);
+  const repeatDelay = totalLoopCycle - travelDuration;
 
   return (
     <div
@@ -154,13 +155,11 @@ export const HeroLivingCollage = () => {
         {pool.map((work, index) => {
           const config = channelConfigs[index % channelConfigs.length];
 
-          // Unidirectional stream flow guarantees zero head-on collisions
           const startX = isRtl ? '-130vw' : '130vw';
           const midX = '0vw';
           const endX = isRtl ? '130vw' : '-130vw';
 
-          const duration = 24;
-          const delay = index * 4.2;
+          const cardDelay = index * staggerStep;
 
           return (
             <motion.div
@@ -169,7 +168,7 @@ export const HeroLivingCollage = () => {
               style={{
                 top: config.top,
                 width: config.width,
-                aspectRatio: config.aspectRatio,
+                aspectRatio: 'auto',
                 left: '50%',
                 translateX: '-50%'
               }}
@@ -185,11 +184,12 @@ export const HeroLivingCollage = () => {
                     }
               }
               transition={{
-                duration: duration,
+                duration: travelDuration,
                 repeat: Infinity,
                 repeatType: 'loop',
+                repeatDelay: repeatDelay,
                 ease: 'easeInOut',
-                delay: delay
+                delay: cardDelay
               }}
               whileHover={{
                 scale: 1.08,
