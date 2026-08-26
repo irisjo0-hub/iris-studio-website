@@ -10,10 +10,10 @@ export const Footer = () => {
   const isRtl = lang === 'ar';
 
   const footerLinks = [
-    { path: '/booking', label_ar: 'جلسات التصوير', label_en: 'Studio Photography' },
-    { path: '/work', label_ar: 'إنتاج الميديا والأعمال', label_en: 'Media Production' },
+    { path: '/studio', label_ar: 'الاستوديو والتصوير', label_en: 'Studio Photography' },
+    { path: '/media', label_ar: 'إنتاج الميديا والأعمال', label_en: 'Media Production' },
+    { path: '/print', label_ar: 'المطبوعات الفاخرة', label_en: 'Luxury Printing' },
     { path: '/graduation-books', label_ar: 'دفاتر التخرج', label_en: 'Graduation Books' },
-    { path: '/printing-products', label_ar: 'المطبوعات الفاخرة', label_en: 'Luxury Printing' },
     { path: '/packages', label_ar: 'البكجات والعروض', label_en: 'Packages & Offers' },
   ];
 

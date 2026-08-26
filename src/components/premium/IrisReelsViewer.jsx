@@ -731,19 +731,19 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
-                <Link to="/work" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                <Link to="/media" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
                   {isRtl ? "ميديا" : "Media"}
                 </Link>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-                <Link to="/booking" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
-                  {isRtl ? "الاستديو" : "Studio"}
+                <Link to="/studio" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                  {isRtl ? "الاستوديو" : "Studio"}
                 </Link>
               </motion.div>
 
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
-                <Link to="/printing-products" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
+                <Link to="/print" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
                   {isRtl ? "المطبوعات" : "Print"}
                 </Link>
               </motion.div>
