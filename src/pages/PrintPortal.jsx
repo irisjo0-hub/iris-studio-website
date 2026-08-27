@@ -13,31 +13,37 @@ const PrintPortal = () => {
   const [trackNumber, setTrackNumber] = useState('');
   const [trackResult, setTrackResult] = useState(null);
 
+  const [activeTab, setActiveTab] = useState('categories');
+
   const printCategories = [
     {
       id: 'canvas',
       title_ar: 'اللوحات والكانفاس الفاخر',
       desc_ar: 'طباعة لوحات جدارية عالية الدقة مشدودة على خشب سويدي ممتاز.',
-      badge: 'الأكثر طلباً'
+      badge: 'الأكثر طلباً',
+      image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80'
     },
     {
       id: 'albums',
       title_ar: 'ألبومات الصور والأكريليك',
       desc_ar: 'ألبومات حرارية وأغطية أكريليك شفافة لحفظ أفخم الذكريات.',
-      badge: 'جودة حرارية'
+      badge: 'جودة حرارية',
+      image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80'
     },
     {
       id: 'custom',
       title_ar: 'الطباعة المخصصة للتجار والشركات',
       desc_ar: 'طباعة التغليف، الكروت، والاستيكرات بأشكال ومقاسات مخصصة.',
-      badge: 'مخصص 🖨️'
+      badge: 'مخصص 🖨️',
+      image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=800&q=80'
     },
     {
       id: 'gifts',
       title_ar: 'الهدايا التذكارية والمطبوعات',
       title_en: 'Gifts & Souvenirs',
       desc_ar: 'طباعة الهدايا المخصصة للطلاب والخريجين والشركات.',
-      badge: 'هدايا'
+      badge: 'هدايا',
+      image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80'
     }
   ];
 
@@ -77,131 +83,150 @@ const PrintPortal = () => {
               <ShoppingBag size={18} />
               <span>{isRtl ? 'تصفح متجر المطبوعات' : 'Print Shop'}</span>
             </Link>
-            <a href="#custom-section" className="btn-portal-secondary">
+            <button type="button" onClick={() => setActiveTab('custom')} className="btn-portal-secondary" style={{ cursor: 'pointer' }}>
               <Printer size={18} />
               <span>{isRtl ? 'طلب طباعة مخصصة' : 'Custom Printing'}</span>
-            </a>
+            </button>
           </div>
         </div>
       </section>
 
-      {/* Main Sub-branches Anchor Links Bar */}
-      <div className="portal-sub-nav-bar">
-        <div className="portal-nav-container">
-          <a href="#shop-section">🛒 المتجر والمنتجات</a>
-          <a href="#categories-section">🗂️ تصنيفات الطباعة</a>
-          <a href="#custom-section">🖨️ طلب طباعة مخصصة</a>
-          <a href="#track-section">📦 تتبع حالة الطلب</a>
-          <a href="#contact-section">📞 التواصل والاستفسار</a>
+      {/* Smart Sticky Interactive Tabs Bar */}
+      <div className="portal-smart-tabs-bar">
+        <div className="portal-smart-tabs-container">
+          <button 
+            type="button" 
+            className={`smart-tab-btn ${activeTab === 'categories' ? 'active' : ''}`}
+            onClick={() => setActiveTab('categories')}
+          >
+            🗂️ {isRtl ? 'تصنيفات الطباعة' : 'Categories'}
+          </button>
+          <button 
+            type="button" 
+            className={`smart-tab-btn ${activeTab === 'custom' ? 'active' : ''}`}
+            onClick={() => setActiveTab('custom')}
+          >
+            🖨️ {isRtl ? 'طلب مخصص' : 'Custom Request'}
+          </button>
+          <button 
+            type="button" 
+            className={`smart-tab-btn ${activeTab === 'track' ? 'active' : ''}`}
+            onClick={() => setActiveTab('track')}
+          >
+            📦 {isRtl ? 'تتبع الطلب' : 'Track Order'}
+          </button>
         </div>
       </div>
 
-      {/* 1. Shop & Products Section */}
-      <section id="shop-section" className="portal-section">
-        <div className="portal-section-header">
-          <span className="section-eyebrow">SHOP & PRODUCTS</span>
-          <h2>{isRtl ? 'متجر المنتجات والمطبوعات الفاخرة' : 'Print Products Shop'}</h2>
-          <p>{isRtl ? 'استعرض واطلب منتجاتنا المطبوعة الجاهزة مع خدمة التوصيل السريع.' : 'Browse and order our luxury print items with fast delivery.'}</p>
-        </div>
-
-        <div className="portal-banner-feature print-banner">
-          <div className="feature-info">
-            <span className="feature-tag">🖨️ طباعة بدقة عالية</span>
-            <h3>منتجات طباعة أكريليك، كانفاس، وخشب فاخر</h3>
-            <p>اختر الحجم والأبعاد المطلوبة وارفع صورتك مباشرة ليتم طباعتها وتغليفها وشحنها لك.</p>
-            <Link to="/printing-products" className="btn-portal-primary print-btn" style={{ display: 'inline-flex', marginTop: '16px' }}>
-              <span>فتح المتجر الإلكتروني كامل</span>
-            </Link>
+      {/* 1. Categories & Products Section */}
+      {activeTab === 'categories' && (
+        <section id="categories-section" className="portal-section theme-alt-bg">
+          <div className="portal-section-header">
+            <span className="section-eyebrow">CATEGORIES</span>
+            <h2>{isRtl ? 'تصنيفات المطبوعات المتاحة' : 'Printing Categories'}</h2>
+            <p>{isRtl ? 'استعرض واطلب منتجاتنا المطبوعة الجاهزة مع خدمة التوصيل السريع.' : 'Browse and order our luxury print items with fast delivery.'}</p>
           </div>
-        </div>
-      </section>
 
-      {/* 2. Categories Section */}
-      <section id="categories-section" className="portal-section theme-alt-bg">
-        <div className="portal-section-header">
-          <span className="section-eyebrow">CATEGORIES</span>
-          <h2>{isRtl ? 'تصنيفات المطبوعات المتاحة' : 'Printing Categories'}</h2>
-        </div>
+          <div className="visual-portfolio-grid">
+            {printCategories.map((c) => (
+              <Link key={c.id} to="/printing-products" className="visual-project-card">
+                <div className="visual-card-thumb">
+                  <img src={c.image} alt={c.title_ar} loading="lazy" />
+                  <div className="visual-card-gradient" />
+                  <span className="visual-card-badge">{c.badge}</span>
+                </div>
+                <div className="visual-card-body">
+                  <h3>{c.title_ar}</h3>
+                  <p>{c.desc_ar}</p>
+                  <div className="visual-card-footer">
+                    <span className="visual-card-btn-text">
+                      <span>{isRtl ? 'طلب الآن' : 'Order Now'}</span>
+                      {isRtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
 
-        <div className="portal-grid-4">
-          {printCategories.map((c) => (
-            <div key={c.id} className="portal-card-box">
-              <div className="card-top-icon">
-                <Printer size={28} />
-                <span className="card-tag">{c.badge}</span>
-              </div>
-              <h3>{c.title_ar}</h3>
-              <p>{c.desc_ar}</p>
-              <Link to="/printing-products" className="card-link-btn">
-                <span>{isRtl ? 'طلب الآن' : 'Order Now'}</span>
-                {isRtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+          <div style={{ marginTop: '32px' }} className="portal-banner-feature print-banner">
+            <div className="feature-info">
+              <span className="feature-tag">🖨️ طباعة بدقة عالية</span>
+              <h3>منتجات طباعة أكريليك، كانفاس، وخشب فاخر</h3>
+              <p>اختر الحجم والأبعاد المطلوبة وارفع صورتك مباشرة ليتم طباعتها وتغليفها وشحنها لك.</p>
+              <Link to="/printing-products" className="btn-portal-primary print-btn" style={{ display: 'inline-flex', marginTop: '16px' }}>
+                <span>فتح المتجر الإلكتروني كامل</span>
               </Link>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 3. Custom Printing Requests */}
-      <section id="custom-section" className="portal-section">
-        <div className="portal-section-header">
-          <span className="section-eyebrow">CUSTOM PRINTING</span>
-          <h2>{isRtl ? 'طلب طباعة بمواصفات مخصصة' : 'Custom Printing Request'}</h2>
-          <p>{isRtl ? 'هل لديك مقاسات أو خامات خاصة؟ اطلب طباعة مخصصة وسننفذها لك بالتفصيل.' : 'Have specific dimensions or materials? Request custom specs.'}</p>
-        </div>
-
-        <div className="portal-banner-feature">
-          <div className="feature-info">
-            <span className="feature-tag">✨ تنفيذ خاص</span>
-            <h3>ارفع ملفك أو تصميمك وسنتكفل بالباقي</h3>
-            <p>نقبل ملفات PDF عالية الدقة، PSD، وAI لجميع الأحجام والمقاسات التخصصية.</p>
-            <Link to="/printing-products" className="btn-portal-primary print-btn" style={{ display: 'inline-flex', marginTop: '16px' }}>
-              <span>ارفع ملفك واطلب الآن</span>
-            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* 2. Custom Order Section */}
+      {activeTab === 'custom' && (
+        <section id="custom-section" className="portal-section">
+          <div className="portal-section-header">
+            <span className="section-eyebrow">CUSTOM PRINTING</span>
+            <h2>{isRtl ? 'طلب طباعة بمواصفات مخصصة' : 'Custom Printing Request'}</h2>
+            <p>{isRtl ? 'هل لديك ملف جاهز أو أبعاد خاصة؟ ارفع ملفك وسنقوم بالتسعير والطباعة.' : 'Upload your design and custom dimensions for tailored pricing.'}</p>
+          </div>
+
+          <div className="portal-quote-container">
+            <div className="custom-print-box">
+              <h3>ارفع ملفك أو صمم مطبوعاتك من خلال المتجر</h3>
+              <p>نوفر خدمة الطباعة الفاخرة للكميات والمؤسسات والطلاب بخصومات خاصة.</p>
+              <Link to="/printing-products" className="btn-portal-primary print-btn" style={{ display: 'inline-flex', marginTop: '16px' }}>
+                <Printer size={18} />
+                <span>انتقال لصفحة طلب المطبوعات المخصصة</span>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* 4. Track Order Section */}
-      <section id="track-section" className="portal-section theme-alt-bg">
-        <div className="portal-section-header">
-          <span className="section-eyebrow">TRACK ORDER</span>
-          <h2>{isRtl ? 'تتبع حالة طلب الطباعة الخاص بك' : 'Track Your Print Order'}</h2>
-          <p>{isRtl ? 'أدخل رقم الطلب للتحقق من مرحلة الطباعة والتوصيل.' : 'Enter your order ID to check current printing and shipping status.'}</p>
-        </div>
+      {(activeTab === 'all' || activeTab === 'track') && (
+        <section id="track-section" className="portal-section theme-alt-bg">
+          <div className="portal-section-header">
+            <span className="section-eyebrow">TRACK ORDER</span>
+            <h2>{isRtl ? 'تتبع حالة طلب الطباعة الخاص بك' : 'Track Your Print Order'}</h2>
+            <p>{isRtl ? 'أدخل رقم الطلب للتحقق من مرحلة الطباعة والتوصيل.' : 'Enter your order ID to check current printing and shipping status.'}</p>
+          </div>
 
-        <div className="portal-quote-container" style={{ maxWidth: 600 }}>
-          <form onSubmit={handleTrackOrder} className="portal-quote-form">
-            <div className="form-group">
-              <label className="as-label">رقم الطلب (Order ID) *</label>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <input 
-                  type="text" 
-                  required
-                  value={trackNumber}
-                  onChange={(e) => setTrackNumber(e.target.value)}
-                  placeholder="مثال: #IRIS-PRINT-1024"
-                  className="as-input"
-                  dir="ltr"
-                />
-                <button type="submit" className="btn-portal-primary print-btn" style={{ padding: '0 24px', flexShrink: 0 }}>
-                  <Search size={18} />
-                  <span>تتبع</span>
-                </button>
+          <div className="portal-quote-container" style={{ maxWidth: 600 }}>
+            <form onSubmit={handleTrackOrder} className="portal-quote-form">
+              <div className="form-group">
+                <label className="as-label">رقم الطلب (Order ID) *</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <input 
+                    type="text" 
+                    required
+                    value={trackNumber}
+                    onChange={(e) => setTrackNumber(e.target.value)}
+                    placeholder="مثال: #IRIS-PRINT-1024"
+                    className="as-input"
+                    dir="ltr"
+                  />
+                  <button type="submit" className="btn-portal-primary print-btn" style={{ padding: '0 24px', flexShrink: 0 }}>
+                    <Search size={18} />
+                    <span>تتبع</span>
+                  </button>
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
 
-          {trackResult && (
-            <div className="quote-success-box" style={{ marginTop: '20px', textAlign: 'right' }}>
-              <PackageCheck size={36} className="success-icon" />
-              <h3>حالة الطلب: {trackResult.id}</h3>
-              <p style={{ color: '#F5BD1A', fontWeight: 'bold', fontSize: '1.1rem' }}>{trackResult.status}</p>
-              <p>{trackResult.details}</p>
-              <span className="file-name-badge">⏱️ الوقت المتوقع: {trackResult.estimatedDelivery}</span>
-            </div>
-          )}
-        </div>
-      </section>
+            {trackResult && (
+              <div className="quote-success-box" style={{ marginTop: '20px', textAlign: 'right' }}>
+                <PackageCheck size={36} className="success-icon" />
+                <h3>حالة الطلب: {trackResult.id}</h3>
+                <p style={{ color: '#F5BD1A', fontWeight: 'bold', fontSize: '1.1rem' }}>{trackResult.status}</p>
+                <p>{trackResult.details}</p>
+                <span className="file-name-badge">⏱️ الوقت المتوقع: {trackResult.estimatedDelivery}</span>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* 5. Contact Section */}
       <section id="contact-section" className="portal-section">

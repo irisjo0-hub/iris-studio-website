@@ -11,6 +11,7 @@ import '../styles/home.css';
 const StudioPortal = () => {
   const { lang } = useSiteSettings();
   const isRtl = lang === 'ar';
+  const [activeTab, setActiveTab] = useState('sessions');
   const [openFaq, setOpenFaq] = useState(null);
 
   const studioBranches = [
@@ -50,27 +51,35 @@ const StudioPortal = () => {
 
   const graduationSubBranches = [
     {
-      num: '01',
+      id: 'grad-sessions',
       title_ar: 'جلسات تصوير الخريجين',
       desc_ar: 'جلسات تصوير فردية وجماعية لأثواب التخرج مع الدفاتر والشهادات.',
+      category_ar: 'تصوير تخرج',
+      image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80',
       link: '/graduation-package'
     },
     {
-      num: '02',
+      id: 'grad-books',
       title_ar: 'دفاتر التخرج الفاخرة',
       desc_ar: 'دفاتر تخرج مخصصة عالية الجودة لطباعة ذكريات سنوات الدراسة.',
+      category_ar: 'طباعة فاخرة',
+      image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
       link: '/graduation-books'
     },
     {
-      num: '03',
+      id: 'grad-templates',
       title_ar: 'قوالب الأغلفة الخارجية والداخلية',
       desc_ar: 'معرض تشكيلة واسعة من الأغلفة الذهبية والصفحات الداخلية لتختار منها.',
+      category_ar: 'تصاميم أغلفة',
+      image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80',
       link: '/templates'
     },
     {
-      num: '04',
+      id: 'grad-custom',
       title_ar: 'طلب دفتر تخرج مخصص',
       desc_ar: 'نموذج تقديم طلب دفتر تخرج جديد وإرفاق صورك وإهدائك بسهولة.',
+      category_ar: 'طلب مباشر',
+      image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=800&q=80',
       link: '/graduation-order'
     }
   ];
@@ -123,115 +132,154 @@ const StudioPortal = () => {
         </div>
       </section>
 
-      {/* Main Sub-branches Anchor Links Bar */}
-      <div className="portal-sub-nav-bar">
-        <div className="portal-nav-container">
-          <a href="#sessions-section">📸 الجلسات والبكجات</a>
-          <a href="#graduation-section">🎓 ركن التخرج الكامل</a>
-          <a href="#portfolio-section">🖼️ معرض الأعمال</a>
-          <a href="#faq-section">❓ الأسئلة الشائعة</a>
-          <a href="#contact-section">📞 التواصل والموقع</a>
+      {/* Smart Sticky Interactive Tabs Bar */}
+      <div className="portal-smart-tabs-bar">
+        <div className="portal-smart-tabs-container">
+          <button 
+            type="button" 
+            className={`smart-tab-btn ${activeTab === 'sessions' ? 'active' : ''}`}
+            onClick={() => setActiveTab('sessions')}
+          >
+            📸 {isRtl ? 'جلسات التصوير' : 'Sessions'}
+          </button>
+          <button 
+            type="button" 
+            className={`smart-tab-btn ${activeTab === 'graduation' ? 'active' : ''}`}
+            onClick={() => setActiveTab('graduation')}
+          >
+            🎓 {isRtl ? 'ركن التخرج' : 'Graduation'}
+          </button>
+          <button 
+            type="button" 
+            className={`smart-tab-btn ${activeTab === 'portfolio' ? 'active' : ''}`}
+            onClick={() => setActiveTab('portfolio')}
+          >
+            🖼️ {isRtl ? 'معرض الأعمال' : 'Gallery'}
+          </button>
+          <button 
+            type="button" 
+            className={`smart-tab-btn ${activeTab === 'faq' ? 'active' : ''}`}
+            onClick={() => setActiveTab('faq')}
+          >
+            ❓ {isRtl ? 'الأسئلة الشائعة' : 'FAQ'}
+          </button>
         </div>
       </div>
 
       {/* 1. Studio Sessions & Packages Section */}
-      <section id="sessions-section" className="portal-section">
-        <div className="portal-section-header">
-          <span className="section-eyebrow">SESSIONS & PACKAGES</span>
-          <h2>{isRtl ? 'جلسات التصوير والبكجات' : 'Studio Sessions & Packages'}</h2>
-          <p>{isRtl ? 'اختر نوع الجلسة المناسبة لك واستمتع بتجربة تصوير استثنائية.' : 'Choose your preferred session and enjoy an extraordinary studio experience.'}</p>
-        </div>
+      {activeTab === 'sessions' && (
+        <section id="sessions-section" className="portal-section">
+          <div className="portal-section-header">
+            <span className="section-eyebrow">SESSIONS & PACKAGES</span>
+            <h2>{isRtl ? 'جلسات التصوير والبكجات' : 'Studio Sessions & Packages'}</h2>
+            <p>{isRtl ? 'اختر نوع الجلسة المناسبة لك واستمتع بتجربة تصوير استثنائية.' : 'Choose your preferred session and enjoy an extraordinary studio experience.'}</p>
+          </div>
 
-        <div className="portal-grid-4">
-          {studioBranches.map((b, idx) => {
-            const IconComp = b.icon;
-            return (
-              <div key={idx} className="portal-card-box">
-                <div className="card-top-icon">
-                  <IconComp size={28} />
-                  <span className="card-tag">{b.badge}</span>
+          <div className="portal-grid-4">
+            {studioBranches.map((b, idx) => {
+              const IconComp = b.icon;
+              return (
+                <div key={idx} className="portal-card-box">
+                  <div className="card-top-icon">
+                    <IconComp size={28} />
+                    <span className="card-tag">{b.badge}</span>
+                  </div>
+                  <h3>{b.title_ar}</h3>
+                  <p>{b.desc_ar}</p>
+                  <Link to={b.link} className="card-link-btn">
+                    <span>{isRtl ? 'استكشف المزيد' : 'Explore'}</span>
+                    {isRtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+                  </Link>
                 </div>
-                <h3>{b.title_ar}</h3>
-                <p>{b.desc_ar}</p>
-                <Link to={b.link} className="card-link-btn">
-                  <span>{isRtl ? 'استكشف المزيد' : 'Explore'}</span>
-                  {isRtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
-                </Link>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* 2. Full Graduation Branch Section */}
-      <section id="graduation-section" className="portal-section theme-alt-bg">
-        <div className="portal-section-header">
-          <span className="section-eyebrow">GRADUATION CORNER</span>
-          <h2>{isRtl ? 'ركن وفروع التخرج الشامل (Graduation)' : 'Full Graduation Hub'}</h2>
-          <p>{isRtl ? 'كل ما يحتاجه الخريج من جلسات تصوير، دفاتر تخرج، وقوالب أغلفة في مكان واحد.' : 'Everything a graduate needs from photoshoots to custom notebooks.'}</p>
-        </div>
+      {activeTab === 'graduation' && (
+        <section id="graduation-section" className="portal-section theme-alt-bg">
+          <div className="portal-section-header">
+            <span className="section-eyebrow">GRADUATION CORNER</span>
+            <h2>{isRtl ? 'ركن وفروع التخرج الشامل (Graduation)' : 'Full Graduation Hub'}</h2>
+            <p>{isRtl ? 'كل ما يحتاجه الخريج من جلسات تصوير، دفاتر تخرج، وقوالب أغلفة في مكان واحد.' : 'Everything a graduate needs from photoshoots to custom notebooks.'}</p>
+          </div>
 
-        <div className="portal-grid-4">
-          {graduationSubBranches.map((g) => (
-            <div key={g.num} className="process-step-card studio-grad-card">
-              <span className="step-badge-num">{g.num}</span>
-              <h4>{g.title_ar}</h4>
-              <p>{g.desc_ar}</p>
-              <Link to={g.link} className="card-link-btn" style={{ marginTop: '12px' }}>
-                <span>{isRtl ? 'انتقال للفرع' : 'Open Branch'}</span>
-                {isRtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+          <div className="visual-portfolio-grid">
+            {graduationSubBranches.map((g) => (
+              <Link key={g.id} to={g.link} className="visual-project-card">
+                <div className="visual-card-thumb">
+                  <img src={g.image} alt={g.title_ar} loading="lazy" />
+                  <div className="visual-card-gradient" />
+                  <span className="visual-card-badge">{g.category_ar}</span>
+                </div>
+                <div className="visual-card-body">
+                  <h3>{g.title_ar}</h3>
+                  <p>{g.desc_ar}</p>
+                  <div className="visual-card-footer">
+                    <span className="visual-card-btn-text">
+                      <span>{isRtl ? 'انتقال للفرع' : 'Open Branch'}</span>
+                      {isRtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+                    </span>
+                  </div>
+                </div>
               </Link>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 3. Portfolio & Work Section */}
-      <section id="portfolio-section" className="portal-section">
-        <div className="portal-section-header">
-          <span className="section-eyebrow">OUR PORTFOLIO</span>
-          <h2>{isRtl ? 'معرض صور وأعمال الاستوديو' : 'Studio Photography Gallery'}</h2>
-        </div>
-
-        <div className="portal-banner-feature studio-banner">
-          <div className="feature-info">
-            <span className="feature-tag">📸 جودة سينمائية</span>
-            <h3>استعرض مئات البورتريهات والذكريات الملتقطة</h3>
-            <p>تصفح معرض أعمالنا الفنية المصنفة حسب الجلسات، التخرج، والبورتريه الشخصي.</p>
-            <Link to="/work" className="btn-portal-primary studio-btn" style={{ display: 'inline-flex', marginTop: '16px' }}>
-              <span>فتح معرض الأعمال الكامل</span>
-            </Link>
+      {activeTab === 'portfolio' && (
+        <section id="portfolio-section" className="portal-section">
+          <div className="portal-section-header">
+            <span className="section-eyebrow">OUR PORTFOLIO</span>
+            <h2>{isRtl ? 'معرض صور وأعمال الاستوديو' : 'Studio Photography Gallery'}</h2>
           </div>
-        </div>
-      </section>
+
+          <div className="portal-banner-feature studio-banner">
+            <div className="feature-info">
+              <span className="feature-tag">📸 جودة سينمائية</span>
+              <h3>استعرض مئات البورتريهات والذكريات الملتقطة</h3>
+              <p>تصفح معرض أعمالنا الفنية المصنفة حسب الجلسات، التخرج، والبورتريه الشخصي.</p>
+              <Link to="/work" className="btn-portal-primary studio-btn" style={{ display: 'inline-flex', marginTop: '16px' }}>
+                <span>فتح معرض الأعمال الكامل</span>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* 4. FAQ Section */}
-      <section id="faq-section" className="portal-section theme-alt-bg">
-        <div className="portal-section-header">
-          <span className="section-eyebrow">FAQ</span>
-          <h2>{isRtl ? 'الأسئلة الشائعة حول الاستوديو' : 'Frequently Asked Questions'}</h2>
-        </div>
+      {activeTab === 'faq' && (
+        <section id="faq-section" className="portal-section theme-alt-bg">
+          <div className="portal-section-header">
+            <span className="section-eyebrow">FAQ</span>
+            <h2>{isRtl ? 'الأسئلة الشائعة حول الاستوديو' : 'Frequently Asked Questions'}</h2>
+          </div>
 
-        <div className="portal-faq-list">
-          {faqs.map((f, idx) => (
-            <div 
-              key={idx} 
-              className={`portal-faq-item ${openFaq === idx ? 'open' : ''}`}
-              onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-            >
-              <div className="faq-question">
-                <h4>{f.q_ar}</h4>
-                <HelpCircle size={20} className="faq-icon" />
-              </div>
-              {openFaq === idx && (
-                <div className="faq-answer">
-                  <p>{f.a_ar}</p>
+          <div className="portal-faq-list">
+            {faqs.map((f, idx) => (
+              <div 
+                key={idx} 
+                className={`portal-faq-item ${openFaq === idx ? 'open' : ''}`}
+                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+              >
+                <div className="faq-question">
+                  <h4>{f.q_ar}</h4>
+                  <HelpCircle size={20} className="faq-icon" />
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
+                {openFaq === idx && (
+                  <div className="faq-answer">
+                    <p>{f.a_ar}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 5. Contact & Location Section */}
       <section id="contact-section" className="portal-section">
