@@ -107,29 +107,6 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
     }
   };
 
-  // Scroll-linked progression threshold
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!containerRef.current || window.innerWidth > 1023) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      
-      if (rect.top <= windowHeight * 0.7 && rect.bottom >= windowHeight * 0.3) {
-        const scrollPercent = (windowHeight * 0.7 - rect.top) / (rect.height + windowHeight * 0.4);
-        if (scrollPercent < 0.33) {
-          setActiveIdx(0);
-        } else if (scrollPercent < 0.66) {
-          setActiveIdx(1);
-        } else {
-          setActiveIdx(2);
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
   return (
@@ -169,34 +146,23 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
             onDragEnd={handleDragEnd}
           >
             <div className="kinetic-stage-viewport">
-              <AnimatePresence mode="wait">
+              <AnimatePresence mode="popLayout">
                 <motion.div
                   key={activeDivision.id}
                   className="kinetic-stage-viewport"
                   initial={{
                     opacity: 0,
-                    scale: 1.04,
-                    clipPath: activeDivision.clipDirection === 'horizontal'
-                      ? 'inset(0 100% 0 0)'
-                      : activeDivision.clipDirection === 'diagonal'
-                      ? 'polygon(0 0, 0 0, 0 100%, 0 100%)'
-                      : 'inset(100% 0 0 0)'
+                    scale: 1.03
                   }}
                   animate={{
                     opacity: 1,
-                    scale: 1,
-                    clipPath: activeDivision.clipDirection === 'horizontal'
-                      ? 'inset(0 0% 0 0)'
-                      : activeDivision.clipDirection === 'diagonal'
-                      ? 'polygon(0 0, 100% 0, 100% 100%, 0 100%)'
-                      : 'inset(0% 0 0 0)'
+                    scale: 1
                   }}
                   exit={{
                     opacity: 0,
-                    scale: 1.04,
-                    clipPath: 'inset(0 0 100% 0)'
+                    scale: 0.98
                   }}
-                  transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 >
                   {activeDivision.image ? (
                     <>

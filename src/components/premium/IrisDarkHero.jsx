@@ -215,7 +215,7 @@ export const IrisDarkHero = () => {
           >
             <button
               type="button"
-              className="hero-v2-discover-cta"
+              className="hero-v2-discover-cta glass-gold-pulse-btn"
               onClick={handleDiscoverScroll}
               onMouseMove={handleCtaMouseMove}
               onMouseLeave={handleCtaMouseLeave}
@@ -225,8 +225,8 @@ export const IrisDarkHero = () => {
               aria-label={ctaLabel}
             >
               <span className="cta-label-text">{ctaLabel}</span>
-              <span className="cta-arrow-icon">
-                <ArrowDown size={18} />
+              <span className="cta-arrow-badge">
+                <ArrowDown size={17} />
               </span>
             </button>
           </motion.div>

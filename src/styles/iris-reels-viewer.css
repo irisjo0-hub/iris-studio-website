@@ -7,7 +7,11 @@
   position: relative;
   width: 100vw;
   height: 100dvh;
-  background: #120A11;
+  background-color: #180C17;
+  background-image: 
+    radial-gradient(ellipse at 85% 15%, rgba(103, 36, 95, 0.75) 0%, rgba(103, 36, 95, 0.3) 45%, transparent 80%),
+    radial-gradient(ellipse at 15% 85%, rgba(4, 70, 48, 0.70) 0%, rgba(4, 70, 48, 0.25) 50%, transparent 85%),
+    radial-gradient(circle at 50% 50%, rgba(245, 189, 26, 0.18) 0%, transparent 70%);
   color: #ECEBE7;
   overflow: hidden;
   touch-action: pan-y;
@@ -16,6 +20,78 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Atmospheric Ambient Layer behind Reels Frame (IRIS Theme Option 2) */
+.reels-bg-ambient-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.reels-glow-purple-top {
+  position: absolute;
+  top: -10%;
+  right: -5%;
+  width: clamp(550px, 70vw, 1000px);
+  height: clamp(550px, 70vw, 1000px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(103, 36, 95, 0.85) 0%, rgba(103, 36, 95, 0.45) 45%, transparent 75%);
+  filter: blur(70px);
+  animation: reelsPurpleFloat 14s ease-in-out infinite alternate;
+}
+
+.reels-glow-green-bottom {
+  position: absolute;
+  bottom: -10%;
+  left: -5%;
+  width: clamp(550px, 70vw, 1050px);
+  height: clamp(550px, 70vw, 1050px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(4, 70, 48, 0.85) 0%, rgba(4, 70, 48, 0.40) 50%, transparent 75%);
+  filter: blur(75px);
+  animation: reelsGreenFloat 18s ease-in-out infinite alternate;
+}
+
+.reels-glow-gold-center {
+  position: absolute;
+  top: 30%;
+  left: 20%;
+  width: clamp(400px, 50vw, 750px);
+  height: clamp(400px, 50vw, 750px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 189, 26, 0.25) 0%, rgba(245, 189, 26, 0.06) 50%, transparent 75%);
+  filter: blur(60px);
+  animation: reelsGoldFloat 12s ease-in-out infinite alternate;
+}
+
+.reels-grain-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+@keyframes reelsPurpleFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, 20px) scale(1.05); }
+  100% { transform: translate(-20px, 30px) scale(0.95); }
+}
+
+@keyframes reelsGreenFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, -25px) scale(1.06); }
+  100% { transform: translate(25px, -15px) scale(0.94); }
+}
+
+@keyframes reelsGoldFloat {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+  50% { transform: translate(15px, -15px) scale(1.08); opacity: 1; }
+  100% { transform: translate(-15px, 15px) scale(0.92); opacity: 0.7; }
 }
 
 /* Stage Container (Full Viewport Area) */
@@ -27,6 +103,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  z-index: 5;
 }
 
 /* ===== TRUE 9:16 REEL FRAME CANVAS GEOMETRY ===== */
@@ -38,7 +115,7 @@
   max-height: 100dvh;
   margin: 0 auto;
   overflow: hidden;
-  box-shadow: 0 0 80px rgba(0, 0, 0, 0.95);
+  box-shadow: 0 0 120px rgba(103, 36, 95, 0.75), 0 0 60px rgba(245, 189, 26, 0.4), 0 25px 80px rgba(0, 0, 0, 0.95);
   border-radius: 0px;
 }
 
@@ -48,7 +125,8 @@
     width: calc((100dvh - 32px) * 9 / 16);
     max-width: 520px;
     border-radius: 20px;
-    border: 1px solid rgba(236, 235, 231, 0.12);
+    border: 1px solid rgba(245, 189, 26, 0.45);
+    box-shadow: 0 0 130px rgba(103, 36, 95, 0.85), 0 0 65px rgba(245, 189, 26, 0.4), 0 20px 90px rgba(0, 0, 0, 0.95);
   }
 }
 
@@ -340,23 +418,24 @@
   pointer-events: auto;
 }
 
+/* ===== DYNAMIC REEL EDITORIAL OVERLAY ===== */
 .reel-item-number {
   font-family: var(--font-hero, "DegularDisplay", sans-serif);
-  font-size: 0.82rem;
+  font-size: clamp(0.72rem, 2vw, 0.85rem);
   font-weight: 600;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   color: #F5BD1A;
   font-synthesis: none;
 }
 
 .reel-headline-text {
   font-family: var(--font-primary, sans-serif);
-  font-size: clamp(1.2rem, 2.5vw, 1.85rem);
+  font-size: clamp(0.98rem, 3.6vw, 1.75rem);
   font-weight: 700;
-  line-height: 1.35;
+  line-height: 1.28;
   color: #ECEBE7;
   margin: 0;
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 3px 14px rgba(0, 0, 0, 0.85);
 
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -366,10 +445,10 @@
 
 .reel-secondary-text {
   font-family: var(--font-primary, sans-serif);
-  font-size: 0.88rem;
-  color: rgba(236, 235, 231, 0.75);
+  font-size: clamp(0.72rem, 2.5vw, 0.88rem);
+  color: rgba(236, 235, 231, 0.8);
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.35;
 
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -377,78 +456,79 @@
   overflow: hidden;
 }
 
-/* ===== INSTAGRAM REEL CAPTION BLOCK (NATIVE OVERLAY - NO RECTANGLE BOX) ===== */
+/* ===== INSTAGRAM REEL CAPTION BLOCK (FLUID FLEX LAYOUT) ===== */
 .instagram-reel-caption-block {
   position: absolute;
   z-index: 25;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   pointer-events: auto;
   background: transparent;
   padding: 0;
   border-radius: 0;
+  max-width: calc(100% - 105px);
 }
 
 /* ===== 1. EXPLICIT ARABIC OVERLAY GRID (data-locale="ar") ===== */
 .reel-frame[data-locale="ar"] .reels-hamburger-btn {
-  right: 20px;
+  right: 18px;
   left: auto;
-  top: 18px;
+  top: 16px;
 }
 
 .reel-frame[data-locale="ar"] .reels-counter-pill-tag {
-  left: 20px;
+  left: 18px;
   right: auto;
-  top: 18px;
+  top: 16px;
 }
 
 /* Action Rail Pinned strictly to LEFT SIDE for Arabic */
 .reel-frame[data-locale="ar"] .reels-action-rail {
-  left: 20px;
+  left: 16px;
   right: auto;
-  bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(40px + env(safe-area-inset-bottom, 0px));
   align-items: center;
-  width: 68px;
-  gap: 18px;
+  width: 62px;
+  gap: clamp(10px, 1.8vh, 18px);
 }
 
 /* Caption Block Pinned strictly to RIGHT SIDE for Arabic */
 .reel-frame[data-locale="ar"] .instagram-reel-caption-block {
-  right: 20px;
-  left: 105px;
-  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  right: 18px;
+  left: 95px;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
   text-align: right;
 }
 
 /* ===== 2. EXPLICIT ENGLISH OVERLAY GRID (data-locale="en") ===== */
 .reel-frame[data-locale="en"] .reels-hamburger-btn {
-  left: 20px;
+  left: 18px;
   right: auto;
-  top: 18px;
+  top: 16px;
 }
 
 .reel-frame[data-locale="en"] .reels-counter-pill-tag {
-  right: 20px;
+  right: 18px;
   left: auto;
-  top: 18px;
+  top: 16px;
 }
 
 /* Action Rail Pinned strictly to RIGHT SIDE for English */
 .reel-frame[data-locale="en"] .reels-action-rail {
-  right: 20px;
+  right: 16px;
   left: auto;
-  bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(40px + env(safe-area-inset-bottom, 0px));
   align-items: center;
-  width: 68px;
-  gap: 18px;
+  width: 62px;
+  gap: clamp(10px, 1.8vh, 18px);
 }
 
 /* Caption Block Pinned strictly to LEFT SIDE for English */
 .reel-frame[data-locale="en"] .instagram-reel-caption-block {
-  left: 20px;
-  right: 105px;
-  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  left: 18px;
+  right: 95px;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
   text-align: left;
 }
 
@@ -591,31 +671,40 @@
   margin-right: auto;
 }
 
-/* Floating Bottom Skip Reels Pill */
+/* Floating Outer Skip Reels Pills (Floating in Iris Ambient Background outside Reel Frame) */
 .reels-floating-skip-pill {
   position: absolute;
-  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 50;
   pointer-events: auto;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 14px;
+  gap: 6px;
+  padding: 6px 18px;
   border-radius: 100px;
-  background: rgba(18, 9, 17, 0.88);
-  border: 1px solid rgba(245, 189, 26, 0.45);
+  background: transparent !important;
+  border: 1px solid rgba(245, 189, 26, 0.6);
   color: #F5BD1A;
   font-family: var(--font-hero, "DegularDisplay", sans-serif);
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(245, 189, 26, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35), 0 0 16px rgba(245, 189, 26, 0.22);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
+}
+
+.reels-skip-top-pill-outer {
+  top: calc(14px + env(safe-area-inset-top, 0px));
+  bottom: auto;
+}
+
+.reels-skip-bottom-pill-outer {
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  top: auto;
 }
 
 .reels-floating-skip-pill:hover {
@@ -628,12 +717,6 @@
 
 .skip-arrow-anim {
   animation: skipArrowBounce 1.6s infinite ease-in-out;
-}
-
-/* Floating Top Skip Reels Pill */
-.reels-skip-top-pill {
-  top: calc(14px + env(safe-area-inset-top, 0px));
-  bottom: auto;
 }
 
 .skip-up-arrow-anim {

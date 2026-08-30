@@ -550,16 +550,16 @@
   background-color: #F5BD1A !important;
 }
 
-/* Premium Pill Eyebrow: [ WE BREAK THE BOX ● ] (Translucent Dark Purple Surface + Gold Dot) */
+/* Premium Pill Eyebrow: [ WE BREAK THE BOX ● ] (Outline Glass Badge + Gold Dot) */
 .hero-v2-eyebrow-pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 8px 18px;
   border-radius: 100px;
-  background: rgba(103, 36, 95, 0.48);
-  border: 1px solid rgba(245, 189, 26, 0.45);
-  backdrop-filter: blur(16px);
+  background: transparent !important;
+  border: 1px solid rgba(245, 189, 26, 0.55);
+  backdrop-filter: blur(12px);
   max-width: max-content;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -618,9 +618,9 @@
 
 .hero-v2-editorial-title {
   font-family: var(--font-primary, sans-serif);
-  font-size: clamp(2.2rem, 5.2vw, 4.2rem);
+  font-size: clamp(1.65rem, 5.5vw, 4.2rem);
   font-weight: 800;
-  line-height: 1.28;
+  line-height: 1.25;
   letter-spacing: -0.5px;
   color: #ECEBE7;
   margin: 0;
@@ -648,69 +648,110 @@
 
 .hero-v2-supporting-desc {
   font-family: var(--font-primary, sans-serif);
-  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  font-size: clamp(0.85rem, 2.2vw, 1.15rem);
   font-weight: 500;
-  line-height: 1.6;
+  line-height: 1.55;
   color: rgba(236, 235, 231, 0.78);
   margin: 0;
   max-width: 780px;
 }
 
-/* Primary Action CTA — Living Magnetic IRIS Button (#F5BD1A Gold Surface + #044630 Green Text) */
+/* Primary Action CTA — Living Magnetic Glass & Gold Pulse Masterpiece */
 .hero-v2-action-wrapper {
-  margin-top: 12px;
+  margin-top: clamp(14px, 2.2vh, 24px);
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
+.hero-v2-discover-cta.glass-gold-pulse-btn,
 .hero-v2-discover-cta,
 .hero-discover-btn {
   position: relative;
   display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 38px;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 8px 6px 28px;
   border-radius: 100px;
-  background: #F5BD1A;
-  color: #044630 !important;
+  background: transparent !important;
+  border: 1px solid rgba(245, 189, 26, 0.65);
+  color: #F5BD1A !important;
   font-family: var(--font-primary, sans-serif);
-  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  font-size: clamp(0.92rem, 2.5vw, 1.08rem);
   font-weight: 800;
   text-decoration: none;
-  border: 1px solid rgba(245, 189, 26, 0.85);
-  box-shadow: 0 10px 30px rgba(245, 189, 26, 0.38);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 22px rgba(245, 189, 26, 0.22);
   cursor: pointer;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              background 0.3s ease;
+  margin: 0 auto;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
   outline: none;
 }
 
-.hero-v2-discover-cta:hover,
-.hero-discover-btn:hover {
-  background: #f7ca45;
-  box-shadow: 0 16px 45px rgba(245, 189, 26, 0.6), 0 0 30px rgba(245, 189, 26, 0.45);
+.dir-rtl .hero-v2-discover-cta.glass-gold-pulse-btn,
+.dir-rtl .hero-v2-discover-cta {
+  direction: rtl !important;
+  padding: 6px 28px 6px 8px;
 }
 
+.dir-ltr .hero-v2-discover-cta.glass-gold-pulse-btn,
+.dir-ltr .hero-v2-discover-cta {
+  direction: ltr !important;
+  padding: 6px 8px 6px 28px;
+}
+
+.hero-v2-discover-cta.glass-gold-pulse-btn:hover,
+.hero-v2-discover-cta:hover,
+.hero-discover-btn:hover {
+  background: rgba(245, 189, 26, 0.12) !important;
+  border-color: #F5BD1A;
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.6), 0 0 35px rgba(245, 189, 26, 0.4);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.hero-v2-discover-cta.glass-gold-pulse-btn:active,
 .hero-v2-discover-cta:active,
 .hero-discover-btn:active {
   transform: scale(0.97) !important;
   box-shadow: 0 6px 20px rgba(245, 189, 26, 0.3);
 }
 
-.hero-v2-discover-cta .cta-arrow-icon,
-.hero-discover-btn .btn-arrow-icon {
+/* Inner Solid Gold Arrow Badge with Continuous Bounce Animation */
+.cta-arrow-badge,
+.cta-arrow-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #F5BD1A;
+  color: #044630 !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #044630;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(245, 189, 26, 0.4);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
 }
 
-.hero-v2-discover-cta:hover .cta-arrow-icon,
-.hero-discover-btn:hover .btn-arrow-icon {
-  transform: translateY(4px);
+.cta-arrow-badge svg,
+.cta-arrow-icon svg {
+  animation: ctaArrowPulse 1.8s infinite ease-in-out;
+}
+
+.hero-v2-discover-cta:hover .cta-arrow-badge,
+.hero-v2-discover-cta:hover .cta-arrow-icon {
+  background: #f7ca45;
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(245, 189, 26, 0.6);
+}
+
+@keyframes ctaArrowPulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
 }
 
 /* Reduced Motion Override (Pauses Drift Animation while Preserving Complete Static Atmosphere) */
