@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 import { useSiteSettings } from '../../context/SiteSettingsContext';
-import { getFlowItems, getFlowItemsAsync, getApprovedFeedbackForFlow, getAllApprovedFeedback, submitFlowFeedback } from '../../repositories/flowRepository';
+import { getFlowItems, getApprovedFeedbackForFlow, getAllApprovedFeedback, submitFlowFeedback } from '../../repositories/flowRepository';
 import irisLogo from '../../assets/iris_logo.png';
 import '../../styles/iris-reels-viewer.css';
 import '../../styles/iris-dark-hero.css';
@@ -114,13 +114,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     const flowItems = loaded.length > 0 ? loaded : getFlowItems();
     setItems(flowItems);
 
-    getFlowItemsAsync().then(cloudItems => {
-      if (cloudItems && cloudItems.length > 0) {
-        const enabledCloud = cloudItems.filter(it => it.enabled !== false);
-        setItems(enabledCloud.length > 0 ? enabledCloud : cloudItems);
-      }
-    });
-
     // Load shared approved feedback for all reels
     setAllFeedbackList(getAllApprovedFeedback());
 
@@ -211,12 +204,11 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     setIsLocked(true);
     cooldownRef.current = true;
     setActiveIndex(newIndex);
-    lockWindowToStage();
 
     setTimeout(() => {
       setIsLocked(false);
       cooldownRef.current = false;
-    }, 450);
+    }, 500);
   };
 
   // NON-PASSIVE WHEEL & TOUCH EVENT LISTENERS WITH PINNED WINDOW LOCK
@@ -302,7 +294,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       const totalCount = items.length > 0 ? items.length : 8;
       const maxIndex = totalCount - 1;
 
-      // Strictly lock window position to stage top while browsing inner reels
       if (currIndex >= 0 && currIndex <= maxIndex) {
         e.preventDefault();
         lockWindowToStage();
@@ -328,21 +319,20 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     const touchEndY = e.changedTouches[0].clientY;
     const diff = touchStartY.current - touchEndY;
 
-    if (Math.abs(diff) < 40) return;
+    if (Math.abs(diff) < 50) return;
 
     const currIndex = activeIndex;
-    const maxIndex = items.length > 0 ? items.length - 1 : 7;
 
     if (diff > 0) {
-      // Swipe UP (Next Reel)
-      if (currIndex < maxIndex) {
+      // Swipe UP (Downward Intent -> Next Reel)
+      if (currIndex < 7) {
         navigateToIndex(currIndex + 1, 1);
-      } else if (currIndex === maxIndex && !cooldownRef.current) {
+      } else if (currIndex === 7 && !cooldownRef.current) {
         const divisionsSec = document.getElementById('iris-divisions-section') || document.getElementById('iris-footer-root');
         if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     } else {
-      // Swipe DOWN (Prev Reel)
+      // Swipe DOWN (Upward Intent -> Prev Reel)
       if (currIndex > 0) {
         navigateToIndex(currIndex - 1, -1);
       } else if (currIndex === 0 && !cooldownRef.current) {
