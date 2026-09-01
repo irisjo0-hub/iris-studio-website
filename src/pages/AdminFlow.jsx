@@ -99,7 +99,25 @@ export const AdminFlow = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    const updated = items.map((it) => (it.id === editingId ? { ...formData } : it));
+    if (uploadingMedia) {
+      alert('⏳ يرجى الانتظار حتى ينتهي رفع الفيديو/الصورة سحابياً أولاً');
+      return;
+    }
+    const finalMedia = (formData.image || formData.media_url || '').trim();
+    if (!finalMedia) {
+      alert('يرجى إدخال رابط أو اختيار صورة/فيديو للريل');
+      return;
+    }
+    const isVid = formData.media_type === 'video' || finalMedia.toLowerCase().includes('.mp4') || finalMedia.toLowerCase().includes('.mov') || finalMedia.toLowerCase().includes('.webm');
+
+    const updatedData = {
+      ...formData,
+      image: finalMedia,
+      media_url: finalMedia,
+      media_type: isVid ? 'video' : 'image'
+    };
+
+    const updated = items.map((it) => (it.id === editingId ? updatedData : it));
     setItems(updated);
     await saveFlowItems(updated);
     setEditingId(null);
@@ -575,9 +593,20 @@ export const AdminFlow = () => {
                 </button>
                 <button
                   type="submit"
-                  style={{ background: '#ECEBE7', color: '#1A0D18', border: 'none', borderRadius: '50px', padding: '10px 30px', fontWeight: '900', cursor: 'pointer', fontSize: '0.92rem' }}
+                  disabled={uploadingMedia}
+                  style={{
+                    background: uploadingMedia ? 'rgba(236, 235, 231, 0.4)' : '#ECEBE7',
+                    color: '#1A0D18',
+                    border: 'none',
+                    borderRadius: '50px',
+                    padding: '10px 30px',
+                    fontWeight: '900',
+                    cursor: uploadingMedia ? 'wait' : 'pointer',
+                    fontSize: '0.92rem',
+                    opacity: uploadingMedia ? 0.6 : 1
+                  }}
                 >
-                  حفظ التعديلات 💾
+                  {uploadingMedia ? '⏳ جاري الرفع سحابياً... انتظر القليل' : 'حفظ التعديلات 💾'}
                 </button>
               </div>
             </form>
