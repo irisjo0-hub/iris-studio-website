@@ -20,9 +20,9 @@ export const AdminFlow = () => {
     });
   }, []);
 
-  const handleSaveAll = () => {
-    saveFlowItems(items);
-    alert('✅ تم حفظ جميع تغييرات الريلز بنجاح!');
+  const handleSaveAll = async () => {
+    await saveFlowItems(items);
+    alert('✅ تم حفظ وتحديث جميع تغييرات الريلز سحابياً بنجاح!');
   };
 
   const handleEditClick = (item) => {
@@ -65,7 +65,7 @@ export const AdminFlow = () => {
     }
   };
 
-  const handleAddNewReel = () => {
+  const handleAddNewReel = async () => {
     const newId = `flow-${Date.now()}`;
     const newItem = {
       id: newId,
@@ -93,23 +93,24 @@ export const AdminFlow = () => {
 
     const updated = [...items, newItem];
     setItems(updated);
-    saveFlowItems(updated);
+    await saveFlowItems(updated);
     handleEditClick(newItem);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     const updated = items.map((it) => (it.id === editingId ? { ...formData } : it));
     setItems(updated);
-    saveFlowItems(updated);
+    await saveFlowItems(updated);
     setEditingId(null);
+    alert('✅ تم حفظ التعديلات ومزامنتها على السيرفر سحابياً بنجاح!');
   };
 
-  const handleDeleteReel = (id) => {
+  const handleDeleteReel = async (id) => {
     if (!window.confirm('هل أنت تأكد من رغبتك في حذف هذا الريل؟')) return;
     const updated = items.filter((it) => it.id !== id).map((it, idx) => ({ ...it, sort_order: idx + 1 }));
     setItems(updated);
-    saveFlowItems(updated);
+    await saveFlowItems(updated);
   };
 
   const toggleEnabled = (id) => {

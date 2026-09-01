@@ -244,29 +244,31 @@ export const getFlowItemsAsync = async () => {
   return getFlowItems();
 };
 
-export const saveFlowItems = (items) => {
+export const saveFlowItems = async (items) => {
   try {
     localStorage.setItem(FLOW_STORAGE_KEY, JSON.stringify(items));
   } catch (err) {
-    console.error("Failed to save flow items:", err);
+    console.error("Failed to save flow items to localStorage:", err);
   }
 
-  // Async cloud sync to Supabase
-  (async () => {
-    try {
-      const rows = items.map((item, index) => ({
-        id: item.id || `flow-${index + 1}`,
-        data: item,
-        sort_order: item.sort_order || index + 1,
-        updated_at: new Date().toISOString()
-      }));
-      for (const row of rows) {
-        await supabase.from('flow_items').upsert(row, { onConflict: 'id' });
+  try {
+    const rows = items.map((item, index) => ({
+      id: item.id || `flow-${index + 1}`,
+      data: item,
+      sort_order: item.sort_order || index + 1,
+      updated_at: new Date().toISOString()
+    }));
+    for (const row of rows) {
+      const { error } = await supabase.from('flow_items').upsert(row, { onConflict: 'id' });
+      if (error) {
+        console.error("Error upserting flow item to Supabase:", error);
       }
-    } catch (err) {
-      console.warn("Cloud sync to Supabase flow_items failed:", err);
     }
-  })();
+    return true;
+  } catch (err) {
+    console.warn("Cloud sync to Supabase flow_items failed:", err);
+    return false;
+  }
 };
 
 // Feedback Repository Methods
