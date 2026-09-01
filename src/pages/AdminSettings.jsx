@@ -270,19 +270,30 @@ const AdminSettings = () => {
           value: typeof updates[key] === 'object' ? JSON.stringify(updates[key]) : updates[key]
         }));
 
+        let dbSaveSuccess = true;
         for (const row of settingsData) {
-          await supabase
+          const { error } = await supabase
             .from('site_settings')
             .upsert(row, { onConflict: 'key' });
+          if (error) {
+            dbSaveSuccess = false;
+            console.error('Supabase site_settings error:', error);
+          }
         }
         if (refreshSettings) {
           await refreshSettings();
         }
+
+        if (!dbSaveSuccess) {
+          alert('⚠️ تنبيه مهم: تعذر الحفظ على السيرفر لعدم وجود جدول site_settings في Supabase بعد. تم الحفظ على هذا الجهاز فقط.\n\nيرجى تشغيل كود الـ SQL في Supabase SQL Editor لمزامنة جميع التعديلات بين التلفون والكمبيوتر فوراً!');
+        } else {
+          alert('تم حفظ كافة إعدادات وتخصيصات الموقع ومزامنتها على السيرفر بنجاح! 🚀');
+        }
       } catch (dbErr) {
-        console.warn('Supabase DB save skipped (running in local mode):', dbErr.message);
+        console.warn('Supabase DB save skipped:', dbErr.message);
+        alert('⚠️ تنبيه: تعذر الحفظ السحابي. يرجى تشغيل كود الـ SQL في Supabase لمزامنة الأجهزة.');
       }
 
-      alert('تم حفظ كافة إعدادات وتخصيصات الموقع بنجاح!');
       setLogoFile(null);
       setDesktopVideoFile(null);
       setMobileVideoFile(null);
