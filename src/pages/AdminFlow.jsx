@@ -27,7 +27,15 @@ export const AdminFlow = () => {
 
   const handleEditClick = (item) => {
     setEditingId(item.id);
-    setFormData({ ...item });
+    const cleanItem = { ...item };
+    const isInvalid = (url) => !url || url.startsWith('blob:') || (!url.startsWith('http') && !url.startsWith('/') && !url.startsWith('data:'));
+    if (isInvalid(cleanItem.image)) {
+      cleanItem.image = '';
+    }
+    if (isInvalid(cleanItem.media_url)) {
+      cleanItem.media_url = '';
+    }
+    setFormData(cleanItem);
   };
 
   const handleFormChange = (field, val) => {
