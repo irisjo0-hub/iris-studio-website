@@ -275,6 +275,9 @@ const AdminSettings = () => {
             .from('site_settings')
             .upsert(row, { onConflict: 'key' });
         }
+        if (refreshSettings) {
+          await refreshSettings();
+        }
       } catch (dbErr) {
         console.warn('Supabase DB save skipped (running in local mode):', dbErr.message);
       }

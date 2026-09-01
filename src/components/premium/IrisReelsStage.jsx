@@ -81,6 +81,12 @@ export const IrisReelsStage = ({ id = "iris-reels-stage-root" }) => {
   useEffect(() => {
     const loaded = getFlowItems().filter((it) => it.enabled);
     setItems(loaded.length > 0 ? loaded : getFlowItems());
+    getFlowItemsAsync().then(asyncItems => {
+      if (asyncItems && asyncItems.length > 0) {
+        const filtered = asyncItems.filter((it) => it.enabled);
+        setItems(filtered.length > 0 ? filtered : asyncItems);
+      }
+    });
   }, []);
 
   // Sync URL hash with active Reel

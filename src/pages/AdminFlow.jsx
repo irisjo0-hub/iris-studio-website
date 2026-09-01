@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getFlowItems, saveFlowItems } from '../repositories/flowRepository';
+import { getFlowItems, getFlowItemsAsync, saveFlowItems } from '../repositories/flowRepository';
 import { uploadFile } from '../lib/supabase';
 import AdminLayout from '../components/AdminLayout';
 import { Plus, Trash2, Edit2, Check, X, ArrowUp, ArrowDown, Eye, EyeOff, Film, Sparkles, Image as ImageIcon, Link as LinkIcon, Upload } from 'lucide-react';
@@ -13,6 +13,11 @@ export const AdminFlow = () => {
 
   useEffect(() => {
     setItems(getFlowItems());
+    getFlowItemsAsync().then(loadedItems => {
+      if (loadedItems && loadedItems.length > 0) {
+        setItems(loadedItems);
+      }
+    });
   }, []);
 
   const handleSaveAll = () => {

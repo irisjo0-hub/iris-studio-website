@@ -306,3 +306,29 @@ CREATE POLICY "Public read printing-orders" ON storage.objects FOR SELECT USING 
 CREATE POLICY "Allow upload printing-orders" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'printing-orders');
 CREATE POLICY "Allow update printing-orders" ON storage.objects FOR UPDATE USING (bucket_id = 'printing-orders');
 CREATE POLICY "Allow delete printing-orders" ON storage.objects FOR DELETE USING (bucket_id = 'printing-orders');
+
+-- ────────────────────────────────────────────
+-- 8. GLOBAL SITE SETTINGS & FLOW ITEMS
+-- ────────────────────────────────────────────
+
+-- Global Site Settings Table (Key-Value pairs)
+CREATE TABLE IF NOT EXISTS site_settings (
+  key         TEXT PRIMARY KEY,
+  value       JSONB NOT NULL,
+  updated_at  TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all on site_settings" ON site_settings FOR ALL USING (true) WITH CHECK (true);
+
+-- Flow Items Table
+CREATE TABLE IF NOT EXISTS flow_items (
+  id          TEXT PRIMARY KEY,
+  data        JSONB NOT NULL,
+  sort_order  INT DEFAULT 0,
+  updated_at  TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE flow_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all on flow_items" ON flow_items FOR ALL USING (true) WITH CHECK (true);
+

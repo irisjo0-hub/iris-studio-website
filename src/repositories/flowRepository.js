@@ -211,6 +211,8 @@ export const INITIAL_FLOW_ITEMS = [
   }
 ];
 
+import { supabase } from '../lib/supabase';
+
 export const getFlowItems = () => {
   try {
     const raw = localStorage.getItem(FLOW_STORAGE_KEY);
@@ -224,12 +226,47 @@ export const getFlowItems = () => {
   return INITIAL_FLOW_ITEMS;
 };
 
+export const getFlowItemsAsync = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('flow_items')
+      .select('*')
+      .order('sort_order', { ascending: true });
+
+    if (!error && data && data.length > 0) {
+      const items = data.map(row => typeof row.data === 'string' ? JSON.parse(row.data) : row.data);
+      localStorage.setItem(FLOW_STORAGE_KEY, JSON.stringify(items));
+      return items;
+    }
+  } catch (err) {
+    console.warn("Could not fetch flow items from Supabase:", err);
+  }
+  return getFlowItems();
+};
+
 export const saveFlowItems = (items) => {
   try {
     localStorage.setItem(FLOW_STORAGE_KEY, JSON.stringify(items));
   } catch (err) {
     console.error("Failed to save flow items:", err);
   }
+
+  // Async cloud sync to Supabase
+  (async () => {
+    try {
+      const rows = items.map((item, index) => ({
+        id: item.id || `flow-${index + 1}`,
+        data: item,
+        sort_order: item.sort_order || index + 1,
+        updated_at: new Date().toISOString()
+      }));
+      for (const row of rows) {
+        await supabase.from('flow_items').upsert(row, { onConflict: 'id' });
+      }
+    } catch (err) {
+      console.warn("Cloud sync to Supabase flow_items failed:", err);
+    }
+  })();
 };
 
 // Feedback Repository Methods
