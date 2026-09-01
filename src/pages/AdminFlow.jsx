@@ -108,6 +108,10 @@ export const AdminFlow = () => {
       alert('يرجى إدخال رابط أو اختيار صورة/فيديو للريل');
       return;
     }
+    if (finalMedia.startsWith('blob:')) {
+      alert('⚠️ لا يمكن حفظ رابط مؤقت (blob). يرجى الانتظار حتى يكتمل رفع الملف سحابياً أولاً.');
+      return;
+    }
     const isVid = formData.media_type === 'video' || finalMedia.toLowerCase().includes('.mp4') || finalMedia.toLowerCase().includes('.mov') || finalMedia.toLowerCase().includes('.webm');
 
     const updatedData = {

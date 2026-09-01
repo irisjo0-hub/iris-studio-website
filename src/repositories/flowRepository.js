@@ -245,14 +245,26 @@ export const getFlowItemsAsync = async () => {
 };
 
 export const saveFlowItems = async (items) => {
+  // Sanitize items so temporary blob: URLs are never written to database
+  const sanitizedItems = items.map(item => {
+    const copy = { ...item };
+    if (copy.image && copy.image.startsWith('blob:')) {
+      copy.image = copy.media_url && !copy.media_url.startsWith('blob:') ? copy.media_url : '';
+    }
+    if (copy.media_url && copy.media_url.startsWith('blob:')) {
+      copy.media_url = copy.image && !copy.image.startsWith('blob:') ? copy.image : '';
+    }
+    return copy;
+  });
+
   try {
-    localStorage.setItem(FLOW_STORAGE_KEY, JSON.stringify(items));
+    localStorage.setItem(FLOW_STORAGE_KEY, JSON.stringify(sanitizedItems));
   } catch (err) {
     console.error("Failed to save flow items to localStorage:", err);
   }
 
   try {
-    const rows = items.map((item, index) => ({
+    const rows = sanitizedItems.map((item, index) => ({
       id: item.id || `flow-${index + 1}`,
       data: item,
       sort_order: item.sort_order || index + 1,
