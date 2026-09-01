@@ -204,7 +204,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   }, [items.length]);
 
   // Trigger Cooldown Lock on Index Change
-  // Trigger Cooldown Lock on Index Change
   const navigateToIndex = (newIndex, customDirection = null) => {
     if (isLocked || cooldownRef.current) return;
     const dir = customDirection !== null ? customDirection : (newIndex > activeIndex ? 1 : -1);
@@ -212,11 +211,12 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     setIsLocked(true);
     cooldownRef.current = true;
     setActiveIndex(newIndex);
+    lockWindowToStage();
 
     setTimeout(() => {
       setIsLocked(false);
       cooldownRef.current = false;
-    }, 320);
+    }, 450);
   };
 
   // NON-PASSIVE WHEEL & TOUCH EVENT LISTENERS WITH PINNED WINDOW LOCK
@@ -302,9 +302,10 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       const totalCount = items.length > 0 ? items.length : 8;
       const maxIndex = totalCount - 1;
 
-      // Prevent native page scroll jump during middle reel swipes
-      if (currIndex > 0 && currIndex < maxIndex) {
+      // Strictly lock window position to stage top while browsing inner reels
+      if (currIndex >= 0 && currIndex <= maxIndex) {
         e.preventDefault();
+        lockWindowToStage();
       }
     };
 
