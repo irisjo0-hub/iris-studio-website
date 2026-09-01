@@ -332,3 +332,29 @@ CREATE TABLE IF NOT EXISTS flow_items (
 ALTER TABLE flow_items ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow all on flow_items" ON flow_items FOR ALL USING (true) WITH CHECK (true);
 
+-- Storage Buckets & Full Access Policies
+INSERT INTO storage.buckets (id, name, public) VALUES ('portfolio', 'portfolio', true) ON CONFLICT (id) DO NOTHING;
+INSERT INTO storage.buckets (id, name, public) VALUES ('packages', 'packages', true) ON CONFLICT (id) DO NOTHING;
+INSERT INTO storage.buckets (id, name, public) VALUES ('reels', 'reels', true) ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Public read portfolio" ON storage.objects;
+DROP POLICY IF EXISTS "Allow upload portfolio" ON storage.objects;
+DROP POLICY IF EXISTS "Allow update portfolio" ON storage.objects;
+DROP POLICY IF EXISTS "Allow delete portfolio" ON storage.objects;
+DROP POLICY IF EXISTS "Allow all portfolio" ON storage.objects;
+CREATE POLICY "Allow all portfolio" ON storage.objects FOR ALL USING (bucket_id = 'portfolio') WITH CHECK (bucket_id = 'portfolio');
+
+DROP POLICY IF EXISTS "Public read packages" ON storage.objects;
+DROP POLICY IF EXISTS "Allow upload packages" ON storage.objects;
+DROP POLICY IF EXISTS "Allow update packages" ON storage.objects;
+DROP POLICY IF EXISTS "Allow delete packages" ON storage.objects;
+DROP POLICY IF EXISTS "Allow all packages" ON storage.objects;
+CREATE POLICY "Allow all packages" ON storage.objects FOR ALL USING (bucket_id = 'packages') WITH CHECK (bucket_id = 'packages');
+
+DROP POLICY IF EXISTS "Public read reels" ON storage.objects;
+DROP POLICY IF EXISTS "Allow upload reels" ON storage.objects;
+DROP POLICY IF EXISTS "Allow update reels" ON storage.objects;
+DROP POLICY IF EXISTS "Allow delete reels" ON storage.objects;
+DROP POLICY IF EXISTS "Allow all reels" ON storage.objects;
+CREATE POLICY "Allow all reels" ON storage.objects FOR ALL USING (bucket_id = 'reels') WITH CHECK (bucket_id = 'reels');
+
