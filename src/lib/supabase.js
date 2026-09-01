@@ -29,11 +29,18 @@ export async function uploadFile(bucket, path, file) {
     return ext ? `${finalBase}.${ext}` : finalBase;
   }).filter(Boolean).join('/');
 
-  const { error } = await supabase.storage
+  let uploadResult = await supabase.storage
     .from(bucket)
     .upload(sanitizedPath, file, { upsert: true });
 
-  if (error) throw error;
+  if (uploadResult.error) {
+    console.warn('Upsert upload failed, retrying standard upload:', uploadResult.error);
+    uploadResult = await supabase.storage
+      .from(bucket)
+      .upload(sanitizedPath, file, { upsert: false });
+  }
+
+  if (uploadResult.error) throw uploadResult.error;
 
   const { data } = supabase.storage
     .from(bucket)
