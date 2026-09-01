@@ -4,7 +4,8 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Menu, X, MessageSquare, Share2, ArrowUpRight, Globe,
-  Camera, Calendar, Printer, ShoppingBag, FolderKanban
+  Camera, Calendar, Printer, ShoppingBag, FolderKanban,
+  Volume2, VolumeX
 } from 'lucide-react';
 
 import { useSiteSettings } from '../../context/SiteSettingsContext';
@@ -28,6 +29,7 @@ export const IrisReelsStage = ({ id = "iris-reels-stage-root" }) => {
   const [isLocked, setIsLocked] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isStageActive, setIsStageActive] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
 
   // Feedback State
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -40,7 +42,40 @@ export const IrisReelsStage = ({ id = "iris-reels-stage-root" }) => {
   const [toastMessage, setToastMessage] = useState('');
 
   const stageRef = useRef(null);
+  const videoRef = useRef(null);
   const touchStartY = useRef(0);
+
+  // Auto-pause video when scrolling away from Reels stage or tab loses focus
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isStageActive && document.visibilityState === 'visible') {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [isStageActive, activeReelIndex]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const video = videoRef.current;
+      if (!video) return;
+      if (document.visibilityState === 'hidden' || !isStageActive) {
+        video.pause();
+      } else if (isStageActive) {
+        video.play().catch(() => {});
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
+    };
+  }, [isStageActive]);
 
   // Load items on mount
   useEffect(() => {
@@ -271,11 +306,24 @@ export const IrisReelsStage = ({ id = "iris-reels-stage-root" }) => {
               exit={{ y: '-100%', opacity: 1 }}
               transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
             >
-              <img
-                src={currentReel.image}
-                alt={isRtl ? currentReel.alt_ar : currentReel.alt_en}
-                className="flow-static-img"
-              />
+              {currentReel.media_type === 'video' || (currentReel.media_url && (currentReel.media_url.endsWith('.mp4') || currentReel.media_url.endsWith('.mov') || currentReel.media_url.endsWith('.webm') || currentReel.media_url.startsWith('blob:') || currentReel.media_url.startsWith('data:video'))) ? (
+                <video
+                  ref={videoRef}
+                  src={currentReel.media_url || currentReel.image}
+                  autoPlay={isStageActive}
+                  loop
+                  muted={isMuted}
+                  playsInline
+                  className="flow-static-img"
+                  style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                />
+              ) : (
+                <img
+                  src={currentReel.image || currentReel.media_url}
+                  alt={isRtl ? currentReel.alt_ar : currentReel.alt_en}
+                  className="flow-static-img"
+                />
+              )}
               <div className="flow-darkness-gradient" />
 
               {/* FLOATING EDITORIAL OVERLAY ATTACHED TO CANVAS */}
@@ -356,6 +404,17 @@ export const IrisReelsStage = ({ id = "iris-reels-stage-root" }) => {
               title={isRtl ? "مشاركة" : "Share"}
             >
               <Share2 size={22} />
+            </button>
+
+            {/* 4. MUTE / UNMUTE SOUND BUTTON */}
+            <button
+              type="button"
+              className="flow-action-circle-btn"
+              onClick={() => setIsMuted((prev) => !prev)}
+              aria-label={isMuted ? (isRtl ? "تشغيل الصوت" : "Unmute") : (isRtl ? "كتم الصوت" : "Mute")}
+              title={isMuted ? (isRtl ? "تشغيل الصوت" : "Unmute") : (isRtl ? "كتم الصوت" : "Mute")}
+            >
+              {isMuted ? <VolumeX size={22} /> : <Volume2 size={22} />}
             </button>
           </div>
 

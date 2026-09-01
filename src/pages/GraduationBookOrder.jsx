@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase, uploadFile } from '../lib/supabase';
+import { getNextOrderNumber } from '../lib/orderUtils';
 import { Loader2, Check } from 'lucide-react';
 import '../styles/graduation.css';
 
@@ -502,7 +503,7 @@ const GraduationBookOrder = () => {
     setSubmitError('');
 
     try {
-      const generatedOrderNum = `IRIS-GRAD-${Date.now().toString().slice(-6)}`;
+      const generatedOrderNum = getNextOrderNumber('GRAD');
       setOrderNum(generatedOrderNum);
 
       // Upload Front Cover
@@ -995,7 +996,14 @@ const GraduationBookOrder = () => {
 
           <div className="invoice-box" style={{ border: '2px solid #eee', borderRadius: 12, padding: 24, textAlign: 'right', marginBottom: 24 }}>
             <h3 style={{ borderBottom: '1px solid #eee', paddingBottom: 12, marginBottom: 16 }}>فاتورة الطلب</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>رقم الطلب:</strong> <span>{orderNum}</span></div>
+
+            <div style={{ background: 'rgba(245, 189, 26, 0.12)', border: '1.5px dashed #D49D0E', borderRadius: 10, padding: '12px', textAlign: 'center', marginBottom: 16 }}>
+              <div style={{ color: '#D49D0E', fontWeight: 800, fontSize: '0.95rem' }}>📌 احفظ رقم الطلب لمتابعة وتتبع الحالة:</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#120911', margin: '4px 0' }}>#{orderNum}</div>
+              <span style={{ fontSize: '0.82rem', color: '#555' }}>يمكنك إدخال هذا الرقم في صفحة "تتبع الطلب" للتحقق من مرحلة المعالجة والطباعة.</span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>رقم الطلب:</strong> <span style={{ color: 'var(--g-purple)', fontWeight: 800 }}>#{orderNum}</span></div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>الاسم:</strong> <span>{arabicName}</span></div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>رقم الهاتف:</strong> <span>{phone}</span></div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>الباقة المختارة:</strong> <span>{selectedPkg?.name}</span></div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Video, Film, Sparkles, Layers, CheckCircle2, 
   Send, PhoneCall, ArrowLeft, ArrowRight, Play, Briefcase, Zap, HelpCircle
@@ -15,6 +15,13 @@ const MediaPortal = () => {
   const [activeTab, setActiveTab] = useState('services');
   const [quoteForm, setQuoteForm] = useState({ name: '', phone: '', serviceType: 'video', budget: '', details: '' });
   const [submitted, setSubmitted] = useState(false);
+
+  const handleTabSelect = (tabKey, e) => {
+    setActiveTab(tabKey);
+    if (e?.currentTarget) {
+      e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  };
 
   const mediaServices = [
     {
@@ -153,28 +160,28 @@ const MediaPortal = () => {
           <button 
             type="button" 
             className={`smart-tab-btn ${activeTab === 'services' ? 'active' : ''}`}
-            onClick={() => setActiveTab('services')}
+            onClick={(e) => handleTabSelect('services', e)}
           >
             🎥 {isRtl ? 'الخدمات المرئية' : 'Services'}
           </button>
           <button 
             type="button" 
             className={`smart-tab-btn ${activeTab === 'projects' ? 'active' : ''}`}
-            onClick={() => setActiveTab('projects')}
+            onClick={(e) => handleTabSelect('projects', e)}
           >
             🖼️ {isRtl ? 'معرض الأعمال' : 'Portfolio'}
           </button>
           <button 
             type="button" 
             className={`smart-tab-btn ${activeTab === 'process' ? 'active' : ''}`}
-            onClick={() => setActiveTab('process')}
+            onClick={(e) => handleTabSelect('process', e)}
           >
             ⚙️ {isRtl ? 'طريقة العمل' : 'Process'}
           </button>
           <button 
             type="button" 
             className={`smart-tab-btn ${activeTab === 'quote' ? 'active' : ''}`}
-            onClick={() => setActiveTab('quote')}
+            onClick={(e) => handleTabSelect('quote', e)}
           >
             📝 {isRtl ? 'طلب عرض سعر' : 'Quote'}
           </button>

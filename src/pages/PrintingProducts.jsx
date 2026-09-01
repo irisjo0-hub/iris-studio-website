@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Grid, List, ShoppingCart, Plus, Minus, Trash2, X, CheckCircle, ArrowRight } from 'lucide-react';
+import { Grid, List, ShoppingCart, Plus, Minus, Trash2, X, CheckCircle, ArrowRight, Download } from 'lucide-react';
+import html2canvas from 'html2canvas';
 import { supabase, uploadFile } from '../lib/supabase';
+import { getNextOrderNumber } from '../lib/orderUtils';
 import '../styles/graduation.css'; // Leverage shared premium styling variables
 
 const getColorStyle = (colorName, isSelected) => {
@@ -208,23 +210,61 @@ const ProductStoreCard = ({ prod, onOrder, onAddToCart, viewMode = 'grid' }) => 
             {prod.price} JOD
           </div>
 
-          <div style={{ display: 'flex', gap: '4px' }}>
+          <div style={{ display: 'flex', gap: '6px' }}>
             <button
               type="button"
-              onClick={() => onOrder(prod)}
-              title="تخصيص وإضافة للسلة"
-              style={{ background: 'rgba(245, 189, 26, 0.15)', color: '#F5BD1A', fontWeight: '900', border: '1px solid rgba(245, 189, 26, 0.4)', borderRadius: '50px', padding: '5px 10px', fontSize: '0.74rem', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s ease' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddToCart(prod);
+              }}
+              title="إضافة للسلة"
+              style={{
+                height: '34px',
+                background: 'rgba(255, 255, 255, 0.08)',
+                color: '#FFFFFF',
+                fontWeight: '800',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: '10px',
+                padding: '0 10px',
+                fontSize: '0.78rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '4px',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease'
+              }}
             >
-              + السلة 🛒
+              <span>+ السلة 🛒</span>
             </button>
             <button
               type="button"
-              className="grad-pkg-btn"
-              onClick={() => onOrder(prod)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOrder(prod);
+              }}
               title="طلب مباشر مخصص"
-              style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '5px 10px', fontSize: '0.74rem', cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(245, 189, 26, 0.25)' }}
+              style={{
+                height: '34px',
+                background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
+                color: '#120911',
+                fontWeight: '900',
+                border: 'none',
+                borderRadius: '10px',
+                padding: '0 10px',
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '3px',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 4px 12px rgba(245, 189, 26, 0.3)',
+                transition: 'all 0.2s ease'
+              }}
             >
-              طلب ⚡
+              <span>طلب ⚡</span>
             </button>
           </div>
         </div>
@@ -299,21 +339,60 @@ const ProductStoreCard = ({ prod, onOrder, onAddToCart, viewMode = 'grid' }) => 
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: '6px', marginTop: 'auto' }}>
+        {/* Buttons Grid Bar */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginTop: 'auto', paddingTop: '6px' }}>
           <button
             type="button"
-            onClick={() => onOrder(prod)}
-            style={{ flex: 1, background: 'rgba(245, 189, 26, 0.15)', color: '#F5BD1A', fontWeight: '900', border: '1px solid rgba(245, 189, 26, 0.4)', borderRadius: '50px', padding: '6px 8px', fontSize: '0.76rem', cursor: 'pointer', transition: 'all 0.2s ease' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart(prod);
+            }}
+            style={{
+              height: '36px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              color: '#FFFFFF',
+              fontWeight: '800',
+              border: '1px solid rgba(255, 255, 255, 0.22)',
+              borderRadius: '10px',
+              padding: '0 4px',
+              fontSize: '0.78rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s ease'
+            }}
           >
-            + السلة 🛒
+            <span>+ السلة 🛒</span>
           </button>
           <button
             type="button"
-            className="grad-pkg-btn"
-            onClick={() => onOrder(prod)}
-            style={{ flex: 1, background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', fontWeight: '900', border: 'none', borderRadius: '50px', padding: '6px 8px', fontSize: '0.76rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(245, 189, 26, 0.25)' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOrder(prod);
+            }}
+            style={{
+              height: '36px',
+              background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
+              color: '#120A11',
+              fontWeight: '900',
+              border: 'none',
+              borderRadius: '10px',
+              padding: '0 4px',
+              fontSize: '0.8rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '3px',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 4px 12px rgba(245, 189, 26, 0.3)',
+              transition: 'all 0.2s ease'
+            }}
           >
-            طلب ⚡
+            <span>طلب ⚡</span>
           </button>
         </div>
       </div>
@@ -578,10 +657,36 @@ const PrintingProducts = () => {
       const payLabel = paymentMethod === 'cliq' ? '[دفع عبر CliQ 📱]' : '[الدفع عند الاستلام 💵]';
       finalNotes = `${payLabel}\n${finalNotes}`;
 
+      let calculatedProductName = selectedProduct.name;
+      if (selectedProduct.id === 'cart_checkout' && cart && cart.length > 0) {
+        calculatedProductName = cart.map(item => `${item.name}${item.selectedColor ? ` [${item.selectedColor}]` : ''} (×${item.quantity})`).join(' + ');
+      }
+
+      const cartItemsStructured = selectedProduct.id === 'cart_checkout' && cart
+        ? cart.map((item, idx) => ({
+            id: `item-${idx}`,
+            name: item.name,
+            selectedColor: item.selectedColor || '',
+            quantity: item.quantity,
+            price: item.price,
+            image: item.image || ''
+          }))
+        : [{
+            id: 'item-single',
+            name: selectedProduct.name,
+            selectedColor: selectedColor || '',
+            quantity: quantity,
+            price: Number(selectedProduct.price) || 0,
+            image: ''
+          }];
+
+      const generatedOrderNum = getNextOrderNumber('ORD');
       const newOrderObj = {
-        id: `ord_${Date.now()}`,
+        id: generatedOrderNum,
+        order_number: generatedOrderNum,
         product_id: selectedProduct.id,
-        product_name: selectedProduct.id === 'cart_checkout' ? `سلة متعددة (${totalCartCount} منتجات)` : selectedProduct.name,
+        product_name: calculatedProductName,
+        cart_items: cartItemsStructured,
         customer_name: customerName.trim(),
         phone: phone.trim(),
         notes: finalNotes,
@@ -625,7 +730,7 @@ const PrintingProducts = () => {
         : (Number(selectedProduct.price) || 0) * quantity + (deliverySelected ? 2 : 0);
 
       const invoiceData = {
-        invoiceNo: `INV-${Date.now().toString().slice(-6)}`,
+        invoiceNo: generatedOrderNum,
         date: new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
         customerName: customerName.trim(),
         phone: phone.trim(),
@@ -656,6 +761,168 @@ const PrintingProducts = () => {
     }
   };
 
+  const [savingImage, setSavingImage] = useState(false);
+
+  const handleSaveInvoiceImage = async () => {
+    if (!placedInvoiceData) return;
+    setSavingImage(true);
+
+    try {
+      // 1. Create high-resolution HD Canvas (2x scale for 1280x1040 HD export)
+      const canvas = document.createElement('canvas');
+      const width = 640;
+      const height = 575;
+      canvas.width = width * 2;
+      canvas.height = height * 2;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(2, 2);
+
+      // 2. Dark Background
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, '#261124');
+      bgGrad.addColorStop(1, '#120911');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      // 3. Gold Outer Card Border
+      ctx.beginPath();
+      ctx.strokeStyle = '#F5BD1A';
+      ctx.lineWidth = 2.5;
+      ctx.roundRect(14, 14, width - 28, height - 28, 16);
+      ctx.stroke();
+
+      // 4. Header: Centered Brand Title & Subtitle
+      ctx.direction = 'rtl';
+      ctx.textAlign = 'center';
+
+      ctx.font = 'bold 20px Arial, sans-serif';
+      ctx.fillStyle = '#F5BD1A';
+      ctx.fillText('آيرس — المطبوعات والتطريز 🖨️', width / 2, 48);
+
+      ctx.font = '12px Arial, sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.fillText('فاتورة طلب إلكترونية مؤكدة', width / 2, 68);
+
+      // Order Badge Box (Centered Box)
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(245, 189, 26, 0.12)';
+      ctx.strokeStyle = '#F5BD1A';
+      ctx.lineWidth = 1.5;
+      ctx.roundRect((width - 240) / 2, 80, 240, 54, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.textAlign = 'center';
+      ctx.font = 'bold 11px Arial, sans-serif';
+      ctx.fillStyle = '#F5BD1A';
+      ctx.fillText('رقم الأوردر (Order Number)', width / 2, 98);
+
+      ctx.font = 'bold 20px Arial, sans-serif';
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillText(`#${placedInvoiceData.invoiceNo}`, width / 2, 122);
+
+      // 5. Divider Line
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(245, 189, 26, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.moveTo(32, 146);
+      ctx.lineTo(width - 32, 146);
+      ctx.stroke();
+
+      // 6. Customer Details Box
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.strokeStyle = 'rgba(245, 189, 26, 0.25)';
+      ctx.lineWidth = 1;
+      ctx.roundRect(32, 158, width - 64, 140, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.direction = 'rtl';
+      ctx.textAlign = 'right';
+
+      const details = [
+        { label: '👤 اسم الزبون:', val: placedInvoiceData.customerName || 'عميل آيرس', y: 184 },
+        { label: '📞 رقم التواصل:', val: placedInvoiceData.phone || 'غير مدخل', y: 212 },
+        { label: '🚚 طريقة التسليم:', val: placedInvoiceData.deliverySelected ? `توصيل (${placedInvoiceData.deliveryAddress})` : 'استلام من المحل', y: 240 },
+        { label: '💳 وسيلة الدفع:', val: placedInvoiceData.paymentStatus || 'نقداً', y: 268 }
+      ];
+
+      details.forEach((d) => {
+        ctx.font = 'bold 13px Arial, sans-serif';
+        ctx.fillStyle = '#F5BD1A';
+        ctx.fillText(d.label, width - 50, d.y);
+
+        ctx.font = '13px Arial, sans-serif';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(d.val, width - 165, d.y);
+      });
+
+      // 7. Products List
+      ctx.font = 'bold 14px Arial, sans-serif';
+      ctx.fillStyle = '#F5BD1A';
+      ctx.fillText('🛍️ المنتجات المطلوبة:', width - 32, 322);
+
+      let currentY = 348;
+      placedInvoiceData.items.forEach((item) => {
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(18, 9, 17, 0.95)';
+        ctx.strokeStyle = 'rgba(245, 189, 26, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.roundRect(32, currentY - 18, width - 64, 36, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.font = 'bold 13px Arial, sans-serif';
+        ctx.fillStyle = '#FFFFFF';
+        const colorTxt = item.selectedColor ? ` [اللون: ${item.selectedColor}]` : '';
+        ctx.fillText(`${item.name}${colorTxt} (×${item.quantity})`, width - 50, currentY + 4);
+
+        ctx.textAlign = 'left';
+        ctx.font = 'bold 14px Arial, sans-serif';
+        ctx.fillStyle = '#F5BD1A';
+        ctx.fillText(`${item.price * item.quantity} JOD`, 50, currentY + 4);
+        ctx.textAlign = 'right';
+
+        currentY += 44;
+      });
+
+      // 8. Total Summary Banner
+      const totalY = Math.max(currentY + 6, 455);
+      const totalGrad = ctx.createLinearGradient(32, totalY, width - 32, totalY);
+      totalGrad.addColorStop(0, '#F5BD1A');
+      totalGrad.addColorStop(1, '#D49D0E');
+
+      ctx.beginPath();
+      ctx.fillStyle = totalGrad;
+      ctx.roundRect(32, totalY, width - 64, 46, 12);
+      ctx.fill();
+
+      ctx.font = 'bold 16px Arial, sans-serif';
+      ctx.fillStyle = '#120911';
+      ctx.fillText('المجموع الكلي النهائي:', width - 52, totalY + 28);
+
+      ctx.textAlign = 'left';
+      ctx.font = 'bold 19px Arial, sans-serif';
+      ctx.fillText(`${placedInvoiceData.totalPrice} JOD`, 52, totalY + 29);
+
+      // Download PNG
+      const image = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = image;
+      link.download = `فاتورة_أوردر_${placedInvoiceData.invoiceNo}.png`;
+      link.click();
+
+      setToast('📸 تم حفظ صورة الفاتورة في المعرض بنجاح!');
+      setTimeout(() => setToast(''), 4000);
+    } catch (err) {
+      console.error(err);
+      alert('تعذر حفظ الصورة: ' + err.message);
+    } finally {
+      setSavingImage(false);
+    }
+  };
+
   const categoriesList = ['الكل', ...new Set(products.map(p => p.category).filter(Boolean))];
 
   const filteredProducts = products.filter(p => {
@@ -667,14 +934,14 @@ const PrintingProducts = () => {
   return (
     <main className="grad-page" dir="rtl" style={{ minHeight: '100vh', paddingBottom: '60px' }}>
       {/* Hero Banner */}
-      <section className="grad-hero" style={{ paddingBottom: '30px' }}>
+      <section className="grad-hero no-print" style={{ paddingBottom: '30px' }}>
         <div className="grad-hero-badge">🖨️ آيرس — المطبوعات والتطريز</div>
         <h1>منتجات الطباعة والتصميم المخصصة</h1>
         <p>استكشف منتجات المطبوعات والهدايا ووشاحات التخرج، وارفع تصميمك الخاص لنقوم بطباعته لك.</p>
       </section>
 
       {/* Category Pills & Search Filter Control Bar */}
-      <section className="portal-section" style={{ paddingTop: '0', paddingBottom: '20px' }}>
+      <section className="portal-section no-print" style={{ paddingTop: '0', paddingBottom: '20px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '1150px', margin: '0 auto' }}>
           
           {/* Search Row */}
@@ -770,7 +1037,7 @@ const PrintingProducts = () => {
       </section>
 
       {/* Grid / List of products */}
-      <section className="grad-section" style={{ paddingTop: 0 }}>
+      <section className="grad-section no-print" style={{ paddingTop: 0 }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px', fontSize: '1.2rem', color: '#F5BD1A' }}>⏳ جاري تحميل الكتالوج...</div>
         ) : filteredProducts.length === 0 ? (
@@ -829,11 +1096,12 @@ const PrintingProducts = () => {
             >
               <button
                 type="button"
+                className="no-print"
                 onClick={closeOrderModal}
                 style={{
                   position: 'absolute',
-                  top: '18px',
-                  left: '18px',
+                  top: '12px',
+                  left: '12px',
                   background: 'rgba(255,255,255,0.1)',
                   border: '1px solid rgba(255,255,255,0.2)',
                   borderRadius: '50%',
@@ -844,89 +1112,143 @@ const PrintingProducts = () => {
                   color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  zIndex: 99
                 }}
               >
                 ✕
               </button>
 
               {orderPlaced && placedInvoiceData ? (
-                <div className="invoice-print-area" style={{ color: '#FFFFFF', padding: '10px 0' }}>
-                  {/* Invoice Header */}
-                  <div style={{ textAlign: 'center', borderBottom: '2px dashed rgba(245, 189, 26, 0.4)', paddingBottom: '16px', marginBottom: '20px' }}>
-                    <div style={{ fontSize: '1.6rem', fontWeight: '900', color: '#F5BD1A', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <div className="invoice-print-area" style={{ color: '#FFFFFF', padding: '6px 0 0', width: '100%', boxSizing: 'border-box' }}>
+                  
+                  {/* Top Centered Header & Standalone Order Number Banner */}
+                  <div style={{ textAlign: 'center', borderBottom: '1.5px dashed rgba(245, 189, 26, 0.4)', paddingBottom: '12px', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '1.35rem', fontWeight: '900', color: '#F5BD1A', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                       <span>🖨️</span>
                       <span>آيرس — المطبوعات والتطريز</span>
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: 'rgba(236, 235, 231, 0.7)', marginTop: '4px' }}>
+                    <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.7)', marginTop: '2px', fontWeight: '600' }}>
                       فاتورة طلب إلكترونية مؤكدة
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '14px', background: 'rgba(245, 189, 26, 0.1)', padding: '8px 14px', borderRadius: '10px', fontSize: '0.82rem', border: '1px solid rgba(245, 189, 26, 0.25)' }}>
-                      <span>رقم الفاتورة: <strong style={{ color: '#F5BD1A' }}>#{placedInvoiceData.invoiceNo}</strong></span>
-                      <span>التاريخ: <strong>{placedInvoiceData.date}</strong></span>
+
+                    {/* Clean Centered Standalone Order Number Banner */}
+                    <div style={{ marginTop: '10px', background: 'rgba(245, 189, 26, 0.12)', padding: '10px 14px', borderRadius: '12px', border: '1.5px solid rgba(245, 189, 26, 0.4)', textAlign: 'center' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#F5BD1A', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        رقم الأوردر (Order Number)
+                      </div>
+                      <div style={{ fontSize: '1.75rem', fontWeight: '900', color: '#FFFFFF', letterSpacing: '1px', lineHeight: '1.15', margin: '2px 0' }}>
+                        #{placedInvoiceData.invoiceNo}
+                      </div>
+                      <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.75)' }}>
+                        التاريخ: {placedInvoiceData.date}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Customer Details Card */}
-                  <div style={{ background: 'rgba(255, 255, 255, 0.04)', borderRadius: '12px', padding: '14px', marginBottom: '18px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.88rem', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div>👤 <strong>الزبون:</strong> {placedInvoiceData.customerName}</div>
-                    <div>📞 <strong>رقم التواصل:</strong> <span dir="ltr">{placedInvoiceData.phone}</span></div>
-                    <div>
-                      🚚 <strong>طريقة التسليم:</strong> {placedInvoiceData.deliverySelected ? `توصيل للمنزل (${placedInvoiceData.deliveryAddress})` : 'استلام من الاستوديو / المحل'}
+                  {/* Compact Customer & Delivery Info Grid */}
+                  <div style={{ background: 'rgba(255, 255, 255, 0.04)', borderRadius: '12px', padding: '10px 12px', marginBottom: '12px', border: '1px solid rgba(245, 189, 26, 0.25)', fontSize: '0.82rem', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
+                      <div>👤 <strong>الزبون:</strong> <span style={{ color: '#FFFFFF', fontWeight: '800' }}>{placedInvoiceData.customerName}</span></div>
+                      <div>📞 <strong>التواصل:</strong> <span dir="ltr" style={{ color: '#FFFFFF', fontWeight: '800' }}>{placedInvoiceData.phone}</span></div>
                     </div>
-                    <div>
-                      💳 <strong>وسيلة الدفع:</strong> <span style={{ color: '#F5BD1A', fontWeight: 'bold' }}>{placedInvoiceData.paymentStatus}</span> {placedInvoiceData.cardMasked ? <span style={{ fontSize: '0.8rem', opacity: 0.85 }}>({placedInvoiceData.cardMasked})</span> : ''}
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', borderTop: '1px dashed rgba(255,255,255,0.08)', paddingTop: '5px' }}>
+                      <div>🚚 <strong>التسليم:</strong> <span style={{ color: '#FFFFFF' }}>{placedInvoiceData.deliverySelected ? `توصيل (${placedInvoiceData.deliveryAddress})` : 'استلام من المحل'}</span></div>
+                      <div>💳 <strong>الدفع:</strong> <span style={{ color: '#F5BD1A', fontWeight: '800' }}>{placedInvoiceData.paymentStatus}</span></div>
                     </div>
+
                     {placedInvoiceData.uploadedImagesCount > 0 && (
-                      <div>🖼️ <strong>مرفقات التصميم:</strong> تم رفع {placedInvoiceData.uploadedImagesCount} صور مخصصة للطباعة</div>
+                      <div style={{ borderTop: '1px dashed rgba(255,255,255,0.08)', paddingTop: '5px', fontSize: '0.78rem', color: '#F5BD1A' }}>
+                        🖼️ <strong>مرفقات:</strong> تم رفع {placedInvoiceData.uploadedImagesCount} صور مخصصة
+                      </div>
                     )}
                   </div>
 
-                  {/* Items Table */}
-                  <div style={{ marginBottom: '20px' }}>
-                    <h4 style={{ fontSize: '0.95rem', color: '#F5BD1A', marginBottom: '10px', fontWeight: '800' }}>🛍️ تفاصيل المنتجات المطلوبة:</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {/* Products Table (Compact) */}
+                  <div style={{ marginBottom: '12px' }}>
+                    <div style={{ fontSize: '0.82rem', color: '#F5BD1A', marginBottom: '6px', fontWeight: '900' }}>
+                      🛍️ المنتجات المطلوبة ({placedInvoiceData.items.length}):
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '130px', overflowY: 'auto' }}>
                       {placedInvoiceData.items.map((item, idx) => (
-                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(18, 9, 17, 0.95)', padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(245, 189, 26, 0.2)', fontSize: '0.88rem' }}>
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(18, 9, 17, 0.95)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(245, 189, 26, 0.2)', fontSize: '0.82rem' }}>
                           <div>
-                            <div style={{ fontWeight: '800', color: '#FFFFFF' }}>{item.name}</div>
-                            {item.selectedColor && (
-                              <span style={{ fontSize: '0.74rem', color: '#F5BD1A' }}>اللون: {item.selectedColor}</span>
-                            )}
-                            <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.6)', marginRight: '8px' }}>
-                              (العدد: {item.quantity})
-                            </span>
+                            <span style={{ fontWeight: '800', color: '#FFFFFF' }}>{item.name}</span>
+                            {item.selectedColor && <span style={{ fontSize: '0.74rem', color: '#F5BD1A', marginRight: '6px' }}>[{item.selectedColor}]</span>}
+                            <span style={{ fontSize: '0.76rem', color: 'rgba(255,255,255,0.6)', marginRight: '6px' }}>×{item.quantity}</span>
                           </div>
-                          <div style={{ fontWeight: '900', color: '#F5BD1A', fontSize: '0.98rem' }}>
+                          <span style={{ fontWeight: '900', color: '#F5BD1A', fontSize: '0.92rem' }}>
                             {item.price * item.quantity} JOD
-                          </div>
+                          </span>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Total Summary */}
-                  <div style={{ background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)', color: '#120911', borderRadius: '14px', padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: '900', fontSize: '1.1rem', boxShadow: '0 6px 20px rgba(245, 189, 26, 0.35)', marginBottom: '24px' }}>
-                    <span>المجموع الكلي النهائي:</span>
-                    <span>{placedInvoiceData.totalPrice} JOD</span>
+                  {/* Total Summary Box */}
+                  <div style={{ background: 'linear-gradient(135deg, rgba(65, 22, 60, 0.9) 0%, rgba(32, 12, 30, 0.95) 100%)', border: '1.5px solid rgba(245, 189, 26, 0.45)', borderRadius: '12px', padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: '900', fontSize: '0.96rem', boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)', marginBottom: '12px' }}>
+                    <span style={{ color: '#FFFFFF' }}>المجموع الكلي النهائي:</span>
+                    <span style={{ fontSize: '1.25rem', color: '#F5BD1A', textShadow: '0 2px 8px rgba(245, 189, 26, 0.3)' }}>{placedInvoiceData.totalPrice} JOD</span>
                   </div>
 
-                  {/* Buttons */}
-                  <div style={{ display: 'flex', gap: '10px' }}>
+                  {/* Action Buttons Row (Side by side full width) */}
+                  <div className="no-print" style={{ display: 'flex', gap: '10px' }}>
                     <button
                       type="button"
                       onClick={() => window.print()}
-                      style={{ flex: 1, background: 'rgba(245, 189, 26, 0.15)', color: '#F5BD1A', border: '1.5px solid #F5BD1A', borderRadius: '50px', padding: '10px', fontWeight: '900', cursor: 'pointer', fontSize: '0.88rem' }}
+                      style={{
+                        flex: 1,
+                        height: '44px',
+                        background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
+                        color: '#120911',
+                        border: 'none',
+                        borderRadius: '12px',
+                        fontWeight: '900',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        boxShadow: '0 6px 18px rgba(245, 189, 26, 0.35)',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.25s ease'
+                      }}
                     >
-                      طباعة الفاتورة 🖨️
+                      <span>طباعة الفاتورة 🖨️</span>
                     </button>
+
                     <button
                       type="button"
-                      onClick={closeOrderModal}
-                      style={{ flex: 1, background: 'rgba(255,255,255,0.1)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50px', padding: '10px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.88rem' }}
+                      onClick={handleSaveInvoiceImage}
+                      disabled={savingImage}
+                      title="حفظ الفاتورة كصورة في معرض الصور بالجهاز"
+                      style={{
+                        flex: 1,
+                        height: '44px',
+                        background: 'linear-gradient(135deg, rgba(245, 189, 26, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                        color: '#F5BD1A',
+                        border: '1.5px solid rgba(245, 189, 26, 0.5)',
+                        borderRadius: '12px',
+                        fontWeight: '900',
+                        cursor: 'pointer',
+                        fontSize: '0.88rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.25s ease'
+                      }}
                     >
-                      إغلاق
+                      <Download size={15} color="#F5BD1A" />
+                      <span>{savingImage ? '⏳ جاري الحفظ...' : 'حفظ بالمعرض 📸'}</span>
                     </button>
+                  </div>
+
+                  <div className="no-print" style={{ fontSize: '0.72rem', color: '#F5BD1A', textAlign: 'center', marginTop: '8px', opacity: 0.85 }}>
+                    💡 احفظ رقم الأوردر (#{placedInvoiceData.invoiceNo}) لمتابعة وتتبع طلبك في قسم "تتبع الطلب".
                   </div>
                 </div>
               ) : (
@@ -1231,44 +1553,79 @@ const PrintingProducts = () => {
                     )}
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '24px' }}>
-                    {selectedProduct.id !== 'cart_checkout' && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleAddToCart(selectedProduct, selectedColor, quantity, notes, imagesPreviews);
-                          closeOrderModal();
-                          setIsCartOpen(true);
-                        }}
-                        style={{
-                          width: '100%',
-                          background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
-                          color: '#120911',
-                          fontWeight: '900',
-                          border: 'none',
-                          borderRadius: '50px',
-                          padding: '13px',
-                          fontSize: '0.98rem',
-                          cursor: 'pointer',
-                          boxShadow: '0 6px 20px rgba(245, 189, 26, 0.35)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '8px'
-                        }}
-                      >
-                        <span>إضافة هذا المنتج إلى السلة 🛒</span>
-                      </button>
-                    )}
-
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
                     {selectedProduct.id !== 'cart_checkout' && !showDirectOrderFields && (
-                      <button
-                        type="button"
-                        onClick={() => setShowDirectOrderFields(true)}
-                        style={{ background: 'none', border: 'none', color: '#F5BD1A', fontSize: '0.84rem', fontWeight: '800', cursor: 'pointer', textDecoration: 'underline', margin: '4px 0' }}
-                      >
-                        أو طلب مباشر فوراً بدون إضافة للسلة ⚡
-                      </button>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleAddToCart(selectedProduct, selectedColor, quantity, notes, imagesPreviews);
+                            closeOrderModal();
+                            setIsCartOpen(true);
+                          }}
+                          style={{
+                            width: '100%',
+                            height: '48px',
+                            background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
+                            color: '#120911',
+                            fontWeight: '900',
+                            border: 'none',
+                            borderRadius: '12px',
+                            fontSize: '0.96rem',
+                            cursor: 'pointer',
+                            boxShadow: '0 6px 20px rgba(245, 189, 26, 0.35)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            transition: 'all 0.2s ease'
+                          }}
+                        >
+                          <span>إضافة هذا المنتج إلى السلة 🛒</span>
+                        </button>
+
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <button
+                            type="button"
+                            onClick={() => setShowDirectOrderFields(true)}
+                            style={{
+                              flex: 2,
+                              height: '46px',
+                              background: 'rgba(245, 189, 26, 0.15)',
+                              color: '#F5BD1A',
+                              fontWeight: '900',
+                              border: '1.5px solid rgba(245, 189, 26, 0.4)',
+                              borderRadius: '12px',
+                              fontSize: '0.88rem',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '6px'
+                            }}
+                          >
+                            <span>أو طلب مباشر فوراً ⚡</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={closeOrderModal}
+                            style={{
+                              flex: 1,
+                              height: '46px',
+                              background: 'rgba(255, 255, 255, 0.08)',
+                              color: '#FFFFFF',
+                              fontWeight: '800',
+                              border: '1px solid rgba(255, 255, 255, 0.2)',
+                              borderRadius: '12px',
+                              fontSize: '0.88rem',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            إغلاق
+                          </button>
+                        </div>
+                      </div>
                     )}
 
                     {(selectedProduct.id === 'cart_checkout' || showDirectOrderFields) && (
@@ -1276,19 +1633,45 @@ const PrintingProducts = () => {
                         <button
                           type="submit"
                           disabled={submittingOrder}
-                          className="btn-portal-primary print-btn"
-                          style={{ flex: 1, padding: '12px', fontSize: '0.9rem' }}
+                          style={{
+                            flex: 2,
+                            height: '48px',
+                            background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
+                            color: '#120A11',
+                            fontWeight: '900',
+                            border: 'none',
+                            borderRadius: '12px',
+                            fontSize: '0.92rem',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            boxShadow: '0 6px 20px rgba(245, 189, 26, 0.35)',
+                            whiteSpace: 'nowrap'
+                          }}
                         >
                           {submittingOrder 
                             ? '⏳ جاري إرسال الطلب...' 
                             : (selectedProduct.id === 'cart_checkout' ? 'تأكيد الطلب وإصدار الفاتورة 🚀' : 'إرسال طلب مباشر ⚡')
                           }
                         </button>
+
                         <button
                           type="button"
                           onClick={closeOrderModal}
-                          className="btn-portal-secondary"
-                          style={{ flex: 1, padding: '12px', fontSize: '0.9rem' }}
+                          style={{
+                            flex: 1,
+                            height: '48px',
+                            background: 'rgba(255, 255, 255, 0.08)',
+                            color: '#FFFFFF',
+                            fontWeight: '800',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            borderRadius: '12px',
+                            fontSize: '0.88rem',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap'
+                          }}
                         >
                           إلغاء
                         </button>

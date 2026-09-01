@@ -1633,27 +1633,37 @@ body.scroll-lock {
   position: sticky;
   top: 70px;
   z-index: 90;
-  background: rgba(23, 13, 22, 0.92);
+  background: rgba(23, 13, 22, 0.94);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom: 1px solid rgba(245, 189, 26, 0.25);
-  padding: 12px 16px;
+  padding: 8px 0;
   margin-bottom: 24px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  width: 100%;
 }
 
 .portal-smart-tabs-container {
   max-width: 1100px;
   margin: 0 auto;
   display: flex;
-  justify-content: center;
   align-items: center;
   gap: 12px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  overflow-y: hidden;
+  padding: 8px 24px;
   scrollbar-width: none;
+  -ms-overflow-style: none;
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.portal-smart-tabs-container::before,
+.portal-smart-tabs-container::after {
+  content: '';
+  flex: 1 1 0px;
+  pointer-events: none;
 }
 
 .portal-smart-tabs-container::-webkit-scrollbar {
@@ -1661,6 +1671,7 @@ body.scroll-lock {
 }
 
 .smart-tab-btn {
+  flex-shrink: 0;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: rgba(236, 235, 231, 0.85);
@@ -1675,6 +1686,7 @@ body.scroll-lock {
   align-items: center;
   gap: 8px;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
 }
 
 .smart-tab-btn:hover {
@@ -2143,4 +2155,90 @@ body.scroll-lock {
 .whatsapp-bg {
   background: #25D366 !important;
   color: #FFFFFF !important;
+}
+
+/* Printable Invoice Formatting (@media print) */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 12mm;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: Arial, sans-serif !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Hide elements marked no-print explicitly */
+  .no-print,
+  button {
+    display: none !important;
+  }
+
+  /* Reset fixed position modal overlay and center on paper */
+  div[style*="position: fixed"],
+  div[style*="position:fixed"] {
+    position: static !important;
+    inset: auto !important;
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    display: block !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  div[style*="max-height"],
+  div[style*="maxHeight"] {
+    max-height: none !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .invoice-print-area {
+    display: block !important;
+    width: 100% !important;
+    max-width: 650px !important;
+    margin: 0 auto !important;
+    padding: 10px 15px !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .invoice-print-area * {
+    color: #000000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .invoice-print-area div[style*="background"],
+  .invoice-print-area span[style*="background"] {
+    background: #f8f9fa !important;
+    border: 1.5px solid #cccccc !important;
+  }
+
+  .invoice-print-area strong,
+  .invoice-print-area span,
+  .invoice-print-area div,
+  .invoice-print-area h1,
+  .invoice-print-area h2,
+  .invoice-print-area h3,
+  .invoice-print-area h4 {
+    color: #000000 !important;
+  }
 }

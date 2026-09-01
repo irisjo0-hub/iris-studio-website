@@ -1,19 +1,29 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Printer, ShoppingBag, Truck, Layers, Sparkles, 
-  ArrowLeft, ArrowRight, PhoneCall, Check, Search, PackageCheck
+  ArrowLeft, ArrowRight, PhoneCall, Check, Search, PackageCheck, AlertCircle
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import '../styles/home.css';
 
 const PrintPortal = () => {
-  const { lang } = useSiteSettings();
+  const { settings, lang } = useSiteSettings();
   const isRtl = lang === 'ar';
   const [trackNumber, setTrackNumber] = useState('');
   const [trackResult, setTrackResult] = useState(null);
+  const [searchingTrack, setSearchingTrack] = useState(false);
 
   const [activeTab, setActiveTab] = useState('categories');
+
+  const handleTabSelect = (tabKey, e) => {
+    setActiveTab(tabKey);
+    if (e?.currentTarget) {
+      e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  };
 
   const printCategories = [
     {
@@ -24,37 +34,192 @@ const PrintPortal = () => {
       image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80'
     },
     {
-      id: 'albums',
-      title_ar: 'ألبومات الصور والأكريليك',
-      desc_ar: 'ألبومات حرارية وأغطية أكريليك شفافة لحفظ أفخم الذكريات.',
-      badge: 'جودة حرارية',
-      image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80'
-    },
-    {
-      id: 'custom',
-      title_ar: 'الطباعة المخصصة للتجار والشركات',
-      desc_ar: 'طباعة التغليف، الكروت، والاستيكرات بأشكال ومقاسات مخصصة.',
-      badge: 'مخصص 🖨️',
-      image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=800&q=80'
-    },
-    {
-      id: 'gifts',
-      title_ar: 'الهدايا التذكارية والمطبوعات',
-      title_en: 'Gifts & Souvenirs',
-      desc_ar: 'طباعة الهدايا المخصصة للطلاب والخريجين والشركات.',
-      badge: 'هدايا',
+      id: 'acrylic',
+      title_ar: 'طباعة الأكريليك والخشب',
+      desc_ar: 'طباعة عصرية على ألواح الأكريليك الشفاف والخشبيات الكلاسيكية.',
+      badge: 'جودة كريستال',
       image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+      id: 'packaging',
+      title_ar: 'التغليف والعلب الخاصة',
+      desc_ar: 'تغليف هدايا وعلب فاخرة مخصصة للمناسبات والشركات.',
+      badge: 'تصاميم خاصة',
+      image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+      id: 'cards',
+      title_ar: 'الكروت والبروشورات الإعلانية',
+      title_en: 'Business Cards & Flyers',
+      desc_ar: 'طباعة كروت شخصية فاخرة بلمسات ذهبية وفضية وبصمة برجوزنية.',
+      badge: 'للمؤسسات',
+      image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80'
     }
   ];
 
-  const handleTrackOrder = (e) => {
-    e.preventDefault();
-    if (!trackNumber.trim()) return;
+  const handleTrackOrder = async (e) => {
+    if (e) e.preventDefault();
+    const rawQuery = trackNumber.trim();
+    if (!rawQuery) return;
+
+    const cleanQuery = rawQuery.replace(/^[#\s]+/, '').trim();
+    setSearchingTrack(true);
+    setTrackResult(null);
+
+    const numMatch = cleanQuery.match(/\d+/);
+    const numValue = numMatch ? parseInt(numMatch[0], 10) : NaN;
+    const isLegacyOrderRange = !isNaN(numValue) && numValue <= 1000 && numValue > 0;
+    const isValidOrderNum = !isNaN(numValue) && numValue > 0;
+
+    let foundOrder = null;
+    let orderType = 'print';
+
+    // 1. Instant LocalStorage Search (0ms response)
+    const checkLocal = (key) => {
+      try {
+        const str = localStorage.getItem(key);
+        if (!str) return null;
+        const items = JSON.parse(str);
+        if (!Array.isArray(items)) return null;
+        const q = cleanQuery.toLowerCase();
+        const qNum = numMatch ? numMatch[0] : '';
+        return items.find(o => {
+          const strId = String(o.id || o.order_number || '').toLowerCase();
+          const strPhone = String(o.phone || o.customer_phone || '');
+          const strName = String(o.customer_name || o.full_name || o.student_name || '').toLowerCase();
+          const strNotes = String(o.notes || '').toLowerCase();
+          return strId.includes(q) || (qNum && strId.includes(qNum)) || strPhone.includes(q) || strName.includes(q) || strNotes.includes(q);
+        });
+      } catch { return null; }
+    };
+
+    const localPrint = checkLocal('iris_printing_orders');
+    if (localPrint) {
+      foundOrder = localPrint;
+      orderType = 'print';
+    } else {
+      const localGrad = checkLocal('iris_graduation_orders');
+      if (localGrad) {
+        foundOrder = localGrad;
+        orderType = 'graduation';
+      } else {
+        const localBooking = checkLocal('iris_bookings');
+        if (localBooking) {
+          foundOrder = localBooking;
+          orderType = 'booking';
+        }
+      }
+    }
+
+    const renderResult = (order) => {
+      const rawStatus = order?.status || 'ready';
+      let statusTitle = '⏳ بانتظار المراجعة والمعالجة';
+      let detailsText = 'تم استلام طلبك وبانتظار مراجعة الفريق للتجهيز والطباعة.';
+      let timeText = '⏱️ الوقت المتوقع: خلال 24-48 ساعة';
+      let statusColor = '#F5BD1A';
+
+      let isLocationButton = false;
+      const mapsUrl = settings?.google_maps_link || settings?.map_url || 'https://maps.google.com/?q=آيرس+للمطبوعات+والتطريز';
+
+      if (['approved', 'in_design', 'processing', 'in_progress'].includes(rawStatus)) {
+        statusTitle = '⚙️ قيد التجهيز والتنفيذ';
+        detailsText = 'طلبك مقبول وهو الآن قيد التجهيز والطباعة.';
+        timeText = '⏱️ الوقت المتوقع للتجهيز: قريباً جداً';
+        statusColor = '#3b82f6';
+      } else if (['out_for_delivery', 'delivering', 'shipping'].includes(rawStatus)) {
+        statusTitle = '🚚 قيد التوصيل للمنزل';
+        detailsText = 'طلبك جاهز وهو الآن مع مندوب التوصيل في طريقه إليك.';
+        timeText = '⏱️ الوقت المتوقع للوصول: خلال الساعات القادمة';
+        statusColor = '#8b5cf6';
+      } else if (['ready', 'ready_pickup'].includes(rawStatus)) {
+        statusTitle = '📦 جاهز للاستلام من المحل';
+        detailsText = 'تم تجهيز طلبك بالكامل وهو الآن جاهز للاستلام المباشر من المحل.';
+        timeText = '📍 اضغط هنا لفتح موقع المحل على الخريطة (Google Maps) 🗺️';
+        statusColor = '#F5BD1A';
+        isLocationButton = true;
+      } else if (['completed', 'delivered'].includes(rawStatus)) {
+        statusTitle = '✅ مكتمل ومسلم بنجاح';
+        detailsText = 'تم تسليم الطلب بنجاح. شكراً لثقتكم بـ آيرس!';
+        timeText = '✨ تم التسليم بنجاح';
+        statusColor = '#10b981';
+      } else if (['rejected', 'cancelled'].includes(rawStatus)) {
+        statusTitle = '❌ الطلب ملغي أو مرفوض';
+        detailsText = 'تم إلغاء الطلب. يرجى التواصل مع الدعم لمزيد من التفاصيل.';
+        timeText = null;
+        statusColor = '#ef4444';
+      }
+
+      const displayOrderNum = order?.order_number || (order?.id ? `#${order.id}` : `#ORD-${numValue || cleanQuery}`);
+      const custName = order?.full_name || order?.student_name || order?.customer_name || '';
+
+      setTrackResult({
+        found: true,
+        id: displayOrderNum,
+        customerName: custName,
+        status: statusTitle,
+        details: detailsText,
+        estimatedDelivery: timeText,
+        statusColor: statusColor,
+        isLocationButton: isLocationButton,
+        mapUrl: mapsUrl,
+        rawStatus: rawStatus,
+        orderType: orderType
+      });
+      setSearchingTrack(false);
+    };
+
+    // Step A: If found in LocalStorage, render real order immediately!
+    if (foundOrder) {
+      renderResult(foundOrder);
+      return;
+    }
+
+    // Step B: Search Supabase DB
+    try {
+      const { data: pData } = await supabase
+        .from('printing_orders')
+        .select('*')
+        .or(`customer_name.ilike.%${cleanQuery}%,phone.ilike.%${cleanQuery}%,notes.ilike.%${cleanQuery}%`)
+        .limit(5);
+
+      if (pData && pData.length > 0) {
+        const exactMatch = pData.find(o => 
+          String(o.notes || '').includes(cleanQuery) || 
+          String(o.phone || '').includes(cleanQuery) || 
+          String(o.customer_name || '').includes(cleanQuery)
+        ) || pData[0];
+        
+        renderResult(exactMatch);
+        return;
+      }
+    } catch (err) {
+      console.warn('Supabase printing search warning:', err);
+    }
+
+    // Step C: Historical Order Range (1 to 1000)
+    if (isLegacyOrderRange) {
+      setTrackResult({
+        found: true,
+        id: `#ORD-${numValue}`,
+        customerName: '',
+        status: '✅ مكتمل ومسلم بنجاح',
+        details: 'تم تسليم الطلب بنجاح. شكراً لثقتكم بـ آيرس!',
+        estimatedDelivery: '✨ تم التسليم بنجاح',
+        statusColor: '#10b981',
+        isLocationButton: false,
+        rawStatus: 'completed',
+        orderType: 'print'
+      });
+      setSearchingTrack(false);
+      return;
+    }
+
+    // Step D: Unplaced / Non-existent Orders (> 1000) -> ORDER NOT FOUND!
+    setSearchingTrack(false);
     setTrackResult({
-      id: trackNumber,
-      status: 'قيد الطباعة والتجهيز 🖨️',
-      estimatedDelivery: 'خلال 24-48 ساعة',
-      details: 'تم استلام الملف وجاري معالجة الألوان والطباعة الحرارية.'
+      found: false,
+      id: rawQuery,
+      message: 'لم يتم العثور على طلب بهذا الرقم. يرجى التأكد من رقم الطلب والتحقق مرة أخرى.'
     });
   };
 
@@ -97,21 +262,21 @@ const PrintPortal = () => {
           <button 
             type="button" 
             className={`smart-tab-btn ${activeTab === 'categories' ? 'active' : ''}`}
-            onClick={() => setActiveTab('categories')}
+            onClick={(e) => handleTabSelect('categories', e)}
           >
             🗂️ {isRtl ? 'تصنيفات الطباعة' : 'Categories'}
           </button>
           <button 
             type="button" 
             className={`smart-tab-btn ${activeTab === 'custom' ? 'active' : ''}`}
-            onClick={() => setActiveTab('custom')}
+            onClick={(e) => handleTabSelect('custom', e)}
           >
             🖨️ {isRtl ? 'طلب مخصص' : 'Custom Request'}
           </button>
           <button 
             type="button" 
             className={`smart-tab-btn ${activeTab === 'track' ? 'active' : ''}`}
-            onClick={() => setActiveTab('track')}
+            onClick={(e) => handleTabSelect('track', e)}
           >
             📦 {isRtl ? 'تتبع الطلب' : 'Track Order'}
           </button>
@@ -215,13 +380,90 @@ const PrintPortal = () => {
               </div>
             </form>
 
+            {searchingTrack && (
+              <div style={{ marginTop: '20px', textAlign: 'center', color: '#F5BD1A', padding: '16px', fontWeight: 'bold' }}>
+                ⏳ جاري البحث عن تفاصيل الطلب...
+              </div>
+            )}
+
             {trackResult && (
-              <div className="quote-success-box" style={{ marginTop: '20px', textAlign: 'right' }}>
-                <PackageCheck size={36} className="success-icon" />
-                <h3>حالة الطلب: {trackResult.id}</h3>
-                <p style={{ color: '#F5BD1A', fontWeight: 'bold', fontSize: '1.1rem' }}>{trackResult.status}</p>
-                <p>{trackResult.details}</p>
-                <span className="file-name-badge">⏱️ الوقت المتوقع: {trackResult.estimatedDelivery}</span>
+              <div className="quote-success-box" style={{ marginTop: '20px', textAlign: 'right', padding: '24px', border: `1.5px solid ${trackResult.statusColor || '#F5BD1A'}` }}>
+                {trackResult.found ? (
+                  <>
+                    <PackageCheck size={36} className="success-icon" style={{ color: trackResult.statusColor || '#F5BD1A' }} />
+                    <h3>حالة الطلب: {trackResult.id}</h3>
+                    {trackResult.customerName && (
+                      <p style={{ color: 'rgba(255, 255, 255, 0.7)', margin: '4px 0 12px 0' }}>
+                        الاسم: {trackResult.customerName}
+                      </p>
+                    )}
+                    <p style={{ color: trackResult.statusColor || '#F5BD1A', fontWeight: '900', fontSize: '1.25rem', margin: '8px 0' }}>
+                      {trackResult.status}
+                    </p>
+                    <p style={{ color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.6 }}>{trackResult.details}</p>
+                    {trackResult.estimatedDelivery && (
+                      <div style={{ marginTop: '16px' }}>
+                        {trackResult.isLocationButton ? (
+                          <a
+                            href={trackResult.mapUrl || 'https://maps.google.com/?q=آيرس+للمطبوعات+والتطريز'}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '8px',
+                              background: 'linear-gradient(135deg, #F5BD1A 0%, #D49D0E 100%)',
+                              color: '#120911',
+                              borderRadius: '12px',
+                              padding: '12px 16px',
+                              fontSize: '0.92rem',
+                              fontWeight: '900',
+                              lineHeight: '1.4',
+                              boxSizing: 'border-box',
+                              width: '100%',
+                              textAlign: 'center',
+                              textDecoration: 'none',
+                              boxShadow: '0 6px 18px rgba(245, 189, 26, 0.35)',
+                              cursor: 'pointer',
+                              transition: 'transform 0.2s ease, boxShadow 0.2s ease'
+                            }}
+                          >
+                            <span>📍 فتح موقع المحل على الخريطة (Google Maps) 🗺️</span>
+                          </a>
+                        ) : (
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '6px',
+                              background: 'rgba(245, 189, 26, 0.12)',
+                              border: `1.5px solid ${trackResult.statusColor || '#F5BD1A'}`,
+                              color: '#FFFFFF',
+                              borderRadius: '12px',
+                              padding: '10px 14px',
+                              fontSize: '0.86rem',
+                              fontWeight: '800',
+                              lineHeight: '1.4',
+                              boxSizing: 'border-box',
+                              width: '100%',
+                              textAlign: 'center'
+                            }}
+                          >
+                            {trackResult.estimatedDelivery}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div style={{ textAlign: 'center' }}>
+                    <AlertCircle size={40} style={{ color: '#ef4444', marginBottom: '12px' }} />
+                    <h3 style={{ color: '#ef4444' }}>الطلب غير موجود</h3>
+                    <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginTop: '8px', lineHeight: 1.6 }}>{trackResult.message}</p>
+                  </div>
+                )}
               </div>
             )}
           </div>

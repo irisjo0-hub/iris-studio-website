@@ -1337,22 +1337,14 @@
 }
 
 @media print {
-  .no-print, .grad-order-hero, .grad-steps-bar, .admin-sidebar, .admin-header {
+  .no-print, nav, header, footer, button {
     display: none !important;
   }
-  body, .grad-page, .grad-order-page, .grad-order-body {
-    background: #fff !important;
-    padding: 0 !important;
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
     margin: 0 !important;
-  }
-  .invoice-print-area {
-    width: 100% !important;
-    max-width: none !important;
     padding: 0 !important;
-  }
-  .invoice-box {
-    border: none !important;
-    box-shadow: none !important;
   }
 }
 

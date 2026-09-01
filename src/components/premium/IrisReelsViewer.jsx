@@ -49,10 +49,43 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const [toastMessage, setToastMessage] = useState('');
 
   const stageRef = useRef(null);
+  const videoRef = useRef(null);
   const touchStartY = useRef(0);
   const cooldownRef = useRef(false);
   const activeIndexRef = useRef(0);
   const isSkippingRef = useRef(false);
+
+  // Auto-pause video when scrolling away from Reels stage or tab loses focus
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isStageActive && document.visibilityState === 'visible') {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [isStageActive, activeIndex]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const video = videoRef.current;
+      if (!video) return;
+      if (document.visibilityState === 'hidden' || !isStageActive) {
+        video.pause();
+      } else if (isStageActive) {
+        video.play().catch(() => {});
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
+    };
+  }, [isStageActive]);
 
   // Keep activeIndexRef synced for non-passive listeners
   useEffect(() => {
@@ -505,11 +538,24 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               animate="animate"
               exit="exit"
             >
-              <img
-                src={currentReel.image}
-                alt={isRtl ? currentReel.alt_ar : currentReel.alt_en}
-                className="reel-static-img"
-              />
+              {currentReel.media_type === 'video' || (currentReel.media_url && (currentReel.media_url.endsWith('.mp4') || currentReel.media_url.endsWith('.mov') || currentReel.media_url.endsWith('.webm') || currentReel.media_url.startsWith('blob:') || currentReel.media_url.startsWith('data:video'))) ? (
+                <video
+                  ref={videoRef}
+                  src={currentReel.media_url || currentReel.image}
+                  autoPlay={isStageActive}
+                  loop
+                  muted={isMuted}
+                  playsInline
+                  className="reel-static-img"
+                  style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                />
+              ) : (
+                <img
+                  src={currentReel.image || currentReel.media_url}
+                  alt={isRtl ? currentReel.alt_ar : currentReel.alt_en}
+                  className="reel-static-img"
+                />
+              )}
               <div className="reel-darkness-gradient" />
 
               {/* INSTAGRAM REEL BOTTOM CAPTION BLOCK (FLUID FLEX LAYOUT) */}
@@ -614,6 +660,22 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 </button>
                 <span className="reels-action-counter" onClick={handleShare}>
                   {isRtl ? 'شير' : 'Share'}
+                </span>
+              </div>
+
+              {/* 4. MUTE / UNMUTE SOUND BUTTON */}
+              <div className="reels-action-btn-group-single">
+                <button
+                  type="button"
+                  className="reels-action-circle-btn"
+                  onClick={() => setIsMuted((prev) => !prev)}
+                  aria-label={isMuted ? (isRtl ? "تشغيل الصوت" : "Unmute") : (isRtl ? "كتم الصوت" : "Mute")}
+                  title={isMuted ? (isRtl ? "تشغيل الصوت" : "Unmute") : (isRtl ? "كتم الصوت" : "Mute")}
+                >
+                  {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                </button>
+                <span className="reels-action-counter" onClick={() => setIsMuted((prev) => !prev)}>
+                  {isMuted ? (isRtl ? 'مكتوم' : 'Muted') : (isRtl ? 'مسموع' : 'Sound')}
                 </span>
               </div>
             </div>

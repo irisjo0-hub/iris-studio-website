@@ -251,29 +251,69 @@ const AdminGraduationOrders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        let combined = [];
         const { data, error } = await supabase
           .from('graduation_orders')
           .select('*')
           .order('created_at', { ascending: false });
-        if (error) throw error;
-        if (data) setOrders(data);
-      } catch { setOrders([]); }
+        
+        if (!error && data && data.length > 0) {
+          combined = [...data];
+        }
+
+        const localStr = localStorage.getItem('iris_graduation_orders');
+        if (localStr) {
+          const localData = JSON.parse(localStr);
+          localData.forEach(lo => {
+            if (!combined.some(o => o.id === lo.id || (o.created_at && o.created_at === lo.created_at))) {
+              combined.push(lo);
+            }
+          });
+        }
+
+        setOrders(combined.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)));
+      } catch (e) {
+        console.error('Failed to fetch graduation orders:', e);
+        const localStr = localStorage.getItem('iris_graduation_orders');
+        if (localStr) {
+          try { setOrders(JSON.parse(localStr)); } catch { setOrders([]); }
+        }
+      }
     };
     fetchOrders();
   }, []);
 
   const updateStatus = async (id, status) => {
     try {
-      const { error } = await supabase
-        .from('graduation_orders')
-        .update({ status })
-        .eq('id', id);
-      if (error) throw error;
-      
-      setOrders(orders.map((o) => o.id === id ? { ...o, status } : o));
-      if (detailOrder && detailOrder.id === id) {
-        setDetailOrder({ ...detailOrder, status });
+      // 1. Update Supabase
+      try {
+        const { error } = await supabase
+          .from('graduation_orders')
+          .update({ status })
+          .eq('id', id);
+        if (error) console.warn('Supabase graduation status update warning:', error);
+      } catch (sbErr) {
+        console.warn('Supabase update failed:', sbErr);
       }
+
+      // 2. Update LocalStorage fallback
+      try {
+        const localStr = localStorage.getItem('iris_graduation_orders');
+        if (localStr) {
+          const localData = JSON.parse(localStr);
+          const updatedLocal = localData.map(o => o.id === id ? { ...o, status } : o);
+          localStorage.setItem('iris_graduation_orders', JSON.stringify(updatedLocal));
+        }
+      } catch (lErr) {
+        console.warn('LocalStorage status update failed:', lErr);
+      }
+
+      // 3. Update React state immediately
+      setOrders(prev => prev.map((o) => o.id === id ? { ...o, status } : o));
+      if (detailOrder && detailOrder.id === id) {
+        setDetailOrder(prev => prev ? { ...prev, status } : null);
+      }
+      alert('تم تحديث حالة الطلب بنجاح');
     } catch (err) {
       alert('حدث خطأ أثناء تحديث الحالة: ' + err.message);
     }

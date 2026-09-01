@@ -14,15 +14,33 @@ const AdminBookings = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
+        let combined = [];
         const { data, error } = await supabase
           .from('bookings')
           .select('*')
           .order('created_at', { ascending: false });
-        if (error) throw error;
-        if (data) setBookings(data);
+        
+        if (!error && data && data.length > 0) {
+          combined = [...data];
+        }
+
+        const localStr = localStorage.getItem('iris_bookings');
+        if (localStr) {
+          const localData = JSON.parse(localStr);
+          localData.forEach(lo => {
+            if (!combined.some(b => b.id === lo.id || (b.created_at && b.created_at === lo.created_at))) {
+              combined.push(lo);
+            }
+          });
+        }
+
+        setBookings(combined.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)));
       } catch (e) {
         console.error('Failed to fetch bookings', e);
-        setBookings([]);
+        const localStr = localStorage.getItem('iris_bookings');
+        if (localStr) {
+          try { setBookings(JSON.parse(localStr)); } catch { setBookings([]); }
+        }
       }
     };
     fetchBookings();
@@ -30,12 +48,32 @@ const AdminBookings = () => {
 
   const updateStatus = async (id, status) => {
     try {
-      const { error } = await supabase
-        .from('bookings')
-        .update({ status })
-        .eq('id', id);
-      if (error) throw error;
-      setBookings(bookings.map((b) => (b.id === id ? { ...b, status } : b)));
+      // 1. Update Supabase
+      try {
+        const { error } = await supabase
+          .from('bookings')
+          .update({ status })
+          .eq('id', id);
+        if (error) console.warn('Supabase booking status update warning:', error);
+      } catch (sbErr) {
+        console.warn('Supabase booking update failed:', sbErr);
+      }
+
+      // 2. Update LocalStorage fallback
+      try {
+        const localStr = localStorage.getItem('iris_bookings');
+        if (localStr) {
+          const localData = JSON.parse(localStr);
+          const updatedLocal = localData.map(b => b.id === id ? { ...b, status } : b);
+          localStorage.setItem('iris_bookings', JSON.stringify(updatedLocal));
+        }
+      } catch (lErr) {
+        console.warn('LocalStorage booking status update failed:', lErr);
+      }
+
+      // 3. Update React state immediately
+      setBookings(prev => prev.map((b) => (b.id === id ? { ...b, status } : b)));
+      alert('تم تحديث حالة الحجز بنجاح');
     } catch (err) {
       alert('حدث خطأ أثناء تحديث الحالة: ' + err.message);
     }

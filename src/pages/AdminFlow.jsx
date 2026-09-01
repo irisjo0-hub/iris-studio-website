@@ -36,19 +36,24 @@ export const AdminFlow = () => {
     setUploadingMedia(true);
     try {
       let publicUrl = '';
+      const isVideo = file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mp4') || file.name.toLowerCase().endsWith('.mov') || file.name.toLowerCase().endsWith('.webm');
+
       try {
         const filePath = `reels/${Date.now()}-${file.name}`;
         publicUrl = await uploadFile('portfolio', filePath, file);
       } catch (err) {
-        console.warn('Supabase storage fallback to Data URL:', err);
-        publicUrl = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.readAsDataURL(file);
-        });
+        console.warn('Supabase storage fallback to Object URL:', err);
+        // Use URL.createObjectURL for videos or files > 2MB to prevent STATUS_BREAKPOINT browser crash
+        if (isVideo || file.size > 2 * 1024 * 1024) {
+          publicUrl = URL.createObjectURL(file);
+        } else {
+          publicUrl = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+          });
+        }
       }
-
-      const isVideo = file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mp4');
 
       setFormData((prev) => ({
         ...prev,
@@ -216,8 +221,8 @@ export const AdminFlow = () => {
 
                 {/* Media Preview Box */}
                 <div style={{ width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.15)', flexShrink: 0, position: 'relative', background: '#000' }}>
-                  {item.media_type === 'video' || (item.media_url && item.media_url.endsWith('.mp4')) ? (
-                    <video src={item.media_url || item.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {item.media_type === 'video' || (item.media_url && (item.media_url.endsWith('.mp4') || item.media_url.endsWith('.mov') || item.media_url.endsWith('.webm') || item.media_url.startsWith('blob:') || item.media_url.startsWith('data:video'))) ? (
+                    <video src={item.media_url || item.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} muted playsInline />
                   ) : (
                     <img src={item.image || item.media_url || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80'} alt={item.category_label_ar} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   )}
@@ -537,7 +542,7 @@ export const AdminFlow = () => {
                   {/* Live Media Preview inside Modal */}
                   {(formData.image || formData.media_url) && (
                     <div style={{ marginTop: '10px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(236, 235, 231, 0.2)', maxHeight: '160px', background: '#000', textAlign: 'center' }}>
-                      {formData.media_type === 'video' || (formData.media_url && formData.media_url.endsWith('.mp4')) ? (
+                      {formData.media_type === 'video' || (formData.media_url && (formData.media_url.endsWith('.mp4') || formData.media_url.endsWith('.mov') || formData.media_url.endsWith('.webm') || formData.media_url.startsWith('blob:') || formData.media_url.startsWith('data:video'))) ? (
                         <video src={formData.media_url || formData.image} controls style={{ maxHeight: '160px', width: '100%', objectFit: 'contain' }} />
                       ) : (
                         <img src={formData.image || formData.media_url} alt="معاينة" style={{ maxHeight: '160px', width: '100%', objectFit: 'contain' }} />
