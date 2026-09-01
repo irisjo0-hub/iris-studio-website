@@ -46,46 +46,34 @@ export const AdminFlow = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 30 * 1024 * 1024) {
+      alert('⚠️ حجم الملف كبير جداً (أكبر من 30 ميجابايت). يرجى اختيار فيديو أصغر حجماً.');
+      e.target.value = '';
+      return;
+    }
+
     setUploadingMedia(true);
     try {
       const isVideo = file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mp4') || file.name.toLowerCase().endsWith('.mov') || file.name.toLowerCase().endsWith('.webm');
-      let finalUrl = '';
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const filePath = `reels/${Date.now()}-${cleanFileName}`;
 
-      // Try Supabase Storage upload with 8-second timeout
-      try {
-        const filePath = `reels/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const publicUrl = await uploadFile('portfolio', filePath, file);
 
-        const uploadPromise = uploadFile('portfolio', filePath, file);
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Upload timeout')), 8000)
-        );
-
-        finalUrl = await Promise.race([uploadPromise, timeoutPromise]);
-      } catch (storageErr) {
-        console.warn('Supabase storage direct upload timed out or failed, using Data URL fallback:', storageErr);
-        // Fallback to FileReader DataURL so upload NEVER hangs
-        finalUrl = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result || '');
-          reader.onerror = () => resolve('');
-          reader.readAsDataURL(file);
-        });
-      }
-
-      if (finalUrl) {
+      if (publicUrl) {
         setFormData((prev) => ({
           ...prev,
-          image: finalUrl,
-          media_url: finalUrl,
+          image: publicUrl,
+          media_url: publicUrl,
           media_type: isVideo ? 'video' : 'image'
         }));
-      } else {
-        alert('تعذر قراءة الفايل، يرجى إدخال رابط مباشر للفيديو أو الصورة.');
       }
     } catch (err) {
-      alert('حدث خطأ أثناء تحميل الفايل: ' + err.message);
+      console.error('File upload error:', err);
+      alert('⚠️ تعذر رفع الملف: ' + (err.message || 'يرجى التأكد من الاتصال بالإنترنت أو إدخال رابط مباشر'));
     } finally {
       setUploadingMedia(false);
+      e.target.value = '';
     }
   };
 
