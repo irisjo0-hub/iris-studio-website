@@ -531,18 +531,32 @@ export const AdminFlow = () => {
                     )}
                   </div>
 
-                  <input
-                    type="text"
-                    className="admin-input"
-                    required
-                    placeholder="رابط الميديا المرفقة أو أدخل رابط مباشر MP4 / صورة..."
-                    value={formData.image || formData.media_url || ''}
-                    onChange={(e) => {
-                      handleFormChange('image', e.target.value);
-                      handleFormChange('media_url', e.target.value);
-                    }}
-                    dir="ltr"
-                  />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px', gap: '10px', marginBottom: '8px' }}>
+                    <input
+                      type="text"
+                      className="admin-input"
+                      required
+                      placeholder="رابط الميديا المرفقة أو أدخل رابط مباشر MP4 / صورة..."
+                      value={formData.image || formData.media_url || ''}
+                      onChange={(e) => {
+                        const val = e.target.value.trim();
+                        const isVid = val.toLowerCase().includes('.mp4') || val.toLowerCase().includes('.mov') || val.toLowerCase().includes('.webm') || val.toLowerCase().includes('video');
+                        handleFormChange('image', val);
+                        handleFormChange('media_url', val);
+                        if (isVid) handleFormChange('media_type', 'video');
+                      }}
+                      dir="ltr"
+                    />
+                    <select
+                      className="admin-input"
+                      value={formData.media_type || 'image'}
+                      onChange={(e) => handleFormChange('media_type', e.target.value)}
+                      style={{ fontWeight: 'bold' }}
+                    >
+                      <option value="image">📷 صورة</option>
+                      <option value="video">🎥 فيديو</option>
+                    </select>
+                  </div>
 
                   {/* Live Media Preview inside Modal */}
                   {(formData.image || formData.media_url) && (
