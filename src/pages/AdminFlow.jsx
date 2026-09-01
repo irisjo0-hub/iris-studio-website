@@ -47,17 +47,9 @@ export const AdminFlow = () => {
         const filePath = `reels/${Date.now()}-${file.name}`;
         publicUrl = await uploadFile('portfolio', filePath, file);
       } catch (err) {
-        console.warn('Supabase storage fallback to Object URL:', err);
-        // Use URL.createObjectURL for videos or files > 2MB to prevent STATUS_BREAKPOINT browser crash
-        if (isVideo || file.size > 2 * 1024 * 1024) {
-          publicUrl = URL.createObjectURL(file);
-        } else {
-          publicUrl = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(file);
-          });
-        }
+        console.warn('Supabase storage error:', err);
+        alert('⚠️ تنبيه مهم: تعذر رفع الملف على السيرفر سحابياً لأن مجلد (portfolio) في Storage غير موجود في Supabase بعد.\n\nيرجى تشغيل كود الـ SQL المرفق في Supabase Dashboard لتفعيل رفع الفيديوهات والصور سحابياً بنجاح!');
+        return;
       }
 
       setFormData((prev) => ({
