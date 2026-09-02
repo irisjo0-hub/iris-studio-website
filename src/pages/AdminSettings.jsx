@@ -172,6 +172,8 @@ const AdminSettings = () => {
     reader.readAsDataURL(file);
   };
 
+  const safeTrim = (str) => (str && typeof str === 'string' ? str.trim() : (str != null ? String(str).trim() : ''));
+
   const handleSaveSettings = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -179,27 +181,27 @@ const AdminSettings = () => {
 
     try {
       const updates = {
-        slogan_line_1: sloganLine1.trim(),
-        slogan_line_2: sloganLine2.trim(),
-        supporting_text: supportingText.trim(),
-        whatsapp_number: whatsappNumber.trim(),
-        facebook_link: facebookLink.trim(),
-        instagram_link: instagramLink.trim(),
-        studio_address: studioAddress.trim(),
-        location_map_url: locationMapUrl.trim(),
-        office_hours: officeHours.trim(),
-        preloader_text: preloaderText.trim(),
+        slogan_line_1: safeTrim(sloganLine1),
+        slogan_line_2: safeTrim(sloganLine2),
+        supporting_text: safeTrim(supportingText),
+        whatsapp_number: safeTrim(whatsappNumber),
+        facebook_link: safeTrim(facebookLink),
+        instagram_link: safeTrim(instagramLink),
+        studio_address: safeTrim(studioAddress),
+        location_map_url: safeTrim(locationMapUrl),
+        office_hours: safeTrim(officeHours),
+        preloader_text: safeTrim(preloaderText),
         hero_image_display_count: parseInt(heroImageDisplayCount, 10) || 8,
         hero_motion_images: JSON.stringify(heroMotionImages),
-        division_media_title_ar: divisionMediaTitleAr.trim(),
-        division_media_subtitle_ar: divisionMediaSubtitleAr.trim(),
-        division_media_url: divisionMediaUrl.trim(),
-        division_studio_title_ar: divisionStudioTitleAr.trim(),
-        division_studio_subtitle_ar: divisionStudioSubtitleAr.trim(),
-        division_studio_url: divisionStudioUrl.trim(),
-        division_print_title_ar: divisionPrintTitleAr.trim(),
-        division_print_subtitle_ar: divisionPrintSubtitleAr.trim(),
-        division_print_url: divisionPrintUrl.trim()
+        division_media_title_ar: safeTrim(divisionMediaTitleAr),
+        division_media_subtitle_ar: safeTrim(divisionMediaSubtitleAr),
+        division_media_url: safeTrim(divisionMediaUrl),
+        division_studio_title_ar: safeTrim(divisionStudioTitleAr),
+        division_studio_subtitle_ar: safeTrim(divisionStudioSubtitleAr),
+        division_studio_url: safeTrim(divisionStudioUrl),
+        division_print_title_ar: safeTrim(divisionPrintTitleAr),
+        division_print_subtitle_ar: safeTrim(divisionPrintSubtitleAr),
+        division_print_url: safeTrim(divisionPrintUrl)
       };
 
       // Upload Logo if provided
@@ -311,7 +313,7 @@ const AdminSettings = () => {
 
   const handleAddMotionImage = async (e) => {
     e.preventDefault();
-    if (newMotionFiles.length === 0 && !newMotionUrl.trim()) {
+    if (newMotionFiles.length === 0 && !safeTrim(newMotionUrl)) {
       alert('يرجى اختيار صورة أو مجموعة صور للرفع أولاً');
       return;
     }
@@ -340,18 +342,18 @@ const AdminSettings = () => {
           newItems.push({
             id: `hm-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 4)}`,
             image: finalUrl,
-            alt_ar: newMotionTitleAr.trim() || file.name.replace(/\.[^/.]+$/, ''),
-            alt_en: newMotionTitleEn.trim() || 'IRIS Showcase',
+            alt_ar: safeTrim(newMotionTitleAr) || file.name.replace(/\.[^/.]+$/, ''),
+            alt_en: safeTrim(newMotionTitleEn) || 'IRIS Showcase',
             url_optional: ''
           });
         }
-      } else if (newMotionUrl.trim()) {
+      } else if (safeTrim(newMotionUrl)) {
         setUploadProgress('جاري إضافة رابط الصورة...');
         newItems.push({
           id: `hm-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-          image: newMotionUrl.trim(),
-          alt_ar: newMotionTitleAr.trim() || 'أعمال آيرس',
-          alt_en: newMotionTitleEn.trim() || 'IRIS Showcase',
+          image: safeTrim(newMotionUrl),
+          alt_ar: safeTrim(newMotionTitleAr) || 'أعمال آيرس',
+          alt_en: safeTrim(newMotionTitleEn) || 'IRIS Showcase',
           url_optional: ''
         });
       }
