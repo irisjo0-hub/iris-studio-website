@@ -623,35 +623,54 @@ export const AdminFlow = () => {
                     )}
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px', gap: '10px', marginBottom: '8px' }}>
-                    <input
-                      type="text"
-                      className="admin-input"
-                      required
-                      placeholder="رابط الميديا المرفقة أو أدخل رابط مباشر MP4 / صورة..."
-                      value={formData.media_url || formData.image || ''}
-                      onChange={(e) => {
-                        const val = e.target.value.trim();
-                        const isVid = /\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(val) || val.toLowerCase().includes('video');
-                        handleFormChange('media_url', val);
-                        if (isVid) {
-                          handleFormChange('media_type', 'video');
-                        } else {
-                          handleFormChange('image', val);
-                          handleFormChange('media_type', 'image');
-                        }
-                      }}
-                      dir="ltr"
-                    />
-                    <select
-                      className="admin-input"
-                      value={formData.media_type || 'image'}
-                      onChange={(e) => handleFormChange('media_type', e.target.value)}
-                      style={{ fontWeight: 'bold' }}
-                    >
-                      <option value="image">📷 صورة</option>
-                      <option value="video">🎥 فيديو</option>
-                    </select>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '10px', marginTop: '8px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px', gap: '10px' }}>
+                      <div>
+                        <label style={{ fontSize: '0.78rem', color: '#D4AF37', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
+                          🎥 رابط ملف الفيديو الأصلي (Video URL MP4 / MOV):
+                        </label>
+                        <input
+                          type="text"
+                          className="admin-input"
+                          placeholder="رابط الفيديو المباشر MP4 / MOV..."
+                          value={formData.media_url || ''}
+                          onChange={(e) => {
+                            const val = e.target.value.trim();
+                            handleFormChange('media_url', val);
+                            if (val) handleFormChange('media_type', 'video');
+                          }}
+                          dir="ltr"
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.78rem', color: '#D4AF37', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
+                          نوع الميديا:
+                        </label>
+                        <select
+                          className="admin-input"
+                          value={formData.media_type || 'image'}
+                          onChange={(e) => handleFormChange('media_type', e.target.value)}
+                          style={{ fontWeight: 'bold' }}
+                        >
+                          <option value="image">📷 صورة</option>
+                          <option value="video">🎥 فيديو</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.78rem', color: '#AAA', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
+                        🖼️ رابط صورة غلاف الفيديو (JPEG Poster Image):
+                      </label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        placeholder="رابط صورة الغلاف الفوري..."
+                        value={formData.image || ''}
+                        onChange={(e) => handleFormChange('image', e.target.value.trim())}
+                        dir="ltr"
+                      />
+                    </div>
                   </div>
 
                   {/* Live Media Preview inside Modal */}
