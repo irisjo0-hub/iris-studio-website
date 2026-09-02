@@ -168,10 +168,26 @@ export const SiteSettingsProvider = ({ children }) => {
     const cached = localStorage.getItem('cached_site_settings');
     if (cached) {
       try {
-        setSettings(JSON.parse(cached));
+        setSettings(prev => ({ ...prev, ...JSON.parse(cached) }));
       } catch {}
     }
     fetchSettings();
+
+    // Subscribe to Realtime changes on site_settings table for instant cross-device sync!
+    const channel = supabase
+      .channel('public:site_settings')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'site_settings' },
+        (payload) => {
+          fetchSettings();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return (

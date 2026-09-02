@@ -206,42 +206,50 @@ const AdminSettings = () => {
 
       // Upload Logo if provided
       if (logoFile) {
-        setUploadProgress('جاري رفع الشعار الجديد...');
+        setUploadProgress('جاري رفع الشعار الجديد للسيرفر...');
         const path = `branding/logo-${Date.now()}-${logoFile.name}`;
         const logoUrl = await uploadFile('packages', path, logoFile);
         updates.logo_url = logoUrl;
-      } else if (logoPreview) {
+        updates.hero_logo_url = logoUrl;
+      } else if (logoPreview && !logoPreview.startsWith('data:image/')) {
         updates.logo_url = logoPreview;
+        updates.hero_logo_url = logoPreview;
       }
 
       // 1. Upload Division Media Image if provided
       if (divisionMediaImageFile) {
-        setUploadProgress('جاري رفع غلاف قسم الميديا...');
+        setUploadProgress('جاري رفع غلاف قسم الميديا للسيرفر...');
         const path = `divisions/media-${Date.now()}-${divisionMediaImageFile.name}`;
         const mediaImgUrl = await uploadFile('packages', path, divisionMediaImageFile);
         updates.division_media_image = mediaImgUrl;
-      } else if (divisionMediaImagePreview) {
+        updates.hero_division_media_image = mediaImgUrl;
+      } else if (divisionMediaImagePreview && !divisionMediaImagePreview.startsWith('data:image/')) {
         updates.division_media_image = divisionMediaImagePreview;
+        updates.hero_division_media_image = divisionMediaImagePreview;
       }
 
       // 2. Upload Division Studio Image if provided
       if (divisionStudioImageFile) {
-        setUploadProgress('جاري رفع غلاف قسم الاستوديو...');
+        setUploadProgress('جاري رفع غلاف قسم الاستوديو للسيرفر...');
         const path = `divisions/studio-${Date.now()}-${divisionStudioImageFile.name}`;
         const studioImgUrl = await uploadFile('packages', path, divisionStudioImageFile);
         updates.division_studio_image = studioImgUrl;
-      } else if (divisionStudioImagePreview) {
+        updates.hero_division_studio_image = studioImgUrl;
+      } else if (divisionStudioImagePreview && !divisionStudioImagePreview.startsWith('data:image/')) {
         updates.division_studio_image = divisionStudioImagePreview;
+        updates.hero_division_studio_image = divisionStudioImagePreview;
       }
 
       // 3. Upload Division Print Image if provided
       if (divisionPrintImageFile) {
-        setUploadProgress('جاري رفع غلاف قسم المطبوعات...');
+        setUploadProgress('جاري رفع غلاف قسم المطبوعات للسيرفر...');
         const path = `divisions/print-${Date.now()}-${divisionPrintImageFile.name}`;
         const printImgUrl = await uploadFile('packages', path, divisionPrintImageFile);
         updates.division_print_image = printImgUrl;
-      } else if (divisionPrintImagePreview) {
+        updates.hero_division_print_image = printImgUrl;
+      } else if (divisionPrintImagePreview && !divisionPrintImagePreview.startsWith('data:image/')) {
         updates.division_print_image = divisionPrintImagePreview;
+        updates.hero_division_print_image = divisionPrintImagePreview;
       }
 
       // Upload Desktop Video if provided
