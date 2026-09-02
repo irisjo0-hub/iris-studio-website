@@ -483,13 +483,13 @@
 .reel-frame[data-locale="ar"] .instagram-caption-profile-row-persistent {
   right: 18px;
   left: 95px;
-  bottom: calc(185px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(160px + env(safe-area-inset-bottom, 0px));
 }
 
 .reel-frame[data-locale="en"] .instagram-caption-profile-row-persistent {
   left: 18px;
   right: 95px;
-  bottom: calc(185px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(160px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ===== 1. EXPLICIT ARABIC OVERLAY GRID (data-locale="ar") ===== */
@@ -720,23 +720,13 @@
 }
 
 .reels-skip-top-pill-outer {
-  top: calc(8px + env(safe-area-inset-top, 0px));
+  top: 14px;
   bottom: auto;
 }
 
 .reels-skip-bottom-pill-outer {
-  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  bottom: 14px;
   top: auto;
-}
-
-@media (min-width: 1024px) {
-  .reels-skip-top-pill-outer {
-    top: calc(50% - (100dvh - 32px) / 2 - 42px) !important;
-  }
-
-  .reels-skip-bottom-pill-outer {
-    bottom: calc(50% - (100dvh - 32px) / 2 - 42px) !important;
-  }
 }
 
 .reels-floating-skip-pill:hover {

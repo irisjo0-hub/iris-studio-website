@@ -530,21 +530,9 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       </div>
 
       <div className="reels-stage-container">
-        {/* OUTER FLOATING TOP SKIP PILL (FLOATING IN AMBIENT BACKGROUND ABOVE REEL) */}
-        <button
-          type="button"
-          className="reels-floating-skip-pill reels-skip-top-pill-outer"
-          onClick={handleSkipUp}
-          aria-label={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
-          title={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
-        >
-          <span>{isRtl ? 'تخطي' : 'Skip'}</span>
-          <ChevronUp size={16} className="skip-up-arrow-anim" />
-        </button>
-
         {/* ===== TRUE 9:16 REEL FRAME CANVAS WITH EXPLICIT BILINGUAL LOCALE ===== */}
         <div className="reel-frame" data-locale={isRtl ? 'ar' : 'en'}>
-          {/* ===== 1. ACTIVE 9:16 REEL CANVAS (LOCKSTEP INSTAGRAM SPRING SLIDE) ===== */}
+          {/* ===== 1. ACTIVE 9:16 REEL CANVAS (LOCKSTEP INSTAGRAM SLIDE) ===== */}
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={`reel-canvas-${currentReel.id}`}
@@ -596,19 +584,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               })()}
               <div className="reel-darkness-gradient" />
 
-              {/* INSTAGRAM REEL BOTTOM CAPTION BLOCK (FLUID FLEX LAYOUT) */}
+              {/* INSTAGRAM REEL BOTTOM CAPTION BLOCK */}
               <div className="instagram-reel-caption-block" dir={isRtl ? 'rtl' : 'ltr'}>
-                {/* PROFILE IDENTITY ROW — ATTACHED TIGHTLY 6px ABOVE CATEGORY TAG */}
-                <div className="instagram-caption-profile-row">
-                  <div className="instagram-avatar-ring">
-                    <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="instagram-avatar-img" />
-                  </div>
-                  <div className="instagram-user-meta">
-                    <span className="instagram-username">IRIS HOME</span>
-                    <span className="instagram-handle bidi-isolate" dir="ltr">@iris.jo</span>
-                  </div>
-                </div>
-
                 <span className="reel-item-number">
                   <span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / 0{activeIndex + 1}
                 </span>
@@ -628,6 +605,29 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
           {/* ===== 2. PERSISTENT SPATIAL OVERLAYS INSIDE 9:16 FRAME ===== */}
           <div className="reels-persistent-ui-layer">
+
+            {/* TOP SKIP PILL (100% VISIBLE & INSIDE FRAME) */}
+            <button
+              type="button"
+              className="reels-floating-skip-pill reels-skip-top-pill-outer"
+              onClick={handleSkipUp}
+              aria-label={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
+              title={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
+            >
+              <span>{isRtl ? 'تخطي' : 'Skip'}</span>
+              <ChevronUp size={16} className="skip-up-arrow-anim" />
+            </button>
+
+            {/* STATIC & STATIONARY IRIS PROFILE IDENTITY BADGE (NEVER SLIDES ON REEL FLIP) */}
+            <div className="instagram-caption-profile-row-persistent" dir={isRtl ? 'rtl' : 'ltr'}>
+              <div className="instagram-avatar-ring">
+                <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="instagram-avatar-img" />
+              </div>
+              <div className="instagram-user-meta">
+                <span className="instagram-username">IRIS HOME</span>
+                <span className="instagram-handle bidi-isolate" dir="ltr">@iris.jo</span>
+              </div>
+            </div>
 
             {/* Top Bar Controls */}
             <div className="reels-top-bar">
@@ -716,21 +716,21 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                   {isMuted ? (isRtl ? 'مكتوم' : 'Muted') : (isRtl ? 'مسموع' : 'Sound')}
                 </span>
               </div>
+
+              {/* BOTTOM SKIP PILL (100% VISIBLE & INSIDE FRAME) */}
+              <button
+                type="button"
+                className="reels-floating-skip-pill reels-skip-bottom-pill-outer"
+                onClick={handleSkipReels}
+                aria-label={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
+                title={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
+              >
+                <span>{isRtl ? 'تخطي' : 'Skip'}</span>
+                <ChevronDown size={16} className="skip-arrow-anim" />
+              </button>
             </div>
           </div>
         </div>
-
-        {/* OUTER FLOATING BOTTOM SKIP PILL (FLOATING IN AMBIENT BACKGROUND BELOW REEL) */}
-        <button
-          type="button"
-          className="reels-floating-skip-pill reels-skip-bottom-pill-outer"
-          onClick={handleSkipReels}
-          aria-label={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
-          title={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
-        >
-          <span>{isRtl ? 'تخطي' : 'Skip'}</span>
-          <ChevronDown size={16} className="skip-arrow-anim" />
-        </button>
       </div>
 
       {/* ===== 3. SHARED VISITOR FEEDBACK BOTTOM SHEET (MOBILE) / DRAWER (DESKTOP) ===== */}
