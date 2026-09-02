@@ -63,11 +63,22 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     if (!video) return;
 
     if (isStageActive && document.visibilityState === 'visible') {
-      video.play().catch(() => {});
+      video.muted = isMuted;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      try {
+        video.load();
+      } catch (e) {}
+      const promise = video.play();
+      if (promise !== undefined) {
+        promise.catch((err) => {
+          console.warn("Mobile autoplay notice:", err);
+        });
+      }
     } else {
       video.pause();
     }
-  }, [isStageActive, activeIndex]);
+  }, [isStageActive, activeIndex, isMuted]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
