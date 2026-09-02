@@ -268,10 +268,10 @@ export const saveFlowItems = async (items) => {
   const sanitizedItems = items.map(item => {
     const copy = { ...item };
     if (copy.image && copy.image.startsWith('blob:')) {
-      copy.image = copy.media_url && !copy.media_url.startsWith('blob:') ? copy.media_url : '';
+      copy.image = '';
     }
     if (copy.media_url && copy.media_url.startsWith('blob:')) {
-      copy.media_url = copy.image && !copy.image.startsWith('blob:') ? copy.image : '';
+      copy.media_url = '';
     }
     return copy;
   });

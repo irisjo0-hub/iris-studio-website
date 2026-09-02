@@ -24,13 +24,14 @@ export const AdminFlow = () => {
 
   const handleSaveAll = async () => {
     let itemsToSave = [...items];
-    if (editingId && formData && (formData.image || formData.media_url)) {
-      const finalMedia = (formData.image || formData.media_url || '').trim();
-      const isVid = formData.media_type === 'video' || (/\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(finalMedia));
+    if (editingId && formData && (formData.media_url || formData.image)) {
+      const videoOrMediaUrl = (formData.media_url || formData.image || '').trim();
+      const imageUrl = (formData.image || formData.media_url || '').trim();
+      const isVid = formData.media_type === 'video' || (/\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(videoOrMediaUrl));
       const updatedData = {
         ...formData,
-        image: finalMedia,
-        media_url: finalMedia,
+        image: imageUrl,
+        media_url: videoOrMediaUrl,
         media_type: isVid ? 'video' : 'image'
       };
       itemsToSave = itemsToSave.map(it => it.id === editingId ? updatedData : it);
@@ -41,7 +42,7 @@ export const AdminFlow = () => {
     if (ok) {
       alert('✅ تم حفظ وتحديث جميع تغييرات الريلز سحابياً بنجاح! ستظهر الآن عند الجميع على كافة الهواتف والأجهزة.');
     } else {
-      alert('⚠️ تنبيه مهم: تعذر الحفظ على السيرفر لعدم تفعيل إذن الجداول في Supabase بعد. تم الحفظ على هذا الجهاز فقط.\\n\\nيرجى تشغيل كود الـ SQL في Supabase SQL Editor لمزامنة الفيديوهات والتعديلات فوراً مع كافة الهواتف!');
+      alert('⚠️ تنبيه مهم: تعذر الحفظ السحابي على السيرفر! تم الحفظ على هذا الجهاز فقط.');
     }
   };
 
