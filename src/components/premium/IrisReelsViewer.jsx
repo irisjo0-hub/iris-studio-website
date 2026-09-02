@@ -121,11 +121,18 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     };
   }, []);
 
-  // Load items and all approved feedback on mount
+  // Load items from Supabase Cloud on mount for all devices
   useEffect(() => {
     const loaded = getFlowItems().filter((it) => it.enabled);
-    const flowItems = loaded.length > 0 ? loaded : getFlowItems();
-    setItems(flowItems);
+    const initialItems = loaded.length > 0 ? loaded : getFlowItems();
+    setItems(initialItems);
+
+    getFlowItemsAsync().then((cloudItems) => {
+      if (cloudItems && cloudItems.length > 0) {
+        const filtered = cloudItems.filter((it) => it.enabled);
+        setItems(filtered.length > 0 ? filtered : cloudItems);
+      }
+    });
 
     // Load shared approved feedback for all reels
     setAllFeedbackList(getAllApprovedFeedback());
@@ -134,7 +141,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     const currentHash = window.location.hash;
     if (currentHash && currentHash.startsWith('#flow-')) {
       const targetSlug = currentHash.replace('#flow-', '');
-      const matchedIndex = flowItems.findIndex((it) => it.slug === targetSlug);
+      const matchedIndex = initialItems.findIndex((it) => it.slug === targetSlug);
       if (matchedIndex !== -1) {
         setActiveIndex(matchedIndex);
         return;
