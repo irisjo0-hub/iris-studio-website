@@ -39,7 +39,7 @@ export const HeroLivingCollage = () => {
   ];
 
   // Full Dynamic Admin Pool Parsing
-  let parsedPool = [];
+  let parsedPool = null;
   if (Array.isArray(settings.hero_motion_images)) {
     parsedPool = settings.hero_motion_images;
   } else if (typeof settings.hero_motion_images === 'string') {
@@ -49,11 +49,11 @@ export const HeroLivingCollage = () => {
     } catch (e) {}
   }
 
-  const rawPool = Array.isArray(parsedPool) ? parsedPool : [];
+  const rawPool = Array.isArray(parsedPool) ? parsedPool : default8Works;
 
-  // Respect hero_image_display_count if specified by Admin
-  const displayCount = settings.hero_image_display_count 
-    ? Math.max(1, parseInt(settings.hero_image_display_count, 10))
+  // Respect hero_image_display_count if specified by Admin (or default to rawPool length)
+  const displayCount = settings.hero_image_display_count && parseInt(settings.hero_image_display_count, 10) > 0
+    ? parseInt(settings.hero_image_display_count, 10)
     : rawPool.length;
 
   const limitedPool = rawPool.slice(0, displayCount);

@@ -92,7 +92,7 @@ const AdminSettings = () => {
       setDivisionPrintUrl(settings.division_print_url || '/printing-products');
       setDivisionPrintImagePreview(settings.division_print_image || '');
 
-      let parsedMotionImages = [];
+      let parsedMotionImages = null;
       if (Array.isArray(settings.hero_motion_images)) {
         parsedMotionImages = settings.hero_motion_images;
       } else if (typeof settings.hero_motion_images === 'string') {
@@ -101,7 +101,7 @@ const AdminSettings = () => {
         } catch (e) {}
       }
 
-      if (!Array.isArray(parsedMotionImages) || parsedMotionImages.length === 0) {
+      if (!Array.isArray(parsedMotionImages)) {
         parsedMotionImages = DEFAULT_HERO_MOTION_IMAGES;
       }
 
