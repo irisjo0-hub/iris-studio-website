@@ -166,29 +166,36 @@ export const AdminFlow = () => {
       alert('⏳ يرجى الانتظار حتى ينتهي رفع الفيديو/الصورة سحابياً أولاً');
       return;
     }
-    const finalMedia = (formData.image || formData.media_url || '').trim();
-    if (!finalMedia) {
+    const videoOrMediaUrl = (formData.media_url || formData.image || '').trim();
+    const imageUrl = (formData.image || formData.media_url || '').trim();
+
+    if (!videoOrMediaUrl && !imageUrl) {
       alert('يرجى إدخال رابط أو اختيار صورة/فيديو للريل');
       return;
     }
-    if (finalMedia.startsWith('blob:')) {
+    if (videoOrMediaUrl.startsWith('blob:') || imageUrl.startsWith('blob:')) {
       alert('⚠️ لا يمكن حفظ رابط مؤقت (blob). يرجى الانتظار حتى يكتمل رفع الملف سحابياً أولاً.');
       return;
     }
-    const isVid = formData.media_type === 'video' || finalMedia.toLowerCase().includes('.mp4') || finalMedia.toLowerCase().includes('.mov') || finalMedia.toLowerCase().includes('.webm');
+
+    const isVid = formData.media_type === 'video' || /\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(videoOrMediaUrl);
 
     const updatedData = {
       ...formData,
-      image: finalMedia,
-      media_url: finalMedia,
+      image: imageUrl,
+      media_url: videoOrMediaUrl,
       media_type: isVid ? 'video' : 'image'
     };
 
     const updated = items.map((it) => (it.id === editingId ? updatedData : it));
     setItems(updated);
-    await saveFlowItems(updated);
+    const ok = await saveFlowItems(updated);
     setEditingId(null);
-    alert('✅ تم حفظ التعديلات ومزامنتها على السيرفر سحابياً بنجاح!');
+    if (ok) {
+      alert('✅ تم حفظ التعديلات ومزامنتها على السيرفر سحابياً بنجاح!');
+    } else {
+      alert('⚠️ تنبيه: تعذر الحفظ السحابي على السيرفر! تم الحفظ على هذا الجهاز فقط.');
+    }
   };
 
   const handleDeleteReel = async (id) => {
@@ -622,13 +629,17 @@ export const AdminFlow = () => {
                       className="admin-input"
                       required
                       placeholder="رابط الميديا المرفقة أو أدخل رابط مباشر MP4 / صورة..."
-                      value={formData.image || formData.media_url || ''}
+                      value={formData.media_url || formData.image || ''}
                       onChange={(e) => {
                         const val = e.target.value.trim();
-                        const isVid = val.toLowerCase().includes('.mp4') || val.toLowerCase().includes('.mov') || val.toLowerCase().includes('.webm') || val.toLowerCase().includes('video');
-                        handleFormChange('image', val);
+                        const isVid = /\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(val) || val.toLowerCase().includes('video');
                         handleFormChange('media_url', val);
-                        if (isVid) handleFormChange('media_type', 'video');
+                        if (isVid) {
+                          handleFormChange('media_type', 'video');
+                        } else {
+                          handleFormChange('image', val);
+                          handleFormChange('media_type', 'image');
+                        }
                       }}
                       dir="ltr"
                     />
