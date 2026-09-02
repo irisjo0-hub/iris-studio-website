@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { AnimatePresence } from "framer-motion";
 import Preloader from "../components/premium/Preloader";
 import IrisDarkHero from "../components/premium/IrisDarkHero";
 import IrisReelsViewer from "../components/premium/IrisReelsViewer";
@@ -38,11 +37,9 @@ const Home = () => {
 
   return (
     <>
-      <AnimatePresence>
-        {loading && (
-          <Preloader onComplete={handlePreloaderComplete} />
-        )}
-      </AnimatePresence>
+      {loading && (
+        <Preloader onComplete={handlePreloaderComplete} />
+      )}
 
       <div className="home-page" dir="rtl">
         {/* 1. HERO */}
