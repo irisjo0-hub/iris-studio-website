@@ -489,29 +489,26 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const currentReel = items[activeIndex] || items[0];
 
-  // Motion variants for Instagram continuous spring vertical slide
+  // Instagram/TikTok Silky Smooth Vertical Slide Engine (0% Jitter & Zero Vibration)
   const slideVariants = {
     initial: (dir) => ({
       y: dir > 0 ? '100%' : '-100%',
-      scale: 1.04,
       opacity: 1
     }),
     animate: {
       y: '0%',
-      scale: 1,
       opacity: 1,
       transition: {
-        y: { type: 'spring', stiffness: 260, damping: 28 },
-        scale: { duration: 0.4 }
+        duration: 0.42,
+        ease: [0.16, 1, 0.3, 1]
       }
     },
     exit: (dir) => ({
       y: dir > 0 ? '-100%' : '100%',
-      scale: 0.96,
       opacity: 1,
       transition: {
-        y: { type: 'spring', stiffness: 260, damping: 28 },
-        scale: { duration: 0.4 }
+        duration: 0.42,
+        ease: [0.16, 1, 0.3, 1]
       }
     })
   };
@@ -557,6 +554,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               initial="initial"
               animate="animate"
               exit="exit"
+              style={{ willChange: 'transform', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden' }}
             >
               {(() => {
                 const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv|avi)($|\?)/i.test(url) || url.startsWith('data:video') || url.startsWith('blob:video'));
