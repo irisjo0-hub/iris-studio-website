@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, uploadFile } from '../lib/supabase';
-import { useSiteSettings, DEFAULT_HERO_MOTION_IMAGES } from '../context/SiteSettingsContext';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/admin.css';
 
@@ -92,7 +92,7 @@ const AdminSettings = () => {
       setDivisionPrintUrl(settings.division_print_url || '/printing-products');
       setDivisionPrintImagePreview(settings.division_print_image || '');
 
-      let parsedMotionImages = null;
+      let parsedMotionImages = [];
       if (Array.isArray(settings.hero_motion_images)) {
         parsedMotionImages = settings.hero_motion_images;
       } else if (typeof settings.hero_motion_images === 'string') {
@@ -102,7 +102,7 @@ const AdminSettings = () => {
       }
 
       if (!Array.isArray(parsedMotionImages)) {
-        parsedMotionImages = DEFAULT_HERO_MOTION_IMAGES;
+        parsedMotionImages = [];
       }
 
       setHeroMotionImages(parsedMotionImages);
