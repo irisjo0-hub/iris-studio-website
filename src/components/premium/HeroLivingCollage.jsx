@@ -147,18 +147,8 @@ export const HeroLivingCollage = () => {
           const midX = '0vw';
           const endX = isRtl ? '130vw' : '-130vw';
 
-          // Distribute initial positions for small pools (N <= 3) so all cards are visible immediately on load
-          let initialXSequence = [startX, midX, endX];
-          if (N <= 3) {
-            const spreadOffsets = [
-              ['0vw', endX, startX, '0vw'],
-              [isRtl ? '-45vw' : '45vw', endX, startX, isRtl ? '-45vw' : '45vw'],
-              [isRtl ? '45vw' : '-45vw', endX, startX, isRtl ? '45vw' : '-45vw']
-            ];
-            initialXSequence = spreadOffsets[index % spreadOffsets.length];
-          }
-
-          const cardDelay = N <= 3 ? 0 : index * staggerStep;
+          const initialXSequence = [startX, midX, endX];
+          const cardDelay = index * staggerStep;
 
           return (
             <motion.div
@@ -169,7 +159,7 @@ export const HeroLivingCollage = () => {
                 width: config.width,
                 aspectRatio: 'auto',
                 left: '50%',
-                translateX: '-50%'
+                transform: 'translateX(-50%)'
               }}
               animate={
                 isPaused
