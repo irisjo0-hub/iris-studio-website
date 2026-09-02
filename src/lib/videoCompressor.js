@@ -1,25 +1,21 @@
 /**
- * Client-Side Video Compressor & Optimizer for IRIS Studio Admin
+ * Client-Side Video Compressor & Thumbnail Generator for IRIS Studio Admin
  * Automatically compresses high-res/heavy videos (e.g. 50MB-250MB) down to ~10MB-25MB 
- * with crisp 1080p resolution before uploading to Supabase Storage.
+ * with crisp 1080p resolution and generates a high-quality JPEG poster frame 
+ * for 100% cross-device compatibility (iOS iPhones, Android & Desktop).
  */
 
 export async function compressVideoIfNeeded(file, onProgress = () => {}) {
-  // If not a file or not a video, or already small (<= 15MB), return immediately
-  if (!file || !file.type.startsWith('video/') && !/\.(mp4|mov|webm|m4v|mkv)$/i.test(file.name)) {
-    return file;
+  if (!file || (!file.type.startsWith('video/') && !/\.(mp4|mov|webm|m4v|mkv)$/i.test(file.name))) {
+    return { file, posterBlob: null };
   }
 
-  const isHeavy = file.size > 15 * 1024 * 1024; // > 15MB
-  if (!isHeavy) {
-    onProgress(100, 'الملف بحجم مناسب ولا يحتاج لضغط');
-    return file;
-  }
+  const isHeavy = file.size > 12 * 1024 * 1024; // > 12MB
 
   // Check browser support for MediaRecorder & HTMLCanvasElement
   if (typeof window === 'undefined' || !window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) {
-    console.warn("Browser does not support client-side video compression, proceeding with original file.");
-    return file;
+    console.warn("Browser media recorder API unavailable, returning original file.");
+    return { file, posterBlob: null };
   }
 
   return new Promise((resolve) => {
@@ -35,6 +31,7 @@ export async function compressVideoIfNeeded(file, onProgress = () => {}) {
       let mediaRecorder;
       let recordedChunks = [];
       let isCleanedUp = false;
+      let posterBlob = null;
 
       const cleanup = () => {
         if (isCleanedUp) return;
@@ -49,7 +46,7 @@ export async function compressVideoIfNeeded(file, onProgress = () => {}) {
       const handleFallback = (msg) => {
         console.warn("Video compression fallback:", msg);
         cleanup();
-        resolve(file);
+        resolve({ file, posterBlob: null });
       };
 
       video.onloadedmetadata = () => {
@@ -86,6 +83,20 @@ export async function compressVideoIfNeeded(file, onProgress = () => {}) {
           return handleFallback("Canvas 2D context unavailable");
         }
 
+        // Capture 1st frame as JPEG poster thumbnail for iOS Safari / Mobile
+        try {
+          ctx.drawImage(video, 0, 0, width, height);
+          canvas.toBlob((b) => {
+            posterBlob = b;
+          }, 'image/jpeg', 0.88);
+        } catch (e) {}
+
+        if (!isHeavy) {
+          onProgress(100, 'الملف بحجم مناسب (جاري استخراج الغلاف)...');
+          cleanup();
+          return resolve({ file, posterBlob });
+        }
+
         // 30 FPS Canvas Stream
         const stream = canvas.captureStream(30);
 
@@ -102,21 +113,21 @@ export async function compressVideoIfNeeded(file, onProgress = () => {}) {
           console.log("Audio track capture skipped:", e);
         }
 
-        // Supported Codec Selection
-        let selectedMime = 'video/webm;codecs=vp9,opus';
-        if (!MediaRecorder.isTypeSupported(selectedMime)) {
-          selectedMime = 'video/webm;codecs=vp8,opus';
-        }
-        if (!MediaRecorder.isTypeSupported(selectedMime)) {
-          selectedMime = 'video/webm';
-        }
-        if (!MediaRecorder.isTypeSupported(selectedMime)) {
-          selectedMime = 'video/mp4';
-        }
+        // Supported Codec Selection (Prioritize MP4 / H.264 for iOS iPhone & Safari compatibility)
+        const mimeTypesToTry = [
+          'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+          'video/mp4',
+          'video/webm;codecs=h264,opus',
+          'video/webm;codecs=vp9,opus',
+          'video/webm;codecs=vp8,opus',
+          'video/webm'
+        ];
+
+        let selectedMime = mimeTypesToTry.find(m => MediaRecorder.isTypeSupported(m)) || 'video/webm';
 
         const options = {
-          mimeType: MediaRecorder.isTypeSupported(selectedMime) ? selectedMime : '',
-          videoBitsPerSecond: 2500000 // 2.5 Mbps bitrate (Crisp 1080p @ small size)
+          mimeType: selectedMime,
+          videoBitsPerSecond: 2500000 // 2.5 Mbps bitrate (Crisp 1080p @ low file size)
         };
 
         try {
@@ -140,7 +151,7 @@ export async function compressVideoIfNeeded(file, onProgress = () => {}) {
           if (blob && blob.size > 0 && blob.size < file.size) {
             const originalMB = (file.size / (1024 * 1024)).toFixed(1);
             const compressedMB = (blob.size / (1024 * 1024)).toFixed(1);
-            console.log(`✅ Compressed video from ${originalMB}MB to ${compressedMB}MB`);
+            console.log(`✅ Compressed video from ${originalMB}MB to ${compressedMB}MB (${selectedMime})`);
 
             const cleanBase = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
             const compressedFile = new File(
@@ -148,10 +159,9 @@ export async function compressVideoIfNeeded(file, onProgress = () => {}) {
               `${cleanBase}_opt${ext}`, 
               { type: selectedMime }
             );
-            resolve(compressedFile);
+            resolve({ file: compressedFile, posterBlob });
           } else {
-            // Compressed size was larger or empty, use original
-            resolve(file);
+            resolve({ file, posterBlob });
           }
         };
 
@@ -191,7 +201,6 @@ export async function compressVideoIfNeeded(file, onProgress = () => {}) {
             }
           };
 
-          // Maximum safety timeout
           setTimeout(() => {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') {
               onProgress(100, 'تم المعالجة، جاري التجهيز...');
@@ -208,7 +217,7 @@ export async function compressVideoIfNeeded(file, onProgress = () => {}) {
       };
     } catch (err) {
       console.warn("Compression exception caught:", err);
-      resolve(file);
+      resolve({ file, posterBlob: null });
     }
   });
 }

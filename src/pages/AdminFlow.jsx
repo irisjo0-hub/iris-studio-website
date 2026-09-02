@@ -61,25 +61,42 @@ export const AdminFlow = () => {
       const isVideo = originalFile.type.startsWith('video/') || originalFile.name.toLowerCase().endsWith('.mp4') || originalFile.name.toLowerCase().endsWith('.mov') || originalFile.name.toLowerCase().endsWith('.webm') || originalFile.name.toLowerCase().endsWith('.mkv');
 
       let fileToUpload = originalFile;
-      if (isVideo && originalFile.size > 15 * 1024 * 1024) {
-        setUploadProgressText('🎬 جاري تحسين وضغط الفيديو تلقائياً...');
-        fileToUpload = await compressVideoIfNeeded(originalFile, (percent, msg) => {
+      let posterBlob = null;
+
+      if (isVideo) {
+        setUploadProgressText('🎬 جاري معالجة الفيديو واستخراج الغلاف...');
+        const result = await compressVideoIfNeeded(originalFile, (percent, msg) => {
           setUploadProgressText(msg || `🎬 جاري ضغط وتحسين الفيديو... (${percent}%)`);
         });
+        fileToUpload = result.file || originalFile;
+        posterBlob = result.posterBlob;
       }
 
-      setUploadProgressText('🚀 جاري الرفع للسيرفر السحابي (Supabase)...');
+      setUploadProgressText('🚀 جاري رفع الفيديو والغلاف للسيرفر السحابي (Supabase)...');
 
+      const timeStamp = Date.now();
       const cleanFileName = fileToUpload.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const filePath = `reels/${Date.now()}-${cleanFileName}`;
+      const filePath = `reels/${timeStamp}-${cleanFileName}`;
 
-      const publicUrl = await uploadFile('portfolio', filePath, fileToUpload);
+      const videoPublicUrl = await uploadFile('portfolio', filePath, fileToUpload);
 
-      if (publicUrl) {
+      let posterPublicUrl = videoPublicUrl;
+      if (posterBlob && isVideo) {
+        try {
+          const posterFile = new File([posterBlob], `poster_${timeStamp}.jpg`, { type: 'image/jpeg' });
+          const posterPath = `reels/${timeStamp}-poster.jpg`;
+          const uploadedPoster = await uploadFile('portfolio', posterPath, posterFile);
+          if (uploadedPoster) posterPublicUrl = uploadedPoster;
+        } catch (e) {
+          console.warn("Poster upload skipped:", e);
+        }
+      }
+
+      if (videoPublicUrl) {
         setFormData((prev) => ({
           ...prev,
-          image: publicUrl,
-          media_url: publicUrl,
+          image: posterPublicUrl || videoPublicUrl,
+          media_url: videoPublicUrl,
           media_type: isVideo ? 'video' : 'image'
         }));
       }

@@ -47,6 +47,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   // Toast Notification State
   const [toastMessage, setToastMessage] = useState('');
+  const [videoErrorMap, setVideoErrorMap] = useState({});
 
   const stageRef = useRef(null);
   const videoRef = useRef(null);
@@ -540,14 +541,16 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
             >
               {(() => {
                 const mediaSrc = currentReel.media_url || currentReel.image || '';
-                const isVideo = currentReel.media_type === 'video' ||
-                  (/\.(mp4|mov|webm|m4v)($|\?)/i.test(mediaSrc) || mediaSrc.includes('video') || mediaSrc.startsWith('blob:') || mediaSrc.startsWith('data:video'));
+                const posterSrc = (currentReel.image && currentReel.image !== mediaSrc && !currentReel.image.endsWith('.webm') && !currentReel.image.endsWith('.mp4')) ? currentReel.image : '';
+                const isVideo = (currentReel.media_type === 'video' ||
+                  (/\.(mp4|mov|webm|m4v)($|\?)/i.test(mediaSrc) || mediaSrc.includes('video') || mediaSrc.startsWith('blob:') || mediaSrc.startsWith('data:video'))) && !videoErrorMap[currentReel.id];
 
                 if (isVideo && mediaSrc) {
                   return (
                     <video
                       ref={videoRef}
                       src={mediaSrc}
+                      poster={posterSrc}
                       autoPlay={isStageActive}
                       loop
                       muted={isMuted}
@@ -555,12 +558,13 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                       webkit-playsinline="true"
                       className="reel-static-img"
                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      onError={() => setVideoErrorMap(prev => ({ ...prev, [currentReel.id]: true }))}
                     />
                   );
                 }
                 return (
                   <img
-                    src={mediaSrc}
+                    src={currentReel.image || mediaSrc}
                     alt={isRtl ? currentReel.alt_ar : currentReel.alt_en}
                     className="reel-static-img"
                   />
