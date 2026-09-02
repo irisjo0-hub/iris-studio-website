@@ -541,7 +541,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               exit="exit"
             >
               {(() => {
-                const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(url) || url.includes('video') || url.includes('/reels/'));
+                const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv|avi)($|\?)/i.test(url) || url.startsWith('data:video') || url.startsWith('blob:video'));
                 const mediaSrc = currentReel.media_url || currentReel.image || '';
                 
                 let validImage = heroMediaImg;

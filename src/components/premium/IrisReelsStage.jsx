@@ -315,7 +315,7 @@ export const IrisReelsStage = ({ id = "iris-reels-stage-root" }) => {
               transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
             >
               {(() => {
-                const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(url) || url.includes('video') || url.includes('/reels/'));
+                const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv|avi)($|\?)/i.test(url) || url.startsWith('data:video') || url.startsWith('blob:video'));
                 const mediaSrc = currentReel.media_url || currentReel.image || '';
                 
                 let validImage = heroMediaImg;

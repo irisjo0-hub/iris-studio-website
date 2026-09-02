@@ -23,7 +23,21 @@ export const AdminFlow = () => {
   }, []);
 
   const handleSaveAll = async () => {
-    const ok = await saveFlowItems(items);
+    let itemsToSave = [...items];
+    if (editingId && formData && (formData.image || formData.media_url)) {
+      const finalMedia = (formData.image || formData.media_url || '').trim();
+      const isVid = formData.media_type === 'video' || (/\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(finalMedia));
+      const updatedData = {
+        ...formData,
+        image: finalMedia,
+        media_url: finalMedia,
+        media_type: isVid ? 'video' : 'image'
+      };
+      itemsToSave = itemsToSave.map(it => it.id === editingId ? updatedData : it);
+      setItems(itemsToSave);
+    }
+
+    const ok = await saveFlowItems(itemsToSave);
     if (ok) {
       alert('✅ تم حفظ وتحديث جميع تغييرات الريلز سحابياً بنجاح! ستظهر الآن عند الجميع على كافة الهواتف والأجهزة.');
     } else {
