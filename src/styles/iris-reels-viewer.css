@@ -470,6 +470,28 @@
   max-width: calc(100% - 105px);
 }
 
+/* STATIC PERSISTENT IRIS PROFILE IDENTITY BADGE */
+.instagram-caption-profile-row-persistent {
+  position: absolute;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.reel-frame[data-locale="ar"] .instagram-caption-profile-row-persistent {
+  right: 18px;
+  left: 95px;
+  bottom: calc(235px + env(safe-area-inset-bottom, 0px));
+}
+
+.reel-frame[data-locale="en"] .instagram-caption-profile-row-persistent {
+  left: 18px;
+  right: 95px;
+  bottom: calc(235px + env(safe-area-inset-bottom, 0px));
+}
+
 /* ===== 1. EXPLICIT ARABIC OVERLAY GRID (data-locale="ar") ===== */
 .reel-frame[data-locale="ar"] .reels-hamburger-btn {
   right: 18px;
@@ -487,7 +509,7 @@
 .reel-frame[data-locale="ar"] .reels-action-rail {
   left: 16px;
   right: auto;
-  bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(75px + env(safe-area-inset-bottom, 0px));
   align-items: center;
   width: 62px;
   gap: clamp(10px, 1.8vh, 18px);
@@ -497,7 +519,7 @@
 .reel-frame[data-locale="ar"] .instagram-reel-caption-block {
   right: 18px;
   left: 95px;
-  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(75px + env(safe-area-inset-bottom, 0px));
   text-align: right;
 }
 
@@ -518,7 +540,7 @@
 .reel-frame[data-locale="en"] .reels-action-rail {
   right: 16px;
   left: auto;
-  bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(75px + env(safe-area-inset-bottom, 0px));
   align-items: center;
   width: 62px;
   gap: clamp(10px, 1.8vh, 18px);
@@ -528,7 +550,7 @@
 .reel-frame[data-locale="en"] .instagram-reel-caption-block {
   left: 18px;
   right: 95px;
-  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(75px + env(safe-area-inset-bottom, 0px));
   text-align: left;
 }
 
