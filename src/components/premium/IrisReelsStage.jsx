@@ -312,24 +312,34 @@ export const IrisReelsStage = ({ id = "iris-reels-stage-root" }) => {
               exit={{ y: '-100%', opacity: 1 }}
               transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
             >
-              {currentReel.media_type === 'video' || (currentReel.media_url && (currentReel.media_url.endsWith('.mp4') || currentReel.media_url.endsWith('.mov') || currentReel.media_url.endsWith('.webm') || currentReel.media_url.startsWith('blob:') || currentReel.media_url.startsWith('data:video'))) ? (
-                <video
-                  ref={videoRef}
-                  src={currentReel.media_url || currentReel.image}
-                  autoPlay={isStageActive}
-                  loop
-                  muted={isMuted}
-                  playsInline
-                  className="flow-static-img"
-                  style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                />
-              ) : (
-                <img
-                  src={currentReel.image || currentReel.media_url}
-                  alt={isRtl ? currentReel.alt_ar : currentReel.alt_en}
-                  className="flow-static-img"
-                />
-              )}
+              {(() => {
+                const mediaSrc = currentReel.media_url || currentReel.image || '';
+                const isVideo = currentReel.media_type === 'video' ||
+                  (/\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(mediaSrc) || mediaSrc.includes('video') || mediaSrc.includes('/reels/') || mediaSrc.startsWith('blob:') || mediaSrc.startsWith('data:video'));
+
+                if (isVideo && mediaSrc) {
+                  return (
+                    <video
+                      ref={videoRef}
+                      src={mediaSrc}
+                      autoPlay={isStageActive}
+                      loop
+                      muted={isMuted}
+                      playsInline
+                      webkit-playsinline="true"
+                      className="flow-static-img"
+                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                    />
+                  );
+                }
+                return (
+                  <img
+                    src={mediaSrc}
+                    alt={isRtl ? currentReel.alt_ar : currentReel.alt_en}
+                    className="flow-static-img"
+                  />
+                );
+              })()}
               <div className="flow-darkness-gradient" />
 
               {/* FLOATING EDITORIAL OVERLAY ATTACHED TO CANVAS */}

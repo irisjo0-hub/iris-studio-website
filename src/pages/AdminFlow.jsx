@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getFlowItems, getFlowItemsAsync, saveFlowItems } from '../repositories/flowRepository';
 import { uploadFile } from '../lib/supabase';
+import { compressVideoIfNeeded } from '../lib/videoCompressor';
 import AdminLayout from '../components/AdminLayout';
 import { Plus, Trash2, Edit2, Check, X, ArrowUp, ArrowDown, Eye, EyeOff, Film, Sparkles, Image as ImageIcon, Link as LinkIcon, Upload } from 'lucide-react';
 import '../styles/admin.css';
@@ -10,6 +11,7 @@ export const AdminFlow = () => {
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({});
   const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [uploadProgressText, setUploadProgressText] = useState('');
 
   useEffect(() => {
     setItems(getFlowItems());
@@ -43,22 +45,35 @@ export const AdminFlow = () => {
   };
 
   const handleFileUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const originalFile = e.target.files?.[0];
+    if (!originalFile) return;
 
-    if (file.size > 30 * 1024 * 1024) {
-      alert('⚠️ حجم الملف كبير جداً (أكبر من 30 ميجابايت). يرجى اختيار فيديو أصغر حجماً.');
+    if (originalFile.size > 250 * 1024 * 1024) {
+      alert('⚠️ حجم الملف كبير جداً (أكبر من 250 ميجابايت). يرجى اختيار فيديو أصغر حجماً.');
       e.target.value = '';
       return;
     }
 
     setUploadingMedia(true);
+    setUploadProgressText('⚡ جاري قراءة الملف وتجهيز الفحص...');
+
     try {
-      const isVideo = file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.mp4') || file.name.toLowerCase().endsWith('.mov') || file.name.toLowerCase().endsWith('.webm');
-      const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const isVideo = originalFile.type.startsWith('video/') || originalFile.name.toLowerCase().endsWith('.mp4') || originalFile.name.toLowerCase().endsWith('.mov') || originalFile.name.toLowerCase().endsWith('.webm') || originalFile.name.toLowerCase().endsWith('.mkv');
+
+      let fileToUpload = originalFile;
+      if (isVideo && originalFile.size > 15 * 1024 * 1024) {
+        setUploadProgressText('🎬 جاري تحسين وضغط الفيديو تلقائياً...');
+        fileToUpload = await compressVideoIfNeeded(originalFile, (percent, msg) => {
+          setUploadProgressText(msg || `🎬 جاري ضغط وتحسين الفيديو... (${percent}%)`);
+        });
+      }
+
+      setUploadProgressText('🚀 جاري الرفع للسيرفر السحابي (Supabase)...');
+
+      const cleanFileName = fileToUpload.name.replace(/[^a-zA-Z0-9.-]/g, '_');
       const filePath = `reels/${Date.now()}-${cleanFileName}`;
 
-      const publicUrl = await uploadFile('portfolio', filePath, file);
+      const publicUrl = await uploadFile('portfolio', filePath, fileToUpload);
 
       if (publicUrl) {
         setFormData((prev) => ({
@@ -73,6 +88,7 @@ export const AdminFlow = () => {
       alert('⚠️ تعذر رفع الملف: ' + (err.message || 'يرجى التأكد من الاتصال بالإنترنت أو إدخال رابط مباشر'));
     } finally {
       setUploadingMedia(false);
+      setUploadProgressText('');
       e.target.value = '';
     }
   };
@@ -541,7 +557,7 @@ export const AdminFlow = () => {
                       }}
                     >
                       <Upload size={16} />
-                      <span>{uploadingMedia ? '⏳ جاري الرفع والتحميل...' : '📁 اختيار صورة أو فيديو من الجهاز'}</span>
+                      <span>{uploadingMedia ? (uploadProgressText || '⏳ جاري المعالجة والرفع...') : '📁 اختيار صورة أو فيديو من الجهاز (ضغط تلقائي 1080p)'}</span>
                       <input
                         type="file"
                         accept="image/*,video/*"
@@ -551,7 +567,14 @@ export const AdminFlow = () => {
                       />
                     </label>
 
-                    {(formData.image || formData.media_url) && (
+                    {uploadingMedia && uploadProgressText && (
+                      <div style={{ padding: '8px 12px', background: 'rgba(251, 191, 36, 0.12)', border: '1px solid rgba(251, 191, 36, 0.3)', borderRadius: '8px', fontSize: '0.83rem', color: '#FBBF24', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⏳</span>
+                        <span>{uploadProgressText}</span>
+                      </div>
+                    )}
+
+                    {(formData.image || formData.media_url) && !uploadingMedia && (
                       <span style={{ fontSize: '0.8rem', color: '#4ADE80', fontWeight: 'bold' }}>
                         ✓ تم اختيار الميديا بنجاح
                       </span>
