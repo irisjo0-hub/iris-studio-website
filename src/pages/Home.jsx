@@ -18,12 +18,10 @@ import "../styles/animation.css";
 
 const Home = () => {
   const [loading, setLoading] = useState(() => !window.hasPreloaded);
-  const [preloaderDone, setPreloaderDone] = useState(() => !!window.hasPreloaded);
 
   const handlePreloaderComplete = useCallback(() => {
     window.hasPreloaded = true;
     setLoading(false);
-    setPreloaderDone(true);
   }, []);
 
   // Scroll lock during preloader
@@ -46,21 +44,19 @@ const Home = () => {
         )}
       </AnimatePresence>
 
-      {preloaderDone && (
-        <div className="home-page" dir="rtl">
-          {/* 1. HERO */}
-          <IrisDarkHero />
+      <div className="home-page" dir="rtl">
+        {/* 1. HERO */}
+        <IrisDarkHero />
 
-          {/* 2. FULLSCREEN IRIS REELS VIEWER */}
-          <IrisReelsViewer id="iris-reels-viewer-root" />
+        {/* 2. FULLSCREEN IRIS REELS VIEWER */}
+        <IrisReelsViewer id="iris-reels-viewer-root" />
 
-          {/* 3. THREE WORLDS */}
-          <IrisDivisionsSwitcher id="iris-divisions-section" />
+        {/* 3. THREE WORLDS */}
+        <IrisDivisionsSwitcher id="iris-divisions-section" />
 
-          {/* 4. ONE FOOTER */}
-          <Footer />
-        </div>
-      )}
+        {/* 4. ONE FOOTER */}
+        <Footer />
+      </div>
     </>
   );
 };

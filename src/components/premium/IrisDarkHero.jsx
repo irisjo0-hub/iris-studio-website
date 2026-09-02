@@ -144,13 +144,10 @@ export const IrisDarkHero = () => {
         <header className="hero-v2-top-bar">
           {/* 1. IRIS Logo (Left Edge) */}
           <Link to="/" className="hero-v2-logo-link" aria-label="IRIS Agency">
-            <motion.img
+            <img
               src={settings.hero_logo_url || settings.logo_url || irisLogo}
               alt="IRIS"
               className="hero-v2-logo-img"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
             />
           </Link>
 
@@ -175,44 +172,24 @@ export const IrisDarkHero = () => {
 
         {/* 4. Main Hero Content Stage (Simplified & Confident) */}
         <div className="hero-v2-content-stage">
-          {/* Line-by-Line Masked Headline Reveal */}
+          {/* Line-by-Line Headline */}
           <div className="hero-v2-primary-headline-box">
             <h1 className="hero-v2-editorial-title">
-              <motion.span
-                className="headline-line-1"
-                initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.75, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              >
+              <span className="headline-line-1">
                 {headlinePart1}
-              </motion.span>
-              <motion.span
-                className="headline-line-2"
-                initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.75, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              >
+              </span>
+              <span className="headline-line-2">
                 {headlinePart2}
-              </motion.span>
+              </span>
             </h1>
 
-            <motion.p
-              className="hero-v2-supporting-desc"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.75, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            >
+            <p className="hero-v2-supporting-desc">
               {supportingCopy}
-            </motion.p>
+            </p>
           </div>
 
           {/* Magnetic Interactive Primary CTA */}
-          <motion.div
-            className="hero-v2-action-wrapper"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.75, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          >
+          <div className="hero-v2-action-wrapper">
             <button
               type="button"
               className="hero-v2-discover-cta glass-gold-pulse-btn"
@@ -229,7 +206,7 @@ export const IrisDarkHero = () => {
                 <ArrowDown size={17} />
               </span>
             </button>
-          </motion.div>
+          </div>
         </div>
       </div>
 
