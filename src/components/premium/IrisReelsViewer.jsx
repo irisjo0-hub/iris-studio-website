@@ -530,18 +530,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       </div>
 
       <div className="reels-stage-container">
-        {/* OUTER FLOATING TOP SKIP PILL (FLOATING OUTSIDE REEL FRAME IN AMBIENT BG) */}
-        <button
-          type="button"
-          className="reels-floating-skip-pill reels-skip-top-pill-outer"
-          onClick={handleSkipUp}
-          aria-label={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
-          title={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
-        >
-          <span>{isRtl ? 'تخطي' : 'Skip'}</span>
-          <ChevronUp size={16} className="skip-up-arrow-anim" />
-        </button>
-
         {/* ===== TRUE 9:16 REEL FRAME CANVAS WITH EXPLICIT BILINGUAL LOCALE ===== */}
         <div className="reel-frame" data-locale={isRtl ? 'ar' : 'en'}>
           {/* ===== 1. ACTIVE 9:16 REEL CANVAS (LOCKSTEP INSTAGRAM SLIDE) ===== */}
@@ -628,6 +616,18 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
           {/* ===== 2. PERSISTENT SPATIAL OVERLAYS INSIDE 9:16 FRAME ===== */}
           <div className="reels-persistent-ui-layer">
+
+            {/* TOP SKIP PILL (100% INSIDE FRAME AT TOP CENTER) */}
+            <button
+              type="button"
+              className="reels-floating-skip-pill reels-skip-top-pill-outer"
+              onClick={handleSkipUp}
+              aria-label={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
+              title={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
+            >
+              <span>{isRtl ? 'تخطي' : 'Skip'}</span>
+              <ChevronUp size={16} className="skip-up-arrow-anim" />
+            </button>
 
             {/* Top Bar Controls */}
             <div className="reels-top-bar">
@@ -717,20 +717,20 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 </span>
               </div>
             </div>
+
+            {/* BOTTOM SKIP PILL (100% INSIDE FRAME AT BOTTOM CENTER) */}
+            <button
+              type="button"
+              className="reels-floating-skip-pill reels-skip-bottom-pill-outer"
+              onClick={handleSkipReels}
+              aria-label={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
+              title={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
+            >
+              <span>{isRtl ? 'تخطي' : 'Skip'}</span>
+              <ChevronDown size={16} className="skip-arrow-anim" />
+            </button>
           </div>
         </div>
-
-        {/* OUTER FLOATING BOTTOM SKIP PILL (FLOATING IN AMBIENT BACKGROUND BELOW REEL) */}
-        <button
-          type="button"
-          className="reels-floating-skip-pill reels-skip-bottom-pill-outer"
-          onClick={handleSkipReels}
-          aria-label={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
-          title={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
-        >
-          <span>{isRtl ? 'تخطي' : 'Skip'}</span>
-          <ChevronDown size={16} className="skip-arrow-anim" />
-        </button>
       </div>
 
       {/* ===== 3. SHARED VISITOR FEEDBACK BOTTOM SHEET (MOBILE) / DRAWER (DESKTOP) ===== */}
