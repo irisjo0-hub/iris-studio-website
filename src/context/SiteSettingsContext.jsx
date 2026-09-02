@@ -135,7 +135,11 @@ export const SiteSettingsProvider = ({ children }) => {
           ...dbSettings
         };
         setSettings(merged);
-        localStorage.setItem('cached_site_settings', JSON.stringify(merged));
+        try {
+          localStorage.setItem('cached_site_settings', JSON.stringify(merged));
+        } catch (e) {
+          console.warn('LocalStorage save failed:', e);
+        }
       } else {
         setSettings(baseSettings);
       }
@@ -159,7 +163,11 @@ export const SiteSettingsProvider = ({ children }) => {
   const updateSettingsLocally = (newSettings) => {
     setSettings(prev => {
       const updated = { ...prev, ...newSettings };
-      localStorage.setItem('cached_site_settings', JSON.stringify(updated));
+      try {
+        localStorage.setItem('cached_site_settings', JSON.stringify(updated));
+      } catch (e) {
+        console.warn('LocalStorage save failed:', e);
+      }
       return updated;
     });
   };

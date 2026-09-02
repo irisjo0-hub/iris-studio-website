@@ -29,15 +29,20 @@ export async function uploadFile(bucket, path, file) {
     return ext ? `${finalBase}.${ext}` : finalBase;
   }).filter(Boolean).join('/');
 
+  const options = {
+    upsert: true,
+    contentType: file.type || 'image/jpeg'
+  };
+
   let uploadResult = await supabase.storage
     .from(bucket)
-    .upload(sanitizedPath, file, { upsert: true });
+    .upload(sanitizedPath, file, options);
 
   if (uploadResult.error) {
     console.warn('Upsert upload failed, retrying standard upload:', uploadResult.error);
     uploadResult = await supabase.storage
       .from(bucket)
-      .upload(sanitizedPath, file, { upsert: false });
+      .upload(sanitizedPath, file, { ...options, upsert: false });
   }
 
   if (uploadResult.error) throw uploadResult.error;

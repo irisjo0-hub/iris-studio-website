@@ -333,19 +333,9 @@ const AdminSettings = () => {
       if (newMotionFiles.length > 0) {
         for (let i = 0; i < newMotionFiles.length; i++) {
           const file = newMotionFiles[i];
-          setUploadProgress(`جاري رفع الصورة ${i + 1} من أصل ${newMotionFiles.length}...`);
-          let finalUrl = '';
-          try {
-            const path = `hero-motion/photo-${Date.now()}-${i}-${file.name}`;
-            finalUrl = await uploadFile('packages', path, file);
-          } catch (uploadErr) {
-            console.warn('Supabase file upload fallback to DataURL:', uploadErr);
-            finalUrl = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = (e) => resolve(e.target.result);
-              reader.readAsDataURL(file);
-            });
-          }
+          setUploadProgress(`جاري رفع الصورة ${i + 1} من أصل ${newMotionFiles.length} إلى السيرفر...`);
+          const path = `hero-motion/photo-${Date.now()}-${i}-${file.name}`;
+          const finalUrl = await uploadFile('packages', path, file);
 
           newItems.push({
             id: `hm-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 4)}`,
