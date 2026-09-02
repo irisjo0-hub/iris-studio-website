@@ -470,6 +470,28 @@
   max-width: calc(100% - 105px);
 }
 
+/* STATIC & STATIONARY IRIS PROFILE IDENTITY BADGE (NEVER SLIDES ON REEL FLIP) */
+.instagram-caption-profile-row-persistent {
+  position: absolute;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.reel-frame[data-locale="ar"] .instagram-caption-profile-row-persistent {
+  right: 18px;
+  left: 95px;
+  bottom: calc(185px + env(safe-area-inset-bottom, 0px));
+}
+
+.reel-frame[data-locale="en"] .instagram-caption-profile-row-persistent {
+  left: 18px;
+  right: 95px;
+  bottom: calc(185px + env(safe-area-inset-bottom, 0px));
+}
+
 /* ===== 1. EXPLICIT ARABIC OVERLAY GRID (data-locale="ar") ===== */
 .reel-frame[data-locale="ar"] .reels-hamburger-btn {
   right: 18px;
