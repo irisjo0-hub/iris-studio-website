@@ -11,6 +11,7 @@ import {
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { getFlowItems, getApprovedFeedbackForFlow, getAllApprovedFeedback, submitFlowFeedback } from '../../repositories/flowRepository';
 import irisLogo from '../../assets/iris_logo.png';
+import heroMediaImg from '../../assets/hero.png';
 import '../../styles/iris-reels-viewer.css';
 import '../../styles/iris-dark-hero.css';
 
@@ -540,17 +541,24 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               exit="exit"
             >
               {(() => {
+                const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(url) || url.includes('video') || url.includes('/reels/'));
                 const mediaSrc = currentReel.media_url || currentReel.image || '';
-                const posterSrc = (currentReel.image && currentReel.image !== mediaSrc && !currentReel.image.endsWith('.webm') && !currentReel.image.endsWith('.mp4')) ? currentReel.image : '';
-                const isVideo = (currentReel.media_type === 'video' ||
-                  (/\.(mp4|mov|webm|m4v)($|\?)/i.test(mediaSrc) || mediaSrc.includes('video') || mediaSrc.startsWith('blob:') || mediaSrc.startsWith('data:video'))) && !videoErrorMap[currentReel.id];
+                
+                let validImage = heroMediaImg;
+                if (currentReel.image && !isVidUrl(currentReel.image) && !currentReel.image.startsWith('blob:')) {
+                  validImage = currentReel.image;
+                } else if (currentReel.media_url && !isVidUrl(currentReel.media_url) && !currentReel.media_url.startsWith('blob:')) {
+                  validImage = currentReel.media_url;
+                }
+
+                const isVideo = (currentReel.media_type === 'video' || isVidUrl(mediaSrc) || isVidUrl(currentReel.media_url)) && !videoErrorMap[currentReel.id];
 
                 if (isVideo && mediaSrc) {
                   return (
                     <video
                       ref={videoRef}
                       src={mediaSrc}
-                      poster={posterSrc}
+                      poster={validImage}
                       autoPlay={isStageActive}
                       loop
                       muted={isMuted}
@@ -564,7 +572,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 }
                 return (
                   <img
-                    src={currentReel.image || mediaSrc}
+                    src={validImage}
                     alt={isRtl ? currentReel.alt_ar : currentReel.alt_en}
                     className="reel-static-img"
                   />

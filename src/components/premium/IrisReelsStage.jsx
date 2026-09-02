@@ -11,6 +11,7 @@ import {
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { getFlowItems, getApprovedFeedbackForFlow, submitFlowFeedback } from '../../repositories/flowRepository';
 import irisLogo from '../../assets/iris_logo.png';
+import heroMediaImg from '../../assets/hero.png';
 import '../../styles/iris-flow-stage.css';
 
 /**
@@ -30,6 +31,7 @@ export const IrisReelsStage = ({ id = "iris-reels-stage-root" }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isStageActive, setIsStageActive] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [videoErrorMap, setVideoErrorMap] = useState({});
 
   // Feedback State
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -313,15 +315,24 @@ export const IrisReelsStage = ({ id = "iris-reels-stage-root" }) => {
               transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
             >
               {(() => {
+                const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(url) || url.includes('video') || url.includes('/reels/'));
                 const mediaSrc = currentReel.media_url || currentReel.image || '';
-                const isVideo = currentReel.media_type === 'video' ||
-                  (/\.(mp4|mov|webm|m4v|mkv)($|\?)/i.test(mediaSrc) || mediaSrc.includes('video') || mediaSrc.includes('/reels/') || mediaSrc.startsWith('blob:') || mediaSrc.startsWith('data:video'));
+                
+                let validImage = heroMediaImg;
+                if (currentReel.image && !isVidUrl(currentReel.image) && !currentReel.image.startsWith('blob:')) {
+                  validImage = currentReel.image;
+                } else if (currentReel.media_url && !isVidUrl(currentReel.media_url) && !currentReel.media_url.startsWith('blob:')) {
+                  validImage = currentReel.media_url;
+                }
+
+                const isVideo = (currentReel.media_type === 'video' || isVidUrl(mediaSrc) || isVidUrl(currentReel.media_url)) && !videoErrorMap[currentReel.id];
 
                 if (isVideo && mediaSrc) {
                   return (
                     <video
                       ref={videoRef}
                       src={mediaSrc}
+                      poster={validImage}
                       autoPlay={isStageActive}
                       loop
                       muted={isMuted}
@@ -329,12 +340,13 @@ export const IrisReelsStage = ({ id = "iris-reels-stage-root" }) => {
                       webkit-playsinline="true"
                       className="flow-static-img"
                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      onError={() => setVideoErrorMap(prev => ({ ...prev, [currentReel.id]: true }))}
                     />
                   );
                 }
                 return (
                   <img
-                    src={mediaSrc}
+                    src={validImage}
                     alt={isRtl ? currentReel.alt_ar : currentReel.alt_en}
                     className="flow-static-img"
                   />

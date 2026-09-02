@@ -218,7 +218,17 @@ export const getFlowItems = () => {
     const raw = localStorage.getItem(FLOW_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map(item => {
+          const copy = { ...item };
+          if (copy.image && (copy.image.endsWith('.webm') || copy.image.endsWith('.mp4') || copy.image.endsWith('.mov') || copy.image.endsWith('.mkv'))) {
+            if (!copy.media_url) copy.media_url = copy.image;
+            copy.image = heroMediaImg;
+          }
+          if (!copy.image) copy.image = heroMediaImg;
+          return copy;
+        });
+      }
     }
   } catch (err) {
     console.error("Failed to parse flow items:", err);
@@ -234,7 +244,16 @@ export const getFlowItemsAsync = async () => {
       .order('sort_order', { ascending: true });
 
     if (!error && data && data.length > 0) {
-      const items = data.map(row => typeof row.data === 'string' ? JSON.parse(row.data) : row.data);
+      const items = data.map(row => {
+        const item = typeof row.data === 'string' ? JSON.parse(row.data) : row.data;
+        const copy = { ...item };
+        if (copy.image && (copy.image.endsWith('.webm') || copy.image.endsWith('.mp4') || copy.image.endsWith('.mov') || copy.image.endsWith('.mkv'))) {
+          if (!copy.media_url) copy.media_url = copy.image;
+          copy.image = heroMediaImg;
+        }
+        if (!copy.image) copy.image = heroMediaImg;
+        return copy;
+      });
       localStorage.setItem(FLOW_STORAGE_KEY, JSON.stringify(items));
       return items;
     }
