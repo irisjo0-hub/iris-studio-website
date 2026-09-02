@@ -289,13 +289,15 @@ export const saveFlowItems = async (items) => {
       sort_order: item.sort_order || index + 1,
       updated_at: new Date().toISOString()
     }));
+    let hasError = false;
     for (const row of rows) {
       const { error } = await supabase.from('flow_items').upsert(row, { onConflict: 'id' });
       if (error) {
         console.error("Error upserting flow item to Supabase:", error);
+        hasError = true;
       }
     }
-    return true;
+    return !hasError;
   } catch (err) {
     console.warn("Cloud sync to Supabase flow_items failed:", err);
     return false;

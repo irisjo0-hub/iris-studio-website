@@ -23,8 +23,12 @@ export const AdminFlow = () => {
   }, []);
 
   const handleSaveAll = async () => {
-    await saveFlowItems(items);
-    alert('✅ تم حفظ وتحديث جميع تغييرات الريلز سحابياً بنجاح!');
+    const ok = await saveFlowItems(items);
+    if (ok) {
+      alert('✅ تم حفظ وتحديث جميع تغييرات الريلز سحابياً بنجاح! ستظهر الآن عند الجميع على كافة الهواتف والأجهزة.');
+    } else {
+      alert('⚠️ تنبيه مهم: تعذر الحفظ على السيرفر لعدم تفعيل إذن الجداول في Supabase بعد. تم الحفظ على هذا الجهاز فقط.\\n\\nيرجى تشغيل كود الـ SQL في Supabase SQL Editor لمزامنة الفيديوهات والتعديلات فوراً مع كافة الهواتف!');
+    }
   };
 
   const handleEditClick = (item) => {
