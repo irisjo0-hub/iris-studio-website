@@ -141,10 +141,10 @@ export const HeroLivingCollage = () => {
 
   // Dynamic calculations based on exact photo count N
   const N = pool.length;
-  const travelDuration = 24;
-  const staggerStep = N === 1 ? 24 : 4.5;
-  const totalLoopCycle = N === 1 ? 24 : Math.max(travelDuration + staggerStep, N * staggerStep);
-  const repeatDelay = totalLoopCycle - travelDuration;
+  const travelDuration = 22;
+  const staggerStep = N <= 3 ? 3 : (travelDuration / N);
+  const totalLoopCycle = Math.max(travelDuration, N * staggerStep);
+  const repeatDelay = Math.max(0, totalLoopCycle - travelDuration);
 
   return (
     <div
@@ -159,7 +159,18 @@ export const HeroLivingCollage = () => {
           const midX = '0vw';
           const endX = isRtl ? '130vw' : '-130vw';
 
-          const cardDelay = index * staggerStep;
+          // Distribute initial positions for small pools (N <= 3) so all cards are visible immediately on load
+          let initialXSequence = [startX, midX, endX];
+          if (N <= 3) {
+            const spreadOffsets = [
+              ['0vw', endX, startX, '0vw'],
+              [isRtl ? '-45vw' : '45vw', endX, startX, isRtl ? '-45vw' : '45vw'],
+              [isRtl ? '45vw' : '-45vw', endX, startX, isRtl ? '45vw' : '-45vw']
+            ];
+            initialXSequence = spreadOffsets[index % spreadOffsets.length];
+          }
+
+          const cardDelay = N <= 3 ? 0 : index * staggerStep;
 
           return (
             <motion.div
@@ -176,11 +187,11 @@ export const HeroLivingCollage = () => {
                 isPaused
                   ? {}
                   : {
-                      x: [startX, midX, endX],
+                      x: initialXSequence,
                       y: config.floatY,
                       rotateZ: config.rotateZ,
-                      opacity: [0, 1, 0],
-                      filter: ['blur(12px)', 'blur(0px)', 'blur(12px)']
+                      opacity: [0.7, 1, 0.7],
+                      filter: ['blur(4px)', 'blur(0px)', 'blur(4px)']
                     }
               }
               transition={{
