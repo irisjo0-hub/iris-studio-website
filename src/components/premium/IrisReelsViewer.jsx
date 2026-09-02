@@ -598,6 +598,17 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
               {/* INSTAGRAM REEL BOTTOM CAPTION BLOCK (FLUID FLEX LAYOUT) */}
               <div className="instagram-reel-caption-block" dir={isRtl ? 'rtl' : 'ltr'}>
+                {/* PROFILE IDENTITY ROW — ATTACHED TIGHTLY 6px ABOVE CATEGORY TAG */}
+                <div className="instagram-caption-profile-row">
+                  <div className="instagram-avatar-ring">
+                    <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="instagram-avatar-img" />
+                  </div>
+                  <div className="instagram-user-meta">
+                    <span className="instagram-username">IRIS HOME</span>
+                    <span className="instagram-handle bidi-isolate" dir="ltr">@iris.jo</span>
+                  </div>
+                </div>
+
                 <span className="reel-item-number">
                   <span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / 0{activeIndex + 1}
                 </span>
@@ -617,17 +628,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
           {/* ===== 2. PERSISTENT SPATIAL OVERLAYS INSIDE 9:16 FRAME ===== */}
           <div className="reels-persistent-ui-layer">
-
-            {/* STATIC & STATIONARY IRIS PROFILE IDENTITY BADGE (NEVER SLIDES ON REEL FLIP) */}
-            <div className="instagram-caption-profile-row-persistent" dir={isRtl ? 'rtl' : 'ltr'}>
-              <div className="instagram-avatar-ring">
-                <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="instagram-avatar-img" />
-              </div>
-              <div className="instagram-user-meta">
-                <span className="instagram-username">IRIS HOME</span>
-                <span className="instagram-handle bidi-isolate" dir="ltr">@iris.jo</span>
-              </div>
-            </div>
 
             {/* Top Bar Controls */}
             <div className="reels-top-bar">

@@ -731,11 +731,11 @@
 
 @media (min-width: 1024px) {
   .reels-skip-top-pill-outer {
-    top: 6px;
+    top: calc(50% - (100dvh - 32px) / 2 - 42px) !important;
   }
 
   .reels-skip-bottom-pill-outer {
-    bottom: 6px;
+    bottom: calc(50% - (100dvh - 32px) / 2 - 42px) !important;
   }
 }
 
