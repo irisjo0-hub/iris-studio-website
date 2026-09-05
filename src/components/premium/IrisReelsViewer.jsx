@@ -737,17 +737,18 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       {feedbackOpen && (
         <div className="reels-feedback-drawer-overlay" onClick={() => setFeedbackOpen(false)}>
           <div className="reels-feedback-sheet" onClick={(e) => e.stopPropagation()} dir={isRtl ? 'rtl' : 'ltr'}>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-[#F5BD1A] flex items-center gap-2">
+            <div className="reels-feedback-header">
+              <h3 className="reels-feedback-title">
                 <MessageSquare size={20} />
                 <span>{isRtl ? 'آراء وتقييمات الزوار (IRIS)' : 'IRIS Visitor Reviews'}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setFeedbackOpen(false)}
-                className="p-2 rounded-full hover:bg-white/10 text-[#ECEBE7]"
+                className="reels-feedback-close-btn"
+                aria-label="Close Feedback"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
@@ -758,13 +759,13 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                   : 'Thank you! Your feedback was submitted for review.'}
               </div>
             ) : (
-              <form onSubmit={handleFeedbackSubmit} className="space-y-3 mb-6">
+              <form onSubmit={handleFeedbackSubmit} className="reels-feedback-form">
                 <input
                   type="text"
                   placeholder={isRtl ? 'الاسم (اختياري)...' : 'Name (Optional)...'}
                   value={feedbackName}
                   onChange={(e) => setFeedbackName(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-white/5 border border-white/15 text-sm text-[#ECEBE7]"
+                  className="reels-feedback-input"
                 />
                 <textarea
                   required
@@ -772,19 +773,19 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                   placeholder={isRtl ? 'اكتب رأيك أو تقييمك...' : 'Write feedback or review...'}
                   value={feedbackInput}
                   onChange={(e) => setFeedbackInput(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-white/5 border border-white/15 text-sm text-[#ECEBE7]"
+                  className="reels-feedback-textarea"
                 />
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-full bg-[#F5BD1A] text-[#044630] font-bold text-sm hover:opacity-90 transition-opacity"
+                  className="reels-feedback-submit-btn"
                 >
                   {isRtl ? 'إرسال التقييم' : 'Submit Review'}
                 </button>
               </form>
             )}
 
-            <div className="space-y-3">
-              <h4 className="text-xs font-bold text-[#ECEBE7]/60 uppercase tracking-wider">
+            <div className="reels-feedback-section">
+              <h4 className="reels-feedback-section-title">
                 {isRtl ? 'آراء الزوار المعتمدة' : 'Approved Visitor Reviews'}
               </h4>
               {allFeedbackList.length === 0 ? (
@@ -792,15 +793,17 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                   {isRtl ? 'لا توجد آراء معتمدة حالياً.' : 'No approved reviews yet.'}
                 </p>
               ) : (
-                allFeedbackList.map((fb) => (
-                  <div key={fb.id} className="p-3.5 rounded-xl bg-white/5 border border-white/10 text-sm space-y-1">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-[#F5BD1A] text-xs block">{fb.name}</span>
-                      <span className="text-[10px] opacity-40">IRIS</span>
+                <div className="reels-feedback-list">
+                  {allFeedbackList.map((fb) => (
+                    <div key={fb.id} className="reels-feedback-card">
+                      <div className="reels-feedback-card-header">
+                        <span className="reels-feedback-author">{fb.name}</span>
+                        <span className="reels-feedback-badge">IRIS</span>
+                      </div>
+                      <p className="reels-feedback-message">{fb.message}</p>
                     </div>
-                    <p className="text-xs text-[#ECEBE7]/90 leading-relaxed">{fb.message}</p>
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
             </div>
           </div>
