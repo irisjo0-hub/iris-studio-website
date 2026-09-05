@@ -428,6 +428,9 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       setFeedbackName('');
       setFeedbackSubmitted(true);
       refreshFeedback();
+      setTimeout(() => {
+        setFeedbackSubmitted(false);
+      }, 3500);
     }
   };
 
@@ -741,8 +744,23 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
       {/* ===== 3. SHARED VISITOR FEEDBACK BOTTOM SHEET (MOBILE) / DRAWER (DESKTOP) ===== */}
       {feedbackOpen && (
-        <div className="reels-feedback-drawer-overlay" onClick={() => setFeedbackOpen(false)}>
-          <div className="reels-feedback-sheet" onClick={(e) => e.stopPropagation()} dir={isRtl ? 'rtl' : 'ltr'}>
+        <div 
+          className="reels-feedback-drawer-overlay" 
+          onClick={() => setFeedbackOpen(false)}
+          onWheel={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+        >
+          <div 
+            className="reels-feedback-sheet" 
+            onClick={(e) => e.stopPropagation()} 
+            onWheel={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
+            dir={isRtl ? 'rtl' : 'ltr'}
+          >
             <div className="reels-feedback-header">
               <h3 className="reels-feedback-title">
                 <MessageSquare size={20} />
@@ -758,45 +776,58 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               </button>
             </div>
 
-            {feedbackSubmitted ? (
-              <div className="p-4 mb-6 rounded-2xl bg-green-500/20 border border-green-500/40 text-green-300 text-sm">
+            {/* Instant Success Banner */}
+            {feedbackSubmitted && (
+              <div style={{
+                padding: '10px 14px',
+                marginBottom: '16px',
+                borderRadius: '14px',
+                backgroundColor: 'rgba(245, 189, 26, 0.18)',
+                border: '1px solid rgba(245, 189, 26, 0.4)',
+                color: '#F5BD1A',
+                fontSize: '0.85rem',
+                fontWeight: 'bold',
+                textAlign: 'center'
+              }}>
                 {isRtl
-                  ? 'شكراً لك! تم إرسال رأيك بنجاح وسوف يظهر بعد مراجعته من الإدارة.'
-                  : 'Thank you! Your feedback was submitted for review.'}
+                  ? '✨ تم نشر تقييمك بنجاح ونزل في القائمة أدناه!'
+                  : '✨ Your review has been published successfully below!'}
               </div>
-            ) : (
-              <form onSubmit={handleFeedbackSubmit} className="reels-feedback-form">
-                <input
-                  type="text"
-                  placeholder={isRtl ? 'الاسم (اختياري)...' : 'Name (Optional)...'}
-                  value={feedbackName}
-                  onChange={(e) => setFeedbackName(e.target.value)}
-                  className="reels-feedback-input"
-                />
-                <textarea
-                  required
-                  rows={3}
-                  placeholder={isRtl ? 'اكتب رأيك أو تقييمك...' : 'Write feedback or review...'}
-                  value={feedbackInput}
-                  onChange={(e) => setFeedbackInput(e.target.value)}
-                  className="reels-feedback-textarea"
-                />
-                <button
-                  type="submit"
-                  className="reels-feedback-submit-btn"
-                >
-                  {isRtl ? 'إرسال التقييم' : 'Submit Review'}
-                </button>
-              </form>
             )}
 
+            {/* Always Visible Form (Unlimited Feedback Submissions) */}
+            <form onSubmit={handleFeedbackSubmit} className="reels-feedback-form">
+              <input
+                type="text"
+                placeholder={isRtl ? 'الاسم (اختياري)...' : 'Name (Optional)...'}
+                value={feedbackName}
+                onChange={(e) => setFeedbackName(e.target.value)}
+                className="reels-feedback-input"
+              />
+              <textarea
+                required
+                rows={3}
+                placeholder={isRtl ? 'اكتب رأيك أو تقييمك...' : 'Write feedback or review...'}
+                value={feedbackInput}
+                onChange={(e) => setFeedbackInput(e.target.value)}
+                className="reels-feedback-textarea"
+              />
+              <button
+                type="submit"
+                className="reels-feedback-submit-btn"
+              >
+                {isRtl ? 'إرسال التقييم' : 'Submit Review'}
+              </button>
+            </form>
+
+            {/* Scrollable Real Visitor Feedback List */}
             <div className="reels-feedback-section">
               <h4 className="reels-feedback-section-title">
-                {isRtl ? 'آراء الزوار المعتمدة' : 'Approved Visitor Reviews'}
+                {isRtl ? `آراء الزوار الحقيقية (${allFeedbackList.length})` : `Real Visitor Reviews (${allFeedbackList.length})`}
               </h4>
               {allFeedbackList.length === 0 ? (
-                <p className="text-xs opacity-50 italic py-4">
-                  {isRtl ? 'لا توجد آراء معتمدة حالياً.' : 'No approved reviews yet.'}
+                <p style={{ fontSize: '0.85rem', opacity: 0.5, fontStyle: 'italic', padding: '16px 0', textAlign: 'center' }}>
+                  {isRtl ? 'لا توجد تقييمات حتى الآن. كن أول من يكتب تقييمه!' : 'No reviews yet. Be the first to leave a review!'}
                 </p>
               ) : (
                 <div className="reels-feedback-list">

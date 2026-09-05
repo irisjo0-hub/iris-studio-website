@@ -304,45 +304,23 @@ export const saveFlowItems = async (items) => {
   }
 };
 
-// Feedback Repository Methods
-export const INITIAL_FEEDBACK = [
-  {
-    id: 'fb-01',
-    flow_item_id: 'flow-01',
-    name: 'أحمد التميمي',
-    message: 'خدمة ميديا احترافية جداً وتصوير سينمائي فاق التوقعات!',
-    status: 'approved',
-    created_at: new Date().toISOString()
-  },
-  {
-    id: 'fb-02',
-    flow_item_id: 'flow-03',
-    name: 'سارة خالد',
-    message: 'تجربة الاستوديو كانت رائعة والإضاءة جداً ممتازة.',
-    status: 'approved',
-    created_at: new Date().toISOString()
-  },
-  {
-    id: 'fb-03',
-    flow_item_id: 'flow-07',
-    name: 'عمر المجالي',
-    message: 'بكج التخرج مميز جداً والجودة عالية ودقة المطبوعات ممتازة.',
-    status: 'approved',
-    created_at: new Date().toISOString()
-  }
-];
+// Feedback Repository Methods (Real Visitor Feedback Only - No Fake Data)
+export const INITIAL_FEEDBACK = [];
 
 export const getFlowFeedback = () => {
   try {
     const raw = localStorage.getItem(FEEDBACK_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed)) {
+        // Filter out initial mock IDs if they were cached previously
+        return parsed.filter(item => !['fb-01', 'fb-02', 'fb-03'].includes(item.id));
+      }
     }
   } catch (err) {
     console.error("Failed to parse feedback:", err);
   }
-  return INITIAL_FEEDBACK;
+  return [];
 };
 
 export const getApprovedFeedbackForFlow = (flowItemId) => {
