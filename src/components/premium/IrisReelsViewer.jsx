@@ -238,8 +238,11 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
     const handleWheelNonPassive = (e) => {
       if (!isStageActive || isSkippingRef.current) return;
-      if (menuOpen || feedbackOpen) {
+      if (menuOpen) {
         e.preventDefault();
+        return;
+      }
+      if (feedbackOpen) {
         return;
       }
 
@@ -305,8 +308,11 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
     const handleTouchMoveNonPassive = (e) => {
       if (!isStageActive || isSkippingRef.current) return;
-      if (menuOpen || feedbackOpen) {
+      if (menuOpen) {
         e.preventDefault();
+        return;
+      }
+      if (feedbackOpen) {
         return;
       }
 

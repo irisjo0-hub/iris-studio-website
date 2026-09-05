@@ -360,13 +360,17 @@ export const submitFlowFeedback = (flowItemId, message, name = '') => {
   const newItem = {
     id: `fb-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
     flow_item_id: flowItemId,
-    name: name.trim() || (localStorage.getItem('user_lang') === 'en' ? 'Visitor' : 'زائر'),
+    name: name.trim() || (localStorage.getItem('iris_language') === 'en' ? 'Visitor' : 'زائر'),
     message: message.trim(),
-    status: 'pending',
+    status: 'approved',
     created_at: new Date().toISOString()
   };
   all.unshift(newItem);
-  localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(all));
+  try {
+    localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(all));
+  } catch (err) {
+    console.error("Failed to save feedback to localStorage:", err);
+  }
   return newItem;
 };
 
