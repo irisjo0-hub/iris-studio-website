@@ -308,10 +308,9 @@ const Booking = () => {
       }
 
       try {
-        const { data: bookingsData } = await supabase
-          .from('bookings')
-          .select('date, time, duration, package_name, status');
-        if (bookingsData) setExistingBookings(bookingsData);
+        const { data: bookingsData, error } = await supabase
+          .rpc('get_public_booking_availability');
+        if (!error && bookingsData) setExistingBookings(bookingsData);
       } catch {
         setExistingBookings([]);
       }
@@ -451,35 +450,48 @@ const Booking = () => {
 ${notes}`;
       }
 
-      const { data, error } = await supabase
-        .from('bookings')
-        .insert({
-          name,
-          phone,
-          package_name: selectedPackage.name,
-          package_price: packagePrice,
-          date: selectedDate,
-          time: selectedTime,
-          duration: selectedPackage.duration,
-          companions,
-          extra_companions: extraCompanions,
-          extra_companions_cost: extraCompanionsCost,
-          extras: selectedExtras,
-          extras_total: extrasTotal,
-          subtotal,
-          deposit_amount: DEPOSIT,
-          remaining_amount: remaining,
-          receipt_url: receiptUrl,
-          notes: finalNotes,
-          status: 'pending',
-        })
-        .select()
-        .single();
+      const { data: result, error } = await supabase
+        .rpc('create_public_booking', {
+          p_booking_data: {
+            name,
+            phone,
+            package_name: selectedPackage.name,
+            date: selectedDate,
+            time: selectedTime,
+            companions,
+            extras: selectedExtras,
+            receipt_url: receiptUrl,
+            notes: finalNotes,
+          }
+        });
 
-      if (error) throw error;
+      if (error) {
+        const isSlotConflict =
+          error.message?.includes('BOOKING_SLOT_UNAVAILABLE') ||
+          error.code === '23505' ||
+          error.code === '23P01' ||
+          error.details?.includes('bookings_no_overlap_excl');
 
-      setExistingBookings((prev) => [...prev, data]);
-      setSubmitted(true);
+        if (isSlotConflict) {
+          alert('عذراً، هذا الموعد تم حجزه مؤخراً من قبل عميل آخر. الرجاء اختيار موعد آخر.');
+        } else {
+          alert(error.message || 'حدث خطأ أثناء إرسال الحجز. الرجاء المحاولة مرة أخرى.');
+        }
+        return;
+      }
+
+      if (result && result.success) {
+        setExistingBookings((prev) => [
+          ...prev,
+          {
+            date: result.date,
+            time: result.time,
+            duration: result.duration,
+            status: result.status,
+          },
+        ]);
+        setSubmitted(true);
+      }
     } catch (err) {
       console.error(err);
       alert('حدث خطأ أثناء إرسال الحجز. الرجاء المحاولة مرة أخرى.');
