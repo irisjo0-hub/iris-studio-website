@@ -170,7 +170,7 @@ export const HeroLivingCollage = () => {
                 width: config.width,
                 aspectRatio: 'auto',
                 left: '50%',
-                translateX: '-50%'
+                transform: 'translateX(-50%)'
               }}
               animate={
                 isPaused

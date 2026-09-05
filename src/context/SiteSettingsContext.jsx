@@ -119,15 +119,17 @@ export const SiteSettingsProvider = ({ children }) => {
       if (data && data.length > 0) {
         const dbSettings = {};
         data.forEach(item => {
-          let val = item.value;
-          if (typeof val === 'string') {
-            try {
-              val = JSON.parse(val);
-            } catch {
-              // Keep raw string if not JSON
+          if (item && item.key && item.value !== null && item.value !== undefined) {
+            let val = item.value;
+            if (typeof val === 'string' && (val.trim().startsWith('[') || val.trim().startsWith('{'))) {
+              try {
+                val = JSON.parse(val);
+              } catch {
+                // Keep raw string if not JSON
+              }
             }
+            dbSettings[item.key] = val;
           }
-          dbSettings[item.key] = val;
         });
 
         const merged = {
