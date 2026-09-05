@@ -1,5 +1,5 @@
 -- ============================================================
--- IRIS Studio — Supabase Security Migration: Phase 1
+-- IRIS Studio — Supabase Security Migration: Phase 1 (Revised)
 -- Database-Level Admin Authorization Foundation
 -- File: supabase-migration-phase1-admin-auth.sql
 -- ============================================================
@@ -13,24 +13,25 @@ CREATE TABLE IF NOT EXISTS public.admin_users (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Enable RLS on admin_users table
+-- Enable Row Level Security (RLS)
 ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
 
--- Drop policy if exists for idempotent re-runs
-DROP POLICY IF EXISTS "Admins can view admin_users" ON public.admin_users;
+-- Idempotent policy cleanup
+DROP POLICY IF EXISTS "Admins can view own admin status" ON public.admin_users;
 
--- RLS Policy: Only authenticated admin users can view entries in admin_users
-CREATE POLICY "Admins can view admin_users"
+-- RLS Policy: Authenticated users can ONLY view their own admin_users record (prevents enumeration)
+-- INSERT, UPDATE, and DELETE policies are omitted, forbidding writes from anon/authenticated roles.
+CREATE POLICY "Admins can view own admin status"
   ON public.admin_users
   FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
 -- ────────────────────────────────────────────
--- 2. AUTOMATIC ADMIN ASSOCIATE SEED
+-- 2. INITIAL MIGRATION SEED (EMAIL USED ONLY AT SEED TIME)
 -- ────────────────────────────────────────────
--- If the account iris.contact.jo@gmail.com already exists in auth.users,
--- link its UUID to admin_users automatically.
+-- Automatically associate iris.contact.jo@gmail.com with admin_users IF it already exists in auth.users.
+-- Email is NOT checked at runtime by is_admin().
 
 INSERT INTO public.admin_users (user_id)
 SELECT id
@@ -39,53 +40,39 @@ WHERE email = 'iris.contact.jo@gmail.com'
 ON CONFLICT (user_id) DO NOTHING;
 
 -- ────────────────────────────────────────────
--- 3. SECURE is_admin() FUNCTION
+-- 3. SINGLE SOURCE OF TRUTH: SECURE is_admin() FUNCTION
 -- ────────────────────────────────────────────
--- Secure RPC function called by frontend (supabase.rpc('is_admin'))
--- Returns true ONLY if the requesting user's JWT auth.uid() is in admin_users
--- or matches the primary admin email in auth.users.
+-- Returns true ONLY if auth.uid() exists in public.admin_users.
 
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, auth
+SET search_path = public, pg_temp
 AS $$
 DECLARE
   v_uid UUID;
-  v_is_admin BOOLEAN := FALSE;
 BEGIN
-  -- Get current authenticated user's UUID from JWT token
+  -- 1. Extract current authenticated user's UUID from JWT token
   v_uid := auth.uid();
 
-  -- Return FALSE immediately if user is unauthenticated
+  -- 2. Return FALSE immediately if user is unauthenticated
   IF v_uid IS NULL THEN
     RETURN FALSE;
   END IF;
 
-  -- Check 1: Is user ID listed in admin_users table?
-  SELECT EXISTS (
+  -- 3. Check strictly against public.admin_users table (Single Source of Truth)
+  RETURN EXISTS (
     SELECT 1
     FROM public.admin_users
     WHERE user_id = v_uid
-  ) INTO v_is_admin;
-
-  IF v_is_admin THEN
-    RETURN TRUE;
-  END IF;
-
-  -- Check 2: Does user's authenticated email match intended admin email?
-  SELECT EXISTS (
-    SELECT 1
-    FROM auth.users
-    WHERE id = v_uid
-      AND email = 'iris.contact.jo@gmail.com'
-  ) INTO v_is_admin;
-
-  RETURN v_is_admin;
+  );
 END;
 $$;
 
--- Grant EXECUTE permission to anon and authenticated roles
--- (Unauthenticated/anon callers will safely receive false because auth.uid() is NULL)
-GRANT EXECUTE ON FUNCTION public.is_admin() TO anon, authenticated;
+-- ────────────────────────────────────────────
+-- 4. EXPLICIT EXECUTE PRIVILEGES
+-- ────────────────────────────────────────────
+-- Explicitly revoke from PUBLIC and grant EXECUTE strictly to authenticated users.
+REVOKE EXECUTE ON FUNCTION public.is_admin() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
