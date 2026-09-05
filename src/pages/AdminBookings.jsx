@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase, deleteFile, extractPathFromUrl } from '../lib/supabase';
+import { supabase, deleteFile, extractPathFromUrl, createSignedUrl } from '../lib/supabase';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/admin.css';
 
@@ -98,6 +98,16 @@ const AdminBookings = () => {
       setBookings(bookings.filter((b) => b.id !== id));
     } catch (err) {
       alert('حدث خطأ أثناء الحذف: ' + err.message);
+    }
+  };
+
+  const handleOpenReceiptModal = async (receiptUrl) => {
+    if (!receiptUrl) return;
+    const signed = await createSignedUrl('payment-receipts', receiptUrl, 3600);
+    if (signed) {
+      setReceiptModal(signed);
+    } else {
+      alert('تعذر تحميل وصل الدفع. ملف الوصل غير متاح أو لا تملك صلاحية للوصول إليه.');
     }
   };
 
@@ -307,7 +317,7 @@ const AdminBookings = () => {
                       <button
                         type="button"
                         className="btn-view-receipt-card"
-                        onClick={() => setReceiptModal(b.receipt_url)}
+                        onClick={() => handleOpenReceiptModal(b.receipt_url)}
                       >
                         📄 معاينة وصل العربون المرفق
                       </button>
@@ -387,7 +397,7 @@ const AdminBookings = () => {
                             type="button"
                             className="btn-action confirm"
                             style={{ whiteSpace: 'nowrap' }}
-                            onClick={() => setReceiptModal(b.receipt_url)}
+                            onClick={() => handleOpenReceiptModal(b.receipt_url)}
                           >
                             عرض الوصل
                           </button>

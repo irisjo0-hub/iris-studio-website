@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, createSignedUrl } from '../lib/supabase';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/admin.css';
 import '../styles/graduation.css';
@@ -67,6 +67,62 @@ const ImageLightbox = ({ src, alt, onClose }) => {
 /* ── Order Detail Modal ──────────────────────────────────────── */
 const OrderDetailModal = ({ order, onClose, updateStatus }) => {
   const [previewImg, setPreviewImg] = useState(null);
+  const [signedReceipt, setSignedReceipt] = useState(null);
+  const [signedFront, setSignedFront] = useState(null);
+  const [signedBacks, setSignedBacks] = useState([]);
+  const [signedInternals, setSignedInternals] = useState([]);
+  const [signedPhotos, setSignedPhotos] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const resolveSignedUrls = async () => {
+      if (!order) return;
+
+      if (order.receipt_url) {
+        const s = await createSignedUrl('payment-receipts', order.receipt_url, 3600);
+        if (isMounted) setSignedReceipt(s);
+      } else if (isMounted) {
+        setSignedReceipt(null);
+      }
+
+      if (order.front_cover_url) {
+        const s = await createSignedUrl('graduation-orders', order.front_cover_url, 3600);
+        if (isMounted) setSignedFront(s);
+      } else if (isMounted) {
+        setSignedFront(null);
+      }
+
+      if (order.back_cover_urls?.length) {
+        const urls = await Promise.all(
+          order.back_cover_urls.map(u => createSignedUrl('graduation-orders', u, 3600))
+        );
+        if (isMounted) setSignedBacks(urls.filter(Boolean));
+      } else if (isMounted) {
+        setSignedBacks([]);
+      }
+
+      if (order.internal_image_urls?.length) {
+        const urls = await Promise.all(
+          order.internal_image_urls.map(u => createSignedUrl('graduation-orders', u, 3600))
+        );
+        if (isMounted) setSignedInternals(urls.filter(Boolean));
+      } else if (isMounted) {
+        setSignedInternals([]);
+      }
+
+      if (order.photographic_pages_urls?.length) {
+        const urls = await Promise.all(
+          order.photographic_pages_urls.map(u => createSignedUrl('graduation-orders', u, 3600))
+        );
+        if (isMounted) setSignedPhotos(urls.filter(Boolean));
+      } else if (isMounted) {
+        setSignedPhotos([]);
+      }
+    };
+
+    resolveSignedUrls();
+    return () => { isMounted = false; };
+  }, [order]);
 
   if (!order) return null;
 
@@ -137,11 +193,23 @@ const OrderDetailModal = ({ order, onClose, updateStatus }) => {
           <div className="detail-images-section">
             <div className="detail-images-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>وصل العربون</span>
-              <button className="btn-action confirm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => downloadImage(order.receipt_url, `receipt-${order.id}`)}>تحميل</button>
-              <button className="btn-action" style={{ padding: '4px 10px', fontSize: '0.75rem', marginLeft: '8px' }} onClick={() => openImage(order.receipt_url)}>فتح الصورة</button>
+              {signedReceipt ? (
+                <div>
+                  <button className="btn-action confirm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => downloadImage(signedReceipt, `receipt-${order.id}`)}>تحميل</button>
+                  <button className="btn-action" style={{ padding: '4px 10px', fontSize: '0.75rem', marginLeft: '8px' }} onClick={() => openImage(signedReceipt)}>فتح الصورة</button>
+                </div>
+              ) : (
+                <span style={{ color: '#e74c3c', fontSize: '0.8rem', fontWeight: 'bold' }}>⚠️ تعذر تحميل الملف الآمن</span>
+              )}
             </div>
             <div className="detail-images-row">
-              <img src={order.receipt_url} alt="receipt" className="detail-img-thumb" onClick={() => setPreviewImg(order.receipt_url)} style={{ cursor: 'zoom-in' }} />
+              {signedReceipt ? (
+                <img src={signedReceipt} alt="receipt" className="detail-img-thumb" onClick={() => setPreviewImg(signedReceipt)} style={{ cursor: 'zoom-in' }} />
+              ) : (
+                <div style={{ background: '#fff0f0', color: '#c0392b', padding: '8px 12px', borderRadius: '6px', fontSize: '0.82rem' }}>
+                  تعذر إنشاء رابط آمن لمعاينة وصل العربون.
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -151,11 +219,23 @@ const OrderDetailModal = ({ order, onClose, updateStatus }) => {
           <div className="detail-images-section">
             <div className="detail-images-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>صورة الغلاف الأمامي</span>
-              <button className="btn-action confirm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => downloadImage(order.front_cover_url, `front-cover-${order.id}`)}>تحميل</button>
-              <button className="btn-action" style={{ padding: '4px 10px', fontSize: '0.75rem', marginLeft: '8px' }} onClick={() => openImage(order.front_cover_url)}>فتح الصورة</button>
+              {signedFront ? (
+                <div>
+                  <button className="btn-action confirm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => downloadImage(signedFront, `front-cover-${order.id}`)}>تحميل</button>
+                  <button className="btn-action" style={{ padding: '4px 10px', fontSize: '0.75rem', marginLeft: '8px' }} onClick={() => openImage(signedFront)}>فتح الصورة</button>
+                </div>
+              ) : (
+                <span style={{ color: '#e74c3c', fontSize: '0.8rem', fontWeight: 'bold' }}>⚠️ تعذر تحميل الملف الآمن</span>
+              )}
             </div>
             <div className="detail-images-row">
-              <img src={order.front_cover_url} alt="front" className="detail-img-thumb" onClick={() => setPreviewImg(order.front_cover_url)} style={{ cursor: 'zoom-in' }} />
+              {signedFront ? (
+                <img src={signedFront} alt="front" className="detail-img-thumb" onClick={() => setPreviewImg(signedFront)} style={{ cursor: 'zoom-in' }} />
+              ) : (
+                <div style={{ background: '#fff0f0', color: '#c0392b', padding: '8px 12px', borderRadius: '6px', fontSize: '0.82rem' }}>
+                  تعذر إنشاء رابط آمن لمعاينة الغلاف الأمامي.
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -165,21 +245,29 @@ const OrderDetailModal = ({ order, onClose, updateStatus }) => {
           <div className="detail-images-section">
             <div className="detail-images-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>صور الغلاف الخلفي ({order.back_cover_urls.length})</span>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="btn-action confirm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => downloadAll(order.back_cover_urls, `back-cover-${order.id}`)}>تحميل الكل</button>
-                <button className="btn-action" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => order.back_cover_urls.forEach(url => openImage(url))}>فتح الكل</button>
-              </div>
+              {signedBacks.length > 0 && (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className="btn-action confirm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => downloadAll(signedBacks, `back-cover-${order.id}`)}>تحميل الكل</button>
+                  <button className="btn-action" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => signedBacks.forEach(url => openImage(url))}>فتح الكل</button>
+                </div>
+              )}
             </div>
             <div className="detail-images-row" style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
-              {order.back_cover_urls.map((url, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
-                  <img src={url} alt={`back-${i}`} className="detail-img-thumb" onClick={() => setPreviewImg(url)} style={{ cursor: 'zoom-in' }} />
-                  <div style={{ display: 'flex', gap: 4 }}>
-                    <button className="btn-action confirm" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => downloadImage(url, `back-cover-${order.id}-${i + 1}`)}>تحميل</button>
-                    <button className="btn-action" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => openImage(url)}>فتح</button>
+              {signedBacks.length > 0 ? (
+                signedBacks.map((url, i) => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
+                    <img src={url} alt={`back-${i}`} className="detail-img-thumb" onClick={() => setPreviewImg(url)} style={{ cursor: 'zoom-in' }} />
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <button className="btn-action confirm" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => downloadImage(url, `back-cover-${order.id}-${i + 1}`)}>تحميل</button>
+                      <button className="btn-action" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => openImage(url)}>فتح</button>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div style={{ background: '#fff0f0', color: '#c0392b', padding: '8px 12px', borderRadius: '6px', fontSize: '0.82rem', width: '100%' }}>
+                  تعذر تحميل الملفات الآمنة للغلاف الخلفي.
                 </div>
-              ))}
+              )}
             </div>
           </div>
         )}
@@ -189,21 +277,29 @@ const OrderDetailModal = ({ order, onClose, updateStatus }) => {
           <div className="detail-images-section">
             <div className="detail-images-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>صور الصفحات الداخلية ({order.internal_image_urls.length})</span>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="btn-action confirm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => downloadAll(order.internal_image_urls, `internal-image-${order.id}`)}>تحميل الكل</button>
-                <button className="btn-action" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => order.internal_image_urls.forEach(url => openImage(url))}>فتح الكل</button>
-              </div>
+              {signedInternals.length > 0 && (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className="btn-action confirm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => downloadAll(signedInternals, `internal-image-${order.id}`)}>تحميل الكل</button>
+                  <button className="btn-action" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => signedInternals.forEach(url => openImage(url))}>فتح الكل</button>
+                </div>
+              )}
             </div>
             <div className="detail-images-row" style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
-              {order.internal_image_urls.map((url, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
-                  <img src={url} alt={`int-${i}`} className="detail-img-thumb" onClick={() => setPreviewImg(url)} style={{ cursor: 'zoom-in' }} />
-                  <div style={{ display: 'flex', gap: 4 }}>
-                    <button className="btn-action confirm" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => downloadImage(url, `internal-image-${order.id}-${i + 1}`)}>تحميل</button>
-                    <button className="btn-action" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => openImage(url)}>فتح</button>
+              {signedInternals.length > 0 ? (
+                signedInternals.map((url, i) => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
+                    <img src={url} alt={`int-${i}`} className="detail-img-thumb" onClick={() => setPreviewImg(url)} style={{ cursor: 'zoom-in' }} />
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <button className="btn-action confirm" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => downloadImage(url, `internal-image-${order.id}-${i + 1}`)}>تحميل</button>
+                      <button className="btn-action" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => openImage(url)}>فتح</button>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div style={{ background: '#fff0f0', color: '#c0392b', padding: '8px 12px', borderRadius: '6px', fontSize: '0.82rem', width: '100%' }}>
+                  تعذر تحميل الملفات الآمنة للصفحات الداخلية.
                 </div>
-              ))}
+              )}
             </div>
           </div>
         )}
@@ -213,21 +309,29 @@ const OrderDetailModal = ({ order, onClose, updateStatus }) => {
           <div className="detail-images-section">
             <div className="detail-images-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>صور الصفحات الفوتوغرافية الإضافية ({order.photographic_pages_urls.length})</span>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="btn-action confirm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => downloadAll(order.photographic_pages_urls, `photographic-page-${order.id}`)}>تحميل الكل</button>
-                <button className="btn-action" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => order.photographic_pages_urls.forEach(url => openImage(url))}>فتح الكل</button>
-              </div>
+              {signedPhotos.length > 0 && (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className="btn-action confirm" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => downloadAll(signedPhotos, `photographic-page-${order.id}`)}>تحميل الكل</button>
+                  <button className="btn-action" style={{ padding: '4px 10px', fontSize: '0.75rem' }} onClick={() => signedPhotos.forEach(url => openImage(url))}>فتح الكل</button>
+                </div>
+              )}
             </div>
             <div className="detail-images-row" style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
-              {order.photographic_pages_urls.map((url, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
-                  <img src={url} alt={`photo-${i}`} className="detail-img-thumb" onClick={() => setPreviewImg(url)} style={{ cursor: 'zoom-in' }} />
-                  <div style={{ display: 'flex', gap: 4 }}>
-                    <button className="btn-action confirm" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => downloadImage(url, `photographic-page-${order.id}-${i + 1}`)}>تحميل</button>
-                    <button className="btn-action" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => openImage(url)}>فتح</button>
+              {signedPhotos.length > 0 ? (
+                signedPhotos.map((url, i) => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
+                    <img src={url} alt={`photo-${i}`} className="detail-img-thumb" onClick={() => setPreviewImg(url)} style={{ cursor: 'zoom-in' }} />
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <button className="btn-action confirm" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => downloadImage(url, `photographic-page-${order.id}-${i + 1}`)}>تحميل</button>
+                      <button className="btn-action" style={{ padding: '2px 8px', fontSize: '0.65rem' }} onClick={() => openImage(url)}>فتح</button>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div style={{ background: '#fff0f0', color: '#c0392b', padding: '8px 12px', borderRadius: '6px', fontSize: '0.82rem', width: '100%' }}>
+                  تعذر تحميل الملفات الآمنة للصفحات الفوتوغرافية.
                 </div>
-              ))}
+              )}
             </div>
           </div>
         )}

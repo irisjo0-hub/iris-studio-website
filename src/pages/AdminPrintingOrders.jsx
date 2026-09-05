@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, createSignedUrl } from '../lib/supabase';
 import { formatOrderNumberDisplay } from '../lib/orderUtils';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/admin.css';
@@ -126,6 +126,40 @@ const parseOrderDetails = (ord) => {
   result.cleanUserNotes = clean.trim();
 
   return result;
+};
+
+const PrintingOrderImage = ({ url }) => {
+  const [signedUrl, setSignedUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (url) {
+      createSignedUrl('graduation-orders', url, 3600).then(res => {
+        if (isMounted) {
+          setSignedUrl(res);
+          setLoading(false);
+        }
+      });
+    } else if (isMounted) {
+      setLoading(false);
+    }
+    return () => { isMounted = false; };
+  }, [url]);
+
+  if (loading) {
+    return <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>⏳ جاري التحميل...</span>;
+  }
+
+  if (!signedUrl) {
+    return <span style={{ fontSize: '0.7rem', color: '#e74c3c', fontWeight: 'bold' }} title="تعذر تحميل الملف الآمن">⚠️ غير متاح</span>;
+  }
+
+  return (
+    <a href={signedUrl} target="_blank" rel="noreferrer">
+      <img src={signedUrl} alt="thumb" style={{ width: '34px', height: '34px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #F5BD1A' }} />
+    </a>
+  );
 };
 
 const AdminPrintingOrders = () => {
@@ -528,9 +562,7 @@ const AdminPrintingOrders = () => {
                         <span>🖼️ <strong>المرفقات ({imagesList.length}):</strong></span>
                         <div style={{ display: 'flex', gap: '4px' }}>
                           {imagesList.map((url, i) => (
-                            <a key={i} href={url} target="_blank" rel="noreferrer">
-                              <img src={url} alt={`thumb-${i}`} style={{ width: '34px', height: '34px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #F5BD1A' }} />
-                            </a>
+                            <PrintingOrderImage key={i} url={url} />
                           ))}
                         </div>
                       </div>
