@@ -7,20 +7,17 @@
 @import "./fonts.css";
 
 :root {
-  /* Locked Official IRIS Brand Colors */
   --color-purple: #67245F;
   --color-green: #044630;
   --color-gold: #F5BD1A;
   --color-bg-light: #ECEBE7;
 
-  /* Centralized Semantic Dark Theme Tokens */
   --iris-purple: #67245F;
   --iris-green: #044630;
   --iris-gold: #F5BD1A;
   --iris-offwhite: #ECEBE7;
   --iris-light: #ECEBE7;
 
-  /* Deep Brand-Derived Background Surfaces (0 Generic Black) */
   --iris-bg-primary: #180C17;
   --iris-bg-deep: #180C17;
   --iris-bg-plum: #1A0D18;
@@ -30,7 +27,6 @@
   --iris-surface-alt: #0A1410;
   --iris-surface-glass: rgba(26, 13, 24, 0.85);
 
-  /* Warm Typography System (0 Pure White UI Text) */
   --iris-text-primary: #ECEBE7;
   --iris-text-secondary: rgba(236, 235, 231, 0.75);
   --iris-text-muted: rgba(236, 235, 231, 0.55);
@@ -40,43 +36,35 @@
   --iris-border: rgba(236, 235, 231, 0.14);
   --iris-border-gold: rgba(245, 189, 26, 0.35);
 
-  /* Typography Fonts */
-  --font-primary: "Cairo", "Juman", sans-serif;
-  --font-secondary: "Cairo", "Juman", sans-serif;
-  --font-display: "Cairo", "DegularDisplay", "Juman", sans-serif;
-  --font-hero: "DegularDisplay", "Cairo", sans-serif;
+  --font-primary: "Juman", sans-serif;
+  --font-secondary: "Juman", sans-serif;
+  --font-display: "Juman", sans-serif;
+  --font-hero: "DegularDisplay", sans-serif;
 
-  /* Fluid Typography Clamp System */
   --uds-h1-size: clamp(2rem, 4.5vw, 3.8rem);
   --uds-h2-size: clamp(1.5rem, 3.2vw, 2.2rem);
   --uds-h3-size: clamp(1.2rem, 2.4vw, 1.6rem);
   --uds-h4-size: clamp(1rem, 1.8vw, 1.25rem);
-
-  /* Text Scale */
   --uds-text-sm: clamp(0.8rem, 1.1vw, 0.875rem);
   --uds-text-base: clamp(0.95rem, 1.4vw, 1.05rem);
   --uds-text-lg: clamp(1.1rem, 1.8vw, 1.25rem);
 
-  /* Transitions & Shadows */
   --transition-smooth: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.4);
   --shadow-glass: 0 8px 32px rgba(103, 36, 95, 0.25);
   --blur-glass: blur(16px);
   --border-glass: 1px solid rgba(236, 235, 231, 0.14);
 
-  /* Unified Border Radius */
   --uds-radius-sm: 8px;
   --uds-radius-md: 14px;
   --uds-radius-lg: 20px;
   --uds-radius-xl: 28px;
   --uds-radius-round: 9999px;
 
-  /* Unified Shadows */
   --uds-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
   --uds-shadow-md: 0 8px 24px rgba(103, 36, 95, 0.25);
   --uds-shadow-lg: 0 16px 36px rgba(103, 36, 95, 0.35);
 
-  /* Touch Target & Button Dimensions */
   --uds-min-touch-target: 48px;
   --uds-btn-padding-y: 12px;
   --uds-btn-padding-x: 28px;
@@ -84,19 +72,9 @@
   --uds-btn-radius: 100px;
 }
 
-/* Scroll Anchor Margin Offset for Sticky Navigation */
-section[id], div[id], h1[id], h2[id], h3[id] {
-  scroll-margin-top: 75px;
-}
+section[id], div[id], h1[id], h2[id], h3[id] { scroll-margin-top: 75px; }
 
-/* ── 0. Global Zero-Overflow & Viewport Core ───────────────────── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
   scroll-behavior: smooth;
@@ -105,15 +83,15 @@ html {
   overflow-x: hidden;
   direction: ltr;
   font-size: 16px;
-  background-color: var(--iris-bg-deep, #180C17);
-  color: var(--iris-text-primary, #ECEBE7);
+  background-color: var(--iris-bg-deep);
+  color: var(--iris-text-primary);
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-primary);
-  background-color: var(--iris-bg-deep, #180C17);
-  color: var(--iris-text-primary, #ECEBE7);
+  background-color: var(--iris-bg-deep);
+  color: var(--iris-text-primary);
   line-height: 1.7;
   direction: ltr;
   text-align: right;
@@ -126,152 +104,46 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Safe Area Inset Helpers */
-.safe-area-top {
-  padding-top: env(safe-area-inset-top, 0px);
-}
+.safe-area-top { padding-top: env(safe-area-inset-top, 0px); }
+.safe-area-bottom { padding-bottom: max(24px, env(safe-area-inset-bottom, 0px)); }
+.safe-area-left { padding-left: max(16px, env(safe-area-inset-left, 0px)); }
+.safe-area-right { padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
-.safe-area-bottom {
-  padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
-}
+img, video, iframe, svg { max-width: 100%; height: auto; display: block; }
 
-.safe-area-left {
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--iris-bg-deep); }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--iris-purple), #3b1237); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--iris-purple); }
+* { scrollbar-width: thin; scrollbar-color: var(--iris-purple) var(--iris-bg-deep); }
 
-.safe-area-right {
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-}
+h1, .hero-content h1 { font-family: var(--font-display); font-size: var(--uds-h1-size); font-weight: 800; line-height: 1.2; color: var(--iris-text-primary); }
+h2, .section-title h2 { font-family: var(--font-primary); font-size: var(--uds-h2-size); font-weight: 700; line-height: 1.3; color: var(--iris-text-primary); }
+h3 { font-family: var(--font-primary); font-size: var(--uds-h3-size); font-weight: 700; line-height: 1.4; color: var(--iris-text-primary); }
+h4 { font-family: var(--font-primary); font-size: var(--uds-h4-size); font-weight: 600; line-height: 1.4; color: var(--iris-text-primary); }
+p { font-size: var(--uds-text-base); line-height: 1.7; color: var(--iris-text-secondary); }
+a { color: var(--iris-text-primary); transition: color 0.25s ease; }
+a:hover { color: var(--iris-gold); }
 
-/* Media Elements Responsiveness */
-img,
-video,
-iframe,
-svg {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* ── 1. Custom Scrollbar ────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--iris-bg-deep, #180C17);
-}
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--iris-purple, #67245F), #3b1237);
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--iris-purple, #67245F);
-}
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--iris-purple, #67245F) var(--iris-bg-deep, #180C17);
-}
-
-/* ── 2. Fluid Typography Rules ──────────────────────────────────── */
-h1,
-.hero-content h1 {
-  font-family: var(--font-display);
-  font-size: var(--uds-h1-size);
-  font-weight: 800;
-  line-height: 1.2;
-  color: var(--iris-text-primary, #ECEBE7);
-}
-
-h2,
-.section-title h2 {
-  font-family: var(--font-primary);
-  font-size: var(--uds-h2-size);
-  font-weight: 700;
-  line-height: 1.3;
-  color: var(--iris-text-primary, #ECEBE7);
-}
-
-h3 {
-  font-family: var(--font-primary);
-  font-size: var(--uds-h3-size);
-  font-weight: 700;
-  line-height: 1.4;
-  color: var(--iris-text-primary, #ECEBE7);
-}
-
-h4 {
-  font-family: var(--font-primary);
-  font-size: var(--uds-h4-size);
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--iris-text-primary, #ECEBE7);
-}
-
-p {
-  font-size: var(--uds-text-base);
-  line-height: 1.7;
-  color: var(--iris-text-secondary, rgba(236, 235, 231, 0.75));
-}
-
-a {
-  color: var(--iris-text-primary, #ECEBE7);
-  transition: color 0.25s ease;
-}
-
-a:hover {
-  color: var(--iris-gold, #F5BD1A);
-}
-
-/* ── 3. Reusable Section Atmosphere Utility Classes ─────────────── */
 .iris-atmosphere--purple {
   background-color: #180C17 !important;
-  background-image: radial-gradient(circle at 20% 20%, rgba(103, 36, 95, 0.55) 0%, transparent 65%),
-                    radial-gradient(circle at 80% 80%, rgba(4, 70, 48, 0.30) 0%, transparent 65%) !important;
+  background-image: radial-gradient(circle at 20% 20%, rgba(103,36,95,.55) 0%, transparent 65%), radial-gradient(circle at 80% 80%, rgba(4,70,48,.30) 0%, transparent 65%) !important;
 }
-
 .iris-atmosphere--green {
   background-color: #0A1410 !important;
-  background-image: radial-gradient(circle at 20% 80%, rgba(4, 70, 48, 0.65) 0%, transparent 65%),
-                    radial-gradient(circle at 80% 20%, rgba(103, 36, 95, 0.35) 0%, transparent 65%) !important;
+  background-image: radial-gradient(circle at 20% 80%, rgba(4,70,48,.65) 0%, transparent 65%), radial-gradient(circle at 80% 20%, rgba(103,36,95,.35) 0%, transparent 65%) !important;
 }
-
 .iris-atmosphere--balanced {
   background-color: #180C17 !important;
-  background-image: radial-gradient(circle at 15% 25%, rgba(103, 36, 95, 0.52) 0%, transparent 60%),
-                    radial-gradient(circle at 85% 75%, rgba(4, 70, 48, 0.52) 0%, transparent 60%) !important;
+  background-image: radial-gradient(circle at 15% 25%, rgba(103,36,95,.52) 0%, transparent 60%), radial-gradient(circle at 85% 75%, rgba(4,70,48,.52) 0%, transparent 60%) !important;
 }
-
 .iris-atmosphere--footer {
   background-color: #0A1410 !important;
-  background-image: radial-gradient(circle at 50% 100%, rgba(4, 70, 48, 0.70) 0%, transparent 70%),
-                    radial-gradient(circle at 85% 20%, rgba(103, 36, 95, 0.40) 0%, transparent 60%) !important;
+  background-image: radial-gradient(circle at 50% 100%, rgba(4,70,48,.70) 0%, transparent 70%), radial-gradient(circle at 85% 20%, rgba(103,36,95,.40) 0%, transparent 60%) !important;
 }
 
-/* ── 4. Global Contrast & Form Controls Normalization ──────────── */
-input,
-select,
-textarea {
-  color-scheme: dark;
-  font-family: var(--font-primary), sans-serif;
-}
+input, select, textarea { color-scheme: dark; font-family: var(--font-primary), sans-serif; }
+select option { background-color: #180C17 !important; color: #ECEBE7 !important; }
+input::placeholder, textarea::placeholder { color: rgba(236,235,231,.55) !important; }
 
-select option {
-  background-color: #180C17 !important;
-  color: #ECEBE7 !important;
-}
-
-/* Prevent white-on-white or dark-on-dark text contrast failures in inputs */
-input::placeholder,
-textarea::placeholder {
-  color: rgba(236, 235, 231, 0.55) !important;
-}
-
-/* Gold container contrast enforcement */
-.gold-card,
-.gold-card h1,
-.gold-card h2,
-.gold-card h3,
-.gold-card p,
-.gold-card span {
-  color: #044630 !important;
-}
+.gold-card, .gold-card h1, .gold-card h2, .gold-card h3, .gold-card p, .gold-card span { color: #044630 !important; }
