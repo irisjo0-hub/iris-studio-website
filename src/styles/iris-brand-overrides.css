@@ -1,0 +1,236 @@
+/* IRIS Brand Visual Harmonization Layer
+ * Loaded after page styles so legacy colors cannot break the current IRIS theme.
+ * Official palette: #67245F / #044630 / #F5BD1A / #ECEBE7
+ * Surfaces: #180C17 / #0A1410 / #1A0D18
+ */
+
+:root {
+  --font-primary: 'Juman', sans-serif;
+  --font-secondary: 'Juman', sans-serif;
+  --font-display: 'Juman', sans-serif;
+  --font-hero: 'DegularDisplay', sans-serif;
+  --color-purple: #67245F;
+  --color-green: #044630;
+  --color-gold: #F5BD1A;
+  --color-bg-light: #ECEBE7;
+  --iris-bg-primary: #180C17;
+  --iris-bg-deep: #180C17;
+  --iris-bg-secondary: #0A1410;
+  --iris-bg-green: #0A1410;
+  --iris-surface: #1A0D18;
+  --iris-surface-alt: #0A1410;
+  --iris-text-primary: #ECEBE7;
+  --iris-text-secondary: rgba(236,235,231,.75);
+  --iris-text-muted: rgba(236,235,231,.55);
+  --iris-border: rgba(236,235,231,.14);
+}
+
+html,
+body,
+#root { background: #180C17; color: #ECEBE7; }
+body { font-family: 'Juman', sans-serif; }
+input, select, textarea, button, option { font-family: 'Juman', sans-serif; }
+
+/* Shared public page foundation */
+.packages-section,
+.work-page,
+.division-portal-page,
+.home-page,
+.booking-page,
+.grad-page,
+.grad-order-page,
+.white-content-page { background-color: #180C17 !important; color: #ECEBE7 !important; }
+
+.content-wrapper,
+.subpage-layout-content { background: transparent !important; }
+
+/* Booking: remove legacy white surfaces and make the page visually continuous. */
+.booking-page .slot-btn,
+.booking-page .custom-calendar-box,
+.booking-page .compact-extra-card,
+.booking-page .delivery-card,
+.booking-page .deposit-payment-screen,
+.booking-page .receipt-preview-container,
+.booking-page .compact-confirmation-card,
+.booking-page .summary-card,
+.booking-page .booking-success-card {
+  background: rgba(26,13,24,.92) !important;
+  color: #ECEBE7 !important;
+  border-color: rgba(236,235,231,.14) !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,.42) !important;
+}
+
+.booking-page .slot-btn { color: #ECEBE7 !important; }
+.booking-page .slot-btn:hover { background: rgba(103,36,95,.30) !important; border-color: #67245F !important; }
+.booking-page .slot-btn.selected,
+.booking-page .active-day { background: #67245F !important; border-color: #67245F !important; color: #ECEBE7 !important; }
+
+.booking-page .custom-calendar-box {
+  background: linear-gradient(145deg, rgba(26,13,24,.96), rgba(10,20,16,.96)) !important;
+  border-color: rgba(245,189,26,.18) !important;
+}
+
+.booking-page .cal-arrow-btn { background: rgba(26,13,24,.9) !important; color: #ECEBE7 !important; border-color: rgba(236,235,231,.14) !important; }
+.booking-page .cal-arrow-btn:hover { background: #67245F !important; color: #ECEBE7 !important; }
+.booking-page .compact-extra-card:hover,
+.booking-page .delivery-card:hover { background: rgba(103,36,95,.20) !important; }
+.booking-page .delivery-card.selected { background: rgba(245,189,26,.08) !important; border-color: #F5BD1A !important; }
+.booking-page .summary-header,
+.booking-page .conf-summary-header { background: #67245F !important; color: #ECEBE7 !important; }
+.booking-page .summary-totals { background: rgba(10,20,16,.9) !important; }
+.booking-page .summary-row span,
+.booking-page .summary-row strong,
+.booking-page .conf-row span,
+.booking-page .conf-row strong,
+.booking-page .payment-row { color: #ECEBE7 !important; }
+.booking-page .extras-title,
+.booking-page .extra-subtotal,
+.booking-page .summary-extras h4,
+.booking-page .total-row.remaining,
+.booking-page .total-row.remaining strong { color: #F5BD1A !important; }
+.booking-page .extra-price,
+.booking-page .total-row.deposit,
+.booking-page .total-row.deposit strong,
+.booking-page .selected-date-display { color: #044630 !important; }
+.booking-page .selected-date-display { background: rgba(4,70,48,.18) !important; }
+.booking-page .compact-extra-card .extra-price { color: #F5BD1A !important; }
+
+/* Graduation: fix the broken --g-purple assignment and remove light card surfaces. */
+.grad-page,
+.grad-order-page {
+  --g-purple: #67245F !important;
+  --g-green: #044630 !important;
+  --g-gold: #F5BD1A !important;
+  --g-bg: #180C17 !important;
+  --g-white: rgba(26,13,24,.92) !important;
+}
+
+.grad-page .grad-pkg-card,
+.grad-page .grad-extra-card,
+.grad-page .grad-gallery-item,
+.grad-order-page .grad-order-card,
+.grad-order-page .grad-summary,
+.grad-order-page .grad-deposit-block,
+.grad-order-page .delivery-card,
+.grad-order-page .grad-template-field,
+.grad-order-page .grad-upload-zone,
+.grad-order-page .grad-pkg-option,
+.grad-order-page .grad-extra-toggle,
+.grad-order-page .grad-summary-total,
+.grad-order-page .grad-order-hero,
+.grad-order-page .grad-steps-bar,
+.grad-page .grad-pkg-header,
+.grad-page .grad-pkg-body,
+.grad-order-page .grad-summary-header { background: rgba(26,13,24,.94) !important; color: #ECEBE7 !important; border-color: rgba(236,235,231,.14) !important; }
+
+.grad-page .grad-pkg-price-block { background: rgba(10,20,16,.95) !important; }
+.grad-page .grad-pkg-name,
+.grad-page .grad-extra-price,
+.grad-order-page .grad-card-title,
+.grad-order-page .grad-pkg-option-price,
+.grad-order-page .grad-summary-header h3,
+.grad-order-page .grad-highlight-val,
+.grad-order-page .grad-success h2,
+.grad-order-page .grad-section-title { color: #F5BD1A !important; }
+.grad-page .grad-pkg-features li,
+.grad-order-page .grad-label,
+.grad-order-page .grad-pkg-option-name,
+.grad-order-page .grad-extra-toggle-name,
+.grad-order-page .grad-summary-val,
+.grad-order-page .grad-summary { color: #ECEBE7 !important; }
+.grad-page .grad-gallery-label,
+.grad-page .grad-gallery-num,
+.grad-order-page .grad-summary-key,
+.grad-order-page .grad-card-desc,
+.grad-order-page .grad-template-hint,
+.grad-order-page .grad-pkg-option-detail,
+.grad-order-page .grad-success p { color: rgba(236,235,231,.70) !important; }
+.grad-page .grad-pkg-option:hover,
+.grad-page .grad-pkg-option.selected { background: rgba(103,36,95,.24) !important; }
+.grad-order-page .grad-btn-prev { color: #ECEBE7 !important; border-color: #67245F !important; }
+.grad-order-page .grad-btn-prev:hover { background: rgba(103,36,95,.20) !important; }
+.grad-order-page .grad-input,
+.grad-order-page .grad-textarea,
+.grad-order-page .grad-select { background: rgba(26,13,24,.90) !important; color: #ECEBE7 !important; border-color: rgba(236,235,231,.14) !important; }
+.grad-order-page .grad-input:focus,
+.grad-order-page .grad-textarea:focus,
+.grad-order-page .grad-select:focus { background: rgba(38,19,36,.95) !important; border-color: #F5BD1A !important; }
+
+/* Work */
+.work-card,
+.work-empty { background: rgba(26,13,24,.92) !important; color: #ECEBE7 !important; }
+.work-card-info h3 { color: #ECEBE7 !important; }
+.work-badge { background: rgba(4,70,48,.22) !important; color: #F5BD1A !important; }
+
+/* Home legacy light cards/sections */
+.home-page .service-card-simple,
+.home-page .feature-card,
+.home-page .preview-card,
+.home-page .location-card,
+.home-page .cta-card,
+.home-page .home-package-slide-card,
+.home-page .home-offer-card { background: rgba(26,13,24,.92) !important; color: #ECEBE7 !important; border-color: rgba(236,235,231,.14) !important; }
+.home-page .service-title,
+.home-page .package-name,
+.home-page .offer-body h3,
+.home-page .preview-card h3,
+.home-page .about-section h2,
+.home-page .location-section h2,
+.home-page .preview-section h2,
+.home-page .final-cta h2 { color: #F5BD1A !important; }
+.home-page .hero-content p,
+.home-page .about-section p,
+.home-page .location-section p,
+.home-page .preview-section p,
+.home-page .final-cta p,
+.home-page .offer-body p,
+.home-page .pkg-slide-features li { color: rgba(236,235,231,.75) !important; }
+.home-page .service-icon-wrapper { background: rgba(103,36,95,.18) !important; }
+.home-page .packages-slider-section,
+.home-page .contact-section,
+.home-page .home-portfolio-section { background: #180C17 !important; }
+.home-page .home-package-slide-card .pkg-slide-category-badge { background: rgba(4,70,48,.18) !important; color: #F5BD1A !important; }
+.home-page .home-package-slide-card .pkg-slide-price { color: #F5BD1A !important; }
+.home-page .hero-image-card { background: rgba(26,13,24,.8) !important; border-color: rgba(236,235,231,.16) !important; }
+
+/* 404 */
+.notfound-page { background: #180C17 !important; }
+.notfound-container { background: rgba(26,13,24,.94) !important; border-color: rgba(236,235,231,.14) !important; color: #ECEBE7 !important; }
+.notfound-title,
+.notfound-icon,
+.notfound-icon-wrapper { color: #F5BD1A !important; }
+.notfound-desc,
+.notfound-desc-en { color: rgba(236,235,231,.75) !important; }
+.notfound-btn.primary { background: #67245F !important; color: #ECEBE7 !important; }
+.notfound-btn.secondary { color: #F5BD1A !important; border-color: #67245F !important; }
+.notfound-btn.secondary:hover { background: rgba(103,36,95,.18) !important; }
+
+/* Initial/loading surfaces: no white flash during route/page transitions. */
+.opening-sequence-overlay { background: #180C17 !important; }
+.hero-bloom-scroll { background: #180C17 !important; }
+
+/* Main portal text remains warm off-white. */
+.portal-hero-title,
+.portal-section-header h2,
+.portal-card-box h3,
+.feature-info h3,
+.process-step-card h4,
+.visual-card-body h3,
+.workflow-timeline-card h4,
+.contact-info h2 { color: #ECEBE7 !important; }
+
+/* Replace legacy pure-white text surfaces with brand off-white where applicable. */
+.portal-hero-sub,
+.portal-section-header p,
+.portal-card-box p,
+.process-step-card p,
+.visual-card-body p,
+.workflow-timeline-card p { color: rgba(236,235,231,.75) !important; }
+
+/* Do not alter the distinctive hero/footer atmospheric system; only normalize stray UI colors. */
+.nav-item.active { background: #67245F !important; color: #ECEBE7 !important; }
+.nav-item:hover { color: #F5BD1A !important; background: rgba(103,36,95,.35) !important; }
+
+/* Legacy purple aliases used by older components. */
+.service-icon,
+.contact-social-icon { color: #67245F !important; }
