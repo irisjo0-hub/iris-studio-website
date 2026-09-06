@@ -3,8 +3,6 @@ name: Apply booking calendar popup
 on:
   workflow_dispatch:
   push:
-    paths:
-      - '.github/workflows/calendar-popup.yml'
 
 permissions:
   contents: write
@@ -191,4 +189,8 @@ jobs:
           git commit -m "feat: make booking calendar a popup"
           git push
 
-      # One-shot mutation; the workflow file is removed in a follow-up cleanup.
+      - name: Remove one-shot workflow
+        run: |
+          git rm .github/workflows/calendar-popup.yml
+          git commit -m "chore: remove one-shot calendar workflow"
+          git push
