@@ -1,50 +1,60 @@
 /* src/styles/fonts.css */
 /* Font-face definitions for IRIS Studio brand typography */
 
+/*
+ * The IRIS UI uses local brand fonts. These are loaded from the same-origin
+ * app bundle so the browser does not need a third-party font request.
+ * `font-display: block` intentionally prevents a fallback-font flash/layout
+ * shift during the initial render. The index.html preloads the same files.
+ */
+
 /* Arabic font: Juman */
 @font-face {
   font-family: 'Juman';
   src: url('../assets/fonts/alfont_com_AlFont_com_juman-normal.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
+
 @font-face {
   font-family: 'Juman';
   src: url('../assets/fonts/alfont_com_AlFont_com_juman-bold-.ttf') format('truetype');
-  font-weight: 700;
+  font-weight: 700 900;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
-/* English font: DegularDisplay */
+/* English / display font: DegularDisplay */
 @font-face {
   font-family: 'DegularDisplay';
   src: url('../assets/fonts/DegularDisplay-Black.otf') format('opentype');
   font-weight: 900;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
+
 @font-face {
   font-family: 'DegularDisplay';
   src: url('../assets/fonts/DegularDisplay-Bold.otf') format('opentype');
   font-weight: 600 700;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
+
 @font-face {
   font-family: 'DegularDisplay';
   src: url('../assets/fonts/DegularDisplay-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 /* CSS variables for easy reference */
 :root {
-  --font-body: 'Juman', sans-serif;               /* Arabic body text */
-  --font-heading: 'Juman', sans-serif;            /* Arabic headings (bold) */
-  --font-hero: 'DegularDisplay', sans-serif;     /* Hero title (black) */
-  --font-english-bold: 'DegularDisplay', sans-serif;    /* English bold for numbers/prices */
-  --font-english-regular: 'DegularDisplay', sans-serif;/* English regular */
+  --font-body: 'Juman', sans-serif;
+  --font-heading: 'Juman', sans-serif;
+  --font-hero: 'DegularDisplay', sans-serif;
+  --font-english-bold: 'DegularDisplay', sans-serif;
+  --font-english-regular: 'DegularDisplay', sans-serif;
 }
