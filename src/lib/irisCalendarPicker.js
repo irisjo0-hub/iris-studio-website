@@ -1,3 +1,7 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { CalendarDays } from 'lucide-react';
+
 const CALENDAR_SECTION_SELECTOR = '.calendar-picker-section';
 const CALENDAR_READY_ATTR = 'data-iris-calendar-picker';
 
@@ -23,26 +27,11 @@ const formatTriggerDate = (value) => {
 const getSelectedDate = (section) =>
   section.querySelector('.selected-date-display strong')?.textContent?.trim() || '';
 
-const getTriggerMarkup = (selected) => `
-  <span class="iris-calendar-trigger-icon" aria-hidden="true"></span>
-  <span class="iris-calendar-trigger-copy">
-    <span class="iris-calendar-trigger-label">${selected ? 'تاريخ الجلسة' : 'تاريخ الجلسة'}</span>
-    <strong>${formatTriggerDate(selected)}</strong>
-  </span>
-  <span class="iris-calendar-trigger-chevron" aria-hidden="true"></span>
-`;
-
-const syncTrigger = (section, trigger) => {
+const syncTrigger = (section, trigger, labelNode, valueNode) => {
   const selected = getSelectedDate(section);
-  const markup = getTriggerMarkup(selected);
-
   trigger.classList.toggle('has-value', Boolean(selected));
-
-  // MutationObserver watches this section. Only rewrite the trigger when its
-  // rendered state actually changed, otherwise the observer can trigger itself.
-  if (trigger.innerHTML !== markup) {
-    trigger.innerHTML = markup;
-  }
+  labelNode.textContent = 'تاريخ الجلسة';
+  valueNode.textContent = formatTriggerDate(selected);
 };
 
 const lockBody = () => {
@@ -53,12 +42,12 @@ const unlockBody = () => {
   document.body.classList.remove('iris-calendar-body-lock');
 };
 
-const closeCalendar = (section, trigger) => {
+const closeCalendar = (section, trigger, labelNode, valueNode) => {
   section.classList.remove('calendar-expanded');
   section.classList.add('calendar-collapsed');
   trigger?.setAttribute('aria-expanded', 'false');
   unlockBody();
-  if (trigger) syncTrigger(section, trigger);
+  if (trigger && labelNode && valueNode) syncTrigger(section, trigger, labelNode, valueNode);
 };
 
 const openCalendar = (section, trigger) => {
@@ -66,6 +55,19 @@ const openCalendar = (section, trigger) => {
   section.classList.add('calendar-expanded');
   trigger.setAttribute('aria-expanded', 'true');
   lockBody();
+};
+
+const mountCalendarIcon = (host) => {
+  const root = createRoot(host);
+  root.render(
+    React.createElement(CalendarDays, {
+      size: 21,
+      strokeWidth: 1.8,
+      'aria-hidden': true,
+      focusable: false,
+    })
+  );
+  return root;
 };
 
 const wireCalendarSection = (section) => {
@@ -83,7 +85,28 @@ const wireCalendarSection = (section) => {
   trigger.setAttribute('aria-haspopup', 'dialog');
   trigger.setAttribute('aria-expanded', 'false');
   trigger.setAttribute('aria-label', 'فتح اختيار تاريخ الجلسة');
-  syncTrigger(section, trigger);
+
+  const iconHost = document.createElement('span');
+  iconHost.className = 'iris-calendar-trigger-icon';
+  iconHost.setAttribute('aria-hidden', 'true');
+  mountCalendarIcon(iconHost);
+
+  const copy = document.createElement('span');
+  copy.className = 'iris-calendar-trigger-copy';
+
+  const labelNode = document.createElement('span');
+  labelNode.className = 'iris-calendar-trigger-label';
+
+  const valueNode = document.createElement('strong');
+
+  copy.append(labelNode, valueNode);
+
+  const action = document.createElement('span');
+  action.className = 'iris-calendar-trigger-chevron';
+  action.setAttribute('aria-hidden', 'true');
+
+  trigger.append(iconHost, copy, action);
+  section.insertBefore(trigger, calendar);
 
   const backdrop = document.createElement('div');
   backdrop.className = 'iris-calendar-backdrop';
@@ -95,14 +118,13 @@ const wireCalendarSection = (section) => {
   closeButton.setAttribute('aria-label', 'إغلاق اختيار التاريخ');
   closeButton.textContent = '×';
 
-  section.insertBefore(trigger, calendar);
-  section.appendChild(backdrop);
-  section.appendChild(closeButton);
-  closeCalendar(section, trigger);
+  section.append(backdrop, closeButton);
+  syncTrigger(section, trigger, labelNode, valueNode);
+  closeCalendar(section, trigger, labelNode, valueNode);
 
   trigger.addEventListener('click', () => openCalendar(section, trigger));
-  backdrop.addEventListener('click', () => closeCalendar(section, trigger));
-  closeButton.addEventListener('click', () => closeCalendar(section, trigger));
+  backdrop.addEventListener('click', () => closeCalendar(section, trigger, labelNode, valueNode));
+  closeButton.addEventListener('click', () => closeCalendar(section, trigger, labelNode, valueNode));
 
   section.addEventListener('click', (event) => {
     const target = event.target;
@@ -110,18 +132,19 @@ const wireCalendarSection = (section) => {
 
     const dayButton = target.closest('.day-btn');
     if (dayButton && !dayButton.disabled && section.classList.contains('calendar-expanded')) {
-      // Let React finish updating selectedDate first, then close the modal.
-      window.setTimeout(() => closeCalendar(section, trigger), 0);
+      window.setTimeout(() => closeCalendar(section, trigger, labelNode, valueNode), 0);
     }
   });
 
   section.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && section.classList.contains('calendar-expanded')) {
-      closeCalendar(section, trigger);
+      closeCalendar(section, trigger, labelNode, valueNode);
     }
   });
 
-  const stateObserver = new MutationObserver(() => syncTrigger(section, trigger));
+  const stateObserver = new MutationObserver(() => {
+    if (section.isConnected) syncTrigger(section, trigger, labelNode, valueNode);
+  });
   stateObserver.observe(section, {
     childList: true,
     subtree: true,
