@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Printer, ShoppingBag, Truck, Layers, Sparkles, 
+import {
+  Printer, ShoppingBag, Truck, Layers, Sparkles,
   ArrowLeft, ArrowRight, PhoneCall, Check, Search, PackageCheck, AlertCircle
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -13,6 +13,7 @@ const PrintPortal = () => {
   const { settings, lang } = useSiteSettings();
   const isRtl = lang === 'ar';
   const [trackNumber, setTrackNumber] = useState('');
+  const [trackPhone, setTrackPhone] = useState('');
   const [trackResult, setTrackResult] = useState(null);
   const [searchingTrack, setSearchingTrack] = useState(false);
 
@@ -58,68 +59,65 @@ const PrintPortal = () => {
   ];
 
   const handleTrackOrder = async (e) => {
-    if (e) e.preventDefault();
-    const rawQuery = trackNumber.trim();
-    if (!rawQuery) return;
+    e?.preventDefault();
 
-    const cleanQuery = rawQuery.replace(/^[#\s]+/, '').trim();
+    const rawOrderNumber = trackNumber.trim();
+    const phone = trackPhone.trim();
+    if (!rawOrderNumber || !phone) return;
+
+    const orderNumber = rawOrderNumber.replace(/^#\s*/, '').trim().toUpperCase();
+    const validOrderNumber = /^ORD-\d+$/.test(orderNumber);
+
     setSearchingTrack(true);
     setTrackResult(null);
 
-    const numMatch = cleanQuery.match(/\d+/);
-    const numValue = numMatch ? parseInt(numMatch[0], 10) : NaN;
-    const isLegacyOrderRange = !isNaN(numValue) && numValue <= 1000 && numValue > 0;
-    const isValidOrderNum = !isNaN(numValue) && numValue > 0;
-
-    let foundOrder = null;
-    let orderType = 'print';
-
-    // 1. Instant LocalStorage Search (0ms response)
-    const checkLocal = (key) => {
-      try {
-        const str = localStorage.getItem(key);
-        if (!str) return null;
-        const items = JSON.parse(str);
-        if (!Array.isArray(items)) return null;
-        const q = cleanQuery.toLowerCase();
-        const qNum = numMatch ? numMatch[0] : '';
-        return items.find(o => {
-          const strId = String(o.id || o.order_number || '').toLowerCase();
-          const strPhone = String(o.phone || o.customer_phone || '');
-          const strName = String(o.customer_name || o.full_name || o.student_name || '').toLowerCase();
-          const strNotes = String(o.notes || '').toLowerCase();
-          return strId.includes(q) || (qNum && strId.includes(qNum)) || strPhone.includes(q) || strName.includes(q) || strNotes.includes(q);
-        });
-      } catch { return null; }
-    };
-
-    const localPrint = checkLocal('iris_printing_orders');
-    if (localPrint) {
-      foundOrder = localPrint;
-      orderType = 'print';
-    } else {
-      const localGrad = checkLocal('iris_graduation_orders');
-      if (localGrad) {
-        foundOrder = localGrad;
-        orderType = 'graduation';
-      } else {
-        const localBooking = checkLocal('iris_bookings');
-        if (localBooking) {
-          foundOrder = localBooking;
-          orderType = 'booking';
-        }
-      }
+    if (!validOrderNumber) {
+      setSearchingTrack(false);
+      setTrackResult({
+        found: false,
+        id: rawOrderNumber,
+        message: 'صيغة رقم الطلب غير صحيحة. استخدم رقمًا مثل ORD-1001.'
+      });
+      return;
     }
 
-    const renderResult = (order) => {
-      const rawStatus = order?.status || 'ready';
+    if (phone.length < 5 || phone.length > 30) {
+      setSearchingTrack(false);
+      setTrackResult({
+        found: false,
+        id: orderNumber,
+        message: 'يرجى إدخال رقم الهاتف المستخدم عند إنشاء الطلب.'
+      });
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.rpc('get_public_printing_order_status', {
+        p_order_number: orderNumber,
+        p_phone: phone
+      });
+
+      if (error) throw error;
+
+      const order = Array.isArray(data) ? data[0] : data;
+      if (!order) {
+        setSearchingTrack(false);
+        setTrackResult({
+          found: false,
+          id: orderNumber,
+          message: 'لم يتم العثور على طلب مطابق لرقم الطلب ورقم الهاتف. تأكد من البيانات وحاول مرة أخرى.'
+        });
+        return;
+      }
+
+      const rawStatus = order.status || 'pending';
       let statusTitle = '⏳ بانتظار المراجعة والمعالجة';
       let detailsText = 'تم استلام طلبك وبانتظار مراجعة الفريق للتجهيز والطباعة.';
       let timeText = '⏱️ الوقت المتوقع: خلال 24-48 ساعة';
       let statusColor = '#F5BD1A';
-
       let isLocationButton = false;
-      const mapsUrl = settings?.google_maps_link || settings?.map_url || 'https://maps.google.com/?q=آيرس+للمطبوعات+والتطريز';
+
+      const mapsUrl = settings?.location_map_url || 'https://maps.google.com/?q=آيرس+للمطبوعات+والتطريز';
 
       if (['approved', 'in_design', 'processing', 'in_progress'].includes(rawStatus)) {
         statusTitle = '⚙️ قيد التجهيز والتنفيذ';
@@ -149,78 +147,28 @@ const PrintPortal = () => {
         statusColor = '#ef4444';
       }
 
-      const displayOrderNum = order?.order_number || (order?.id ? `#${order.id}` : `#ORD-${numValue || cleanQuery}`);
-      const custName = order?.full_name || order?.student_name || order?.customer_name || '';
-
       setTrackResult({
         found: true,
-        id: displayOrderNum,
-        customerName: custName,
+        id: order.order_number,
+        customerName: order.customer_name || '',
         status: statusTitle,
         details: detailsText,
         estimatedDelivery: timeText,
-        statusColor: statusColor,
-        isLocationButton: isLocationButton,
+        statusColor,
+        isLocationButton,
         mapUrl: mapsUrl,
-        rawStatus: rawStatus,
-        orderType: orderType
+        rawStatus
       });
-      setSearchingTrack(false);
-    };
-
-    // Step A: If found in LocalStorage, render real order immediately!
-    if (foundOrder) {
-      renderResult(foundOrder);
-      return;
-    }
-
-    // Step B: Search Supabase DB
-    try {
-      const { data: pData } = await supabase
-        .from('printing_orders')
-        .select('*')
-        .or(`customer_name.ilike.%${cleanQuery}%,phone.ilike.%${cleanQuery}%,notes.ilike.%${cleanQuery}%`)
-        .limit(5);
-
-      if (pData && pData.length > 0) {
-        const exactMatch = pData.find(o => 
-          String(o.notes || '').includes(cleanQuery) || 
-          String(o.phone || '').includes(cleanQuery) || 
-          String(o.customer_name || '').includes(cleanQuery)
-        ) || pData[0];
-        
-        renderResult(exactMatch);
-        return;
-      }
     } catch (err) {
-      console.warn('Supabase printing search warning:', err);
-    }
-
-    // Step C: Historical Order Range (1 to 1000)
-    if (isLegacyOrderRange) {
+      console.error('Secure printing order tracking failed:', err);
       setTrackResult({
-        found: true,
-        id: `#ORD-${numValue}`,
-        customerName: '',
-        status: '✅ مكتمل ومسلم بنجاح',
-        details: 'تم تسليم الطلب بنجاح. شكراً لثقتكم بـ آيرس!',
-        estimatedDelivery: '✨ تم التسليم بنجاح',
-        statusColor: '#10b981',
-        isLocationButton: false,
-        rawStatus: 'completed',
-        orderType: 'print'
+        found: false,
+        id: orderNumber,
+        message: 'تعذر الاتصال بخدمة تتبع الطلب حالياً. حاول مرة أخرى بعد قليل.'
       });
+    } finally {
       setSearchingTrack(false);
-      return;
     }
-
-    // Step D: Unplaced / Non-existent Orders (> 1000) -> ORDER NOT FOUND!
-    setSearchingTrack(false);
-    setTrackResult({
-      found: false,
-      id: rawQuery,
-      message: 'لم يتم العثور على طلب بهذا الرقم. يرجى التأكد من رقم الطلب والتحقق مرة أخرى.'
-    });
   };
 
   return (
@@ -238,8 +186,8 @@ const PrintPortal = () => {
             {isRtl ? 'قطاع المطبوعات الفاخرة والتغليف الراقي' : 'LUXURY PRINT & PREMIUM PACKAGING'}
           </h1>
           <p className="portal-hero-sub">
-            {isRtl 
-              ? 'نحول تصاميمك ورسوماتك إلى منتجات ملموسة بأعلى دقة طباعة وتغليف فاخر.' 
+            {isRtl
+              ? 'نحول تصاميمك ورسوماتك إلى منتجات ملموسة بأعلى دقة طباعة وتغليف فاخر.'
               : 'Transforming your artwork and photos into tangible luxury print products.'}
           </p>
 
@@ -259,22 +207,22 @@ const PrintPortal = () => {
       {/* Smart Sticky Interactive Tabs Bar */}
       <div className="portal-smart-tabs-bar">
         <div className="portal-smart-tabs-container">
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`smart-tab-btn ${activeTab === 'categories' ? 'active' : ''}`}
             onClick={(e) => handleTabSelect('categories', e)}
           >
             🗂️ {isRtl ? 'تصنيفات الطباعة' : 'Categories'}
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`smart-tab-btn ${activeTab === 'custom' ? 'active' : ''}`}
             onClick={(e) => handleTabSelect('custom', e)}
           >
             🖨️ {isRtl ? 'طلب مخصص' : 'Custom Request'}
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`smart-tab-btn ${activeTab === 'track' ? 'active' : ''}`}
             onClick={(e) => handleTabSelect('track', e)}
           >
@@ -350,25 +298,38 @@ const PrintPortal = () => {
       )}
 
       {/* 4. Track Order Section */}
-      {(activeTab === 'all' || activeTab === 'track') && (
+      {activeTab === 'track' && (
         <section id="track-section" className="portal-section theme-alt-bg">
           <div className="portal-section-header">
             <span className="section-eyebrow">TRACK ORDER</span>
             <h2>{isRtl ? 'تتبع حالة طلب الطباعة الخاص بك' : 'Track Your Print Order'}</h2>
-            <p>{isRtl ? 'أدخل رقم الطلب للتحقق من مرحلة الطباعة والتوصيل.' : 'Enter your order ID to check current printing and shipping status.'}</p>
+            <p>{isRtl ? 'أدخل رقم الطلب ورقم الهاتف المستخدم عند الطلب للتحقق من الحالة.' : 'Enter your order number and phone used for the order.'}</p>
           </div>
 
           <div className="portal-quote-container" style={{ maxWidth: 600 }}>
             <form onSubmit={handleTrackOrder} className="portal-quote-form">
               <div className="form-group">
                 <label className="as-label">رقم الطلب (Order ID) *</label>
+                <input
+                  type="text"
+                  required
+                  value={trackNumber}
+                  onChange={(e) => setTrackNumber(e.target.value)}
+                  placeholder="مثال: ORD-1001"
+                  className="as-input"
+                  dir="ltr"
+                />
+              </div>
+
+              <div className="form-group" style={{ marginTop: '12px' }}>
+                <label className="as-label">رقم الهاتف المستخدم في الطلب *</label>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <input 
-                    type="text" 
+                  <input
+                    type="tel"
                     required
-                    value={trackNumber}
-                    onChange={(e) => setTrackNumber(e.target.value)}
-                    placeholder="مثال: #IRIS-PRINT-1024"
+                    value={trackPhone}
+                    onChange={(e) => setTrackPhone(e.target.value)}
+                    placeholder="07xxxxxxxx"
                     className="as-input"
                     dir="ltr"
                   />
