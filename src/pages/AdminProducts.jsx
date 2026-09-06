@@ -57,14 +57,6 @@ const AdminProducts = () => {
     void fetchItems();
   }, []);
 
-  useEffect(() => {
-    return () => {
-      images.forEach((img) => {
-        if (img.type === 'new' && img.url?.startsWith('blob:')) URL.revokeObjectURL(img.url);
-      });
-    };
-  }, [images]);
-
   const handleAddUrlImage = () => {
     const value = imageUrlInput.trim();
     if (!value) return;
@@ -112,6 +104,12 @@ const AdminProducts = () => {
   };
 
   const resetForm = () => {
+    setImages(prev => {
+      prev.forEach((img) => {
+        if (img.type === 'new' && img.url?.startsWith('blob:')) URL.revokeObjectURL(img.url);
+      });
+      return [];
+    });
     setName('');
     setPrice('');
     setDescription('');
@@ -120,7 +118,6 @@ const AdminProducts = () => {
     setColorSelectionEnabled(false);
     setCustomNotes('');
     setIsHidden(false);
-    setImages([]);
     setImageUrlInput('');
     setEditingId(null);
   };
@@ -136,7 +133,7 @@ const AdminProducts = () => {
     setIsHidden(Boolean(prod.is_hidden));
     const urls = parseImageUrls(prod.image_urls);
     setImages(urls.map((url, i) => ({ id: `existing-${i}`, type: 'existing', url })));
-  
+
     let colorsArr = [];
     if (Array.isArray(prod.available_colors)) colorsArr = prod.available_colors;
     else if (typeof prod.available_colors === 'string') {
@@ -203,7 +200,6 @@ const AdminProducts = () => {
         try { localStorage.setItem('iris_printing_products', JSON.stringify(updated)); } catch (cacheError) { console.warn('Could not update product cache:', cacheError); }
         alert('تم تعديل المنتج بنجاح');
 
-        // Remove only old package-bucket assets that are no longer referenced, after DB success.
         const previousUrls = parseImageUrls(previous?.image_urls);
         const keptUrls = new Set(finalUrls);
         for (const oldUrl of previousUrls) {
