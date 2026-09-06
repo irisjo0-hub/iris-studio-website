@@ -4,6 +4,8 @@
 
 :root {
   --color-purple: #67245F;
+  --color-purple-bright: #7D2E73;
+  --color-purple-soft: rgba(103, 36, 95, 0.22);
   --color-gold: #F5BD1A;
   --color-dark-green: #044630;
   --color-light-gray: #ECEBE7;
@@ -13,6 +15,7 @@
   --font-hero: 'DegularDisplay', sans-serif;
 
   --iris-purple: #67245F;
+  --iris-purple-bright: #7D2E73;
   --iris-offwhite: #ECEBE7;
   --iris-gold: #F5BD1A;
   --iris-green: #044630;
@@ -21,7 +24,7 @@
   --iris-bg-secondary: #0A1410;
   --iris-surface: #1A0D18;
   --iris-surface-alt: #0A1410;
-  --iris-surface-glass: rgba(26, 13, 24, 0.85);
+  --iris-surface-glass: rgba(26, 13, 24, 0.84);
 
   --iris-text-primary: #ECEBE7;
   --iris-text-secondary: rgba(236, 235, 231, 0.72);
@@ -30,7 +33,13 @@
 
   --iris-accent: #F5BD1A;
   --iris-border: rgba(236, 235, 231, 0.14);
-  --iris-border-gold: rgba(245, 189, 26, 0.35);
+  --iris-border-purple: rgba(103, 36, 95, 0.42);
+  --iris-border-gold: rgba(245, 189, 26, 0.32);
+  --iris-shadow: 0 18px 50px rgba(0, 0, 0, 0.42);
+  --iris-shadow-purple: 0 18px 50px rgba(103, 36, 95, 0.22);
+  --iris-radius-sm: 12px;
+  --iris-radius-md: 18px;
+  --iris-radius-lg: 26px;
 }
 
 body {
@@ -43,42 +52,47 @@ body {
 }
 
 .glass {
-  background: rgba(26, 13, 24, 0.85);
+  background: var(--iris-surface-glass);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-radius: 12px;
+  border-radius: var(--iris-radius-md);
   border: 1px solid var(--iris-border);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--iris-shadow);
 }
 
 .btn-primary {
-  background: var(--iris-gold);
-  color: var(--iris-green);
+  background: var(--iris-purple);
+  color: var(--iris-offwhite);
   padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
+  border: 1px solid rgba(236, 235, 231, 0.08);
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: 600;
-  transition: transform 0.2s, box-shadow 0.2s;
+  font-weight: 700;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s, border-color 0.2s;
+  box-shadow: 0 10px 26px rgba(103, 36, 95, 0.24);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(245, 189, 26, 0.4);
+  background: var(--iris-purple-bright);
+  border-color: rgba(245, 189, 26, 0.25);
+  box-shadow: 0 14px 34px rgba(103, 36, 95, 0.34);
 }
 
 .btn-secondary {
-  background: transparent;
-  color: var(--iris-purple);
-  border: 2px solid var(--iris-purple);
+  background: rgba(103, 36, 95, 0.06);
+  color: var(--iris-offwhite);
+  border: 1px solid rgba(103, 36, 95, 0.60);
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: 600;
-  transition: background 0.2s, color 0.2s;
+  font-weight: 700;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
 }
 
 .btn-secondary:hover {
-  background: var(--iris-purple);
+  background: rgba(103, 36, 95, 0.22);
   color: var(--iris-offwhite);
+  border-color: var(--iris-gold);
+  transform: translateY(-2px);
 }
