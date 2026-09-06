@@ -10,7 +10,8 @@
 INSERT INTO storage.buckets (id, name, public) VALUES ('portfolio', 'portfolio', true) ON CONFLICT (id) DO NOTHING;
 INSERT INTO storage.buckets (id, name, public) VALUES ('packages', 'packages', true) ON CONFLICT (id) DO NOTHING;
 INSERT INTO storage.buckets (id, name, public) VALUES ('templates', 'templates', true) ON CONFLICT (id) DO NOTHING;
-INSERT INTO storage.buckets (id, name, public) VALUES ('reels', 'reels', true) ON CONFLICT (id) DO NOTHING;
+-- Reels are private because the current application does not use this bucket for public delivery.
+INSERT INTO storage.buckets (id, name, public) VALUES ('reels', 'reels', false) ON CONFLICT (id) DO UPDATE SET public = false;
 INSERT INTO storage.buckets (id, name, public) VALUES ('printing-products', 'printing-products', true) ON CONFLICT (id) DO NOTHING;
 
 -- Customer upload buckets marked private for enhanced security
@@ -100,9 +101,9 @@ CREATE POLICY "Admin update templates bucket" ON storage.objects
 CREATE POLICY "Admin delete templates bucket" ON storage.objects
   FOR DELETE TO authenticated USING (bucket_id = 'templates' AND public.is_admin() = true);
 
--- Reels Bucket
-CREATE POLICY "Public read reels bucket" ON storage.objects
-  FOR SELECT TO anon, authenticated USING (bucket_id = 'reels');
+-- Reels Bucket (private; currently unused by the frontend)
+CREATE POLICY "Admin read reels bucket" ON storage.objects
+  FOR SELECT TO authenticated USING (bucket_id = 'reels' AND public.is_admin() = true);
 CREATE POLICY "Admin insert reels bucket" ON storage.objects
   FOR INSERT TO authenticated WITH CHECK (bucket_id = 'reels' AND public.is_admin() = true);
 CREATE POLICY "Admin update reels bucket" ON storage.objects
@@ -128,7 +129,7 @@ CREATE POLICY "Admin delete printing-products bucket" ON storage.objects
 
 -- Payment Receipts Bucket
 CREATE POLICY "Public upload payment-receipts bucket" ON storage.objects
-  FOR INSERT TO anon, authenticated WITH CHECK (bucket_id = 'payment-receipts');
+  FOR INSERT TO anon WITH CHECK (bucket_id = 'payment-receipts');
 CREATE POLICY "Admin read payment-receipts bucket" ON storage.objects
   FOR SELECT TO authenticated USING (bucket_id = 'payment-receipts' AND public.is_admin() = true);
 CREATE POLICY "Admin update payment-receipts bucket" ON storage.objects
@@ -138,7 +139,7 @@ CREATE POLICY "Admin delete payment-receipts bucket" ON storage.objects
 
 -- Graduation Orders Bucket
 CREATE POLICY "Public upload graduation-orders bucket" ON storage.objects
-  FOR INSERT TO anon, authenticated WITH CHECK (bucket_id = 'graduation-orders');
+  FOR INSERT TO anon WITH CHECK (bucket_id = 'graduation-orders');
 CREATE POLICY "Admin read graduation-orders bucket" ON storage.objects
   FOR SELECT TO authenticated USING (bucket_id = 'graduation-orders' AND public.is_admin() = true);
 CREATE POLICY "Admin update graduation-orders bucket" ON storage.objects
@@ -148,7 +149,7 @@ CREATE POLICY "Admin delete graduation-orders bucket" ON storage.objects
 
 -- Printing Orders Bucket
 CREATE POLICY "Public upload printing-orders bucket" ON storage.objects
-  FOR INSERT TO anon, authenticated WITH CHECK (bucket_id = 'printing-orders');
+  FOR INSERT TO anon WITH CHECK (bucket_id = 'printing-orders');
 CREATE POLICY "Admin read printing-orders bucket" ON storage.objects
   FOR SELECT TO authenticated USING (bucket_id = 'printing-orders' AND public.is_admin() = true);
 CREATE POLICY "Admin update printing-orders bucket" ON storage.objects
