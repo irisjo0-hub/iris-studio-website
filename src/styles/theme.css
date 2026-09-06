@@ -7,18 +7,20 @@
   --color-gold: #F5BD1A;
   --color-dark-green: #044630;
   --color-light-gray: #ECEBE7;
-  --font-primary: 'Cairo', 'Juman', sans-serif;
+  --font-primary: 'Juman', sans-serif;
+  --font-secondary: 'Juman', sans-serif;
+  --font-display: 'Juman', sans-serif;
+  --font-hero: 'DegularDisplay', sans-serif;
 
-  /* Centralized Semantic Dark System Tokens */
   --iris-purple: #67245F;
   --iris-offwhite: #ECEBE7;
   --iris-gold: #F5BD1A;
   --iris-green: #044630;
 
-  --iris-bg-primary: #120A11;
+  --iris-bg-primary: #180C17;
   --iris-bg-secondary: #0A1410;
-  --iris-surface: #1A1018;
-  --iris-surface-alt: #0B1A14;
+  --iris-surface: #1A0D18;
+  --iris-surface-alt: #0A1410;
   --iris-surface-glass: rgba(26, 13, 24, 0.85);
 
   --iris-text-primary: #ECEBE7;
@@ -40,7 +42,6 @@ body {
   padding: 0;
 }
 
-/* Glassmorphism utility */
 .glass {
   background: rgba(26, 13, 24, 0.85);
   backdrop-filter: blur(14px);
@@ -50,10 +51,9 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-/* Button utilities */
 .btn-primary {
   background: var(--iris-gold);
-  color: #044630;
+  color: var(--iris-green);
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
