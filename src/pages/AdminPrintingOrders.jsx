@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, createSignedUrl } from '../lib/supabase';
+import { supabase, createSignedUrl, deleteFile } from '../lib/supabase';
 import { formatOrderNumberDisplay } from '../lib/orderUtils';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/admin.css';
@@ -171,108 +171,94 @@ const AdminPrintingOrders = () => {
     const fetchOrders = async () => {
       setLoading(true);
       try {
-        let combined = [];
         const { data, error } = await supabase
           .from('printing_orders')
           .select('*')
           .order('created_at', { ascending: false });
-        
-        if (!error && data && data.length > 0) {
-          combined = [...data];
-        }
 
-        const localStr = localStorage.getItem('iris_printing_orders');
-        if (localStr) {
-          const localData = JSON.parse(localStr);
-          localData.forEach(lo => {
-            if (!combined.some(o => o.id === lo.id || (o.created_at && o.created_at === lo.created_at))) {
-              combined.push(lo);
-            }
-          });
-        }
-
-        setOrders(combined.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)));
+        if (error) throw error;
+        setOrders(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error(err);
+        console.error('Failed to load printing orders:', err);
+        setOrders([]);
+        alert(`تعذر تحميل طلبات الطباعة من قاعدة البيانات: ${err.message}`);
       } finally {
         setLoading(false);
       }
     };
+
     fetchOrders();
   }, []);
 
-  const handleUpdateStatus = (id, newStatus) => {
-    // 1. Instant local React state update
-    setOrders(prevOrders => prevOrders.map(o => o.id === id ? { ...o, status: newStatus } : o));
-
-    // 2. Instant LocalStorage update
-    try {
-      const localStr = localStorage.getItem('iris_printing_orders');
-      if (localStr) {
-        const localData = JSON.parse(localStr);
-        const updatedLocal = localData.map(o => o.id === id ? { ...o, status: newStatus } : o);
-        localStorage.setItem('iris_printing_orders', JSON.stringify(updatedLocal));
-      }
-    } catch (e) {}
-
-    // 3. Background Supabase sync (no annoying alerts if schema table missing)
-    supabase
+  const handleUpdateStatus = async (id, newStatus) => {
+    const { error } = await supabase
       .from('printing_orders')
       .update({ status: newStatus })
-      .eq('id', id)
-      .then(({ error }) => {
-        if (error) console.warn('Supabase sync notice:', error.message);
-      })
-      .catch(err => console.warn('Supabase background warning:', err));
+      .eq('id', id);
+
+    if (error) {
+      console.error('Failed to update printing order status:', error);
+      alert(`تعذر تحديث حالة الطلب: ${error.message}`);
+      return;
+    }
+
+    setOrders(prevOrders => prevOrders.map(order => (
+      order.id === id ? { ...order, status: newStatus } : order
+    )));
   };
 
-  const handleUpdateItemStatus = (orderId, itemId, newSubStatus) => {
-    setOrders(prevOrders => {
-      return prevOrders.map(ord => {
-        if (ord.id !== orderId) return ord;
-        
-        const updatedItemStatuses = {
-          ...(ord.item_statuses || {}),
-          [itemId]: newSubStatus
-        };
+  const handleUpdateItemStatus = async (orderId, itemId, newSubStatus) => {
+    const order = orders.find(ord => ord.id === orderId);
+    if (!order) return;
 
-        const items = getStructuredOrderItems({ ...ord, item_statuses: updatedItemStatuses });
-        const allReady = items.length > 0 && items.every(i => updatedItemStatuses[i.id] === 'ready');
-        const anyInProgress = items.some(i => updatedItemStatuses[i.id] === 'in_progress' || updatedItemStatuses[i.id] === 'ready');
-        
-        let overallStatus = ord.status;
-        if (allReady && ord.status !== 'completed') {
-          overallStatus = 'ready';
-        } else if (anyInProgress && ord.status === 'pending') {
-          overallStatus = 'approved';
-        }
+    const existingStatuses = order.item_statuses && typeof order.item_statuses === 'object'
+      ? order.item_statuses
+      : {};
+    const updatedItemStatuses = {
+      ...existingStatuses,
+      [itemId]: newSubStatus
+    };
 
-        const updatedOrder = {
-          ...ord,
-          item_statuses: updatedItemStatuses,
-          status: overallStatus
-        };
+    const items = getStructuredOrderItems({ ...order, item_statuses: updatedItemStatuses });
+    const allReady = items.length > 0 && items.every(item => updatedItemStatuses[item.id] === 'ready');
+    const anyInProgress = items.some(item => updatedItemStatuses[item.id] === 'in_progress' || updatedItemStatuses[item.id] === 'ready');
 
-        try {
-          const localStr = localStorage.getItem('iris_printing_orders');
-          if (localStr) {
-            const localData = JSON.parse(localStr);
-            const updatedLocal = localData.map(o => o.id === orderId ? updatedOrder : o);
-            localStorage.setItem('iris_printing_orders', JSON.stringify(updatedLocal));
-          }
-        } catch (e) {}
+    let overallStatus = order.status;
+    if (allReady && order.status !== 'completed') {
+      overallStatus = 'ready';
+    } else if (anyInProgress && order.status === 'pending') {
+      overallStatus = 'approved';
+    }
 
-        supabase
-          .from('printing_orders')
-          .update({ item_statuses: updatedItemStatuses, status: overallStatus })
-          .eq('id', orderId)
-          .then(({ error }) => {
-            if (error) console.warn('Supabase sub-status update warning:', error);
-          });
+    const { error } = await supabase
+      .from('printing_orders')
+      .update({ item_statuses: updatedItemStatuses, status: overallStatus })
+      .eq('id', orderId);
 
-        return updatedOrder;
-      });
-    });
+    if (error) {
+      console.error('Failed to update printing order item status:', error);
+      alert(`تعذر تحديث حالة المنتج: ${error.message}`);
+      return;
+    }
+
+    setOrders(prevOrders => prevOrders.map(currentOrder => (
+      currentOrder.id === orderId
+        ? { ...currentOrder, item_statuses: updatedItemStatuses, status: overallStatus }
+        : currentOrder
+    )));
+  };
+
+  const parseStoragePaths = (value) => {
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed.filter(Boolean) : (value ? [value] : []);
+      } catch {
+        return value ? [value] : [];
+      }
+    }
+    return [];
   };
 
   const handleDeleteOrder = async (id) => {
@@ -280,21 +266,29 @@ const AdminPrintingOrders = () => {
       return;
     }
 
-    setOrders(prevOrders => prevOrders.filter(o => o.id !== id));
+    const order = orders.find(currentOrder => currentOrder.id === id);
+    if (!order) return;
 
-    try {
-      const localStr = localStorage.getItem('iris_printing_orders');
-      if (localStr) {
-        const localData = JSON.parse(localStr);
-        const updatedLocal = localData.filter(o => o.id !== id);
-        localStorage.setItem('iris_printing_orders', JSON.stringify(updatedLocal));
-      }
-    } catch (e) {}
+    const imagePaths = parseStoragePaths(order.image_urls);
+    const { error } = await supabase
+      .from('printing_orders')
+      .delete()
+      .eq('id', id);
 
-    try {
-      await supabase.from('printing_orders').delete().eq('id', id);
-    } catch (err) {
-      console.warn('Supabase delete warning:', err);
+    if (error) {
+      console.error('Failed to delete printing order:', error);
+      alert(`تعذر حذف الطلب: ${error.message}`);
+      return;
+    }
+
+    setOrders(prevOrders => prevOrders.filter(currentOrder => currentOrder.id !== id));
+
+    const cleanupResults = await Promise.allSettled(
+      imagePaths.map(path => deleteFile('graduation-orders', path))
+    );
+    const failedCleanup = cleanupResults.filter(result => result.status === 'rejected');
+    if (failedCleanup.length > 0) {
+      console.warn(`Deleted order ${id}, but ${failedCleanup.length} storage file(s) could not be cleaned up.`);
     }
   };
 

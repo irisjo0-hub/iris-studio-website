@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Grid, List, ShoppingCart, Plus, Minus, Trash2, X, CheckCircle, ArrowRight, Download } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import { supabase, uploadFile } from '../lib/supabase';
-import { getNextOrderNumber } from '../lib/orderUtils';
+import { supabase, uploadFile, deleteFile } from '../lib/supabase';
 import '../styles/graduation.css'; // Leverage shared premium styling variables
 
 const getColorStyle = (colorName, isSelected) => {
@@ -680,57 +679,75 @@ const PrintingProducts = () => {
             image: ''
           }];
 
-      const generatedOrderNum = getNextOrderNumber('ORD');
-      const newOrderObj = {
-        id: generatedOrderNum,
-        order_number: generatedOrderNum,
-        product_id: selectedProduct.id,
-        product_name: calculatedProductName,
-        cart_items: cartItemsStructured,
-        customer_name: customerName.trim(),
-        phone: phone.trim(),
-        notes: finalNotes,
-        image_urls: uploadedUrls,
-        quantity: selectedProduct.id === 'cart_checkout' ? totalCartCount : quantity,
-        selected_color: selectedColor || (selectedProduct.id === 'cart_checkout' ? 'سلة متعددة' : ''),
-        status: 'pending',
-        created_at: new Date().toISOString()
+      const toNumericProductId = (id) => {
+        const numericId = Number(id);
+        return Number.isInteger(numericId) && numericId > 0 ? numericId : null;
       };
 
-      // 1. Try Supabase insert
-      try {
-        await supabase
-          .from('printing_orders')
-          .insert({
-            product_id: newOrderObj.product_id,
-            product_name: newOrderObj.product_name,
-            customer_name: newOrderObj.customer_name,
-            phone: newOrderObj.phone,
-            notes: newOrderObj.notes,
-            image_urls: newOrderObj.image_urls,
-            quantity: newOrderObj.quantity,
-            selected_color: newOrderObj.selected_color,
-            status: newOrderObj.status
-          });
-      } catch (dbErr) {
-        console.warn('Supabase printing_orders table log warning:', dbErr);
+      const cartItemsStructured = selectedProduct.id === 'cart_checkout' && cart
+        ? cart.map((item, idx) => ({
+            id: item.id || `item-${idx}`,
+            product_id: toNumericProductId(item.id),
+            name: item.name,
+            selectedColor: item.selectedColor || '',
+            quantity: Math.max(1, Number(item.quantity) || 1),
+            price: Number(item.price) || 0,
+            image: item.image || ''
+          }))
+        : [];
+
+      if (selectedProduct.id === 'cart_checkout') {
+        const invalidCartItem = cartItemsStructured.find(item => !item.product_id);
+        if (invalidCartItem) {
+          throw new Error('أحد المنتجات الموجودة في السلة لم يعد متاحاً في قاعدة البيانات. أعد تحميل المنتجات وحاول مرة أخرى.');
+        }
       }
 
-      // 2. Always sync to localStorage fallback for Admin Dashboard
-      try {
-        const existingLocal = localStorage.getItem('iris_printing_orders');
-        const parsedLocal = existingLocal ? JSON.parse(existingLocal) : [];
-        localStorage.setItem('iris_printing_orders', JSON.stringify([newOrderObj, ...parsedLocal]));
-      } catch (lErr) {
-        console.error(lErr);
+      const selectedProductId = selectedProduct.id === 'cart_checkout'
+        ? null
+        : toNumericProductId(selectedProduct.id);
+
+      if (selectedProduct.id !== 'cart_checkout' && !selectedProductId) {
+        throw new Error('هذا المنتج غير متاح للطلب حالياً. أعد تحميل الصفحة وحاول مرة أخرى.');
       }
 
-      const finalPrice = selectedProduct.id === 'cart_checkout' 
-        ? totalCartPrice + (deliverySelected ? 2 : 0) 
-        : (Number(selectedProduct.price) || 0) * quantity + (deliverySelected ? 2 : 0);
+      let calculatedProductName = selectedProduct.name;
+      if (selectedProduct.id === 'cart_checkout' && cart && cart.length > 0) {
+        calculatedProductName = cart.map(item => `${item.name}${item.selectedColor ? ` [${item.selectedColor}]` : ''} (×${item.quantity})`).join(' + ');
+      }
+
+      const rpcCartItems = selectedProduct.id === 'cart_checkout'
+        ? cartItemsStructured
+        : [];
+
+      const { data: rpcData, error: rpcError } = await supabase.rpc('create_public_printing_order', {
+        p_order_data: {
+          product_id: selectedProductId,
+          product_name: calculatedProductName,
+          customer_name: customerName.trim(),
+          phone: phone.trim(),
+          notes: finalNotes,
+          image_urls: uploadedUrls,
+          cart_items: rpcCartItems,
+          quantity: selectedProduct.id === 'cart_checkout' ? totalCartCount : quantity,
+          selected_color: selectedColor || (selectedProduct.id === 'cart_checkout' ? 'سلة متعددة' : ''),
+          delivery_selected: deliverySelected,
+          delivery_address: deliverySelected ? deliveryAddress.trim() : '',
+          payment_method: paymentMethod
+        }
+      });
+
+      if (rpcError) throw rpcError;
+
+      const orderResult = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+      if (!orderResult?.order_number) {
+        throw new Error('تم قبول الطلب بدون إرجاع رقم الأوردر. تواصل مع الاستوديو قبل إعادة المحاولة.');
+      }
+
+      const finalPrice = Number(orderResult.total_amount ?? 0);
 
       const invoiceData = {
-        invoiceNo: generatedOrderNum,
+        invoiceNo: orderResult.order_number,
         date: new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
         customerName: customerName.trim(),
         phone: phone.trim(),
