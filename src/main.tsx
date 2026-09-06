@@ -9,6 +9,7 @@ import './styles/iris-calendar-popup.css'
 import './styles/iris-calendar-final.css'
 import './styles/iris-booking-compact.css'
 import './styles/iris-responsive-system.css'
+import './styles/iris-hero-responsive-polish.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
