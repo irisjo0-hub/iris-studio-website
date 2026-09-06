@@ -65,7 +65,16 @@ const PrintPortal = () => {
     const phone = trackPhone.trim();
     if (!rawOrderNumber || !phone) return;
 
-    const orderNumber = rawOrderNumber.replace(/^#\s*/, '').trim().toUpperCase();
+    // Accept all common ways a customer may enter the order number:
+    // 1001, ORD-1001, #ORD-1001, and #1001.
+    const normalizedOrderNumber = rawOrderNumber
+      .replace(/^#\s*/, '')
+      .replace(/\s*#$/, '')
+      .trim()
+      .toUpperCase();
+    const orderNumber = /^\d+$/.test(normalizedOrderNumber)
+      ? `ORD-${normalizedOrderNumber}`
+      : normalizedOrderNumber;
     const validOrderNumber = /^ORD-\d+$/.test(orderNumber);
 
     setSearchingTrack(true);
@@ -76,7 +85,7 @@ const PrintPortal = () => {
       setTrackResult({
         found: false,
         id: rawOrderNumber,
-        message: 'صيغة رقم الطلب غير صحيحة. استخدم رقمًا مثل ORD-1001.'
+        message: 'صيغة رقم الطلب غير صحيحة. يمكنك كتابة 1001 أو ORD-1001 أو #ORD-1001.'
       });
       return;
     }
@@ -315,7 +324,7 @@ const PrintPortal = () => {
                   required
                   value={trackNumber}
                   onChange={(e) => setTrackNumber(e.target.value)}
-                  placeholder="مثال: ORD-1001"
+                  placeholder="مثال: 1001 أو #ORD-1001"
                   className="as-input"
                   dir="ltr"
                 />
