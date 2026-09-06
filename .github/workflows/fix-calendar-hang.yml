@@ -1,0 +1,311 @@
+name: Fix booking calendar hang
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Replace calendar with native React popup and remove legacy enhancer
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          booking = Path('src/pages/Booking.jsx')
+          text = booking.read_text(encoding='utf-8')
+          start_marker = 'const CustomCalendar = ({ value, onChange, existingBookings = [], selectedPackage = null }) => {'
+          end_marker = '// ─────────────────────────────────────────────\n// Main Component'
+          start = text.index(start_marker)
+          end = text.index(end_marker, start)
+
+          replacement = r'''const CustomCalendar = ({ value, onChange, existingBookings = [], selectedPackage = null }) => {
+  const [currentDate, setCurrentDate] = useState(value ? new Date(value) : new Date());
+  const [isOpen, setIsOpen] = useState(false);
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  const monthNames = [
+    "كانون الثاني (1)", "شباط (2)", "آذار (3)", "نيسان (4)", "أيار (5)", "حزيران (6)",
+    "تموز (7)", "آب (8)", "أيلول (9)", "تشرين الأول (10)", "تشرين الثاني (11)", "كانون الأول (12)"
+  ];
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayIndex = new Date(year, month, 1).getDay();
+
+  const handlePrevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
+  const handleNextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setIsOpen(false);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (value) setCurrentDate(new Date(value));
+  }, [value]);
+
+  const days = [];
+  for (let i = 0; i < firstDayIndex; i++) days.push(null);
+  for (let i = 1; i <= daysInMonth; i++) days.push(new Date(year, month, i));
+
+  const isSelected = (date) => {
+    if (!date || !value) return false;
+    const valDate = new Date(value);
+    return date.getDate() === valDate.getDate() &&
+      date.getMonth() === valDate.getMonth() &&
+      date.getFullYear() === valDate.getFullYear();
+  };
+
+  const isDisabled = (date) => {
+    if (!date) return true;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
+  };
+
+  const getBookingStatus = (date) => {
+    if (!date) return { hasBookings: false, fullyBooked: false };
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const bookingsForDate = existingBookings.filter(b =>
+      b.date === dateStr &&
+      (b.status === 'approved' || b.status === 'completed' || b.status === 'pending')
+    );
+    const hasBookings = bookingsForDate.length > 0;
+    const duration = selectedPackage ? selectedPackage.duration : 50;
+    const slots = generateSlots(dateStr, duration, existingBookings);
+    return { hasBookings, fullyBooked: slots.length === 0 };
+  };
+
+  const handleDateClick = (date) => {
+    if (!date || isDisabled(date)) return;
+    const { fullyBooked } = getBookingStatus(date);
+    if (fullyBooked) return;
+    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    onChange(formatted);
+    setIsOpen(false);
+  };
+
+  const weekDays = ["أحد", "اثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"];
+
+  return (
+    <>
+      <button
+        type="button"
+        className={`calendar-trigger ${value ? 'has-value' : ''}`}
+        onClick={() => setIsOpen(true)}
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+      >
+        <span className="calendar-trigger-icon"><Calendar size={22} strokeWidth={1.7} /></span>
+        <span className="calendar-trigger-copy">
+          <strong>{value ? 'تاريخ الجلسة' : 'اختر تاريخ الجلسة'}</strong>
+          <span>{value || 'اضغط لاختيار اليوم المناسب'}</span>
+        </span>
+        <span className="calendar-trigger-arrow">←</span>
+      </button>
+
+      {isOpen && (
+        <div
+          className="calendar-modal-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setIsOpen(false);
+          }}
+        >
+          <div className="calendar-modal" role="dialog" aria-modal="true" aria-label="اختيار تاريخ الجلسة">
+            <div className="calendar-modal-topbar">
+              <div>
+                <span className="calendar-modal-eyebrow">IRIS STUDIO</span>
+                <h3>اختيار تاريخ الجلسة</h3>
+              </div>
+              <button type="button" className="calendar-close-btn" onClick={() => setIsOpen(false)} aria-label="إغلاق">×</button>
+            </div>
+
+            <div className="custom-calendar-box calendar-modal-inner">
+              <div className="cal-header">
+                <button type="button" className="cal-arrow-btn" onClick={handlePrevMonth} aria-label="الشهر السابق">&lt;</button>
+                <span className="cal-title">{monthNames[month]} {year}</span>
+                <button type="button" className="cal-arrow-btn" onClick={handleNextMonth} aria-label="الشهر التالي">&gt;</button>
+              </div>
+              <div className="cal-weekdays-row">
+                {weekDays.map(d => <div key={d} className="cal-wkday">{d}</div>)}
+              </div>
+              <div className="cal-days-grid">
+                {days.map((day, idx) => {
+                  if (!day) return <div key={`empty-${idx}`} className="cal-day-cell empty" />;
+                  const disabled = isDisabled(day);
+                  const { hasBookings, fullyBooked } = getBookingStatus(day);
+                  const selected = isSelected(day);
+                  return (
+                    <button
+                      key={`day-${day.getDate()}`}
+                      type="button"
+                      className={`cal-day-cell day-btn ${selected ? 'active-day' : ''} ${disabled ? 'past-day disabled-day' : ''} ${fullyBooked ? 'fully-booked-day disabled-day' : ''} ${hasBookings ? 'has-bookings' : ''}`}
+                      disabled={disabled || fullyBooked}
+                      onClick={() => handleDateClick(day)}
+                    >
+                      {day.getDate()}
+                      {hasBookings && !fullyBooked && <span className="cal-dot" />}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="cal-legend">
+                <div className="legend-item"><span className="legend-dot selected" />المحدد</div>
+                <div className="legend-item"><span className="legend-dot has-bookings" />متاح (يوجد حجوزات)</div>
+                <div className="legend-item"><span className="legend-dot available" />متاح بالكامل</div>
+                <div className="legend-item"><span className="legend-dot fully-booked" />محجوز بالكامل</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+'''
+          booking.write_text(text[:start] + replacement + text[end:], encoding='utf-8')
+
+          main = Path('src/main.tsx')
+          main_text = main.read_text(encoding='utf-8')
+          main_text = main_text.replace("import './styles/iris-calendar-popover.css'\n", "")
+          main_text = main_text.replace("import './lib/irisCalendarPicker'\n", "")
+          main.write_text(main_text, encoding='utf-8')
+
+          css = Path('src/styles/iris-calendar-popover.css')
+          css.write_text(r'''/* IRIS Calendar modal — native React interaction, no DOM enhancer needed. */
+.calendar-picker-section { position: relative; }
+
+.calendar-trigger {
+  width: 100%;
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(103, 36, 95, 0.44);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(103, 36, 95, 0.14), rgba(26, 13, 24, 0.94));
+  color: var(--iris-text-primary);
+  text-align: right;
+  cursor: pointer;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(236,235,231,0.035);
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, background .22s ease;
+}
+.calendar-trigger:hover {
+  transform: translateY(-1px);
+  border-color: rgba(245, 189, 26, 0.48);
+  background: linear-gradient(145deg, rgba(103, 36, 95, 0.20), rgba(26, 13, 24, 0.97));
+  box-shadow: 0 18px 38px rgba(0,0,0,.32), 0 0 24px rgba(103,36,95,.14);
+}
+.calendar-trigger-icon {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  color: #F5BD1A;
+  background: rgba(103, 36, 95, 0.22);
+  border: 1px solid rgba(103, 36, 95, 0.35);
+}
+.calendar-trigger-copy { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.calendar-trigger-copy strong { color: var(--iris-text-primary); font-size: 1rem; font-weight: 900; }
+.calendar-trigger-copy span { color: var(--iris-text-secondary); font-size: .82rem; font-weight: 700; }
+.calendar-trigger-arrow { color: #F5BD1A; font-size: 1.15rem; opacity: .92; }
+
+.calendar-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(10, 5, 10, 0.76);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.calendar-modal {
+  width: min(430px, 100%);
+  max-height: min(92vh, 720px);
+  overflow: auto;
+  border: 1px solid rgba(103, 36, 95, 0.52);
+  border-radius: 24px;
+  background: linear-gradient(155deg, rgba(30, 14, 28, 0.99), rgba(10, 20, 16, 0.98));
+  box-shadow: 0 30px 90px rgba(0,0,0,.62), 0 0 48px rgba(103,36,95,.18);
+  animation: irisCalendarIn .25s cubic-bezier(.22,1,.36,1);
+}
+.calendar-modal-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid rgba(236,235,231,.08);
+}
+.calendar-modal-eyebrow { display:block; margin-bottom: 4px; color:#F5BD1A; font-size:.68rem; font-weight:900; letter-spacing:.16em; }
+.calendar-modal-topbar h3 { margin:0; color:var(--iris-text-primary); font-size:1.12rem; font-weight:900; }
+.calendar-close-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(236,235,231,.10);
+  background: rgba(255,255,255,.04);
+  color: var(--iris-text-primary);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.calendar-close-btn:hover { border-color: rgba(245,189,26,.46); color:#F5BD1A; }
+.calendar-modal-inner { margin: 0; border: 0 !important; box-shadow: none !important; background: transparent !important; border-radius: 0 !important; }
+.calendar-modal .cal-header { padding-inline: 18px; }
+.calendar-modal .cal-weekdays-row { padding-inline: 18px; }
+.calendar-modal .cal-days-grid { padding-inline: 18px; }
+.calendar-modal .cal-legend { margin: 8px 18px 18px; }
+@keyframes irisCalendarIn { from { opacity:0; transform:translateY(10px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+@media (max-width: 520px) {
+  .calendar-modal-backdrop { padding: 12px; align-items: flex-end; }
+  .calendar-modal { width:100%; max-height:88vh; border-radius:22px 22px 16px 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .calendar-modal { animation:none; } .calendar-trigger { transition:none; } }
+''', encoding='utf-8')
+
+          legacy = Path('src/lib/irisCalendarPicker.js')
+          if legacy.exists(): legacy.unlink()
+          legacy2 = Path('src/scripts/calendar-popover.js')
+          if legacy2.exists(): legacy2.unlink()
+          Path('CALENDAR_FIX_APPLIED.txt').write_text('Booking calendar popup uses native React state; legacy DOM enhancer removed.\n', encoding='utf-8')
+          PY
+
+      - name: Commit and remove one-shot workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/pages/Booking.jsx src/main.tsx src/styles/iris-calendar-popover.css src/lib/irisCalendarPicker.js src/scripts/calendar-popover.js CALENDAR_FIX_APPLIED.txt
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: replace hanging booking calendar popup"
+          git push
+          git rm .github/workflows/fix-calendar-hang.yml
+          git commit -m "chore: remove one-shot calendar fix workflow"
+          git push
