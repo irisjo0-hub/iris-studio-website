@@ -1,0 +1,373 @@
+/* IRIS Responsive System
+   One layout language across wide desktop, laptop, tablet and phone.
+   Mobile keeps the current compact feel; larger screens use the available canvas.
+*/
+
+:root {
+  --iris-content-max: 1380px;
+  --iris-content-wide: 1500px;
+  --iris-page-gutter: clamp(16px, 3vw, 48px);
+  --iris-section-space: clamp(48px, 6vw, 92px);
+}
+
+/* Prevent common fixed-width children from creating dead space or overflow. */
+.main-content,
+.page-content,
+.site-content,
+.page-wrapper,
+.content-wrapper {
+  width: 100%;
+  max-width: none;
+}
+
+/* Shared content rails */
+.section-container,
+.portal-hero-container,
+.portal-nav-container,
+.portal-smart-tabs-container,
+.portal-section,
+.grad-section,
+.grad-order-body,
+.booking-wizard-content {
+  width: min(var(--iris-content-max), calc(100% - (var(--iris-page-gutter) * 2)));
+  margin-inline: auto;
+}
+
+.section-container,
+.portal-hero-container,
+.portal-nav-container,
+.portal-smart-tabs-container,
+.portal-section,
+.grad-section,
+.grad-order-body {
+  max-width: var(--iris-content-max);
+}
+
+/* Wider composition on desktop without making text lines excessively long. */
+@media (min-width: 1024px) {
+  .section-container,
+  .portal-hero-container,
+  .portal-nav-container,
+  .portal-smart-tabs-container,
+  .portal-section,
+  .grad-section,
+  .grad-order-body,
+  .booking-wizard-content {
+    width: min(var(--iris-content-max), calc(100% - 72px));
+  }
+
+  .portal-section {
+    padding-inline: 0 !important;
+    padding-block: clamp(52px, 5vw, 84px) !important;
+  }
+
+  .grad-section {
+    padding-inline: 0 !important;
+    padding-block: clamp(52px, 5vw, 84px) !important;
+  }
+
+  /* Home page: use the desktop canvas instead of leaving large side gutters. */
+  .home-page .section-container {
+    width: min(1280px, calc(100% - 72px));
+  }
+
+  .home-page .preview-grid-simple {
+    width: 100%;
+    max-width: none;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-page .preview-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-portfolio-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .home-page .two-col {
+    grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
+    gap: clamp(42px, 5vw, 80px);
+  }
+
+  .home-page .hero-container {
+    width: min(1280px, calc(100% - 72px));
+  }
+
+  /* Booking: make the wizard feel like a proper desktop app, not a phone card. */
+  .booking-page {
+    padding-inline: 28px;
+  }
+
+  .booking-wizard-content {
+    width: min(1120px, calc(100% - 20px));
+    max-width: 1120px;
+  }
+
+  .booking-page .bk-section {
+    max-width: 1120px;
+    padding: clamp(28px, 2.5vw, 42px);
+  }
+
+  .booking-page .pkg-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .booking-page .slots-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .booking-page .compact-extras-grid,
+  .booking-page .extras-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .booking-page .delivery-cards-grid,
+  .booking-page .payment-methods-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .booking-page .bk-fields-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 20px;
+  }
+
+  .booking-page .bk-fields-group .bk-field:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .booking-page .calendar-trigger {
+    max-width: none;
+  }
+
+  /* Graduation public pages. */
+  .grad-packages-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grad-extras-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grad-gallery-grid,
+  .admin-tpl-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .grad-pkg-selector {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grad-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Portal pages: more density on large canvases. */
+  .portal-grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .visual-portfolio-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .workflow-timeline-container {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .portal-quote-container {
+    max-width: 920px;
+  }
+
+  .portal-contact-box {
+    padding: 34px 40px;
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --iris-content-max: var(--iris-content-wide);
+  }
+
+  .home-page .section-container,
+  .home-page .hero-container {
+    width: min(1360px, calc(100% - 96px));
+  }
+
+  .booking-wizard-content {
+    width: min(1240px, calc(100% - 96px));
+    max-width: 1240px;
+  }
+
+  .booking-page .bk-section {
+    max-width: 1240px;
+  }
+
+  .booking-page .pkg-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .booking-page .slots-grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  .home-portfolio-grid,
+  .visual-portfolio-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* Tablet: two-column composition where space allows, but never force tiny cards. */
+@media (min-width: 769px) and (max-width: 1100px) {
+  :root { --iris-page-gutter: 24px; }
+
+  .section-container,
+  .portal-hero-container,
+  .portal-nav-container,
+  .portal-smart-tabs-container,
+  .portal-section,
+  .grad-section,
+  .grad-order-body,
+  .booking-wizard-content {
+    width: min(100% - 48px, 1040px);
+  }
+
+  .home-page .hero-container,
+  .home-page .two-col {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+
+  .home-page .preview-grid-simple,
+  .home-page .preview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-portfolio-grid,
+  .visual-portfolio-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .portal-grid-4,
+  .workflow-timeline-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grad-packages-grid,
+  .grad-extras-grid,
+  .grad-pkg-selector {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grad-gallery-grid,
+  .admin-tpl-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .booking-page .pkg-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .booking-page .slots-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .booking-page .compact-extras-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Phone: preserve compactness while keeping tap targets comfortable. */
+@media (max-width: 768px) {
+  :root { --iris-page-gutter: 14px; }
+
+  .section-container,
+  .portal-hero-container,
+  .portal-nav-container,
+  .portal-smart-tabs-container,
+  .portal-section,
+  .grad-section,
+  .grad-order-body,
+  .booking-wizard-content {
+    width: calc(100% - 28px);
+  }
+
+  .home-page .hero-container,
+  .home-page .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .home-portfolio-grid,
+  .visual-portfolio-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .workflow-timeline-container,
+  .portal-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .grad-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grad-field.full { grid-column: auto; }
+
+  .grad-packages-grid,
+  .grad-extras-grid,
+  .grad-pkg-selector,
+  .grad-gallery-grid,
+  .admin-tpl-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .booking-page .bk-section {
+    width: 100%;
+    max-width: none;
+  }
+
+  .booking-page .slots-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .booking-page .bk-fields-group {
+    gap: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-portfolio-grid,
+  .visual-portfolio-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grad-gallery-grid,
+  .admin-tpl-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .booking-page .slots-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Let large cards breathe without creating giant empty zones. */
+@media (min-width: 1024px) {
+  .portal-hero-banner,
+  .portal-section,
+  .grad-section,
+  .about-section,
+  .location-section,
+  .preview-section,
+  .final-cta,
+  .contact-section {
+    min-height: 0 !important;
+  }
+
+  .portal-section-header {
+    margin-bottom: clamp(28px, 3vw, 44px);
+  }
+}
