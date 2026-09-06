@@ -1,5 +1,5 @@
 /* IRIS Hero Responsive Polish
- * Desktop composition: true centered content, stable first paint, balanced lower collage.
+ * Desktop composition: elevated content, stable lower collage, no overlap.
  * Tablet/mobile keep their existing composition.
  */
 
@@ -18,17 +18,20 @@
     flex: 0 0 auto !important;
   }
 
+  /* Keep the copy in the upper visual field so the lower image stream has its own stage. */
   .hero-v2-content-stage {
-    flex: 1 1 auto !important;
+    flex: 0 0 auto !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     text-align: center !important;
     width: 100% !important;
     max-width: 100% !important;
-    padding: clamp(24px, 4vh, 56px) 0 clamp(140px, 18vh, 220px) !important;
+    padding: clamp(56px, 8vh, 96px) 0 0 !important;
+    margin-top: 0 !important;
     box-sizing: border-box !important;
+    transform: none !important;
   }
 
   .hero-v2-primary-headline-box {
@@ -46,12 +49,13 @@
 
   .hero-v2-action-wrapper {
     width: auto !important;
-    margin-top: clamp(18px, 2.4vh, 28px) !important;
+    margin-top: clamp(14px, 1.8vh, 22px) !important;
   }
 
+  /* Reserve the lower third for the moving portfolio cards. */
   .hero-v2-lower-animation-area {
-    top: clamp(48%, 54vh, 58%) !important;
-    height: clamp(34%, 42vh, 48%) !important;
+    top: clamp(50%, 56vh, 60%) !important;
+    height: clamp(34%, 40vh, 46%) !important;
   }
 }
 
