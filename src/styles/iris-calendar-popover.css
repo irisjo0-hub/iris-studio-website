@@ -1,0 +1,156 @@
+/* IRIS Calendar Compact Picker
+ * Keeps the calendar closed and lightweight until the customer clicks it.
+ * Expanded calendar retains the existing booking logic and visual language.
+ */
+
+.calendar-picker-section {
+  position: relative;
+}
+
+.calendar-picker-section .custom-calendar-box {
+  overflow: hidden;
+  transition:
+    max-height 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.28s ease,
+    transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.calendar-picker-section.calendar-collapsed .custom-calendar-box {
+  max-height: 92px !important;
+  min-height: 76px;
+  padding: 0 !important;
+  cursor: pointer;
+  border: 1px solid rgba(103, 36, 95, 0.48) !important;
+  background:
+    linear-gradient(145deg, rgba(103, 36, 95, 0.16), rgba(26, 13, 24, 0.94)) !important;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(236, 235, 231, 0.035) !important;
+}
+
+.calendar-picker-section.calendar-collapsed .custom-calendar-box:hover {
+  border-color: rgba(245, 189, 26, 0.48) !important;
+  background:
+    linear-gradient(145deg, rgba(103, 36, 95, 0.22), rgba(26, 13, 24, 0.97)) !important;
+  transform: translateY(-1px);
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.34),
+    0 0 24px rgba(103, 36, 95, 0.16),
+    inset 0 1px 0 rgba(236, 235, 231, 0.04) !important;
+}
+
+.calendar-picker-section.calendar-collapsed .custom-calendar-box::after {
+  content: 'اضغط لاختيار التاريخ';
+  position: absolute;
+  inset-inline-start: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(236, 235, 231, 0.58);
+  font-size: 0.83rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.calendar-picker-section.calendar-collapsed .cal-header {
+  min-height: 76px;
+  height: 76px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.calendar-picker-section.calendar-collapsed .cal-title {
+  position: relative;
+  flex: 1;
+  text-align: center;
+  color: var(--iris-text-primary) !important;
+  font-size: 1.02rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0;
+}
+
+.calendar-picker-section.calendar-collapsed .cal-title::before {
+  content: '📅';
+  display: inline-block;
+  margin-inline-end: 9px;
+  font-size: 1rem;
+  filter: saturate(0.82);
+}
+
+.calendar-picker-section.calendar-collapsed .cal-arrow-btn {
+  width: 38px !important;
+  min-width: 38px !important;
+  height: 38px !important;
+  padding: 0 !important;
+  opacity: 0.95;
+}
+
+.calendar-picker-section.calendar-collapsed .cal-weekdays-row,
+.calendar-picker-section.calendar-collapsed .cal-days-grid,
+.calendar-picker-section.calendar-collapsed .cal-legend {
+  display: none !important;
+}
+
+.calendar-picker-section.calendar-collapsed .selected-date-display {
+  margin: 0 16px 12px !important;
+  transform: translateY(-2px);
+  position: relative;
+  z-index: 2;
+}
+
+.calendar-picker-section.calendar-collapsed.has-selected-date .custom-calendar-box {
+  min-height: 104px;
+  max-height: 120px !important;
+}
+
+.calendar-picker-section.calendar-collapsed.has-selected-date .cal-header {
+  min-height: 72px;
+  height: 72px;
+}
+
+.calendar-picker-section.calendar-collapsed.has-selected-date .selected-date-display {
+  margin-top: -2px !important;
+}
+
+.calendar-picker-section.calendar-expanded .custom-calendar-box {
+  max-height: 760px !important;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 767px) {
+  .calendar-picker-section.calendar-collapsed .custom-calendar-box {
+    min-height: 74px;
+    max-height: 90px !important;
+  }
+
+  .calendar-picker-section.calendar-collapsed .cal-header {
+    min-height: 74px;
+    height: 74px;
+    padding: 0 12px;
+  }
+
+  .calendar-picker-section.calendar-collapsed .cal-title {
+    font-size: 0.96rem !important;
+  }
+
+  .calendar-picker-section.calendar-collapsed .custom-calendar-box::after {
+    inset-inline-start: auto;
+    inset-inline-end: 16px;
+    top: auto;
+    bottom: 6px;
+    transform: none;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar-picker-section .custom-calendar-box {
+    transition: none;
+  }
+}
