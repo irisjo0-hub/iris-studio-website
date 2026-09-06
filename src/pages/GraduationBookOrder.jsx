@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase, uploadFile } from '../lib/supabase';
-import { getNextOrderNumber } from '../lib/orderUtils';
 import { Loader2, Check } from 'lucide-react';
 import '../styles/graduation.css';
 
@@ -249,6 +248,7 @@ const GraduationBookOrder = () => {
   const [submitError, setSubmitError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [orderNum, setOrderNum] = useState('');
+  const [createdOrder, setCreatedOrder] = useState(null);
   const [selectedPkg, setSelectedPkg] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -503,9 +503,6 @@ const GraduationBookOrder = () => {
     setSubmitError('');
 
     try {
-      const generatedOrderNum = getNextOrderNumber('GRAD');
-      setOrderNum(generatedOrderNum);
-
       // Upload Front Cover
       let frontUrl = null;
       if (frontCoverFile) {
@@ -558,12 +555,9 @@ const GraduationBookOrder = () => {
         ? `العنوان بالتفصيل: ${deliveryAddress} | هاتف إضافي للتوصيل: ${additionalPhone || 'لا يوجد'} | رابط خرائط جوجل: ${googleMapsLink || 'لا يوجد'}`
         : '';
 
-      const { error } = await supabase
-        .from('graduation_orders')
-        .insert({
-          order_number: generatedOrderNum,
-          package_name: selectedPkg.name,
-          package_price: selectedPkg.price,
+      const { data: rpcData, error: rpcError } = await supabase.rpc('create_public_graduation_order', {
+        p_order_data: {
+          package_id: selectedPkg?.id,
           arabic_name: arabicName.trim(),
           english_name: englishName.trim(),
           phone: phone.trim(),
@@ -577,19 +571,19 @@ const GraduationBookOrder = () => {
           internal_image_urls: internalUrls,
           photographic_pages_quantity: photoPagesQty,
           photographic_pages_urls: photoUrls,
-          photographic_pages_total: photographicPagesTotal,
           delivery_selected: deliverySelected,
           delivery_address: serializedAddress,
-          delivery_cost: deliveryCost,
-          subtotal: subtotal,
-          deposit_amount: DEPOSIT,
-          remaining_amount: remaining,
-          receipt_url: receiptUrl,
-          status: 'pending'
-        });
+          receipt_url: receiptUrl
+        }
+      });
 
-      if (error) throw error;
+      if (rpcError) throw rpcError;
+      if (!rpcData || !rpcData.success) {
+        throw new Error(rpcData?.error || 'حدث خطأ أثناء حفظ الطلب. الرجاء المحاولة مرة أخرى.');
+      }
 
+      setOrderNum(rpcData.order_number);
+      setCreatedOrder(rpcData);
       setSubmitted(true);
       setSuccess(true);
     } catch (err) {
@@ -999,22 +993,22 @@ const GraduationBookOrder = () => {
 
             <div style={{ background: 'rgba(245, 189, 26, 0.12)', border: '1.5px dashed #D49D0E', borderRadius: 10, padding: '12px', textAlign: 'center', marginBottom: 16 }}>
               <div style={{ color: '#D49D0E', fontWeight: 800, fontSize: '0.95rem' }}>📌 احفظ رقم الطلب لمتابعة وتتبع الحالة:</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#120911', margin: '4px 0' }}>#{orderNum}</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#120911', margin: '4px 0' }}>#{createdOrder?.order_number || orderNum}</div>
               <span style={{ fontSize: '0.82rem', color: '#555' }}>يمكنك إدخال هذا الرقم في صفحة "تتبع الطلب" للتحقق من مرحلة المعالجة والطباعة.</span>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>رقم الطلب:</strong> <span style={{ color: 'var(--g-purple)', fontWeight: 800 }}>#{orderNum}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>رقم الطلب:</strong> <span style={{ color: 'var(--g-purple)', fontWeight: 800 }}>#{createdOrder?.order_number || orderNum}</span></div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>الاسم:</strong> <span>{arabicName}</span></div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>رقم الهاتف:</strong> <span>{phone}</span></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>الباقة المختارة:</strong> <span>{selectedPkg?.name}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>الباقة المختارة:</strong> <span>{createdOrder?.package_name || selectedPkg?.name}</span></div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>سعر الباقة:</strong> <span>{selectedPkg?.price} JOD</span></div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>رقم قالب الغلاف الخارجي:</strong> <span>#{extTplNum}</span></div>
             {intTplNum && (<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>رقم قالب الورق الداخلي:</strong> <span>#{intTplNum}</span></div>)}
             {photoPagesQty > 0 && (<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>الصور الإضافية:</strong> <span>{photoPagesQty}</span></div>)}
             <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '16px 0' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>الإجمالي:</strong> <span>{subtotal} JOD</span></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>العربون:</strong> <span style={{ color: 'var(--g-gold)' }}>5 JOD</span></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem' }}><strong>المبلغ المتبقي:</strong> <span style={{ color: 'var(--g-green)', fontWeight: 800 }}>{remaining} JOD</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>الإجمالي:</strong> <span>{createdOrder?.subtotal ?? subtotal} JOD</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}><strong>العربون:</strong> <span style={{ color: 'var(--g-gold)' }}>{createdOrder?.deposit_amount ?? DEPOSIT} JOD</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem' }}><strong>المبلغ المتبقي:</strong> <span style={{ color: 'var(--g-green)', fontWeight: 800 }}>{createdOrder?.remaining_amount ?? remaining} JOD</span></div>
           </div>
 
           <div className="no-print" style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
