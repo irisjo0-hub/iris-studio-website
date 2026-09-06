@@ -8,7 +8,7 @@ old_cart_block = """      const cartItemsStructured = selectedProduct.id === 'ca
         ? cart.map((item, idx) => ({
             id: `item-${idx}`,
             name: item.name,
-            selectedColor: item.selectedColor || '',
+            selectedColor: selectedColor || '',
             quantity: item.quantity,
             price: item.price,
             image: item.image || ''
@@ -23,26 +23,28 @@ old_cart_block = """      const cartItemsStructured = selectedProduct.id === 'ca
           }];
 
 """
-if text.count(old_cart_block) != 1:
-    raise SystemExit(f'old cart block expected once, found {text.count(old_cart_block)}')
-text = text.replace(old_cart_block, '', 1)
+if text.count(old_cart_block) != 0:
+    text = text.replace(old_cart_block, '', 1)
 
-old_name_block = """      let calculatedProductName = selectedProduct.name;
+old_old_name_block = """      let calculatedProductName = selectedProduct.name;
       if (selectedProduct.id === 'cart_checkout' && cart && cart.length > 0) {
         calculatedProductName = cart.map(item => `${item.name}${item.selectedColor ? ` [${item.selectedColor}]` : ''} (×${item.quantity})`).join(' + ');
       }
 
-      const rpcCartItems = selectedProduct.id === 'cart_checkout'
+      const cartItemsStructured = selectedProduct.id === 'cart_checkout' && cart
 """
-if text.count(old_name_block) != 2:
-    raise SystemExit(f'calculatedProductName block expected twice before cleanup, found {text.count(old_name_block)}')
-text = text.replace(old_name_block, "      const rpcCartItems = selectedProduct.id === 'cart_checkout'\n", 1)
+if text.count(old_old_name_block) != 0:
+    text = text.replace(old_old_name_block, '', 1)
 
-text = text.replace(
-    "    setSubmittingOrder(true);\n    try {\n      // Upload design images to storage\n      const uploadedUrls = [];",
-    "    const uploadedUrls = [];\n    setSubmittingOrder(true);\n    try {\n      // Upload design images to storage",
-    1,
-)
+# Keep exactly one authoritative calculatedProductName block before rpcCartItems.
+authoritative_prefix = "      let calculatedProductName = selectedProduct.name;\n      if (selectedProduct.id === 'cart_checkout' && cart && cart.length > 0) {"
+if text.count(authoritative_prefix) != 1:
+    raise SystemExit(f'calculatedProductName block expected once after cleanup, found {text.count(authoritative_prefix)}')
+
+old_upload_setup = "    setSubmittingOrder(true);\n    try {\n      // Upload design images to storage\n      const uploadedUrls = [];"
+new_upload_setup = "    const uploadedUrls = [];\n    setSubmittingOrder(true);\n    try {\n      // Upload design images to storage"
+if old_upload_setup in text:
+    text = text.replace(old_upload_setup, new_upload_setup, 1)
 
 old_catch = """    } catch (err) {
       alert('حدث خطأ أثناء تقديم الطلب: ' + err.message);
@@ -57,9 +59,8 @@ new_catch = """    } catch (err) {
       alert('حدث خطأ أثناء تقديم الطلب: ' + err.message);
     } finally {
 """
-if text.count(old_catch) != 1:
-    raise SystemExit(f'catch block expected once, found {text.count(old_catch)}')
-text = text.replace(old_catch, new_catch, 1)
+if old_catch in text:
+    text = text.replace(old_catch, new_catch, 1)
 
 PRINTING.write_text(text, encoding='utf-8')
-print('PrintingProducts duplicate cleanup applied.')
+print('PrintingProducts cleanup complete.')
