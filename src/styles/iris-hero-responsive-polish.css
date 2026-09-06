@@ -1,0 +1,61 @@
+/* IRIS Hero Responsive Polish
+ * Desktop composition: true centered content, stable first paint, balanced lower collage.
+ * Tablet/mobile keep their existing composition.
+ */
+
+@media (min-width: 1024px) {
+  .iris-dark-hero-v2-wrapper {
+    justify-content: flex-start !important;
+  }
+
+  .hero-v2-main-container {
+    min-height: calc(100dvh - 64px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .hero-v2-top-bar {
+    flex: 0 0 auto !important;
+  }
+
+  .hero-v2-content-stage {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: clamp(24px, 4vh, 56px) 0 clamp(140px, 18vh, 220px) !important;
+    box-sizing: border-box !important;
+  }
+
+  .hero-v2-primary-headline-box {
+    width: min(900px, 84vw) !important;
+    max-width: 900px !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  .hero-v2-editorial-title,
+  .hero-v2-supporting-desc {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .hero-v2-action-wrapper {
+    width: auto !important;
+    margin-top: clamp(18px, 2.4vh, 28px) !important;
+  }
+
+  .hero-v2-lower-animation-area {
+    top: clamp(48%, 54vh, 58%) !important;
+    height: clamp(34%, 42vh, 48%) !important;
+  }
+}
+
+.iris-hero-lower-stage .edge-floating-stream-card {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
