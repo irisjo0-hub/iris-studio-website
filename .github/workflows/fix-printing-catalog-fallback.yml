@@ -1,0 +1,68 @@
+name: Fix printing catalog fallback
+on:
+  push:
+    branches: [main]
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch catalog fallback
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('src/pages/PrintingProducts.jsx')
+          s = p.read_text(encoding='utf-8')
+          old = '''        } else {
+          setCart([]);
+          const local = localStorage.getItem('iris_printing_products');
+          if (local) {
+            const parsed = JSON.parse(local).filter(p => !p.is_hidden);
+            if (parsed.length > 0) {
+              setProducts(parsed);
+              return;
+            }
+          }
+          setProducts(DEFAULT_PRODUCTS);
+        }
+      } catch (e) {
+        console.error('Failed to load printing products:', e);
+        // Do not fall back to locally defined products: they have no authoritative
+        // database IDs and therefore cannot be submitted through the secure order RPC.
+        setCart([]);
+        setProducts([]);
+      } finally {'''
+          new = '''        } else {
+          // The database is the only authoritative printing catalog. An empty result
+          // must not fall back to stale local/default products that cannot be ordered.
+          setCart([]);
+          setProducts([]);
+        }
+      } catch (e) {
+        console.error('Failed to load printing products:', e);
+        // Do not fall back to locally cached/default products: they may have stale IDs.
+        setCart([]);
+        setProducts([]);
+      } finally {'''
+          if old not in s:
+              raise SystemExit('Expected catalog fallback block not found')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+      - name: Verify
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s = Path('src/pages/PrintingProducts.jsx').read_text(encoding='utf-8')
+          assert "localStorage.getItem('iris_printing_products')" not in s.split('const PrintingProducts = () =>', 1)[1].split('const openOrderModal', 1)[0]
+          assert 'setProducts([]);' in s
+          print('Printing catalog fallback removed')
+          PY
+      - name: Build
+        run: npm ci && npm run build
+      - name: Commit patch and remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/pages/PrintingProducts.jsx .github/workflows/fix-printing-catalog-fallback.yml
+          git rm .github/workflows/fix-printing-catalog-fallback.yml
+          git commit -m "fix: remove printing catalog fallback" || exit 0
+          git push
