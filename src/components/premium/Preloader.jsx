@@ -9,17 +9,18 @@ const Preloader = ({ onComplete }) => {
   const [fading, setFading] = useState(false);
 
   useEffect(() => {
-    const timer1 = setTimeout(() => {
+    // Premium intro: 1.5s hold + 0.6s fade = 2.1s total.
+    const fadeTimer = setTimeout(() => {
       setFading(true);
-    }, 1000);
-
-    const timer2 = setTimeout(() => {
-      onComplete();
     }, 1500);
 
+    const completeTimer = setTimeout(() => {
+      onComplete();
+    }, 2100);
+
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+      clearTimeout(fadeTimer);
+      clearTimeout(completeTimer);
     };
   }, [onComplete]);
 
@@ -29,7 +30,7 @@ const Preloader = ({ onComplete }) => {
       style={{
         opacity: fading ? 0 : 1,
         pointerEvents: fading ? 'none' : 'auto',
-        transition: 'opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+        transition: 'opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
         visibility: fading && !onComplete ? 'hidden' : 'visible'
       }}
     >
@@ -49,7 +50,7 @@ const Preloader = ({ onComplete }) => {
       <div className="preloader-artistic-wrap">
         {/* Golden Halo Ring Wrapper with Centered Logo */}
         <div className="preloader-halo-wrapper">
-          <svg className="preloader-halo-svg" viewBox="0 0 200 200">
+          <svg className="preloader-halo-svg" viewBox="0 0 200 200" aria-hidden="true">
             <circle
               cx="100"
               cy="100"
