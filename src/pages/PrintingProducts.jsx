@@ -536,8 +536,13 @@ const PrintingProducts = () => {
           .order('created_at', { ascending: false });
         if (error) throw error;
         if (data && data.length > 0) {
+          // The database is authoritative for products. Remove stale local cart items
+          // that reference old fallback/default products or deleted catalog entries.
+          const availableProductIds = new Set(data.map(product => String(product.id)));
+          setCart(previousCart => previousCart.filter(item => availableProductIds.has(String(item.id))));
           setProducts(data);
         } else {
+          setCart([]);
           const local = localStorage.getItem('iris_printing_products');
           if (local) {
             const parsed = JSON.parse(local).filter(p => !p.is_hidden);
@@ -550,15 +555,10 @@ const PrintingProducts = () => {
         }
       } catch (e) {
         console.error('Failed to load printing products:', e);
-        const local = localStorage.getItem('iris_printing_products');
-        if (local) {
-          const parsed = JSON.parse(local).filter(p => !p.is_hidden);
-          if (parsed.length > 0) {
-            setProducts(parsed);
-            return;
-          }
-        }
-        setProducts(DEFAULT_PRODUCTS);
+        // Do not fall back to locally defined products: they have no authoritative
+        // database IDs and therefore cannot be submitted through the secure order RPC.
+        setCart([]);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
