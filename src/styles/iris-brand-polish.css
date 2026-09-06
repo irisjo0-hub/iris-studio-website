@@ -1,0 +1,190 @@
+/* IRIS FINAL POLISH LAYER
+ * Loaded after iris-brand-overrides.css.
+ * Targets components with legacy inline light styling without changing the hero/footer art direction.
+ */
+
+/* ---------------------------------------------------------
+   Graduation books + printing shop shared empty states
+   --------------------------------------------------------- */
+.subpage-layout-content [style*="background: #fff"] {
+  background: linear-gradient(145deg, rgba(26, 13, 24, 0.96), rgba(10, 20, 16, 0.90)) !important;
+  border: 1px solid rgba(103, 36, 95, 0.28) !important;
+  color: var(--iris-text-secondary) !important;
+  box-shadow: var(--iris-shadow) !important;
+}
+
+.subpage-layout-content [style*="background: #fff"] h3 {
+  color: var(--iris-text-primary) !important;
+}
+
+.subpage-layout-content [style*="background: #fff"] p,
+.subpage-layout-content [style*="background: #fff"] div {
+  color: var(--iris-text-secondary) !important;
+}
+
+/* ---------------------------------------------------------
+   Printing shop cards
+   --------------------------------------------------------- */
+.subpage-layout-content .grad-pkg-card,
+.subpage-layout-content .grad-pkg-card-list {
+  background: linear-gradient(145deg, rgba(30, 14, 28, 0.97), rgba(14, 21, 17, 0.94)) !important;
+  border: 1px solid rgba(103, 36, 95, 0.32) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.36) !important;
+}
+
+.subpage-layout-content .grad-pkg-card:hover,
+.subpage-layout-content .grad-pkg-card-list:hover {
+  border-color: rgba(103, 36, 95, 0.62) !important;
+  box-shadow: 0 18px 40px rgba(103, 36, 95, 0.22) !important;
+}
+
+/* Product card text uses warm off-white rather than browser-white. */
+.subpage-layout-content .grad-pkg-card h3,
+.subpage-layout-content .grad-pkg-card-list h3 {
+  color: var(--iris-text-primary) !important;
+}
+
+.subpage-layout-content .grad-pkg-card p,
+.subpage-layout-content .grad-pkg-card-list p {
+  color: var(--iris-text-secondary) !important;
+}
+
+/* Product card direct actions: purple is primary; gold is a controlled accent. */
+.subpage-layout-content .grad-pkg-card button,
+.subpage-layout-content .grad-pkg-card-list button {
+  color: var(--iris-text-primary) !important;
+}
+
+.subpage-layout-content .grad-pkg-card button[title="إضافة للسلة"],
+.subpage-layout-content .grad-pkg-card-list button[title="إضافة للسلة"] {
+  background: rgba(103, 36, 95, 0.10) !important;
+  border-color: rgba(103, 36, 95, 0.40) !important;
+}
+
+.subpage-layout-content .grad-pkg-card button[title="طلب مباشر مخصص"],
+.subpage-layout-content .grad-pkg-card-list button[title="طلب مباشر مخصص"] {
+  background: linear-gradient(135deg, #67245F 0%, #7D2E73 100%) !important;
+  border: 1px solid rgba(236, 235, 231, 0.10) !important;
+  color: var(--iris-text-primary) !important;
+  box-shadow: 0 8px 20px rgba(103, 36, 95, 0.24) !important;
+}
+
+/* Grid-view buttons do not expose titles; distinguish direct action by button order. */
+.subpage-layout-content .grad-pkg-card > .grad-pkg-body > div:last-child > button:last-child {
+  background: linear-gradient(135deg, #67245F 0%, #7D2E73 100%) !important;
+  color: var(--iris-text-primary) !important;
+  border: 1px solid rgba(236, 235, 231, 0.10) !important;
+  box-shadow: 0 8px 20px rgba(103, 36, 95, 0.24) !important;
+}
+
+/* ---------------------------------------------------------
+   Graduation gallery image placeholders + lightbox
+   --------------------------------------------------------- */
+.subpage-layout-content .grad-gallery-img-placeholder {
+  background: linear-gradient(145deg, rgba(103, 36, 95, 0.16), rgba(10, 20, 16, 0.84)) !important;
+  color: var(--iris-text-muted) !important;
+}
+
+.subpage-layout-content .grad-gallery-overlay {
+  background: linear-gradient(to top, rgba(24, 12, 23, 0.82), transparent) !important;
+}
+
+.subpage-layout-content .grad-gallery-label {
+  color: var(--iris-text-primary) !important;
+}
+
+.subpage-layout-content .grad-gallery-num {
+  color: var(--iris-text-muted) !important;
+}
+
+/* ---------------------------------------------------------
+   Portal hero + tabs: make them feel like an IRIS extension
+   of the homepage rather than a separate template.
+   --------------------------------------------------------- */
+.subpage-layout-content .portal-hero-banner {
+  border-bottom: 1px solid rgba(236, 235, 231, 0.08);
+}
+
+.subpage-layout-content .portal-hero-badge {
+  background: rgba(103, 36, 95, 0.24) !important;
+  border-color: rgba(103, 36, 95, 0.56) !important;
+  color: var(--iris-text-primary) !important;
+}
+
+.subpage-layout-content .portal-hero-title {
+  color: var(--iris-text-primary) !important;
+}
+
+.subpage-layout-content .portal-hero-sub {
+  color: var(--iris-text-secondary) !important;
+}
+
+.subpage-layout-content .portal-hero-ctas .btn-portal-primary,
+.subpage-layout-content .portal-hero-ctas .btn-portal-secondary {
+  min-height: 46px;
+}
+
+/* ---------------------------------------------------------
+   Forms / checkout / cart surfaces
+   --------------------------------------------------------- */
+.subpage-layout-content .checkout-page,
+.subpage-layout-content .checkout-container,
+.subpage-layout-content .checkout-card,
+.subpage-layout-content .cart-panel,
+.subpage-layout-content .cart-drawer,
+.subpage-layout-content .cart-summary,
+.subpage-layout-content .order-form-card,
+.subpage-layout-content .order-modal,
+.subpage-layout-content .modal-content,
+.subpage-layout-content .order-success-card {
+  background: linear-gradient(145deg, rgba(26, 13, 24, 0.97), rgba(10, 20, 16, 0.92)) !important;
+  color: var(--iris-text-primary) !important;
+  border-color: rgba(103, 36, 95, 0.30) !important;
+  box-shadow: var(--iris-shadow) !important;
+}
+
+.subpage-layout-content .checkout-page h1,
+.subpage-layout-content .checkout-page h2,
+.subpage-layout-content .checkout-page h3,
+.subpage-layout-content .checkout-container h1,
+.subpage-layout-content .checkout-container h2,
+.subpage-layout-content .checkout-container h3,
+.subpage-layout-content .order-modal h2,
+.subpage-layout-content .order-modal h3 {
+  color: var(--iris-text-primary) !important;
+}
+
+.subpage-layout-content .checkout-page p,
+.subpage-layout-content .checkout-container p,
+.subpage-layout-content .order-modal p {
+  color: var(--iris-text-secondary) !important;
+}
+
+/* ---------------------------------------------------------
+   Generic public controls that commonly carry old light styles
+   --------------------------------------------------------- */
+.subpage-layout-content .as-input,
+.subpage-layout-content .form-control,
+.subpage-layout-content .form-input,
+.subpage-layout-content .search-input {
+  background: rgba(26, 13, 24, 0.90) !important;
+  color: var(--iris-text-primary) !important;
+  border-color: rgba(236, 235, 231, 0.13) !important;
+}
+
+.subpage-layout-content .as-input:focus,
+.subpage-layout-content .form-control:focus,
+.subpage-layout-content .form-input:focus,
+.subpage-layout-content .search-input:focus {
+  border-color: var(--color-purple) !important;
+  box-shadow: 0 0 0 3px rgba(103, 36, 95, 0.18) !important;
+}
+
+/* Cart badges / small pills: stay within the four-color family. */
+.subpage-layout-content .cart-badge,
+.subpage-layout-content .category-badge,
+.subpage-layout-content .status-badge {
+  background: rgba(103, 36, 95, 0.20) !important;
+  color: var(--iris-text-primary) !important;
+  border-color: rgba(103, 36, 95, 0.36) !important;
+}
