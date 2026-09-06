@@ -8,7 +8,7 @@ import './styles/iris-calendar-popover.css'
 import './styles/iris-calendar-popup.css'
 import './styles/iris-calendar-final.css'
 import './styles/iris-booking-compact.css'
-import './lib/irisCalendarPicker'
+import './styles/iris-responsive-system.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
