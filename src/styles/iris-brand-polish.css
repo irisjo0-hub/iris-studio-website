@@ -6,19 +6,27 @@
 /* ---------------------------------------------------------
    Graduation books + printing shop shared empty states
    --------------------------------------------------------- */
-.subpage-layout-content [style*="background: #fff"] {
+.subpage-layout-content [style*="background: #fff"],
+.subpage-layout-content [style*="background: rgb(255, 255, 255)"],
+.subpage-layout-content [style*="background-color: rgb(255, 255, 255)"] {
   background: linear-gradient(145deg, rgba(26, 13, 24, 0.96), rgba(10, 20, 16, 0.90)) !important;
   border: 1px solid rgba(103, 36, 95, 0.28) !important;
   color: var(--iris-text-secondary) !important;
   box-shadow: var(--iris-shadow) !important;
 }
 
-.subpage-layout-content [style*="background: #fff"] h3 {
+.subpage-layout-content [style*="background: #fff"] h3,
+.subpage-layout-content [style*="background: rgb(255, 255, 255)"] h3,
+.subpage-layout-content [style*="background-color: rgb(255, 255, 255)"] h3 {
   color: var(--iris-text-primary) !important;
 }
 
 .subpage-layout-content [style*="background: #fff"] p,
-.subpage-layout-content [style*="background: #fff"] div {
+.subpage-layout-content [style*="background: #fff"] div,
+.subpage-layout-content [style*="background: rgb(255, 255, 255)"] p,
+.subpage-layout-content [style*="background: rgb(255, 255, 255)"] div,
+.subpage-layout-content [style*="background-color: rgb(255, 255, 255)"] p,
+.subpage-layout-content [style*="background-color: rgb(255, 255, 255)"] div {
   color: var(--iris-text-secondary) !important;
 }
 
