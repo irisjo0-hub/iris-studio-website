@@ -1,7 +1,19 @@
-/* IRIS Brand Visual Harmonization Layer
- * Loaded after page styles so legacy colors cannot break the current IRIS theme.
- * Official palette: #67245F / #044630 / #F5BD1A / #ECEBE7
- * Surfaces: #180C17 / #0A1410 / #1A0D18
+/*
+ * IRIS BRAND SYSTEM — PUBLIC EXPERIENCE HARMONIZATION
+ *
+ * The homepage hero + footer are the visual reference.
+ * Public sub-pages should feel like the same product, not separate templates.
+ *
+ * Palette hierarchy:
+ *   1) Purple  #67245F  — primary identity / actions / active states
+ *   2) Gold    #F5BD1A  — premium highlights / prices / focus / selected detail
+ *   3) Green   #044630  — balance / semantic success / secondary energy
+ *   4) Offwhite#ECEBE7  — main readable text
+ *
+ * Surfaces:
+ *   Plum       #180C17
+ *   Plum card  #1A0D18
+ *   Green deep #0A1410
  */
 
 :root {
@@ -9,228 +21,938 @@
   --font-secondary: 'Juman', sans-serif;
   --font-display: 'Juman', sans-serif;
   --font-hero: 'DegularDisplay', sans-serif;
+
   --color-purple: #67245F;
+  --color-purple-bright: #7D2E73;
+  --color-purple-soft: rgba(103, 36, 95, 0.22);
   --color-green: #044630;
   --color-gold: #F5BD1A;
   --color-bg-light: #ECEBE7;
+
   --iris-bg-primary: #180C17;
-  --iris-bg-deep: #180C17;
   --iris-bg-secondary: #0A1410;
   --iris-bg-green: #0A1410;
   --iris-surface: #1A0D18;
   --iris-surface-alt: #0A1410;
+  --iris-surface-glass: rgba(26, 13, 24, 0.84);
+  --iris-surface-glass-strong: rgba(24, 12, 23, 0.94);
+
   --iris-text-primary: #ECEBE7;
-  --iris-text-secondary: rgba(236,235,231,.75);
-  --iris-text-muted: rgba(236,235,231,.55);
-  --iris-border: rgba(236,235,231,.14);
+  --iris-text-secondary: rgba(236, 235, 231, 0.74);
+  --iris-text-muted: rgba(236, 235, 231, 0.52);
+  --iris-text-disabled: rgba(236, 235, 231, 0.32);
+
+  --iris-border: rgba(236, 235, 231, 0.13);
+  --iris-border-purple: rgba(103, 36, 95, 0.48);
+  --iris-border-gold: rgba(245, 189, 26, 0.32);
+
+  --iris-shadow: 0 18px 50px rgba(0, 0, 0, 0.42);
+  --iris-shadow-purple: 0 18px 50px rgba(103, 36, 95, 0.22);
+  --iris-radius-sm: 12px;
+  --iris-radius-md: 18px;
+  --iris-radius-lg: 26px;
 }
 
 html,
 body,
-#root { background: #180C17; color: #ECEBE7; }
-body { font-family: 'Juman', sans-serif; }
-input, select, textarea, button, option { font-family: 'Juman', sans-serif; }
-
-/* Shared public page foundation */
-.packages-section,
-.work-page,
-.division-portal-page,
-.home-page,
-.booking-page,
-.grad-page,
-.grad-order-page,
-.white-content-page { background-color: #180C17 !important; color: #ECEBE7 !important; }
-
-.content-wrapper,
-.subpage-layout-content { background: transparent !important; }
-
-/* Booking: remove legacy white surfaces and make the page visually continuous. */
-.booking-page .slot-btn,
-.booking-page .custom-calendar-box,
-.booking-page .compact-extra-card,
-.booking-page .delivery-card,
-.booking-page .deposit-payment-screen,
-.booking-page .receipt-preview-container,
-.booking-page .compact-confirmation-card,
-.booking-page .summary-card,
-.booking-page .booking-success-card {
-  background: rgba(26,13,24,.92) !important;
-  color: #ECEBE7 !important;
-  border-color: rgba(236,235,231,.14) !important;
-  box-shadow: 0 16px 40px rgba(0,0,0,.42) !important;
+#root {
+  background: var(--iris-bg-primary);
+  color: var(--iris-text-primary);
 }
 
-.booking-page .slot-btn { color: #ECEBE7 !important; }
-.booking-page .slot-btn:hover { background: rgba(103,36,95,.30) !important; border-color: #67245F !important; }
-.booking-page .slot-btn.selected,
-.booking-page .active-day { background: #67245F !important; border-color: #67245F !important; color: #ECEBE7 !important; }
-
-.booking-page .custom-calendar-box {
-  background: linear-gradient(145deg, rgba(26,13,24,.96), rgba(10,20,16,.96)) !important;
-  border-color: rgba(245,189,26,.18) !important;
+body,
+button,
+input,
+select,
+textarea,
+option {
+  font-family: var(--font-primary), sans-serif;
 }
 
-.booking-page .cal-arrow-btn { background: rgba(26,13,24,.9) !important; color: #ECEBE7 !important; border-color: rgba(236,235,231,.14) !important; }
-.booking-page .cal-arrow-btn:hover { background: #67245F !important; color: #ECEBE7 !important; }
-.booking-page .compact-extra-card:hover,
-.booking-page .delivery-card:hover { background: rgba(103,36,95,.20) !important; }
-.booking-page .delivery-card.selected { background: rgba(245,189,26,.08) !important; border-color: #F5BD1A !important; }
-.booking-page .summary-header,
-.booking-page .conf-summary-header { background: #67245F !important; color: #ECEBE7 !important; }
-.booking-page .summary-totals { background: rgba(10,20,16,.9) !important; }
-.booking-page .summary-row span,
-.booking-page .summary-row strong,
-.booking-page .conf-row span,
-.booking-page .conf-row strong,
-.booking-page .payment-row { color: #ECEBE7 !important; }
-.booking-page .extras-title,
-.booking-page .extra-subtotal,
-.booking-page .summary-extras h4,
-.booking-page .total-row.remaining,
-.booking-page .total-row.remaining strong { color: #F5BD1A !important; }
-.booking-page .extra-price,
-.booking-page .total-row.deposit,
-.booking-page .total-row.deposit strong,
-.booking-page .selected-date-display { color: #044630 !important; }
-.booking-page .selected-date-display { background: rgba(4,70,48,.18) !important; }
-.booking-page .compact-extra-card .extra-price { color: #F5BD1A !important; }
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
 
-/* Graduation: fix the broken --g-purple assignment and remove light card surfaces. */
+::selection {
+  background: rgba(103, 36, 95, 0.55);
+  color: var(--iris-text-primary);
+}
+
+/* =========================================================
+   SHARED SUBPAGE FOUNDATION
+   ========================================================= */
+
+.subpage-layout-content {
+  background:
+    radial-gradient(circle at 15% 15%, rgba(103, 36, 95, 0.15), transparent 36%),
+    radial-gradient(circle at 85% 75%, rgba(4, 70, 48, 0.11), transparent 34%),
+    var(--iris-bg-primary) !important;
+}
+
+.subpage-layout-content > * {
+  color: var(--iris-text-primary);
+}
+
+/* Quiet atmospheric separators: same idea as hero/footer, but restrained. */
+.subpage-layout-content .portal-section,
+.subpage-layout-content .packages-section,
+.subpage-layout-content .work-page,
+.subpage-layout-content .booking-page,
+.subpage-layout-content .grad-page,
+.subpage-layout-content .grad-order-page,
+.subpage-layout-content .division-portal-page {
+  position: relative;
+  isolation: isolate;
+}
+
+.subpage-layout-content .portal-section::before,
+.subpage-layout-content .packages-section::before,
+.subpage-layout-content .work-page::before,
+.subpage-layout-content .booking-page::before,
+.subpage-layout-content .grad-page::before,
+.subpage-layout-content .grad-order-page::before,
+.subpage-layout-content .division-portal-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(103, 36, 95, 0.09), transparent 31%),
+    radial-gradient(circle at 82% 88%, rgba(4, 70, 48, 0.07), transparent 30%);
+}
+
+/* =========================================================
+   SHARED TYPOGRAPHY HIERARCHY
+   ========================================================= */
+
+.subpage-layout-content h1,
+.subpage-layout-content h2,
+.subpage-layout-content h3,
+.subpage-layout-content h4 {
+  color: var(--iris-text-primary);
+}
+
+.subpage-layout-content .section-title,
+.subpage-layout-content .bk-title,
+.subpage-layout-content .cal-section-title,
+.subpage-layout-content .portal-section-header h2,
+.subpage-layout-content .section-eyebrow {
+  color: var(--iris-text-primary) !important;
+}
+
+.subpage-layout-content .section-eyebrow,
+.subpage-layout-content .feature-tag {
+  color: var(--color-gold) !important;
+}
+
+.subpage-layout-content p,
+.subpage-layout-content .bk-subtitle,
+.subpage-layout-content .portal-section-header p,
+.subpage-layout-content .package-duration,
+.subpage-layout-content .package-details,
+.subpage-layout-content .work-empty,
+.subpage-layout-content .portal-hero-sub {
+  color: var(--iris-text-secondary) !important;
+}
+
+/* Purple is the identity accent. Gold is the premium detail — not the whole interface. */
+.subpage-layout-content a:not(.btn-primary):not(.btn-secondary) {
+  text-decoration-color: rgba(245, 189, 26, 0.25);
+}
+
+/* =========================================================
+   SHARED SURFACE / CARD LANGUAGE
+   ========================================================= */
+
+.subpage-layout-content .package-card,
+.subpage-layout-content .work-card,
+.subpage-layout-content .work-empty,
+.subpage-layout-content .booking-success-card,
+.subpage-layout-content .bk-section,
+.subpage-layout-content .custom-calendar-box,
+.subpage-layout-content .compact-extra-card,
+.subpage-layout-content .delivery-card,
+.subpage-layout-content .deposit-payment-screen,
+.subpage-layout-content .receipt-preview-container,
+.subpage-layout-content .compact-confirmation-card,
+.subpage-layout-content .summary-card,
+.subpage-layout-content .grad-pkg-card,
+.subpage-layout-content .grad-extra-card,
+.subpage-layout-content .grad-gallery-item,
+.subpage-layout-content .grad-order-card,
+.subpage-layout-content .grad-summary,
+.subpage-layout-content .grad-deposit-block,
+.subpage-layout-content .grad-template-field,
+.subpage-layout-content .grad-upload-zone,
+.subpage-layout-content .grad-pkg-option,
+.subpage-layout-content .grad-extra-toggle,
+.subpage-layout-content .grad-summary-total,
+.subpage-layout-content .grad-order-hero,
+.subpage-layout-content .grad-steps-bar,
+.subpage-layout-content .visual-project-card,
+.subpage-layout-content .portal-quote-container,
+.subpage-layout-content .custom-print-box,
+.subpage-layout-content .portal-banner-feature,
+.subpage-layout-content .portal-contact-box,
+.subpage-layout-content .home-package-slide-card,
+.subpage-layout-content .home-offer-card {
+  background: linear-gradient(145deg, rgba(26, 13, 24, 0.96), rgba(20, 12, 19, 0.91)) !important;
+  color: var(--iris-text-primary) !important;
+  border-color: var(--iris-border) !important;
+  box-shadow: var(--iris-shadow) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.subpage-layout-content .package-card:hover,
+.subpage-layout-content .work-card:hover,
+.subpage-layout-content .visual-project-card:hover,
+.subpage-layout-content .compact-extra-card:hover,
+.subpage-layout-content .delivery-card:hover,
+.subpage-layout-content .grad-pkg-card:hover {
+  border-color: rgba(103, 36, 95, 0.65) !important;
+  box-shadow: var(--iris-shadow-purple) !important;
+  transform: translateY(-3px);
+}
+
+/* Keep gold as a highlight, never as the default card border. */
+.subpage-layout-content .package-card:hover .package-price,
+.subpage-layout-content .package-price,
+.subpage-layout-content .pkg-price,
+.subpage-layout-content .extra-price,
+.subpage-layout-content .grad-extra-price,
+.subpage-layout-content .grad-pkg-option-price,
+.subpage-layout-content .pkg-slide-price,
+.subpage-layout-content .work-card-info .work-card-meta,
+.subpage-layout-content .total-row.remaining,
+.subpage-layout-content .total-row.remaining strong {
+  color: var(--color-gold) !important;
+}
+
+/* =========================================================
+   PRIMARY / SECONDARY ACTION LANGUAGE
+   ========================================================= */
+
+.subpage-layout-content .bk-btn-primary,
+.subpage-layout-content .book-btn,
+.subpage-layout-content .btn-primary,
+.subpage-layout-content .btn-portal-primary,
+.subpage-layout-content .notfound-btn.primary,
+.subpage-layout-content .grad-btn-primary,
+.subpage-layout-content .checkout-submit-btn {
+  background: linear-gradient(135deg, #67245F 0%, #7D2E73 100%) !important;
+  color: var(--iris-text-primary) !important;
+  border: 1px solid rgba(236, 235, 231, 0.10) !important;
+  box-shadow: 0 12px 30px rgba(103, 36, 95, 0.30) !important;
+  border-radius: 13px !important;
+}
+
+.subpage-layout-content .bk-btn-primary:hover,
+.subpage-layout-content .book-btn:hover,
+.subpage-layout-content .btn-primary:hover,
+.subpage-layout-content .btn-portal-primary:hover,
+.subpage-layout-content .notfound-btn.primary:hover,
+.subpage-layout-content .grad-btn-primary:hover,
+.subpage-layout-content .checkout-submit-btn:hover {
+  background: linear-gradient(135deg, #7D2E73 0%, #8B357F 100%) !important;
+  border-color: rgba(245, 189, 26, 0.28) !important;
+  box-shadow: 0 16px 36px rgba(103, 36, 95, 0.38) !important;
+}
+
+.subpage-layout-content .bk-btn-outline,
+.subpage-layout-content .btn-portal-secondary,
+.subpage-layout-content .btn-secondary,
+.subpage-layout-content .notfound-btn.secondary,
+.subpage-layout-content .grad-btn-prev {
+  background: rgba(103, 36, 95, 0.08) !important;
+  color: var(--iris-text-primary) !important;
+  border: 1px solid rgba(103, 36, 95, 0.58) !important;
+  border-radius: 13px !important;
+}
+
+.subpage-layout-content .bk-btn-outline:hover,
+.subpage-layout-content .btn-portal-secondary:hover,
+.subpage-layout-content .btn-secondary:hover,
+.subpage-layout-content .notfound-btn.secondary:hover,
+.subpage-layout-content .grad-btn-prev:hover {
+  background: rgba(103, 36, 95, 0.20) !important;
+  border-color: var(--color-gold) !important;
+  color: var(--iris-text-primary) !important;
+}
+
+.subpage-layout-content button:disabled,
+.subpage-layout-content .bk-btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   BOOKING — ONE COHESIVE EXPERIENCE
+   ========================================================= */
+
+.booking-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(103, 36, 95, 0.28), transparent 34%),
+    radial-gradient(circle at 86% 82%, rgba(4, 70, 48, 0.18), transparent 36%),
+    #180C17 !important;
+  color: var(--iris-text-primary) !important;
+}
+
+.bk-header {
+  max-width: 860px;
+  margin-inline: auto;
+}
+
+.bk-title {
+  color: var(--iris-text-primary) !important;
+  letter-spacing: -0.02em;
+}
+
+.bk-subtitle {
+  color: var(--iris-text-secondary) !important;
+}
+
+.bk-steps-indicator .dot-num {
+  background: rgba(236, 235, 231, 0.08) !important;
+  color: var(--iris-text-muted) !important;
+  border: 1px solid rgba(236, 235, 231, 0.10);
+  box-shadow: none !important;
+}
+
+.bk-steps-indicator .bk-step-dot.active .dot-num {
+  background: var(--color-purple) !important;
+  color: var(--iris-text-primary) !important;
+  border-color: rgba(245, 189, 26, 0.22);
+  box-shadow: 0 8px 22px rgba(103, 36, 95, 0.28) !important;
+}
+
+.bk-steps-indicator .bk-step-dot.done .dot-num {
+  background: var(--color-green) !important;
+  color: var(--color-gold) !important;
+}
+
+.bk-step-dot.active .dot-lbl,
+.bk-step-dot.done .dot-lbl {
+  color: var(--color-gold) !important;
+}
+
+.bk-step-dot:not(:last-child)::after {
+  background: rgba(236, 235, 231, 0.10) !important;
+}
+
+.bk-step-dot.done:not(:last-child)::after,
+.bk-step-dot.active:not(:last-child)::after {
+  background: var(--color-purple) !important;
+}
+
+.bk-section {
+  border-color: rgba(103, 36, 95, 0.30) !important;
+}
+
+.bk-section:hover {
+  border-color: rgba(103, 36, 95, 0.45) !important;
+}
+
+.bk-section-title {
+  color: var(--iris-text-primary) !important;
+  border-bottom: 1px solid rgba(245, 189, 26, 0.28) !important;
+}
+
+.pkg-card {
+  background: rgba(26, 13, 24, 0.88) !important;
+  border-color: rgba(236, 235, 231, 0.12) !important;
+}
+
+.pkg-card:hover {
+  border-color: rgba(103, 36, 95, 0.70) !important;
+  background: rgba(103, 36, 95, 0.15) !important;
+}
+
+.pkg-card.selected {
+  background: linear-gradient(145deg, rgba(103, 36, 95, 0.34), rgba(26, 13, 24, 0.96)) !important;
+  border-color: var(--color-purple) !important;
+  box-shadow: 0 16px 36px rgba(103, 36, 95, 0.28) !important;
+}
+
+.pkg-name,
+.pkg-duration,
+.bk-label,
+.bk-hint {
+  color: var(--iris-text-primary) !important;
+}
+
+.pkg-duration,
+.bk-hint {
+  color: var(--iris-text-secondary) !important;
+}
+
+.pkg-check {
+  background: var(--color-gold) !important;
+  color: var(--iris-bg-primary) !important;
+}
+
+.custom-calendar-box {
+  background:
+    linear-gradient(145deg, rgba(26, 13, 24, 0.98), rgba(10, 20, 16, 0.94)) !important;
+  border-color: rgba(103, 36, 95, 0.28) !important;
+}
+
+.cal-title,
+.cal-wkday {
+  color: var(--iris-text-primary) !important;
+}
+
+.cal-wkday {
+  color: var(--iris-text-muted) !important;
+}
+
+.cal-arrow-btn {
+  background: rgba(103, 36, 95, 0.10) !important;
+  border-color: rgba(103, 36, 95, 0.44) !important;
+  color: var(--iris-text-primary) !important;
+}
+
+.cal-arrow-btn:hover {
+  background: var(--color-purple) !important;
+  color: var(--iris-text-primary) !important;
+}
+
+.day-btn {
+  color: var(--iris-text-secondary) !important;
+}
+
+.day-btn:hover:not(:disabled) {
+  background: rgba(103, 36, 95, 0.18) !important;
+  border-color: rgba(103, 36, 95, 0.44) !important;
+}
+
+.day-btn.active-day {
+  background: var(--color-purple) !important;
+  border-color: var(--color-purple) !important;
+  color: var(--iris-text-primary) !important;
+  box-shadow: 0 10px 24px rgba(103, 36, 95, 0.30) !important;
+}
+
+.selected-date-display {
+  color: var(--iris-text-primary) !important;
+  background: rgba(4, 70, 48, 0.16) !important;
+  border: 1px solid rgba(4, 70, 48, 0.32);
+}
+
+.selected-date-display strong {
+  color: var(--color-gold) !important;
+}
+
+.slots-title,
+.cal-section-title,
+.extras-title {
+  color: var(--iris-text-primary) !important;
+}
+
+.slots-title::after,
+.extras-title::after {
+  background: var(--color-purple) !important;
+}
+
+.slot-btn {
+  background: rgba(26, 13, 24, 0.92) !important;
+  border-color: rgba(236, 235, 231, 0.11) !important;
+  color: var(--iris-text-primary) !important;
+  box-shadow: none !important;
+}
+
+.slot-btn:hover {
+  background: rgba(103, 36, 95, 0.16) !important;
+  border-color: rgba(103, 36, 95, 0.55) !important;
+  box-shadow: 0 8px 20px rgba(103, 36, 95, 0.18) !important;
+}
+
+.slot-btn.selected {
+  background: var(--color-purple) !important;
+  border-color: var(--color-purple) !important;
+  color: var(--iris-text-primary) !important;
+}
+
+.no-slots {
+  background: rgba(10, 20, 16, 0.72) !important;
+  color: var(--iris-text-secondary) !important;
+  border: 1px solid rgba(4, 70, 48, 0.24);
+}
+
+.compact-extra-card {
+  background: rgba(26, 13, 24, 0.88) !important;
+}
+
+.compact-extra-card.selected-extra {
+  background: rgba(103, 36, 95, 0.16) !important;
+  border-color: var(--color-purple) !important;
+  box-shadow: 0 12px 26px rgba(103, 36, 95, 0.20) !important;
+}
+
+.extra-icon-wrapper {
+  background: rgba(103, 36, 95, 0.16) !important;
+}
+
+.extra-icon-wrapper svg {
+  color: var(--color-gold) !important;
+}
+
+.extra-name {
+  color: var(--iris-text-primary) !important;
+}
+
+.qty-control {
+  border-color: rgba(236, 235, 231, 0.12) !important;
+  background: rgba(10, 20, 16, 0.72) !important;
+}
+
+.qty-btn {
+  background: transparent !important;
+  color: var(--color-gold) !important;
+}
+
+.qty-btn:hover {
+  background: rgba(103, 36, 95, 0.20) !important;
+}
+
+.qty-val {
+  background: transparent !important;
+  color: var(--iris-text-primary) !important;
+  border-color: rgba(236, 235, 231, 0.10) !important;
+}
+
+.delivery-card-section {
+  border-top-color: rgba(236, 235, 231, 0.08) !important;
+}
+
+.delivery-card {
+  background: rgba(26, 13, 24, 0.90) !important;
+}
+
+.delivery-card.selected {
+  background: linear-gradient(145deg, rgba(103, 36, 95, 0.20), rgba(26, 13, 24, 0.96)) !important;
+  border-color: var(--color-purple) !important;
+}
+
+.delivery-card-icon {
+  color: var(--color-gold) !important;
+}
+
+.delivery-card-title {
+  color: var(--iris-text-primary) !important;
+}
+
+.delivery-card-desc {
+  color: var(--iris-text-secondary) !important;
+}
+
+.bk-input,
+.grad-order-page .grad-input,
+.grad-order-page .grad-textarea,
+.grad-order-page .grad-select,
+.portal-quote-form .as-input {
+  background: rgba(26, 13, 24, 0.88) !important;
+  color: var(--iris-text-primary) !important;
+  border-color: rgba(236, 235, 231, 0.13) !important;
+}
+
+.bk-input::placeholder,
+.grad-order-page .grad-input::placeholder,
+.grad-order-page .grad-textarea::placeholder,
+.portal-quote-form .as-input::placeholder {
+  color: rgba(236, 235, 231, 0.36) !important;
+}
+
+.bk-input:focus,
+.grad-order-page .grad-input:focus,
+.grad-order-page .grad-textarea:focus,
+.grad-order-page .grad-select:focus,
+.portal-quote-form .as-input:focus {
+  border-color: var(--color-purple) !important;
+  box-shadow: 0 0 0 3px rgba(103, 36, 95, 0.18) !important;
+  background: rgba(38, 19, 36, 0.94) !important;
+}
+
+.deposit-info {
+  background: rgba(4, 70, 48, 0.12) !important;
+  border-right-color: var(--color-green) !important;
+}
+
+.deposit-note,
+.receipt-note {
+  color: var(--iris-text-secondary) !important;
+}
+
+/* Loading state: no purple text on purple background, no old-theme flash. */
+.booking-page[style] {
+  min-height: calc(100vh - 76px) !important;
+  justify-content: center;
+}
+
+.booking-page[style] svg.animate-spin {
+  color: var(--color-gold) !important;
+  filter: drop-shadow(0 0 12px rgba(245, 189, 26, 0.16));
+}
+
+.booking-page[style] span {
+  color: var(--iris-text-primary) !important;
+}
+
+/* Success state: semantic green, but inside the same IRIS visual language. */
+.booking-success-card {
+  max-width: 640px;
+  margin: clamp(48px, 10vh, 100px) auto;
+  padding: clamp(32px, 6vw, 56px) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(103, 36, 95, 0.20), transparent 46%),
+    linear-gradient(145deg, rgba(26, 13, 24, 0.98), rgba(10, 20, 16, 0.94)) !important;
+  border: 1px solid rgba(103, 36, 95, 0.36) !important;
+  border-radius: 24px !important;
+  text-align: center;
+}
+
+.booking-success-card .success-icon {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: rgba(4, 70, 48, 0.20) !important;
+  border: 1px solid rgba(4, 70, 48, 0.42);
+  color: #55D69D !important;
+  font-size: 0 !important;
+  box-shadow: 0 14px 30px rgba(4, 70, 48, 0.16);
+}
+
+.booking-success-card .success-icon::before {
+  content: '✓';
+  font-size: 2.25rem;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.booking-success-card h2 {
+  color: var(--iris-text-primary) !important;
+  margin-bottom: 14px;
+}
+
+.booking-success-card p {
+  color: var(--iris-text-secondary) !important;
+  line-height: 1.9;
+}
+
+/* =========================================================
+   PACKAGES / OFFERS
+   ========================================================= */
+
+.packages-section {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(103, 36, 95, 0.22), transparent 32%),
+    radial-gradient(circle at 88% 88%, rgba(4, 70, 48, 0.12), transparent 32%),
+    #180C17 !important;
+}
+
+.packages-section .section-title {
+  color: var(--iris-text-primary) !important;
+}
+
+.package-card {
+  background: linear-gradient(145deg, rgba(26, 13, 24, 0.96), rgba(20, 12, 19, 0.92)) !important;
+}
+
+.package-card:hover {
+  border-color: rgba(103, 36, 95, 0.70) !important;
+}
+
+.package-name {
+  color: var(--iris-text-primary) !important;
+}
+
+.package-feature-item {
+  color: var(--iris-text-secondary) !important;
+}
+
+.package-feature-item .feature-icon {
+  color: var(--color-gold) !important;
+}
+
+.book-btn {
+  margin-top: 14px;
+}
+
+/* =========================================================
+   WORK / PORTFOLIO
+   ========================================================= */
+
+.work-page {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(103, 36, 95, 0.20), transparent 32%),
+    radial-gradient(circle at 88% 84%, rgba(4, 70, 48, 0.10), transparent 30%),
+    #180C17 !important;
+}
+
+.work-card-info h3 {
+  color: var(--iris-text-primary) !important;
+}
+
+.work-card-info p {
+  color: var(--iris-text-secondary) !important;
+}
+
+.work-badge {
+  background: rgba(103, 36, 95, 0.20) !important;
+  color: var(--color-gold) !important;
+  border: 1px solid rgba(103, 36, 95, 0.32);
+}
+
+/* =========================================================
+   DIVISION PORTALS / PRINTING
+   ========================================================= */
+
+.division-portal-page {
+  background: #180C17 !important;
+}
+
+.portal-smart-tabs-bar {
+  background: rgba(24, 12, 23, 0.88) !important;
+  border-top: 1px solid rgba(236, 235, 231, 0.06) !important;
+  border-bottom: 1px solid rgba(236, 235, 231, 0.08) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.smart-tab-btn {
+  color: var(--iris-text-secondary) !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+.smart-tab-btn:hover {
+  color: var(--iris-text-primary) !important;
+  background: rgba(103, 36, 95, 0.12) !important;
+}
+
+.smart-tab-btn.active {
+  color: var(--iris-text-primary) !important;
+  background: rgba(103, 36, 95, 0.24) !important;
+  border-color: rgba(103, 36, 95, 0.52) !important;
+  box-shadow: inset 0 -2px 0 var(--color-gold) !important;
+}
+
+.portal-section,
+.portal-section.theme-alt-bg {
+  background: transparent !important;
+}
+
+.portal-section-header h2 {
+  color: var(--iris-text-primary) !important;
+}
+
+.portal-section-header p {
+  color: var(--iris-text-secondary) !important;
+}
+
+.visual-project-card:hover {
+  border-color: rgba(103, 36, 95, 0.65) !important;
+}
+
+.visual-card-badge {
+  background: rgba(103, 36, 95, 0.72) !important;
+  color: var(--iris-text-primary) !important;
+  border: 1px solid rgba(245, 189, 26, 0.20);
+}
+
+.visual-card-body h3 {
+  color: var(--iris-text-primary) !important;
+}
+
+.visual-card-body p {
+  color: var(--iris-text-secondary) !important;
+}
+
+.visual-card-btn-text {
+  color: var(--color-gold) !important;
+}
+
+.portal-banner-feature,
+.custom-print-box,
+.portal-contact-box {
+  border-color: rgba(103, 36, 95, 0.30) !important;
+}
+
+.portal-quote-form .as-label {
+  color: var(--iris-text-primary) !important;
+}
+
+.quote-success-box {
+  background: linear-gradient(145deg, rgba(26, 13, 24, 0.96), rgba(10, 20, 16, 0.92)) !important;
+  color: var(--iris-text-primary) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--iris-shadow) !important;
+}
+
+/* Keep semantic status colors available, but remove accidental pure-white/pure-black surfaces. */
+.portal-contact-box h2,
+.portal-contact-box .contact-info h2 {
+  color: var(--iris-text-primary) !important;
+}
+
+.portal-contact-box p,
+.contact-info p {
+  color: var(--iris-text-secondary) !important;
+}
+
+/* =========================================================
+   GRADUATION PAGES
+   ========================================================= */
+
 .grad-page,
 .grad-order-page {
   --g-purple: #67245F !important;
   --g-green: #044630 !important;
   --g-gold: #F5BD1A !important;
   --g-bg: #180C17 !important;
-  --g-white: rgba(26,13,24,.92) !important;
+  --g-white: rgba(26, 13, 24, 0.92) !important;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(103, 36, 95, 0.22), transparent 34%),
+    radial-gradient(circle at 86% 84%, rgba(4, 70, 48, 0.12), transparent 33%),
+    #180C17 !important;
+  color: var(--iris-text-primary) !important;
 }
 
-.grad-page .grad-pkg-card,
-.grad-page .grad-extra-card,
-.grad-page .grad-gallery-item,
-.grad-order-page .grad-order-card,
-.grad-order-page .grad-summary,
-.grad-order-page .grad-deposit-block,
-.grad-order-page .delivery-card,
-.grad-order-page .grad-template-field,
-.grad-order-page .grad-upload-zone,
-.grad-order-page .grad-pkg-option,
-.grad-order-page .grad-extra-toggle,
-.grad-order-page .grad-summary-total,
-.grad-order-page .grad-order-hero,
-.grad-order-page .grad-steps-bar,
-.grad-page .grad-pkg-header,
-.grad-page .grad-pkg-body,
-.grad-order-page .grad-summary-header { background: rgba(26,13,24,.94) !important; color: #ECEBE7 !important; border-color: rgba(236,235,231,.14) !important; }
+.grad-page .grad-pkg-price-block {
+  background: rgba(10, 20, 16, 0.88) !important;
+}
 
-.grad-page .grad-pkg-price-block { background: rgba(10,20,16,.95) !important; }
 .grad-page .grad-pkg-name,
-.grad-page .grad-extra-price,
-.grad-order-page .grad-card-title,
-.grad-order-page .grad-pkg-option-price,
-.grad-order-page .grad-summary-header h3,
-.grad-order-page .grad-highlight-val,
-.grad-order-page .grad-success h2,
-.grad-order-page .grad-section-title { color: #F5BD1A !important; }
+.grad-page .grad-section-title,
+.grad-order-page .grad-section-title {
+  color: var(--iris-text-primary) !important;
+}
+
 .grad-page .grad-pkg-features li,
 .grad-order-page .grad-label,
 .grad-order-page .grad-pkg-option-name,
 .grad-order-page .grad-extra-toggle-name,
-.grad-order-page .grad-summary-val,
-.grad-order-page .grad-summary { color: #ECEBE7 !important; }
-.grad-page .grad-gallery-label,
-.grad-page .grad-gallery-num,
-.grad-order-page .grad-summary-key,
-.grad-order-page .grad-card-desc,
-.grad-order-page .grad-template-hint,
-.grad-order-page .grad-pkg-option-detail,
-.grad-order-page .grad-success p { color: rgba(236,235,231,.70) !important; }
+.grad-order-page .grad-summary-val {
+  color: var(--iris-text-secondary) !important;
+}
+
 .grad-page .grad-pkg-option:hover,
-.grad-page .grad-pkg-option.selected { background: rgba(103,36,95,.24) !important; }
-.grad-order-page .grad-btn-prev { color: #ECEBE7 !important; border-color: #67245F !important; }
-.grad-order-page .grad-btn-prev:hover { background: rgba(103,36,95,.20) !important; }
-.grad-order-page .grad-input,
-.grad-order-page .grad-textarea,
-.grad-order-page .grad-select { background: rgba(26,13,24,.90) !important; color: #ECEBE7 !important; border-color: rgba(236,235,231,.14) !important; }
-.grad-order-page .grad-input:focus,
-.grad-order-page .grad-textarea:focus,
-.grad-order-page .grad-select:focus { background: rgba(38,19,36,.95) !important; border-color: #F5BD1A !important; }
+.grad-page .grad-pkg-option.selected,
+.grad-order-page .grad-pkg-option:hover,
+.grad-order-page .grad-pkg-option.selected,
+.grad-order-page .grad-extra-toggle.selected {
+  background: rgba(103, 36, 95, 0.22) !important;
+  border-color: var(--color-purple) !important;
+}
 
-/* Work */
-.work-card,
-.work-empty { background: rgba(26,13,24,.92) !important; color: #ECEBE7 !important; }
-.work-card-info h3 { color: #ECEBE7 !important; }
-.work-badge { background: rgba(4,70,48,.22) !important; color: #F5BD1A !important; }
+/* =========================================================
+   NOT FOUND
+   ========================================================= */
 
-/* Home legacy light cards/sections */
-.home-page .service-card-simple,
-.home-page .feature-card,
-.home-page .preview-card,
-.home-page .location-card,
-.home-page .cta-card,
-.home-page .home-package-slide-card,
-.home-page .home-offer-card { background: rgba(26,13,24,.92) !important; color: #ECEBE7 !important; border-color: rgba(236,235,231,.14) !important; }
-.home-page .service-title,
-.home-page .package-name,
-.home-page .offer-body h3,
-.home-page .preview-card h3,
-.home-page .about-section h2,
-.home-page .location-section h2,
-.home-page .preview-section h2,
-.home-page .final-cta h2 { color: #F5BD1A !important; }
-.home-page .hero-content p,
-.home-page .about-section p,
-.home-page .location-section p,
-.home-page .preview-section p,
-.home-page .final-cta p,
-.home-page .offer-body p,
-.home-page .pkg-slide-features li { color: rgba(236,235,231,.75) !important; }
-.home-page .service-icon-wrapper { background: rgba(103,36,95,.18) !important; }
-.home-page .packages-slider-section,
-.home-page .contact-section,
-.home-page .home-portfolio-section { background: #180C17 !important; }
-.home-page .home-package-slide-card .pkg-slide-category-badge { background: rgba(4,70,48,.18) !important; color: #F5BD1A !important; }
-.home-page .home-package-slide-card .pkg-slide-price { color: #F5BD1A !important; }
-.home-page .hero-image-card { background: rgba(26,13,24,.8) !important; border-color: rgba(236,235,231,.16) !important; }
+.notfound-page {
+  background:
+    radial-gradient(circle at 16% 12%, rgba(103, 36, 95, 0.22), transparent 32%),
+    radial-gradient(circle at 84% 88%, rgba(4, 70, 48, 0.12), transparent 30%),
+    #180C17 !important;
+}
 
-/* 404 */
-.notfound-page { background: #180C17 !important; }
-.notfound-container { background: rgba(26,13,24,.94) !important; border-color: rgba(236,235,231,.14) !important; color: #ECEBE7 !important; }
-.notfound-title,
+.notfound-container {
+  background: linear-gradient(145deg, rgba(26, 13, 24, 0.96), rgba(10, 20, 16, 0.92)) !important;
+  border-color: rgba(103, 36, 95, 0.32) !important;
+}
+
+.notfound-title {
+  color: var(--iris-text-primary) !important;
+}
+
 .notfound-icon,
-.notfound-icon-wrapper { color: #F5BD1A !important; }
+.notfound-icon-wrapper {
+  color: var(--color-gold) !important;
+}
+
 .notfound-desc,
-.notfound-desc-en { color: rgba(236,235,231,.75) !important; }
-.notfound-btn.primary { background: #67245F !important; color: #ECEBE7 !important; }
-.notfound-btn.secondary { color: #F5BD1A !important; border-color: #67245F !important; }
-.notfound-btn.secondary:hover { background: rgba(103,36,95,.18) !important; }
+.notfound-desc-en {
+  color: var(--iris-text-secondary) !important;
+}
 
-/* Initial/loading surfaces: no white flash during route/page transitions. */
-.opening-sequence-overlay { background: #180C17 !important; }
-.hero-bloom-scroll { background: #180C17 !important; }
+/* =========================================================
+   GLOBAL UI CLEANUP / NO WHITE FLASH
+   ========================================================= */
 
-/* Main portal text remains warm off-white. */
-.portal-hero-title,
-.portal-section-header h2,
-.portal-card-box h3,
-.feature-info h3,
-.process-step-card h4,
-.visual-card-body h3,
-.workflow-timeline-card h4,
-.contact-info h2 { color: #ECEBE7 !important; }
+.opening-sequence-overlay,
+.hero-bloom-scroll {
+  background: #180C17 !important;
+}
 
-/* Replace legacy pure-white text surfaces with brand off-white where applicable. */
-.portal-hero-sub,
-.portal-section-header p,
-.portal-card-box p,
-.process-step-card p,
-.visual-card-body p,
-.workflow-timeline-card p { color: rgba(236,235,231,.75) !important; }
+/* Navbar keeps the same dark/glass language as the hero/footer. */
+.navbar {
+  background: rgba(24, 12, 23, 0.86) !important;
+  border-bottom-color: rgba(236, 235, 231, 0.08) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
 
-/* Do not alter the distinctive hero/footer atmospheric system; only normalize stray UI colors. */
-.nav-item.active { background: #67245F !important; color: #ECEBE7 !important; }
-.nav-item:hover { color: #F5BD1A !important; background: rgba(103,36,95,.35) !important; }
+.navbar-back-btn,
+.navbar-lang-toggle-btn {
+  background: rgba(103, 36, 95, 0.10) !important;
+  color: var(--iris-text-primary) !important;
+  border-color: rgba(103, 36, 95, 0.46) !important;
+}
 
-/* Legacy purple aliases used by older components. */
+.navbar-back-btn:hover,
+.navbar-lang-toggle-btn:hover {
+  background: rgba(103, 36, 95, 0.22) !important;
+  border-color: var(--color-gold) !important;
+}
+
+.nav-item.active {
+  background: var(--color-purple) !important;
+  color: var(--iris-text-primary) !important;
+}
+
+.nav-item:hover {
+  color: var(--color-gold) !important;
+  background: rgba(103, 36, 95, 0.24) !important;
+}
+
+/* Semantic icons: purple first, gold detail, green success. */
 .service-icon,
-.contact-social-icon { color: #67245F !important; }
+.contact-social-icon {
+  color: var(--color-purple) !important;
+}
+
+/* Public forms should never inherit browser-white controls. */
+.subpage-layout-content input,
+.subpage-layout-content select,
+.subpage-layout-content textarea {
+  color-scheme: dark;
+}
+
+.subpage-layout-content option {
+  background: var(--iris-surface) !important;
+  color: var(--iris-text-primary) !important;
+}
+
+@media (max-width: 767px) {
+  .booking-success-card {
+    margin-inline: 14px;
+    border-radius: 20px !important;
+  }
+
+  .subpage-layout-content .package-card,
+  .subpage-layout-content .bk-section,
+  .subpage-layout-content .booking-success-card,
+  .subpage-layout-content .portal-quote-container,
+  .subpage-layout-content .custom-print-box,
+  .subpage-layout-content .portal-contact-box {
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.32) !important;
+  }
+}
