@@ -3,7 +3,7 @@ const CALENDAR_READY_ATTR = 'data-iris-calendar-picker';
 
 const formatTriggerDate = (value) => {
   const raw = String(value || '').trim();
-  if (!raw) return 'اضغط لاختيار الموعد';
+  if (!raw) return 'اختر التاريخ المناسب';
 
   const parts = raw.split('-');
   if (parts.length !== 3) return raw;
@@ -24,12 +24,12 @@ const getSelectedDate = (section) =>
   section.querySelector('.selected-date-display strong')?.textContent?.trim() || '';
 
 const getTriggerMarkup = (selected) => `
-  <span class="iris-calendar-trigger-icon" aria-hidden="true">📅</span>
+  <span class="iris-calendar-trigger-icon" aria-hidden="true"></span>
   <span class="iris-calendar-trigger-copy">
-    <span class="iris-calendar-trigger-label">${selected ? 'تاريخ الجلسة' : 'اختر تاريخ الجلسة'}</span>
+    <span class="iris-calendar-trigger-label">${selected ? 'تاريخ الجلسة' : 'تاريخ الجلسة'}</span>
     <strong>${formatTriggerDate(selected)}</strong>
   </span>
-  <span class="iris-calendar-trigger-chevron" aria-hidden="true">←</span>
+  <span class="iris-calendar-trigger-chevron" aria-hidden="true"></span>
 `;
 
 const syncTrigger = (section, trigger) => {
@@ -38,8 +38,8 @@ const syncTrigger = (section, trigger) => {
 
   trigger.classList.toggle('has-value', Boolean(selected));
 
-  // Important: MutationObserver watches this section. Never rewrite trigger.innerHTML
-  // when nothing actually changed, otherwise the observer can trigger itself forever.
+  // MutationObserver watches this section. Only rewrite the trigger when its
+  // rendered state actually changed, otherwise the observer can trigger itself.
   if (trigger.innerHTML !== markup) {
     trigger.innerHTML = markup;
   }
