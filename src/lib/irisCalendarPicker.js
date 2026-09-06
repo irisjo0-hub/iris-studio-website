@@ -23,17 +23,26 @@ const formatTriggerDate = (value) => {
 const getSelectedDate = (section) =>
   section.querySelector('.selected-date-display strong')?.textContent?.trim() || '';
 
+const getTriggerMarkup = (selected) => `
+  <span class="iris-calendar-trigger-icon" aria-hidden="true">📅</span>
+  <span class="iris-calendar-trigger-copy">
+    <span class="iris-calendar-trigger-label">${selected ? 'تاريخ الجلسة' : 'اختر تاريخ الجلسة'}</span>
+    <strong>${formatTriggerDate(selected)}</strong>
+  </span>
+  <span class="iris-calendar-trigger-chevron" aria-hidden="true">←</span>
+`;
+
 const syncTrigger = (section, trigger) => {
   const selected = getSelectedDate(section);
+  const markup = getTriggerMarkup(selected);
+
   trigger.classList.toggle('has-value', Boolean(selected));
-  trigger.innerHTML = `
-    <span class="iris-calendar-trigger-icon" aria-hidden="true">📅</span>
-    <span class="iris-calendar-trigger-copy">
-      <span class="iris-calendar-trigger-label">${selected ? 'تاريخ الجلسة' : 'اختر تاريخ الجلسة'}</span>
-      <strong>${formatTriggerDate(selected)}</strong>
-    </span>
-    <span class="iris-calendar-trigger-chevron" aria-hidden="true">←</span>
-  `;
+
+  // Important: MutationObserver watches this section. Never rewrite trigger.innerHTML
+  // when nothing actually changed, otherwise the observer can trigger itself forever.
+  if (trigger.innerHTML !== markup) {
+    trigger.innerHTML = markup;
+  }
 };
 
 const lockBody = () => {
@@ -101,6 +110,7 @@ const wireCalendarSection = (section) => {
 
     const dayButton = target.closest('.day-btn');
     if (dayButton && !dayButton.disabled && section.classList.contains('calendar-expanded')) {
+      // Let React finish updating selectedDate first, then close the modal.
       window.setTimeout(() => closeCalendar(section, trigger), 0);
     }
   });
@@ -112,7 +122,7 @@ const wireCalendarSection = (section) => {
   });
 
   const stateObserver = new MutationObserver(() => syncTrigger(section, trigger));
-  stateObserver.observe(section.querySelector('.selected-date-display') || section, {
+  stateObserver.observe(section, {
     childList: true,
     subtree: true,
     characterData: true
