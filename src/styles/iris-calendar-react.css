@@ -1,0 +1,260 @@
+/* IRIS Calendar — React-native popup
+   The calendar is owned by React, avoiding DOM observers and keeping one visual source of truth. */
+
+.calendar-picker-section {
+  position: relative;
+  margin-top: 12px;
+}
+
+.iris-react-calendar-trigger {
+  width: 100%;
+  min-height: 58px;
+  padding: 8px 10px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(103, 36, 95, 0.62);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 8% 50%, rgba(103, 36, 95, 0.16), transparent 30%),
+    linear-gradient(135deg, rgba(103, 36, 95, 0.14), rgba(26, 13, 24, 0.96));
+  color: #ECEBE7;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(236, 235, 231, 0.035);
+  cursor: pointer;
+  text-align: right;
+  font: inherit;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.iris-react-calendar-trigger:hover {
+  transform: translateY(-1px);
+  border-color: rgba(245, 189, 26, 0.46);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24), 0 0 22px rgba(103, 36, 95, 0.12);
+}
+
+.iris-react-calendar-trigger:focus-visible {
+  outline: 2px solid #F5BD1A;
+  outline-offset: 3px;
+}
+
+.iris-react-calendar-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(103, 36, 95, 0.24);
+  border: 1px solid rgba(103, 36, 95, 0.44);
+  color: #F5BD1A;
+}
+
+.iris-react-calendar-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.iris-react-calendar-label {
+  color: rgba(236, 235, 231, 0.48);
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+.iris-react-calendar-value {
+  color: #ECEBE7;
+  font-size: 0.94rem;
+  font-weight: 900;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.iris-react-calendar-value.has-value {
+  color: #F5BD1A;
+}
+
+.iris-react-calendar-action {
+  min-width: 64px;
+  padding: 6px 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 10px;
+  border: 1px solid rgba(103, 36, 95, 0.40);
+  background: rgba(103, 36, 95, 0.08);
+  color: rgba(236, 235, 231, 0.70);
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.iris-react-calendar-action svg {
+  color: #F5BD1A;
+}
+
+.iris-react-calendar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(8, 4, 9, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.iris-react-calendar-modal {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  width: min(410px, calc(100vw - 24px));
+  max-height: min(700px, calc(100vh - 24px));
+  overflow-y: auto;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  padding: 15px;
+  border: 1px solid rgba(103, 36, 95, 0.64);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 12% 7%, rgba(103, 36, 95, 0.18), transparent 32%),
+    linear-gradient(155deg, rgba(29, 13, 28, 0.99), rgba(9, 19, 15, 0.985));
+  box-shadow: 0 34px 100px rgba(0, 0, 0, 0.66), 0 0 46px rgba(103, 36, 95, 0.16);
+}
+
+.iris-react-calendar-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.iris-react-calendar-modal-title {
+  margin: 0;
+  color: #ECEBE7;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.iris-react-calendar-close {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid rgba(236, 235, 231, 0.12);
+  border-radius: 50%;
+  background: rgba(26, 13, 24, 0.94);
+  color: #ECEBE7;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.iris-react-calendar-close:hover {
+  color: #F5BD1A;
+  border-color: rgba(245, 189, 26, 0.42);
+}
+
+.iris-react-calendar-modal .cal-header {
+  margin: 0 0 9px !important;
+}
+
+.iris-react-calendar-modal .cal-title {
+  color: #ECEBE7 !important;
+  font-size: 0.98rem !important;
+}
+
+.iris-react-calendar-modal .cal-arrow-btn {
+  background: rgba(103, 36, 95, 0.14) !important;
+  border-color: rgba(103, 36, 95, 0.42) !important;
+  color: #ECEBE7 !important;
+}
+
+.iris-react-calendar-modal .cal-arrow-btn:hover {
+  background: #67245F !important;
+  border-color: #67245F !important;
+}
+
+.iris-react-calendar-modal .cal-weekdays-row {
+  margin-bottom: 3px !important;
+}
+
+.iris-react-calendar-modal .cal-wkday {
+  color: rgba(236, 235, 231, 0.46) !important;
+  font-size: 0.70rem !important;
+}
+
+.iris-react-calendar-modal .cal-days-grid {
+  gap: 4px !important;
+}
+
+.iris-react-calendar-modal .day-btn {
+  min-height: 38px !important;
+  border-radius: 10px !important;
+  font-size: 0.82rem !important;
+}
+
+.iris-react-calendar-modal .day-btn.active-day {
+  background: #67245F !important;
+  border-color: #67245F !important;
+  color: #ECEBE7 !important;
+  box-shadow: 0 7px 20px rgba(103, 36, 95, 0.34) !important;
+}
+
+.iris-react-calendar-modal .day-btn:hover:not(:disabled) {
+  background: rgba(103, 36, 95, 0.22) !important;
+  border-color: rgba(103, 36, 95, 0.46) !important;
+}
+
+.iris-react-calendar-modal .cal-legend {
+  gap: 8px 11px !important;
+  margin-top: 10px !important;
+  padding-top: 10px !important;
+  border-top-color: rgba(236, 235, 231, 0.10) !important;
+}
+
+.iris-react-calendar-modal .legend-item {
+  color: rgba(236, 235, 231, 0.62) !important;
+  font-size: 0.65rem !important;
+}
+
+@media (max-width: 767px) {
+  .calendar-picker-section {
+    margin-top: 10px;
+  }
+
+  .iris-react-calendar-trigger {
+    min-height: 56px;
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 7px 8px;
+  }
+
+  .iris-react-calendar-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .iris-react-calendar-value {
+    font-size: 0.88rem;
+  }
+
+  .iris-react-calendar-action {
+    min-width: 58px;
+    padding: 5px 7px;
+    font-size: 0.58rem;
+  }
+
+  .iris-react-calendar-modal {
+    width: calc(100vw - 18px);
+    max-height: calc(100vh - 18px);
+    padding: 13px;
+    border-radius: 20px;
+  }
+}
+
+body.iris-react-calendar-open {
+  overflow: hidden !important;
+}
