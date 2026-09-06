@@ -637,14 +637,10 @@ const PrintingProducts = () => {
       }
 
       let finalNotes = notes.trim();
-      let itemsSummary = '';
-
       if (selectedProduct.id === 'cart_checkout') {
         const itemsStr = cart.map((item, i) => `${i + 1}. ${item.name} (عدد ${item.quantity}) ${item.selectedColor ? `[لون: ${item.selectedColor}]` : ''}`).join(' | ');
         finalNotes = `[طلب سلة شريحة متعددة (${totalCartCount} منتجات)]\nعناصر السلة: ${itemsStr}\n${finalNotes}`;
-        itemsSummary = cart.map((item, i) => `${i + 1}️⃣ *${item.name}* (عدد ${item.quantity}) ${item.selectedColor ? `- اللون: ${item.selectedColor}` : ''} - (السعر: ${item.price * item.quantity} JOD)`).join('\n');
       } else {
-        itemsSummary = `1️⃣ *${selectedProduct.name}* (عدد ${quantity}) ${selectedColor ? `- اللون: ${selectedColor}` : ''} - (السعر: ${(Number(selectedProduct.price) || 0) * quantity} JOD)`;
       }
 
       if (deliverySelected) {
@@ -655,23 +651,6 @@ const PrintingProducts = () => {
 
       const payLabel = paymentMethod === 'cliq' ? '[دفع عبر CliQ 📱]' : '[الدفع عند الاستلام 💵]';
       finalNotes = `${payLabel}\n${finalNotes}`;
-
-        ? cart.map((item, idx) => ({
-            id: `item-${idx}`,
-            name: item.name,
-            selectedColor: item.selectedColor || '',
-            quantity: item.quantity,
-            price: item.price,
-            image: item.image || ''
-          }))
-        : [{
-            id: 'item-single',
-            name: selectedProduct.name,
-            selectedColor: selectedColor || '',
-            quantity: quantity,
-            price: Number(selectedProduct.price) || 0,
-            image: ''
-          }];
 
       const toNumericProductId = (id) => {
         const numericId = Number(id);
