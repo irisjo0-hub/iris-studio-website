@@ -48,7 +48,7 @@ const Preloader = ({ onComplete }) => {
 
       {/* 3. Central Artistic Layout Box */}
       <div className="preloader-artistic-wrap">
-        {/* Golden Halo Ring Wrapper with Centered Logo */}
+        {/* Golden Halo Ring Wrapper with visible moving gap */}
         <div className="preloader-halo-wrapper">
           <svg className="preloader-halo-svg" viewBox="0 0 200 200" aria-hidden="true">
             <circle
@@ -59,6 +59,7 @@ const Preloader = ({ onComplete }) => {
               stroke="#F5BD1A"
               strokeWidth="2.5"
               strokeLinecap="round"
+              strokeDasharray="545 8"
             />
           </svg>
 
