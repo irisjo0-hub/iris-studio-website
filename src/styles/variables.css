@@ -7,5 +7,8 @@
   --color-green: #044630;
   --color-gold: #F5BD1A;
   --color-bg-light: #ECEBE7;
-  --font-primary: 'Cairo', 'Juman', sans-serif;
+  --font-primary: 'Juman', sans-serif;
+  --font-secondary: 'Juman', sans-serif;
+  --font-display: 'Juman', sans-serif;
+  --font-hero: 'DegularDisplay', sans-serif;
 }
