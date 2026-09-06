@@ -190,3 +190,5 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m "feat: make booking calendar a popup"
           git push
+
+      # One-shot mutation; the workflow file is removed in a follow-up cleanup.
