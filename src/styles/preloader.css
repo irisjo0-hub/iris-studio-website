@@ -19,7 +19,6 @@
   user-select: none;
 }
 
-/* Texture Grain Overlay — Identical 0.025 Opacity Hero Noise */
 .preloader-grain-overlay {
   position: absolute;
   inset: 0;
@@ -30,7 +29,6 @@
   mix-blend-mode: overlay;
 }
 
-/* ===== ATMOSPHERIC COLOR FIELDS (100% IDENTICAL TO HERO PAGE) ===== */
 .preloader-ambient-layer {
   position: absolute;
   inset: 0;
@@ -39,7 +37,6 @@
   z-index: 1;
 }
 
-/* Zone 1 — Top-Left IRIS Purple Glow */
 .preloader-glow-purple-topleft {
   position: absolute;
   top: -40px;
@@ -57,7 +54,6 @@
   );
 }
 
-/* Zone 2 — Top-Right IRIS Purple Atmosphere */
 .preloader-glow-purple-topright {
   position: absolute;
   top: -8vw;
@@ -74,7 +70,6 @@
   );
 }
 
-/* Zone 3 — Bottom-Left IRIS Deep Green Atmosphere */
 .preloader-glow-green-bottomleft {
   position: absolute;
   bottom: -8vw;
@@ -91,7 +86,6 @@
   );
 }
 
-/* Zone 4 — Bottom-Right IRIS Deep Green Atmosphere */
 .preloader-glow-green-bottomright {
   position: absolute;
   bottom: -6vw;
@@ -108,7 +102,6 @@
   );
 }
 
-/* Zone 5 — Gold Center Energy Accent */
 .preloader-glow-gold-center {
   position: absolute;
   top: 50%;
@@ -126,7 +119,6 @@
   );
 }
 
-/* Central Artistic Layout Box */
 .preloader-artistic-wrap {
   position: relative;
   display: flex;
@@ -137,7 +129,6 @@
   z-index: 10;
 }
 
-/* Centered Golden Halo Ring Container */
 .preloader-halo-wrapper {
   position: relative;
   width: clamp(180px, 22vw, 240px);
@@ -156,32 +147,25 @@
   overflow: visible;
 }
 
-/* The visible gap travels around the halo so the loading motion is unmistakable. */
+/* The ring itself carries the moving gap. This is visually stable across browsers. */
 .preloader-halo-svg circle {
-  stroke-dasharray: 430 123;
+  stroke-dasharray: 510 43;
   stroke-dashoffset: 0;
-  animation: preloader-ring-dash 1.25s linear infinite;
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
+  animation: preloader-ring-dash 1.15s linear infinite;
   will-change: stroke-dashoffset;
 }
 
 @keyframes preloader-ring-dash {
-  from {
-    stroke-dashoffset: 0;
-  }
-  to {
-    stroke-dashoffset: -553;
-  }
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -553; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .preloader-halo-svg circle {
-    animation-duration: 2.5s;
+    animation: preloader-ring-dash 2.3s linear infinite;
   }
 }
 
-/* Center White IRIS Logo (Nested Inside Golden Halo) */
 .preloader-logo-container {
   position: absolute;
   inset: 0;
@@ -200,7 +184,6 @@
   opacity: 0.98;
 }
 
-/* Slogan Typography */
 .preloader-brand-text {
   font-family: var(--font-primary, sans-serif);
   color: #F5BD1A;
@@ -213,7 +196,6 @@
   margin-top: 4px;
 }
 
-/* Luxury Tagline Badge for "ثلاثة عوالم، مكان واحد" */
 .preloader-tagline-badge {
   display: inline-flex;
   align-items: center;
