@@ -625,10 +625,10 @@ const PrintingProducts = () => {
       alert('الرجاء إدخال رقم هاتف للتواصل');
       return;
     }
+    const uploadedUrls = [];
     setSubmittingOrder(true);
     try {
       // Upload design images to storage
-      const uploadedUrls = [];
       for (let idx = 0; idx < imagesFiles.length; idx++) {
         const file = imagesFiles[idx];
         const path = `orders-${Date.now()}-${idx}-${file.name}`;
@@ -656,12 +656,6 @@ const PrintingProducts = () => {
       const payLabel = paymentMethod === 'cliq' ? '[دفع عبر CliQ 📱]' : '[الدفع عند الاستلام 💵]';
       finalNotes = `${payLabel}\n${finalNotes}`;
 
-      let calculatedProductName = selectedProduct.name;
-      if (selectedProduct.id === 'cart_checkout' && cart && cart.length > 0) {
-        calculatedProductName = cart.map(item => `${item.name}${item.selectedColor ? ` [${item.selectedColor}]` : ''} (×${item.quantity})`).join(' + ');
-      }
-
-      const cartItemsStructured = selectedProduct.id === 'cart_checkout' && cart
         ? cart.map((item, idx) => ({
             id: `item-${idx}`,
             name: item.name,
@@ -772,6 +766,11 @@ const PrintingProducts = () => {
       if (selectedProduct.id === 'cart_checkout') clearCart();
       setOrderPlaced(true);
     } catch (err) {
+      if (uploadedUrls.length > 0) {
+        await Promise.allSettled(
+          uploadedUrls.map(path => deleteFile('graduation-orders', path))
+        );
+      }
       alert('حدث خطأ أثناء تقديم الطلب: ' + err.message);
     } finally {
       setSubmittingOrder(false);
