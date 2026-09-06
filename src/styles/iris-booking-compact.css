@@ -1,0 +1,216 @@
+/* IRIS Booking — compact visual pass
+   Loaded after the legacy calendar layers so the booking flow stays visually
+   consistent while reducing vertical density, especially on mobile. */
+
+.booking-page .cal-section-title,
+.booking-page .selected-date-display {
+  display: none !important;
+}
+
+/* Compact package cards */
+.booking-page .pkg-grid {
+  gap: 9px !important;
+}
+
+.booking-page .pkg-card {
+  min-height: 96px !important;
+  padding: 10px !important;
+}
+
+.booking-page .pkg-name {
+  font-size: .92rem !important;
+}
+
+.booking-page .pkg-price {
+  margin: 2px 0 !important;
+  font-size: 1.32rem !important;
+}
+
+.booking-page .pkg-duration {
+  font-size: .70rem !important;
+}
+
+/* More distinctive calendar trigger */
+.booking-page .iris-calendar-trigger {
+  min-height: 64px !important;
+  padding: 8px 10px !important;
+  border-radius: 17px !important;
+  border-color: rgba(103,36,95,.58) !important;
+  background:
+    radial-gradient(circle at 8% 50%, rgba(103,36,95,.18), transparent 30%),
+    linear-gradient(135deg, rgba(103,36,95,.15), rgba(26,13,24,.97)) !important;
+  box-shadow: 0 12px 26px rgba(0,0,0,.20), inset 0 1px 0 rgba(236,235,231,.035) !important;
+}
+
+.booking-page .iris-calendar-trigger::before {
+  width: 4px !important;
+  opacity: 1 !important;
+}
+
+.booking-page .iris-calendar-trigger-icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  color: #F5BD1A !important;
+  background: rgba(103,36,95,.22) !important;
+}
+
+/* CSS-drawn IRIS calendar symbol */
+.booking-page .iris-calendar-trigger-icon::before {
+  width: 17px !important;
+  height: 16px !important;
+  border-width: 1.6px !important;
+  border-radius: 4px !important;
+}
+
+.booking-page .iris-calendar-trigger-icon::after {
+  width: 11px !important;
+  top: 14px !important;
+}
+
+.booking-page .iris-calendar-trigger-copy {
+  gap: 1px !important;
+}
+
+.booking-page .iris-calendar-trigger-label {
+  color: rgba(236,235,231,.48) !important;
+  font-size: .64rem !important;
+}
+
+.booking-page .iris-calendar-trigger-copy strong {
+  font-size: .93rem !important;
+}
+
+.booking-page .iris-calendar-trigger-chevron {
+  height: 31px !important;
+  padding: 0 9px !important;
+  border-radius: 10px !important;
+  border-color: rgba(103,36,95,.42) !important;
+  background: rgba(103,36,95,.09) !important;
+}
+
+.booking-page .iris-calendar-trigger-chevron::before {
+  content: 'التقويم' !important;
+  font-size: .65rem !important;
+  font-weight: 800 !important;
+}
+
+.booking-page .iris-calendar-trigger-chevron::after {
+  content: '↗' !important;
+  font-size: .82rem !important;
+  color: #F5BD1A !important;
+}
+
+/* The popup should feel like a focused IRIS panel */
+.booking-page .calendar-picker-section.calendar-expanded .custom-calendar-box {
+  width: min(420px, calc(100vw - 24px)) !important;
+  border-color: rgba(103,36,95,.68) !important;
+  border-radius: 25px !important;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(103,36,95,.20), transparent 34%),
+    linear-gradient(155deg, rgba(30,14,28,.995), rgba(10,20,16,.99)) !important;
+  box-shadow: 0 36px 96px rgba(0,0,0,.66), 0 0 46px rgba(103,36,95,.16) !important;
+}
+
+.booking-page .calendar-picker-section.calendar-expanded .day-btn {
+  min-height: 37px !important;
+}
+
+/* Time slots become a contained tray instead of making the page endless */
+.booking-page .slots-grid {
+  max-height: 270px !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  padding: 2px 3px 3px 0;
+}
+
+.booking-page .slot-btn {
+  min-height: 39px !important;
+  border-radius: 10px !important;
+  padding: 6px 5px !important;
+}
+
+@media (min-width: 768px) {
+  .booking-page .bk-header {
+    margin-bottom: 12px !important;
+  }
+
+  .booking-page .bk-subtitle {
+    margin-bottom: 8px !important;
+  }
+
+  .booking-page .bk-steps-indicator {
+    margin-bottom: 12px !important;
+  }
+
+  .booking-page .bk-section-title {
+    margin-bottom: 9px !important;
+  }
+
+  .booking-page .slots-grid {
+    grid-template-columns: repeat(5, minmax(0,1fr)) !important;
+    gap: 7px !important;
+    max-height: 285px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .booking-page .bk-title {
+    margin-bottom: 0 !important;
+  }
+
+  .booking-page .bk-subtitle {
+    margin-bottom: 2px !important;
+    font-size: .70rem !important;
+  }
+
+  .booking-page .bk-steps-indicator {
+    margin: 2px 0 8px !important;
+    transform: scale(.92);
+    transform-origin: center;
+  }
+
+  .booking-page .bk-section-title {
+    margin-bottom: 8px !important;
+    font-size: .91rem !important;
+  }
+
+  .booking-page .pkg-grid {
+    gap: 7px !important;
+  }
+
+  .booking-page .pkg-card {
+    min-height: 90px !important;
+    padding: 8px !important;
+  }
+
+  .booking-page .pkg-price {
+    font-size: 1.22rem !important;
+  }
+
+  .booking-page .iris-calendar-trigger {
+    min-height: 60px !important;
+  }
+
+  .booking-page .slots-title {
+    font-size: .80rem !important;
+    margin: 8px 0 6px !important;
+  }
+
+  .booking-page .slots-grid {
+    grid-template-columns: repeat(4, minmax(0,1fr)) !important;
+    gap: 5px !important;
+    max-height: 238px !important;
+  }
+
+  .booking-page .slot-btn {
+    min-height: 37px !important;
+    font-size: .68rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-page .iris-calendar-trigger {
+    transition: none !important;
+  }
+}
