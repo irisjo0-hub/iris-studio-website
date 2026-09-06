@@ -153,25 +153,31 @@
   width: 100%;
   height: 100%;
   filter: drop-shadow(0 0 20px rgba(245, 189, 26, 0.65));
-  transform-origin: 50% 50%;
-  transform-box: fill-box;
-  animation: preloader-halo-spin 1.8s linear infinite;
-  will-change: transform;
+  overflow: visible;
 }
 
-@keyframes preloader-halo-spin {
+/* The visible gap travels around the halo so the loading motion is unmistakable. */
+.preloader-halo-svg circle {
+  stroke-dasharray: 430 123;
+  stroke-dashoffset: 0;
+  animation: preloader-ring-dash 1.25s linear infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  will-change: stroke-dashoffset;
+}
+
+@keyframes preloader-ring-dash {
   from {
-    transform: rotate(0deg);
+    stroke-dashoffset: 0;
   }
   to {
-    transform: rotate(360deg);
+    stroke-dashoffset: -553;
   }
 }
 
-/* Respect reduced-motion preferences without changing the visual layout. */
 @media (prefers-reduced-motion: reduce) {
-  .preloader-halo-svg {
-    animation: none;
+  .preloader-halo-svg circle {
+    animation-duration: 2.5s;
   }
 }
 
