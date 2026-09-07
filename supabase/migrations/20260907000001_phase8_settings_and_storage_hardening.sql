@@ -1,6 +1,6 @@
 -- ============================================================
 -- IRIS Studio — Supabase Security Migration: Phase 8
--- Public settings allowlist + storage bucket restrictions
+-- Public settings allowlist + storage object upload restrictions
 -- ============================================================
 
 BEGIN;
@@ -10,7 +10,7 @@ DROP POLICY IF EXISTS "Public read site_settings" ON public.site_settings;
 CREATE POLICY "Public read site_settings"
   ON public.site_settings
   FOR SELECT
-  TO anon, authenticated
+  TO anon
   USING (
     key IN (
       'whatsapp_number', 'facebook_link', 'instagram_link',
@@ -35,10 +35,9 @@ CREATE POLICY "Public read site_settings"
     )
   );
 
-UPDATE storage.buckets
-SET file_size_limit = 8388608,
-    allowed_mime_types = ARRAY['image/jpeg', 'image/png', 'image/webp']
-WHERE id IN ('payment-receipts', 'graduation-orders', 'printing-orders');
+-- Bucket-level file size and MIME restrictions must be configured through
+-- Supabase Storage settings/API; this migration intentionally does not mutate
+-- the managed storage.buckets schema.
 
 DROP POLICY IF EXISTS "Public upload payment-receipts bucket" ON storage.objects;
 DROP POLICY IF EXISTS "Public upload graduation-orders bucket" ON storage.objects;
