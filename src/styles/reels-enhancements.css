@@ -24,16 +24,25 @@
   transform: translate3d(0, 0, 0);
 }
 .reel-canvas-layer .instagram-caption-profile-row { visibility: hidden; }
-.reels-persistent-ui-layer .reels-static-profile-header {
-  visibility: visible;
-  position: absolute;
-  top: calc(14px + env(safe-area-inset-top, 0px));
-  z-index: 36;
+.reels-profile-placeholder {
+  display: block;
+  flex: 0 0 auto;
+  visibility: hidden;
   pointer-events: none;
+}
+.reels-persistent-ui-layer .reels-static-profile-header {
+  visibility: visible !important;
+  position: absolute !important;
+  top: auto !important;
+  bottom: 104px !important;
+  z-index: 36 !important;
+  pointer-events: none !important;
+  display: flex !important;
+  align-items: center !important;
   transition: none !important;
 }
-.reel-frame[data-locale="ar"] .reels-static-profile-header { right: 18px; left: auto; }
-.reel-frame[data-locale="en"] .reels-static-profile-header { left: 18px; right: auto; }
+.reel-frame[data-locale="ar"] .reels-static-profile-header { right: 18px !important; left: auto !important; }
+.reel-frame[data-locale="en"] .reels-static-profile-header { left: 18px !important; right: auto !important; }
 .reels-static-profile-header .instagram-follow-btn,
 .reels-static-profile-header button,
 .reels-static-profile-header a { pointer-events: none; }
@@ -75,6 +84,13 @@
   0% { opacity: 0; transform: translate(-50%,-50%) scale(.72); }
   25% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
   100% { opacity: 0; transform: translate(-50%,-50%) scale(1.06); }
+}
+@media (max-width: 767px) {
+  .reels-persistent-ui-layer .reels-static-profile-header {
+    bottom: 102px !important;
+  }
+  .reel-frame[data-locale="ar"] .reels-static-profile-header { right: 14px !important; }
+  .reel-frame[data-locale="en"] .reels-static-profile-header { left: 14px !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .iris-reel-playback-indicator.is-visible,
