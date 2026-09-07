@@ -1,3 +1,4 @@
+// __IRIS_BOOKING_HARDENING_APPLIED__
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -279,8 +280,8 @@ const Booking = () => {
           const parsed = pkgsData.map(p => ({
             name: p.title,
             price: Number(p.price),
-            duration: p.features && p.features.includes('25 دقيقة') ? 25 : 50,
-            label: p.features && p.features.includes('25 دقيقة') ? '25 دقيقة' : '50 دقيقة'
+            duration: Number.isFinite(Number(p.duration)) && Number(p.duration) > 0 ? Number(p.duration) : (p.features && p.features.includes('25 دقيقة') ? 25 : 50),
+            label: Number.isFinite(Number(p.duration)) && Number(p.duration) > 0 ? `${Number(p.duration)} دقيقة` : (p.features && p.features.includes('25 دقيقة') ? '25 دقيقة' : '50 دقيقة')
           }));
           setDbPackages(parsed);
           
@@ -352,12 +353,19 @@ const Booking = () => {
     }
   }, [selectedDate, selectedPackage, existingBookings]);
 
-  // Calculations
-  const extraCompanions = Math.max(0, companions - FREE_COMPANIONS);
-  const extraCompanionsCost = extraCompanions * EXTRA_COMPANION_PRICE;
-  const extrasTotal = extras.reduce((sum, e) => sum + e.price * e.qty, 0);
-  const packagePrice = selectedPackage ? selectedPackage.price : 0;
-  const deliveryCost = deliverySelected ? 2 : 0;
+  // Calculations — mirror the public booking configuration from Supabase settings.
+  const companionConfig = settings?.booking_companion_config || {};
+  const freeCompanionCount = Number.isFinite(Number(companionConfig.free_companions)) ? Math.max(0, Number(companionConfig.free_companions)) : FREE_COMPANIONS;
+  const extraCompanionPrice = Number.isFinite(Number(companionConfig.extra_companion_price)) ? Math.max(0, Number(companionConfig.extra_companion_price)) : EXTRA_COMPANION_PRICE;
+  const deliveryConfig = settings?.booking_delivery_config || {};
+  const configuredDeliveryCost = Number.isFinite(Number(deliveryConfig.cost)) ? Math.max(0, Number(deliveryConfig.cost)) : 2;
+  const deliveryEnabled = deliveryConfig.enabled !== false;
+  const effectiveDeliverySelected = deliverySelected && deliveryEnabled;
+  const extraCompanions = Math.max(0, companions - freeCompanionCount);
+  const extraCompanionsCost = extraCompanions * extraCompanionPrice;
+  const extrasTotal = extras.reduce((sum, e) => sum + Number(e.price || 0) * e.qty, 0);
+  const packagePrice = selectedPackage ? Number(selectedPackage.price || 0) : 0;
+  const deliveryCost = effectiveDeliverySelected ? configuredDeliveryCost : 0;
   const subtotal = packagePrice + extraCompanionsCost + extrasTotal + deliveryCost;
   const remaining = subtotal - DEPOSIT;
 
@@ -409,8 +417,17 @@ const Booking = () => {
   };
 
   const handleNextStep3 = () => {
+    if (deliverySelected && !deliveryEnabled) {
+      alert('خدمة التوصيل غير متاحة حالياً.');
+      setDeliverySelected(false);
+      return;
+    }
     if (deliverySelected && !deliveryAddress.trim()) {
       alert('الرجاء إدخال عنوان التوصيل بالتفصيل');
+      return;
+    }
+    if (deliverySelected && deliveryAddress.trim().length > 500) {
+      alert('عنوان التوصيل طويل جداً. الحد الأقصى 500 حرف.');
       return;
     }
     setStep(4);
@@ -440,10 +457,10 @@ const Booking = () => {
       }));
 
       // Combine delivery into notes to avoid schema breakage
-      let finalNotes = notes;
-      if (deliverySelected) {
+      let finalNotes = notes.slice(0, 5000);
+      if (effectiveDeliverySelected) {
         finalNotes = `[طلب توصيل]
-العنوان: ${deliveryAddress}
+العنوان: ${deliveryAddress.trim().slice(0, 500)}
 هاتف بديل: ${alternativePhone || 'لا يوجد'}
 رابط خرائط جوجل: ${googleMapsLink || 'لا يوجد'}
 

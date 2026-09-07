@@ -1,3 +1,4 @@
+// __IRIS_REELS_HARDENING_APPLIED__
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
@@ -9,7 +10,7 @@ import {
 } from 'lucide-react';
 
 import { useSiteSettings } from '../../context/SiteSettingsContext';
-import { getFlowItems, getFlowItemsAsync, getApprovedFeedbackForFlow, getAllApprovedFeedback, submitFlowFeedback } from '../../repositories/flowRepository';
+import { getFlowItems, getFlowItemsAsync, getAllApprovedFeedbackAsync, submitFlowFeedback } from '../../repositories/flowRepository';
 import irisLogo from '../../assets/iris_logo.png';
 import heroMediaImg from '../../assets/hero.png';
 import '../../styles/iris-reels-viewer.css';
@@ -66,9 +67,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       video.muted = isMuted;
       video.defaultMuted = true;
       video.playsInline = true;
-      try {
-        video.load();
-      } catch (e) {}
       const promise = video.play();
       if (promise !== undefined) {
         promise.catch((err) => {
@@ -135,7 +133,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     });
 
     // Load shared approved feedback for all reels
-    setAllFeedbackList(getAllApprovedFeedback());
+    getAllApprovedFeedbackAsync().then(setAllFeedbackList).catch(() => {});
 
     // Evaluate URL Deep Link
     const currentHash = window.location.hash;
@@ -162,7 +160,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   // Refresh Shared Approved Feedback
   const refreshFeedback = () => {
-    setAllFeedbackList(getAllApprovedFeedback());
+    getAllApprovedFeedbackAsync().then(setAllFeedbackList).catch(() => {});
   };
 
   // Helper to lock window position to stage top during active Reels browsing
@@ -351,9 +349,10 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
     if (diff > 0) {
       // Swipe UP (Downward Intent -> Next Reel)
-      if (currIndex < 7) {
+      const maxIndex = items.length - 1;
+      if (currIndex < maxIndex) {
         navigateToIndex(currIndex + 1, 1);
-      } else if (currIndex === 7 && !cooldownRef.current) {
+      } else if (currIndex === maxIndex && !cooldownRef.current) {
         const divisionsSec = document.getElementById('iris-divisions-section') || document.getElementById('iris-footer-root');
         if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -414,16 +413,22 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   };
 
   const handleToggleFeedback = () => {
-    refreshFeedback();
+    void refreshFeedback();
     setFeedbackOpen((prev) => !prev);
     setFeedbackSubmitted(false);
   };
 
-  const handleFeedbackSubmit = (e) => {
+  const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
     if (!feedbackInput.trim()) return;
     if (items[activeIndex]) {
-      submitFlowFeedback(items[activeIndex].id, feedbackInput, feedbackName);
+      try {
+        await submitFlowFeedback(items[activeIndex].id, feedbackInput, feedbackName);
+      } catch (err) {
+        console.error('Failed to submit visitor feedback:', err);
+        setToastMessage(isRtl ? 'تعذر إرسال التقييم، حاول مرة أخرى.' : 'Could not submit your feedback. Please try again.');
+        return;
+      }
       setFeedbackInput('');
       setFeedbackName('');
       setFeedbackSubmitted(true);
