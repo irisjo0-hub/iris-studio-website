@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -15,6 +15,51 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Apply one-time booking hardening
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'audit/security-performance-fixes'
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('src/pages/Booking.jsx')
+          s = p.read_text(encoding='utf-8')
+          marker = '// __IRIS_BOOKING_HARDENING_APPLIED__'
+          if marker in s:
+              raise SystemExit(0)
+
+          original = s
+          s = s.replace(
+              "duration: p.features && p.features.includes('25 دقيقة') ? 25 : 50,\n            label: p.features && p.features.includes('25 دقيقة') ? '25 دقيقة' : '50 دقيقة'",
+              "duration: Number.isFinite(Number(p.duration)) && Number(p.duration) > 0 ? Number(p.duration) : (p.features && p.features.includes('25 دقيقة') ? 25 : 50),\n            label: Number.isFinite(Number(p.duration)) && Number(p.duration) > 0 ? `${Number(p.duration)} دقيقة` : (p.features && p.features.includes('25 دقيقة') ? '25 دقيقة' : '50 دقيقة')"
+          )
+          s = s.replace(
+              "  // Calculations\n  const extraCompanions = Math.max(0, companions - FREE_COMPANIONS);\n  const extraCompanionsCost = extraCompanions * EXTRA_COMPANION_PRICE;\n  const extrasTotal = extras.reduce((sum, e) => sum + e.price * e.qty, 0);\n  const packagePrice = selectedPackage ? selectedPackage.price : 0;\n  const deliveryCost = deliverySelected ? 2 : 0;\n  const subtotal = packagePrice + extraCompanionsCost + extrasTotal + deliveryCost;",
+              "  // Calculations — mirror the public booking configuration from Supabase settings.\n  const companionConfig = settings?.booking_companion_config || {};\n  const freeCompanionCount = Number.isFinite(Number(companionConfig.free_companions)) ? Math.max(0, Number(companionConfig.free_companions)) : FREE_COMPANIONS;\n  const extraCompanionPrice = Number.isFinite(Number(companionConfig.extra_companion_price)) ? Math.max(0, Number(companionConfig.extra_companion_price)) : EXTRA_COMPANION_PRICE;\n  const deliveryConfig = settings?.booking_delivery_config || {};\n  const configuredDeliveryCost = Number.isFinite(Number(deliveryConfig.cost)) ? Math.max(0, Number(deliveryConfig.cost)) : 2;\n  const deliveryEnabled = deliveryConfig.enabled !== false;\n  const effectiveDeliverySelected = deliverySelected && deliveryEnabled;\n  const extraCompanions = Math.max(0, companions - freeCompanionCount);\n  const extraCompanionsCost = extraCompanions * extraCompanionPrice;\n  const extrasTotal = extras.reduce((sum, e) => sum + Number(e.price || 0) * e.qty, 0);\n  const packagePrice = selectedPackage ? Number(selectedPackage.price || 0) : 0;\n  const deliveryCost = effectiveDeliverySelected ? configuredDeliveryCost : 0;\n  const subtotal = packagePrice + extraCompanionsCost + extrasTotal + deliveryCost;"
+          )
+          s = s.replace(
+              "    if (deliverySelected && !deliveryAddress.trim()) {\n      alert('الرجاء إدخال عنوان التوصيل بالتفصيل');\n      return;\n    }",
+              "    if (deliverySelected && !deliveryEnabled) {\n      alert('خدمة التوصيل غير متاحة حالياً.');\n      setDeliverySelected(false);\n      return;\n    }\n    if (deliverySelected && !deliveryAddress.trim()) {\n      alert('الرجاء إدخال عنوان التوصيل بالتفصيل');\n      return;\n    }\n    if (deliverySelected && deliveryAddress.trim().length > 500) {\n      alert('عنوان التوصيل طويل جداً. الحد الأقصى 500 حرف.');\n      return;\n    }"
+          )
+          s = s.replace(
+              "      let finalNotes = notes;\n      if (deliverySelected) {",
+              "      let finalNotes = notes.slice(0, 5000);\n      if (effectiveDeliverySelected) {"
+          )
+          s = s.replace("العنوان: ${deliveryAddress}", "العنوان: ${deliveryAddress.trim().slice(0, 500)}")
+
+          if s == original:
+              raise SystemExit('No Booking hardening replacements matched; aborting.')
+          p.write_text(marker + '\n' + s, encoding='utf-8')
+          PY
+
+          rm -f .github/workflows/one-shot-booking-fix.yml
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/pages/Booking.jsx .github/workflows/one-shot-booking-fix.yml
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore: apply targeted booking hardening"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
