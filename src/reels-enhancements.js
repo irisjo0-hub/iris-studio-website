@@ -2,6 +2,7 @@ import './styles/reels-enhancements.css';
 
 const PROFILE_SELECTOR = '.reel-canvas-layer .instagram-caption-profile-row';
 const STATIC_PROFILE_CLASS = 'reels-static-profile-header';
+const PROFILE_PLACEHOLDER_CLASS = 'reels-profile-placeholder';
 let gestureClickTimer = null;
 let syncQueued = false;
 
@@ -34,6 +35,17 @@ const showSoundIndicator = (frame, isMuted) => {
   requestAnimationFrame(() => indicator.classList.add('is-visible'));
 };
 
+const createPlaceholder = (source) => {
+  const placeholder = document.createElement('div');
+  placeholder.className = PROFILE_PLACEHOLDER_CLASS;
+  placeholder.setAttribute('aria-hidden', 'true');
+  placeholder.style.width = `${source.offsetWidth || 0}px`;
+  placeholder.style.height = `${source.offsetHeight || 0}px`;
+  placeholder.style.visibility = 'hidden';
+  placeholder.style.pointerEvents = 'none';
+  return placeholder;
+};
+
 const syncStaticProfile = () => {
   const frame = getActiveFrame();
   if (!frame) return;
@@ -50,14 +62,14 @@ const syncStaticProfile = () => {
     el.setAttribute('aria-hidden', 'true');
   });
 
-  // Move the REAL profile node into the persistent UI layer instead of cloning it.
-  // This keeps the original visual position while preventing it from sliding with the Reel canvas.
-  if (existing && existing !== source) {
-    existing.remove();
-    layer.appendChild(source);
-  } else if (!existing) {
-    layer.appendChild(source);
+  let placeholder = frame.querySelector(`.${PROFILE_PLACEHOLDER_CLASS}`);
+  if (!placeholder) {
+    placeholder = createPlaceholder(source);
+    source.parentElement?.insertBefore(placeholder, source);
   }
+
+  if (existing && existing !== source) existing.remove();
+  if (source.parentElement !== layer) layer.appendChild(source);
 };
 
 const scheduleProfileSync = () => {
