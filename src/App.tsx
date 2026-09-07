@@ -5,6 +5,12 @@ import { SiteSettingsProvider } from './context/SiteSettingsContext';
 import { CartProvider } from './context/CartContext';
 import Preloader from './components/premium/Preloader';
 
+declare global {
+  interface Window {
+    hasPreloaded?: boolean;
+  }
+}
+
 const AppContent = () => {
   const [loading, setLoading] = useState(() => !window.hasPreloaded);
 
