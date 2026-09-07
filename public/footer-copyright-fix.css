@@ -1,0 +1,11 @@
+.footer-copyright-capsule,
+.footer-copyright-capsule .copyright-brand,
+.footer-copyright-capsule .copyright-year,
+.footer-copyright-capsule .copyright-sep,
+.footer-copyright-capsule .copyright-text {
+  white-space: nowrap !important;
+}
+
+.footer-copyright-capsule {
+  flex-wrap: nowrap !important;
+}
