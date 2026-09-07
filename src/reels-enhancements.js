@@ -8,8 +8,12 @@ const SOUND_BUTTON_CLASS = 'iris-reel-sound-button';
 let syncQueued = false;
 let observedVideo = null;
 
-const getActiveFrame = () => document.querySelector('.iris-reels-viewer-wrapper .reel-frame');
-const getActiveVideo = (frame) => frame?.querySelector('.reel-canvas-layer video') || null;
+const getFrame = () => document.querySelector('.iris-reels-viewer-wrapper .reel-frame');
+const getVideos = () => Array.from(document.querySelectorAll('.iris-reels-viewer-wrapper .reel-canvas-layer video'));
+const getActiveVideo = () => {
+  const videos = getVideos();
+  return videos.length ? videos[videos.length - 1] : null;
+};
 
 const icon = (name) => {
   if (name === 'play') {
@@ -21,8 +25,17 @@ const icon = (name) => {
   return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M17 9a5 5 0 0 1 0 6M19.8 6.4a9 9 0 0 1 0 11.2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>';
 };
 
+const pauseInactiveVideos = (activeVideo) => {
+  getVideos().forEach((video) => {
+    if (video !== activeVideo) {
+      video.pause();
+      video.muted = true;
+    }
+  });
+};
+
 const syncStaticProfile = () => {
-  const frame = getActiveFrame();
+  const frame = getFrame();
   if (!frame) return;
   const source = frame.querySelector(PROFILE_SELECTOR);
   const layer = frame.querySelector('.reels-persistent-ui-layer');
@@ -83,6 +96,7 @@ const buildControls = (frame, video) => {
     playButton.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
+      pauseInactiveVideos(video);
       video.play().then(() => setControlsVisible(frame, false)).catch(() => {});
     });
 
@@ -94,36 +108,44 @@ const buildControls = (frame, video) => {
 };
 
 const ensureVideoBehavior = (video) => {
-  if (!video || video === observedVideo) return;
-  observedVideo = video;
+  if (!video) return;
   const frame = video.closest('.reel-frame');
   buildControls(frame, video);
 
-  // Default is sound ON. Autoplay may still be blocked by the browser;
-  // the visible play control is then the first user gesture.
-  video.muted = false;
-  video.defaultMuted = false;
+  if (video !== observedVideo) {
+    observedVideo = video;
 
-  const syncPlayback = () => {
-    if (!document.body.contains(video)) return;
+    // A newly entered Reel starts with audio on.
     video.muted = false;
-    const promise = video.play();
-    if (promise?.then) {
-      promise.then(() => setControlsVisible(frame, false)).catch(() => setControlsVisible(frame, true));
-    }
-  };
+    video.defaultMuted = false;
 
-  video.addEventListener('play', () => setControlsVisible(frame, false));
-  video.addEventListener('pause', () => setControlsVisible(frame, true));
-  video.addEventListener('loadedmetadata', syncPlayback, { once: true });
+    video.addEventListener('play', () => {
+      pauseInactiveVideos(video);
+      setControlsVisible(frame, false);
+    });
+    video.addEventListener('pause', () => setControlsVisible(frame, true));
+    video.addEventListener('ended', () => setControlsVisible(frame, true));
 
-  // One tap/click pauses the Reel. No double-click gesture is used.
-  video.addEventListener('click', (event) => {
-    if (event.defaultPrevented) return;
-    video.pause();
-  });
+    // One tap/click pauses the active Reel. There is no double-click gesture.
+    video.addEventListener('click', (event) => {
+      if (event.defaultPrevented) return;
+      video.pause();
+    });
 
-  syncPlayback();
+    const tryAutoplay = () => {
+      if (video !== getActiveVideo()) return;
+      video.muted = false;
+      pauseInactiveVideos(video);
+      video.play().then(() => setControlsVisible(frame, false)).catch(() => setControlsVisible(frame, true));
+    };
+
+    video.addEventListener('loadedmetadata', tryAutoplay, { once: true });
+    tryAutoplay();
+  }
+
+  // Critical: every sync kills audio/playback from all exited Reel layers.
+  pauseInactiveVideos(video === getActiveVideo() ? video : getActiveVideo());
+  updateSoundButton(video);
 };
 
 const scheduleSync = () => {
@@ -132,9 +154,9 @@ const scheduleSync = () => {
   requestAnimationFrame(() => {
     syncQueued = false;
     syncStaticProfile();
-    const frame = getActiveFrame();
-    const video = getActiveVideo(frame);
-    if (video) ensureVideoBehavior(video);
+    const activeVideo = getActiveVideo();
+    if (activeVideo) ensureVideoBehavior(activeVideo);
+    pauseInactiveVideos(activeVideo);
   });
 };
 
