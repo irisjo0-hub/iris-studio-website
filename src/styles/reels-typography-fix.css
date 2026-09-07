@@ -1,0 +1,28 @@
+/* Mobile Reel typography fix — sizes only. */
+@media (max-width: 767px) {
+  .iris-reels-viewer-wrapper .reel-item-number {
+    font-size: 0.70rem !important;
+  }
+
+  .iris-reels-viewer-wrapper .reel-headline-text {
+    font-size: 1.00rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .iris-reels-viewer-wrapper .reel-secondary-text {
+    font-size: 0.74rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .iris-reels-viewer-wrapper .reels-action-counter {
+    font-size: 0.70rem !important;
+  }
+
+  .iris-reels-viewer-wrapper .instagram-username {
+    font-size: 0.76rem !important;
+  }
+
+  .iris-reels-viewer-wrapper .instagram-handle {
+    font-size: 0.66rem !important;
+  }
+}
