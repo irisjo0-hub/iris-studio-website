@@ -75,13 +75,11 @@ const buildControls = (frame, video) => {
       event.preventDefault();
       event.stopPropagation();
 
-      // React owns the `muted` state of the video. Trigger the existing React
-      // sound control instead of mutating the media element behind React's back.
+      // React owns the mute state. Trigger its existing control so the DOM and
+      // React state remain synchronized, then refresh the icon from the live video.
       const reactSoundButton = frame.querySelector('.reels-action-rail .reels-action-btn-group-single:nth-child(4) button');
       if (!reactSoundButton) return;
       reactSoundButton.click();
-
-      // React updates the controlled video property on the next render.
       window.requestAnimationFrame(() => syncSoundButtonAfterReactUpdate(frame));
     });
 
@@ -156,7 +154,6 @@ const bindVideo = (video) => {
     event.stopPropagation();
     if (getActiveVideo(frame) !== video) return;
     video.pause();
-    // Keep the current mute state exactly as selected by the user.
     updateSoundButton(video);
   });
 
@@ -286,7 +283,8 @@ const scheduleSync = () => {
 
 new MutationObserver(scheduleSync).observe(document.body, { childList: true, subtree: true });
 document.addEventListener('click', (event) => {
-  if (suppressNextClick) {
+  const mediaControl = event.target instanceof Element && event.target.closest(`.${CONTROLS_CLASS}`);
+  if (suppressNextClick && !mediaControl) {
     event.preventDefault();
     event.stopPropagation();
   }
