@@ -32,11 +32,6 @@ jobs:
           )
 
           s = s.replace(
-              "  const { settings } = useSiteSettings();\n  const [searchParams] = useSearchParams();",
-              "  const { settings } = useSiteSettings();\n  const [searchParams] = useSearchParams();"
-          )
-
-          s = s.replace(
               "  // Calculations\n  const extraCompanions = Math.max(0, companions - FREE_COMPANIONS);\n  const extraCompanionsCost = extraCompanions * EXTRA_COMPANION_PRICE;\n  const extrasTotal = extras.reduce((sum, e) => sum + e.price * e.qty, 0);\n  const packagePrice = selectedPackage ? selectedPackage.price : 0;\n  const deliveryCost = deliverySelected ? 2 : 0;\n  const subtotal = packagePrice + extraCompanionsCost + extrasTotal + deliveryCost;",
               "  // Calculations — mirror the public booking configuration from Supabase settings.\n  const companionConfig = settings?.booking_companion_config || {};\n  const freeCompanionCount = Number.isFinite(Number(companionConfig.free_companions)) ? Math.max(0, Number(companionConfig.free_companions)) : FREE_COMPANIONS;\n  const extraCompanionPrice = Number.isFinite(Number(companionConfig.extra_companion_price)) ? Math.max(0, Number(companionConfig.extra_companion_price)) : EXTRA_COMPANION_PRICE;\n  const deliveryConfig = settings?.booking_delivery_config || {};\n  const configuredDeliveryCost = Number.isFinite(Number(deliveryConfig.cost)) ? Math.max(0, Number(deliveryConfig.cost)) : 2;\n  const deliveryEnabled = deliveryConfig.enabled !== false;\n  const effectiveDeliverySelected = deliverySelected && deliveryEnabled;\n  const extraCompanions = Math.max(0, companions - freeCompanionCount);\n  const extraCompanionsCost = extraCompanions * extraCompanionPrice;\n  const extrasTotal = extras.reduce((sum, e) => sum + Number(e.price || 0) * e.qty, 0);\n  const packagePrice = selectedPackage ? Number(selectedPackage.price || 0) : 0;\n  const deliveryCost = effectiveDeliverySelected ? configuredDeliveryCost : 0;\n  const subtotal = packagePrice + extraCompanionsCost + extrasTotal + deliveryCost;"
           )
@@ -72,3 +67,5 @@ jobs:
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "chore: apply targeted booking hardening"
           git push origin HEAD:audit/security-performance-fixes
+
+# temporary targeted hardening workflow; self-removes after successful patch
