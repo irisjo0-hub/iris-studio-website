@@ -92,7 +92,8 @@ export const HeroLivingCollage = () => {
           const startX = isRtl ? '-130vw' : '130vw';
           const midX = '0vw';
           const endX = isRtl ? '130vw' : '-130vw';
-          const cardDelay = index * staggerStep;
+          // Keep the 4.5s spacing intact, but bring every card's first appearance forward by 1s.
+          const cardDelay = Math.max(0, index * staggerStep - 1);
           const isInitialFrame = index < channelConfigs.length;
 
           return (
