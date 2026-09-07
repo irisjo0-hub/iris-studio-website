@@ -1,0 +1,97 @@
+name: One-shot Reels hardening
+
+on:
+  push:
+    branches:
+      - audit/security-performance-fixes
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.head_commit.message != 'chore: apply targeted reels hardening'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: audit/security-performance-fixes
+
+      - name: Apply targeted hardening
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('src/components/premium/IrisReelsViewer.jsx')
+          s = p.read_text(encoding='utf-8')
+
+          s = s.replace(
+              "import { getFlowItems, getFlowItemsAsync, getApprovedFeedbackForFlow, getAllApprovedFeedback, submitFlowFeedback } from '../../repositories/flowRepository';",
+              "import { getFlowItems, getFlowItemsAsync, getAllApprovedFeedbackAsync, submitFlowFeedback } from '../../repositories/flowRepository';"
+          )
+
+          s = s.replace(
+              "  // Auto-pause video when scrolling away from Reels stage or tab loses focus\n  useEffect(() => {",
+              "  // Auto-pause video when scrolling away from Reels stage or tab loses focus\n  useEffect(() => {"
+          )
+
+          s = s.replace(
+              "      video.playsInline = true;\n      try {\n        video.load();\n      } catch (e) {}\n      const promise = video.play();",
+              "      video.playsInline = true;\n      const promise = video.play();"
+          )
+
+          s = s.replace(
+              "    // Load shared approved feedback for all reels\n    setAllFeedbackList(getAllApprovedFeedback());",
+              "    // Load shared approved feedback from Supabase; local cache is only fallback.\n    getAllApprovedFeedbackAsync().then(setAllFeedbackList).catch(() => {});"
+          )
+
+          s = s.replace(
+              "  // Refresh Shared Approved Feedback\n  const refreshFeedback = () => {\n    setAllFeedbackList(getAllApprovedFeedback());\n  };",
+              "  // Refresh Shared Approved Feedback\n  const refreshFeedback = async () => {\n    try {\n      const feedback = await getAllApprovedFeedbackAsync();\n      setAllFeedbackList(feedback);\n    } catch (err) {\n      console.warn('Could not refresh visitor feedback:', err);\n    }\n  };"
+          )
+
+          s = s.replace(
+              "  const handleToggleFeedback = () => {\n    refreshFeedback();\n    setFeedbackOpen((prev) => !prev);",
+              "  const handleToggleFeedback = () => {\n    void refreshFeedback();\n    setFeedbackOpen((prev) => !prev);"
+          )
+
+          s = s.replace(
+              "  const handleFeedbackSubmit = (e) => {",
+              "  const handleFeedbackSubmit = async (e) => {"
+          )
+
+          s = s.replace(
+              "      submitFlowFeedback(items[activeIndex].id, feedbackInput, feedbackName);\n      setFeedbackInput('');\n      setFeedbackName('');\n      setFeedbackSubmitted(true);",
+              "      try {\n        await submitFlowFeedback(items[activeIndex].id, feedbackInput, feedbackName);\n      } catch (err) {\n        console.error('Failed to submit visitor feedback:', err);\n        setToastMessage(isRtl ? 'تعذر إرسال التقييم، حاول مرة أخرى.' : 'Could not submit your feedback. Please try again.');\n        return;\n      }\n      setFeedbackInput('');\n      setFeedbackName('');\n      setFeedbackSubmitted(true);"
+          )
+
+          s = s.replace(
+              "      if (currIndex < 7) {\n        navigateToIndex(currIndex + 1, 1);\n      } else if (currIndex === 7 && !cooldownRef.current) {",
+              "      const maxIndex = items.length - 1;\n      if (currIndex < maxIndex) {\n        navigateToIndex(currIndex + 1, 1);\n      } else if (currIndex === maxIndex && !cooldownRef.current) {"
+          )
+
+          marker = "// __IRIS_TARGETED_REELS_HARDENING__"
+          if marker not in s:
+              s = marker + "\n" + s
+          p.write_text(s, encoding='utf-8')
+          PY
+
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('.github/workflows/one-shot-reels-fix.yml')
+          # Remove the temporary workflow from the resulting commit.
+          p.unlink(missing_ok=True)
+          PY
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/premium/IrisReelsViewer.jsx .github/workflows/one-shot-reels-fix.yml
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore: apply targeted reels hardening"
+          git push origin HEAD:audit/security-performance-fixes
