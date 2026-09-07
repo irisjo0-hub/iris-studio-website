@@ -60,7 +60,7 @@ BEGIN
   ) THEN
     ALTER TABLE public.bookings
       ADD CONSTRAINT bookings_status_allowed_check
-      CHECK (status IN ('pending', 'approved', 'completed', 'cancelled')) NOT VALID;
+      CHECK (status IN ('pending', 'approved', 'completed', 'cancelled', 'rejected')) NOT VALID;
   END IF;
 
   IF to_regclass('public.printing_orders') IS NOT NULL AND NOT EXISTS (
