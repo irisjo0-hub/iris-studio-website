@@ -1,3 +1,5 @@
+@import './reels-profile-badge.css';
+
 /* Mobile Reel typography fix — sizes only. */
 @media (max-width: 767px) {
   .iris-reels-viewer-wrapper .reel-item-number {
