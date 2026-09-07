@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -8,16 +8,11 @@ const ProtectedAdminRoute = () => {
 
   useEffect(() => {
     let active = true;
+    let verificationTimer;
 
-    // Safety timeout: if auth check exceeds 5 seconds, redirect to login
-    const safetyTimer = setTimeout(() => {
-      if (active) {
-        setAuthorized(false);
-        setLoading(false);
-      }
-    }, 5000);
-
-    const checkAdmin = async () => {
+    const verifyAdmin = async () => {
+      if (!active) return;
+      setLoading(true);
       try {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError || !user) {
@@ -47,16 +42,34 @@ const ProtectedAdminRoute = () => {
           setAuthorized(false);
           setLoading(false);
         }
-      } finally {
-        clearTimeout(safetyTimer);
       }
     };
 
-    checkAdmin();
+    verificationTimer = setTimeout(() => {
+      if (active) {
+        setAuthorized(false);
+        setLoading(false);
+      }
+    }, 5000);
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+      if (event === 'SIGNED_OUT' || !session) {
+        setAuthorized(false);
+        setLoading(false);
+        return;
+      }
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        void verifyAdmin();
+      }
+    });
+
+    void verifyAdmin();
 
     return () => {
       active = false;
-      clearTimeout(safetyTimer);
+      clearTimeout(verificationTimer);
+      authListener.subscription.unsubscribe();
     };
   }, []);
 
@@ -70,10 +83,7 @@ const ProtectedAdminRoute = () => {
     );
   }
 
-  if (!authorized) {
-    return <Navigate to="/admin/login" replace />;
-  }
-
+  if (!authorized) return <Navigate to="/admin/login" replace />;
   return <Outlet />;
 };
 
