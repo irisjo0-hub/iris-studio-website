@@ -3,17 +3,50 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase configuration. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Keep this list aligned with the actual Supabase Storage bucket visibility.
-export const PRIVATE_BUCKETS = ['payment-receipts', 'graduation-orders', 'reels'];
+export const PRIVATE_BUCKETS = [
+  'payment-receipts',
+  'graduation-orders',
+  'printing-orders',
+  'reels',
+];
+
+const DEFAULT_MAX_UPLOAD_BYTES = 12 * 1024 * 1024;
+const IMAGE_MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+
+function validateUploadFile(file) {
+  if (!file || typeof file !== 'object') {
+    throw new Error('A valid file is required.');
+  }
+
+  const size = Number(file.size || 0);
+  if (!Number.isFinite(size) || size <= 0) {
+    throw new Error('The file is empty or invalid.');
+  }
+
+  const type = String(file.type || '').toLowerCase();
+  const isImage = type.startsWith('image/');
+  const maxBytes = isImage ? IMAGE_MAX_UPLOAD_BYTES : DEFAULT_MAX_UPLOAD_BYTES;
+
+  if (size > maxBytes) {
+    throw new Error(`File exceeds the maximum allowed size of ${Math.round(maxBytes / (1024 * 1024))} MB.`);
+  }
+
+  if (isImage && !ALLOWED_IMAGE_TYPES.has(type)) {
+    throw new Error('Only JPG, PNG, and WebP images are allowed.');
+  }
+}
 
 /**
  * Upload a file to a Supabase storage bucket.
- * @param {string} bucket - Bucket name
- * @param {string} path - File path within the bucket (e.g. 'receipts/123.jpg')
- * @param {File|Blob} file - The file to upload
- * @returns {Promise<string>} Public URL for public buckets, or storage path for private buckets
+ * Returns a public URL for public buckets, or the storage path for private buckets.
  */
 export async function uploadFile(bucket, path, file) {
   if (!bucket || typeof bucket !== 'string') {
@@ -22,15 +55,14 @@ export async function uploadFile(bucket, path, file) {
   if (!path || typeof path !== 'string') {
     throw new Error('A valid storage path is required.');
   }
-  if (!file) {
-    throw new Error('A file is required.');
-  }
 
-  // Sanitize path: split by folder slashes, sanitize base name and extension of each part, then join back.
+  validateUploadFile(file);
+
+  // Sanitize path segment-by-segment and reject traversal attempts.
   const sanitizedPath = path
     .split('/')
-    .map(segment => {
-      if (!segment) return '';
+    .filter((segment) => segment && segment !== '.' && segment !== '..')
+    .map((segment) => {
       const parts = segment.split('.');
       const ext = parts.length > 1 ? parts.pop().toLowerCase() : '';
       const base = parts.join('.');
@@ -41,17 +73,14 @@ export async function uploadFile(bucket, path, file) {
       const finalBase = cleanBase.trim() || 'file';
       return ext ? `${finalBase}.${ext}` : finalBase;
     })
-    .filter(Boolean)
     .join('/');
 
-  if (!sanitizedPath) {
+  if (!sanitizedPath || sanitizedPath.length > 512) {
     throw new Error('The storage path is invalid.');
   }
 
   const isPrivate = PRIVATE_BUCKETS.includes(bucket);
 
-  // Never overwrite an existing object. Only retry when Storage explicitly reports
-  // a path collision; permission/network errors must surface immediately.
   let finalPath = sanitizedPath;
   let uploadResult = await supabase.storage
     .from(bucket)
@@ -87,7 +116,6 @@ export async function uploadFile(bucket, path, file) {
     if (uploadResult.error) throw uploadResult.error;
   }
 
-  // Private buckets return only the object path. Consumers must create a signed URL.
   if (isPrivate) {
     return finalPath;
   }
@@ -99,33 +127,22 @@ export async function uploadFile(bucket, path, file) {
   return data.publicUrl;
 }
 
-/**
- * Get the public URL for a file already in storage (public buckets only).
- * @param {string} bucket
- * @param {string} path
- * @returns {string}
- */
+/** Get a public URL for public storage only. */
 export function getPublicUrl(bucket, path) {
   if (!bucket || !path) return '';
+  if (PRIVATE_BUCKETS.includes(bucket)) return '';
+
   const { data } = supabase.storage
     .from(bucket)
     .getPublicUrl(path);
   return data.publicUrl;
 }
 
-/**
- * Create a fresh signed URL for a private storage object.
- * A previously generated signed URL is intentionally parsed back to its object path
- * instead of being reused because it may already be expired.
- * @param {string} bucket
- * @param {string} pathOrUrl
- * @param {number} expiresIn
- * @returns {Promise<string|null>}
- */
+/** Create a fresh signed URL for a private storage object. */
 export async function createSignedUrl(bucket, pathOrUrl, expiresIn = 3600) {
   if (!pathOrUrl || typeof pathOrUrl !== 'string') return null;
+  if (!PRIVATE_BUCKETS.includes(bucket)) return getPublicUrl(bucket, pathOrUrl);
 
-  const isPrivate = PRIVATE_BUCKETS.includes(bucket);
   const cleanPath = extractPathFromUrl(pathOrUrl, bucket) || (
     pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')
       ? null
@@ -140,22 +157,18 @@ export async function createSignedUrl(bucket, pathOrUrl, expiresIn = 3600) {
       .createSignedUrl(cleanPath, expiresIn);
 
     if (error || !data?.signedUrl) {
-      console.warn(`Could not create signed URL for bucket '${bucket}', path '${cleanPath}':`, error?.message || error);
-      return isPrivate ? null : getPublicUrl(bucket, cleanPath);
+      console.warn(`Could not create signed URL for bucket '${bucket}':`, error?.message || error);
+      return null;
     }
 
     return data.signedUrl;
   } catch (err) {
     console.warn(`Exception creating signed URL for bucket '${bucket}':`, err);
-    return isPrivate ? null : getPublicUrl(bucket, cleanPath);
+    return null;
   }
 }
 
-/**
- * Delete a file from a storage bucket.
- * @param {string} bucket
- * @param {string} path
- */
+/** Delete a file from a storage bucket. */
 export async function deleteFile(bucket, path) {
   const cleanPath = extractPathFromUrl(path, bucket) || path;
   if (!bucket || !cleanPath) return;
@@ -167,12 +180,7 @@ export async function deleteFile(bucket, path) {
   if (error) throw error;
 }
 
-/**
- * Extract the storage object path from a full public/signed URL or return a plain path.
- * @param {string} url
- * @param {string} bucket
- * @returns {string|null}
- */
+/** Extract the storage object path from a full public/signed URL or return a plain path. */
 export function extractPathFromUrl(url, bucket) {
   if (!url || typeof url !== 'string' || !bucket) return null;
 
@@ -185,8 +193,7 @@ export function extractPathFromUrl(url, bucket) {
   const signMarker = `/storage/v1/object/sign/${bucket}/`;
   const sIdx = url.indexOf(signMarker);
   if (sIdx !== -1) {
-    const rawPath = url.substring(sIdx + signMarker.length);
-    return rawPath.split('?')[0];
+    return url.substring(sIdx + signMarker.length).split('?')[0];
   }
 
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
