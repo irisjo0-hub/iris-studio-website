@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
@@ -19,7 +19,9 @@ export const HeroLivingCollage = () => {
     try {
       const p = JSON.parse(settings.hero_motion_images);
       if (Array.isArray(p)) parsedPool = p;
-    } catch (e) {}
+    } catch {
+      parsedPool = [];
+    }
   }
 
   const rawPool = Array.isArray(parsedPool) ? parsedPool : [];
@@ -47,8 +49,6 @@ export const HeroLivingCollage = () => {
     };
   }).filter(item => Boolean(item.image));
 
-  if (pool.length === 0) return null;
-
   useEffect(() => {
     const handleVisibilityChange = () => setIsPaused(document.hidden);
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -69,6 +69,8 @@ export const HeroLivingCollage = () => {
   const handleCardClick = (url) => {
     if (url) navigate(url);
   };
+
+  if (pool.length === 0) return null;
 
   const channelConfigs = [
     { top: '4%', width: 'clamp(175px, 19vw, 280px)', rotateZ: [-3, 2, -3], floatY: [-6, 6, -6] },
@@ -104,17 +106,13 @@ export const HeroLivingCollage = () => {
                 transform: 'translateX(-50%)'
               }}
               initial={{ x: startX, y: 0, opacity: 0, filter: 'blur(12px)' }}
-              animate={
-                isPaused
-                  ? {}
-                  : {
-                      x: [startX, midX, endX],
-                      y: config.floatY,
-                      rotateZ: config.rotateZ,
-                      opacity: [0, 1, 0],
-                      filter: ['blur(12px)', 'blur(0px)', 'blur(12px)']
-                    }
-              }
+              animate={isPaused ? {} : {
+                x: [startX, midX, endX],
+                y: config.floatY,
+                rotateZ: config.rotateZ,
+                opacity: [0, 1, 0],
+                filter: ['blur(12px)', 'blur(0px)', 'blur(12px)']
+              }}
               transition={{
                 duration: travelDuration,
                 repeat: Infinity,
@@ -126,12 +124,7 @@ export const HeroLivingCollage = () => {
               whileHover={{ scale: 1.08, zIndex: 60, transition: { duration: 0.3 } }}
               onClick={() => handleCardClick(work.url_optional)}
             >
-              <img
-                src={work.image}
-                alt={isRtl ? work.alt_ar : work.alt_en}
-                className="stream-card-img"
-                loading="eager"
-              />
+              <img src={work.image} alt={isRtl ? work.alt_ar : work.alt_en} className="stream-card-img" loading="eager" />
             </motion.div>
           );
         })}

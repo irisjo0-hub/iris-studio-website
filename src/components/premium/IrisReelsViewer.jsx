@@ -1,3 +1,4 @@
+// __IRIS_BOOKING_HARDENING_APPLIED__
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
@@ -9,7 +10,7 @@ import {
 } from 'lucide-react';
 
 import { useSiteSettings } from '../../context/SiteSettingsContext';
-import { getFlowItems, getFlowItemsAsync, getApprovedFeedbackForFlow, getAllApprovedFeedback, submitFlowFeedback } from '../../repositories/flowRepository';
+import { getFlowItems, getFlowItemsAsync, getAllApprovedFeedbackAsync, submitFlowFeedback } from '../../repositories/flowRepository';
 import irisLogo from '../../assets/iris_logo.png';
 import heroMediaImg from '../../assets/hero.png';
 import '../../styles/iris-reels-viewer.css';
@@ -36,7 +37,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const [isLocked, setIsLocked] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isStageActive, setIsStageActive] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
 
   // Shared Feedback State across all 8 Reels
@@ -57,18 +58,30 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const activeIndexRef = useRef(0);
   const isSkippingRef = useRef(false);
 
-  // Auto-pause video when scrolling away from Reels stage or tab loses focus
+  // Sync external media-control mute changes back into React so a later render
+  // never overwrites the button action with stale state.
+  useEffect(() => {
+    const handleReelMuteChange = (event) => {
+      if (typeof event.detail?.muted === 'boolean') {
+        setIsMuted(event.detail.muted);
+      }
+    };
+
+    window.addEventListener('iris-reel-mute-change', handleReelMuteChange);
+    return () => window.removeEventListener('iris-reel-mute-change', handleReelMuteChange);
+  }, []);
+
+  // Start the active Reel when entering/changing Reels.
+  // Mute changes are intentionally handled separately so toggling sound never restarts playback.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     if (isStageActive && document.visibilityState === 'visible') {
       video.muted = isMuted;
-      video.defaultMuted = true;
+      video.defaultMuted = isMuted;
       video.playsInline = true;
-      try {
-        video.load();
-      } catch (e) {}
+      video.preload = 'auto';
       const promise = video.play();
       if (promise !== undefined) {
         promise.catch((err) => {
@@ -78,7 +91,15 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     } else {
       video.pause();
     }
-  }, [isStageActive, activeIndex, isMuted]);
+  }, [isStageActive, activeIndex]);
+
+  // Update only the muted property; never call play/pause here.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = isMuted;
+    video.defaultMuted = isMuted;
+  }, [isMuted]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -135,7 +156,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     });
 
     // Load shared approved feedback for all reels
-    setAllFeedbackList(getAllApprovedFeedback());
+    getAllApprovedFeedbackAsync().then(setAllFeedbackList).catch(() => {});
 
     // Evaluate URL Deep Link
     const currentHash = window.location.hash;
@@ -162,10 +183,11 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   // Refresh Shared Approved Feedback
   const refreshFeedback = () => {
-    setAllFeedbackList(getAllApprovedFeedback());
+    getAllApprovedFeedbackAsync().then(setAllFeedbackList).catch(() => {});
   };
 
-  // Helper to lock window position to stage top during active Reels browsing
+  // Helper used only when entering/leaving the Reels section.
+  // Inner Reel scrolling is blocked by preventDefault; repeated window.scrollTo calls are deliberately avoided.
   const lockWindowToStage = () => {
     if (isSkippingRef.current) return;
     if (stageRef.current) {
@@ -253,10 +275,9 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
       if (Math.abs(deltaY) < 25) return;
 
-      // Inner Reels Navigation: strictly lock window and navigate Reel
+      // Inner Reels Navigation: block browser page scroll and let Framer Motion animate only the Reel canvas.
       if (currIndex > 0 && currIndex < maxIndex) {
         e.preventDefault();
-        lockWindowToStage();
         if (cooldownRef.current) return;
 
         if (deltaY > 0) {
@@ -278,7 +299,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           }
         } else {
           e.preventDefault();
-          lockWindowToStage();
           if (!cooldownRef.current) {
             navigateToIndex(1, 1);
           }
@@ -297,7 +317,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           }
         } else {
           e.preventDefault();
-          lockWindowToStage();
           if (!cooldownRef.current) {
             navigateToIndex(maxIndex - 1, -1);
           }
@@ -322,7 +341,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
       if (currIndex >= 0 && currIndex <= maxIndex) {
         e.preventDefault();
-        lockWindowToStage();
       }
     };
 
@@ -351,9 +369,10 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
     if (diff > 0) {
       // Swipe UP (Downward Intent -> Next Reel)
-      if (currIndex < 7) {
+      const maxIndex = items.length - 1;
+      if (currIndex < maxIndex) {
         navigateToIndex(currIndex + 1, 1);
-      } else if (currIndex === 7 && !cooldownRef.current) {
+      } else if (currIndex === maxIndex && !cooldownRef.current) {
         const divisionsSec = document.getElementById('iris-divisions-section') || document.getElementById('iris-footer-root');
         if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -363,7 +382,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         navigateToIndex(currIndex - 1, -1);
       } else if (currIndex === 0 && !cooldownRef.current) {
         const heroSec = document.getElementById('iris-dark-hero-root');
-        if (heroSec) heroSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (heroSec) heroSec.scrollIntoView({ behavior: 'smooth' });
       }
     }
   };
@@ -414,16 +433,22 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   };
 
   const handleToggleFeedback = () => {
-    refreshFeedback();
+    void refreshFeedback();
     setFeedbackOpen((prev) => !prev);
     setFeedbackSubmitted(false);
   };
 
-  const handleFeedbackSubmit = (e) => {
+  const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
     if (!feedbackInput.trim()) return;
     if (items[activeIndex]) {
-      submitFlowFeedback(items[activeIndex].id, feedbackInput, feedbackName);
+      try {
+        await submitFlowFeedback(items[activeIndex].id, feedbackInput, feedbackName);
+      } catch (err) {
+        console.error('Failed to submit visitor feedback:', err);
+        setToastMessage(isRtl ? 'تعذر إرسال التقييم، حاول مرة أخرى.' : 'Could not submit your feedback. Please try again.');
+        return;
+      }
       setFeedbackInput('');
       setFeedbackName('');
       setFeedbackSubmitted(true);
@@ -498,7 +523,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const currentReel = items[activeIndex] || items[0];
 
-  // Instagram/TikTok Silky Smooth Vertical Slide Engine (0% Jitter & Zero Vibration)
+  // Instagram/TikTok silky vertical slide engine: smoother snap with no repeated window scrolling.
   const slideVariants = {
     initial: (dir) => ({
       y: dir > 0 ? '100%' : '-100%',
@@ -508,16 +533,16 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       y: '0%',
       opacity: 1,
       transition: {
-        duration: 0.42,
-        ease: [0.16, 1, 0.3, 1]
+        duration: 0.48,
+        ease: [0.22, 1, 0.36, 1]
       }
     },
     exit: (dir) => ({
       y: dir > 0 ? '-100%' : '100%',
       opacity: 1,
       transition: {
-        duration: 0.42,
-        ease: [0.16, 1, 0.3, 1]
+        duration: 0.48,
+        ease: [0.22, 1, 0.36, 1]
       }
     })
   };
@@ -563,7 +588,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               initial="initial"
               animate="animate"
               exit="exit"
-              style={{ willChange: 'transform', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden' }}
+              style={{ willChange: 'transform', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
             >
               {(() => {
                 const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv|avi)($|\?)/i.test(url) || url.startsWith('data:video') || url.startsWith('blob:video'));
@@ -584,13 +609,14 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                       ref={videoRef}
                       src={mediaSrc}
                       poster={validImage}
+                      preload="auto"
                       autoPlay={isStageActive}
                       loop
                       muted={isMuted}
                       playsInline
                       webkit-playsinline="true"
                       className="reel-static-img"
-                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      style={{ objectFit: 'cover', width: '100%', height: '100%', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
                       onError={() => setVideoErrorMap(prev => ({ ...prev, [currentReel.id]: true }))}
                     />
                   );

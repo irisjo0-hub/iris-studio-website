@@ -1,10 +1,10 @@
-import React, { createContext, useContext } from 'react';
+import { createContext, useContext } from 'react';
 import { useScroll } from 'framer-motion';
 
 const ScrollProgressContext = createContext(null);
 
 export const ScrollProgressProvider = ({ children }) => {
-  const scrollData = useScroll(); // returns scrollX, scrollY, scrollXProgress, scrollYProgress
+  const scrollData = useScroll();
 
   return (
     <ScrollProgressContext.Provider value={scrollData}>
@@ -15,9 +15,6 @@ export const ScrollProgressProvider = ({ children }) => {
 
 export const useScrollProgress = () => {
   const context = useContext(ScrollProgressContext);
-  if (!context) {
-    // Fallback: If not wrapped in Provider, return fresh useScroll() call
-    return useScroll();
-  }
-  return context;
+  const fallbackScrollData = useScroll();
+  return context || fallbackScrollData;
 };
