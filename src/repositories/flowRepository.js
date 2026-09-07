@@ -14,7 +14,7 @@ export const INITIAL_FLOW_ITEMS = [
     id: 'flow-01', enabled: true, sort_order: 1, slug: 'media', category_key: 'MEDIA',
     category_label_ar: 'ميديا', category_label_en: 'MEDIA', image: heroMediaImg,
     alt_ar: 'إنتاج ميديا سينمائي', alt_en: 'Cinematic Media Production',
-    headline_ar: 'نصنع قصصًا بصصريـة تترك أثرًا سينمائيًا لا يُنسى', headline_en: 'Crafting Visual Stories with Unforgettable Impact',
+    headline_ar: 'نصنع قصصًا بصريـة تترك أثرًا سينمائيًا لا يُنسى', headline_en: 'Crafting Visual Stories with Unforgettable Impact',
     secondary_text_ar: 'إنتاج الفيديوهات الإعلانية والوثائقية بأحدث التقنيات السينمائية.', secondary_text_en: 'High-end commercial & documentary video production.',
     overlay_style: 'editorial', overlay_position: 'bottom-left', cta_label_ar: 'اطلب عرضًا لمشروعك', cta_label_en: 'Request Project Proposal', cta_url: '/work', cta_icon_type: 'project', feedback_enabled: true, focal_x: 50, focal_y: 50
   },
