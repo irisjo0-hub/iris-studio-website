@@ -14,7 +14,7 @@ export const INITIAL_FLOW_ITEMS = [
     id: 'flow-01', enabled: true, sort_order: 1, slug: 'media', category_key: 'MEDIA',
     category_label_ar: 'ميديا', category_label_en: 'MEDIA', image: heroMediaImg,
     alt_ar: 'إنتاج ميديا سينمائي', alt_en: 'Cinematic Media Production',
-    headline_ar: 'نصنع قصصًا بصريـة تترك أثرًا سينمائيًا لا يُنسى', headline_en: 'Crafting Visual Stories with Unforgettable Impact',
+    headline_ar: 'نصنع قصصًا بصصريـة تترك أثرًا سينمائيًا لا يُنسى', headline_en: 'Crafting Visual Stories with Unforgettable Impact',
     secondary_text_ar: 'إنتاج الفيديوهات الإعلانية والوثائقية بأحدث التقنيات السينمائية.', secondary_text_en: 'High-end commercial & documentary video production.',
     overlay_style: 'editorial', overlay_position: 'bottom-left', cta_label_ar: 'اطلب عرضًا لمشروعك', cta_label_en: 'Request Project Proposal', cta_url: '/work', cta_icon_type: 'project', feedback_enabled: true, focal_x: 50, focal_y: 50
   },
@@ -104,12 +104,27 @@ export const getFlowItemsAsync = async () => {
   try {
     const { data, error } = await supabase
       .from('flow_items')
-      .select('*')
+      .select('id, data, sort_order')
       .order('sort_order', { ascending: true });
-    if (!error && data && data.length > 0) {
-      const items = data.map((row) => normalizeFlowItem(typeof row.data === 'string' ? JSON.parse(row.data) : row.data));
-      localStorage.setItem(FLOW_STORAGE_KEY, JSON.stringify(items));
-      return items;
+
+    if (!error && Array.isArray(data) && data.length > 0) {
+      const items = data
+        .map((row) => {
+          try {
+            const parsed = typeof row.data === 'string' ? JSON.parse(row.data) : row.data;
+            if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+            return normalizeFlowItem({ ...parsed, id: parsed.id || row.id, sort_order: parsed.sort_order ?? row.sort_order });
+          } catch (err) {
+            console.warn(`Skipping malformed flow item ${row.id}:`, err);
+            return null;
+          }
+        })
+        .filter(Boolean);
+
+      if (items.length > 0) {
+        localStorage.setItem(FLOW_STORAGE_KEY, JSON.stringify(items));
+        return items;
+      }
     }
   } catch (err) {
     console.warn('Could not fetch flow items from Supabase:', err);
