@@ -5,19 +5,18 @@ import { SiteSettingsProvider } from './context/SiteSettingsContext';
 import { CartProvider } from './context/CartContext';
 import Preloader from './components/premium/Preloader';
 
-declare global {
-  interface Window {
-    hasPreloaded?: boolean;
-  }
-}
+type IrisWindow = Window & {
+  hasPreloaded?: boolean;
+};
 
 const AppContent = () => {
-  const [loading, setLoading] = useState(() => !window.hasPreloaded);
+  const irisWindow = window as IrisWindow;
+  const [loading, setLoading] = useState(() => !irisWindow.hasPreloaded);
 
   const handlePreloaderComplete = useCallback(() => {
-    window.hasPreloaded = true;
+    irisWindow.hasPreloaded = true;
     setLoading(false);
-  }, []);
+  }, [irisWindow]);
 
   useEffect(() => {
     if (loading) {
