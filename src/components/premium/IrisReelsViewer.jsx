@@ -58,6 +58,19 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const activeIndexRef = useRef(0);
   const isSkippingRef = useRef(false);
 
+  // Sync external media-control mute changes back into React so a later render
+  // never overwrites the button action with stale state.
+  useEffect(() => {
+    const handleReelMuteChange = (event) => {
+      if (typeof event.detail?.muted === 'boolean') {
+        setIsMuted(event.detail.muted);
+      }
+    };
+
+    window.addEventListener('iris-reel-mute-change', handleReelMuteChange);
+    return () => window.removeEventListener('iris-reel-mute-change', handleReelMuteChange);
+  }, []);
+
   // Start the active Reel when entering/changing Reels.
   // Mute changes are intentionally handled separately so toggling sound never restarts playback.
   useEffect(() => {
@@ -510,8 +523,12 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const currentReel = items[activeIndex] || items[0];
 
+  // Instagram/TikTok silky vertical slide engine: smoother snap with no repeated window scrolling.
   const slideVariants = {
-    initial: (dir) => ({ y: dir > 0 ? '100%' : '-100%', opacity: 1 }),
+    initial: (dir) => ({
+      y: dir > 0 ? '100%' : '-100%',
+      opacity: 1
+    }),
     animate: {
       y: '0%',
       opacity: 1,
@@ -538,6 +555,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
+      {/* VIBRANT IRIS BRAND ATMOSPHERE BACKGROUND (OPTION 2: KINETIC AMBIENT MESH) */}
       <div className="reels-bg-ambient-layer">
         <div className="reels-glow-purple-top" />
         <div className="reels-glow-green-bottom" />
@@ -546,6 +564,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       </div>
 
       <div className="reels-stage-container">
+        {/* OUTER FLOATING TOP SKIP PILL (FLOATING IN AMBIENT BACKGROUND ABOVE REEL) */}
         <button
           type="button"
           className="reels-floating-skip-pill reels-skip-top-pill-outer"
@@ -557,7 +576,9 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           <ChevronUp size={16} className="skip-up-arrow-anim" />
         </button>
 
+        {/* ===== TRUE 9:16 REEL FRAME CANVAS WITH EXPLICIT BILINGUAL LOCALE ===== */}
         <div className="reel-frame" data-locale={isRtl ? 'ar' : 'en'}>
+          {/* ===== 1. ACTIVE 9:16 REEL CANVAS (LOCKSTEP INSTAGRAM SPRING SLIDE) ===== */}
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={`reel-canvas-${currentReel.id}`}
@@ -640,8 +661,10 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
             </motion.div>
           </AnimatePresence>
 
+          {/* ===== 2. PERSISTENT SPATIAL OVERLAYS INSIDE 9:16 FRAME ===== */}
           <div className="reels-persistent-ui-layer">
 
+            {/* Top Bar Controls */}
             <div className="reels-top-bar">
               <button
                 type="button"
@@ -658,7 +681,9 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               </div>
             </div>
 
+            {/* ACTION RAIL (PINNED STRICTLY TO SIDE EDGE) */}
             <div className="reels-action-rail">
+              {/* 1. DYNAMIC PRIMARY ACTION BUTTON (ICON ON TOP, TEXT UNDERNEATH) */}
               <div className="reels-action-btn-group-single">
                 <button
                   type="button"
@@ -679,6 +704,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 )}
               </div>
 
+              {/* 2. SHARED VISITOR FEEDBACK BUTTON */}
               <div className="reels-action-btn-group-single">
                 <button
                   type="button"
@@ -694,6 +720,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 </span>
               </div>
 
+              {/* 3. SHARE BUTTON */}
               <div className="reels-action-btn-group-single">
                 <button
                   type="button"
@@ -709,6 +736,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 </span>
               </div>
 
+              {/* 4. MUTE / UNMUTE SOUND BUTTON */}
               <div className="reels-action-btn-group-single">
                 <button
                   type="button"
@@ -727,6 +755,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           </div>
         </div>
 
+        {/* OUTER FLOATING BOTTOM SKIP PILL (FLOATING IN AMBIENT BACKGROUND BELOW REEL) */}
         <button
           type="button"
           className="reels-floating-skip-pill reels-skip-bottom-pill-outer"
@@ -739,6 +768,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         </button>
       </div>
 
+      {/* ===== 3. SHARED VISITOR FEEDBACK BOTTOM SHEET (MOBILE) / DRAWER (DESKTOP) ===== */}
       {feedbackOpen && (
         <div 
           className="reels-feedback-drawer-overlay" 
@@ -772,6 +802,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               </button>
             </div>
 
+            {/* Instant Success Banner */}
             {feedbackSubmitted && (
               <div style={{
                 padding: '10px 14px',
@@ -790,6 +821,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               </div>
             )}
 
+            {/* Always Visible Form (Unlimited Feedback Submissions) */}
             <form onSubmit={handleFeedbackSubmit} className="reels-feedback-form">
               <input
                 type="text"
@@ -814,6 +846,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               </button>
             </form>
 
+            {/* Scrollable Real Visitor Feedback List */}
             <div className="reels-feedback-section">
               <h4 className="reels-feedback-section-title">
                 {isRtl ? `آراء الزوار الحقيقية (${allFeedbackList.length})` : `Real Visitor Reviews (${allFeedbackList.length})`}
@@ -840,6 +873,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         </div>
       )}
 
+      {/* ===== 4. FULLSCREEN NAVIGATION OVERLAY ===== */}
       {menuOpen &&
         createPortal(
           <motion.div
@@ -850,6 +884,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.28 }}
           >
+            {/* Top Bar: IRIS Logo (Left), Close X (Right) */}
             <div className="overlay-top-bar">
               <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" />
 
@@ -863,6 +898,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               </button>
             </div>
 
+            {/* Vertical Menu List (One Item Per Row) */}
             <nav className="overlay-vertical-menu">
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
                 <Link to="/" className="overlay-nav-item active" onClick={() => setMenuOpen(false)}>
@@ -915,6 +951,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               </motion.div>
             </nav>
 
+            {/* Bottom Row: Language Control & Brand Signature */}
             <div className="overlay-bottom-bar">
               <button
                 type="button"
@@ -935,6 +972,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           document.body
         )}
 
+      {/* ===== 5. TOAST NOTIFICATION ===== */}
       {toastMessage && (
         <div className="reels-toast-notification">
           <span>{toastMessage}</span>
