@@ -159,3 +159,25 @@
   .iris-reel-sound-indicator.is-visible { animation-duration: .2s; }
   .iris-reel-media-controls { transition: none; }
 }
+
+/* Preserve the established Reel typography; interaction fixes must not resize content. */
+.reel-item-number {
+  font-size: 0.82rem !important;
+  letter-spacing: 1.5px !important;
+}
+.reel-headline-text {
+  font-size: clamp(1.2rem, 2.5vw, 1.85rem) !important;
+  line-height: 1.35 !important;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.8) !important;
+}
+.reel-secondary-text {
+  font-size: 0.88rem !important;
+  line-height: 1.4 !important;
+  color: rgba(236, 235, 231, 0.75) !important;
+}
+
+/* The media controls must always win over the temporary swipe-click suppressor. */
+.iris-reel-media-controls,
+.iris-reel-media-controls button {
+  pointer-events: auto;
+}
