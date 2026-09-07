@@ -18,8 +18,6 @@ const getCurrentCanvas = (frame = getFrame()) => {
 };
 const getVideos = () => Array.from(document.querySelectorAll('.iris-reels-viewer-wrapper .reel-canvas-layer video'));
 
-// IMPORTANT: the last canvas is the currently rendered Reel. Never treat a video
-// from the exiting canvas as active when the new Reel is an image.
 const getActiveVideo = (frame = getFrame()) => {
   const currentCanvas = getCurrentCanvas(frame);
   if (!currentCanvas) return null;
@@ -55,6 +53,21 @@ const updateSoundButton = (video) => {
   button.setAttribute('title', video.muted ? 'تشغيل الصوت' : 'كتم الصوت');
 };
 
+const notifyReactMuteState = (video) => {
+  window.dispatchEvent(new CustomEvent('iris-reel-mute-change', {
+    detail: { muted: video.muted }
+  }));
+};
+
+const toggleVideoMute = (video) => {
+  if (!video) return;
+  const nextMuted = !video.muted;
+  video.muted = nextMuted;
+  video.defaultMuted = nextMuted;
+  updateSoundButton(video);
+  notifyReactMuteState(video);
+};
+
 const buildControls = (frame, video) => {
   if (!frame || !video) return;
   const layer = frame.querySelector('.reels-persistent-ui-layer');
@@ -71,10 +84,10 @@ const buildControls = (frame, video) => {
     soundButton.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      const current = getActiveVideo(frame);
-      if (!current) return;
-      current.muted = !current.muted;
-      updateSoundButton(current);
+      // Resolve at click time so a reused control always operates the current Reel video.
+      const current = getActiveVideo(frame) || activeVideo;
+      if (!current || current.closest('.reel-frame') !== frame) return;
+      toggleVideoMute(current);
     });
 
     const playButton = document.createElement('button');
@@ -85,8 +98,8 @@ const buildControls = (frame, video) => {
     playButton.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      const current = getActiveVideo(frame);
-      if (!current) return;
+      const current = getActiveVideo(frame) || activeVideo;
+      if (!current || current.closest('.reel-frame') !== frame) return;
       stopAllVideosExcept(current);
       current.play().then(() => setControlsVisible(frame, false)).catch(() => {});
     });
@@ -123,14 +136,12 @@ const bindVideo = (video) => {
   buildControls(frame, video);
   stopAllVideosExcept(video);
 
-  // New Reels start with sound ON. The browser may still reject audible autoplay;
-  // in that case the paused controls remain visible so the user can start it.
   video.muted = false;
   video.defaultMuted = false;
   video.playsInline = true;
+  notifyReactMuteState(video);
 
   video.addEventListener('play', () => {
-    // A play event from an exiting Reel must never keep audio alive.
     if (getActiveVideo(frame) !== video) {
       video.pause();
       video.muted = true;
@@ -146,7 +157,6 @@ const bindVideo = (video) => {
 
   video.addEventListener('volumechange', () => updateSoundButton(video));
 
-  // Single click = pause. No double-click handling.
   video.addEventListener('click', (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -154,6 +164,7 @@ const bindVideo = (video) => {
     video.pause();
     video.muted = false;
     updateSoundButton(video);
+    notifyReactMuteState(video);
   });
 
   const start = () => {
@@ -264,7 +275,6 @@ const sync = () => {
     if (activeVideo !== nextVideo) bindVideo(nextVideo);
     else updateSoundButton(nextVideo);
   } else {
-    // New Reel is an image: kill every exiting video immediately and hide controls.
     stopAllVideosExcept();
     activeVideo = null;
     setControlsVisible(frame, false);
