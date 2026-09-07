@@ -1,7 +1,4 @@
-/* src/styles/preloader.css
- * IRIS LUXURY PRELOADER SYSTEM — EXACT HERO ATMOSPHERIC MATCH & TAGLINE BADGE
- * Colors: #180C17 (Dark Violet), #67245F (Iris Purple), #044630 (Iris Green), #F5BD1A (Iris Gold)
- */
+/* IRIS LUXURY PRELOADER */
 
 .preloader-overlay {
   position: fixed;
@@ -17,6 +14,17 @@
   z-index: 99999;
   overflow: hidden;
   user-select: none;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0s;
+}
+
+.preloader-overlay--fading {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.6s;
 }
 
 .preloader-grain-overlay {
@@ -112,32 +120,30 @@
   justify-content: center;
 }
 
-.preloader-halo-svg {
+/* One ring only. No SVG, no second/static ring, no dash-offset animation. */
+.preloader-halo-ring {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
+  border: 2.5px solid rgba(245, 189, 26, 0.14);
+  border-top-color: #F5BD1A;
+  border-right-color: #F5BD1A;
+  border-radius: 50%;
   filter: drop-shadow(0 0 20px rgba(245, 189, 26, 0.65));
-  overflow: visible;
-  transform-origin: 50% 50%;
   animation: preloader-ring-spin 1.15s linear infinite;
+  transform: translateZ(0);
   will-change: transform;
 }
 
-/* Use actual SVG rotation rather than dash-offset animation. This is more reliable
-   across browsers and makes the loading motion unmistakable. */
-.preloader-halo-svg circle {
-  stroke-dasharray: 510 43;
-  stroke-dashoffset: 0;
-}
-
 @keyframes preloader-ring-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from { transform: translateZ(0) rotate(0deg); }
+  to { transform: translateZ(0) rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .preloader-halo-svg {
+  .preloader-halo-ring {
     animation-duration: 2.3s;
   }
 }
@@ -149,6 +155,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  z-index: 2;
 }
 
 .preloader-logo {
