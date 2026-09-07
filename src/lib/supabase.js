@@ -50,18 +50,35 @@ export async function uploadFile(bucket, path, file) {
 
   const isPrivate = PRIVATE_BUCKETS.includes(bucket);
 
-  // Security: never overwrite an existing object.
+  // Never overwrite an existing object. Only retry when Storage explicitly reports
+  // a path collision; permission/network errors must surface immediately.
   let finalPath = sanitizedPath;
   let uploadResult = await supabase.storage
     .from(bucket)
     .upload(finalPath, file, { upsert: false });
 
   if (uploadResult.error) {
-    // A collision is expected sometimes; retry once with a unique suffix.
-    const parts = sanitizedPath.split('.');
-    const ext = parts.length > 1 ? parts.pop() : '';
-    const base = parts.join('.');
-    finalPath = `${base}_${Date.now()}${ext ? '.' + ext : ''}`;
+    const statusCode = Number(uploadResult.error.statusCode ?? uploadResult.error.status);
+    const message = String(uploadResult.error.message || '').toLowerCase();
+    const isCollision = statusCode === 409 ||
+      message.includes('already exists') ||
+      message.includes('duplicate') ||
+      message.includes('object exists');
+
+    if (!isCollision) {
+      throw uploadResult.error;
+    }
+
+    const parts = sanitizedPath.split('/');
+    const filename = parts.pop() || 'file';
+    const dotIndex = filename.lastIndexOf('.');
+    const base = dotIndex > 0 ? filename.slice(0, dotIndex) : filename;
+    const ext = dotIndex > 0 ? filename.slice(dotIndex) : '';
+    const uniqueSuffix = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    parts.push(`${base}_${uniqueSuffix}${ext}`);
+    finalPath = parts.join('/');
 
     uploadResult = await supabase.storage
       .from(bucket)

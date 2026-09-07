@@ -1,7 +1,4 @@
-/* src/styles/preloader.css
- * IRIS LUXURY PRELOADER SYSTEM — EXACT HERO ATMOSPHERIC MATCH & TAGLINE BADGE
- * Colors: #180C17 (Dark Violet), #67245F (Iris Purple), #044630 (Iris Green), #F5BD1A (Iris Gold)
- */
+/* IRIS LUXURY PRELOADER */
 
 .preloader-overlay {
   position: fixed;
@@ -17,6 +14,17 @@
   z-index: 99999;
   overflow: hidden;
   user-select: none;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0s;
+}
+
+.preloader-overlay--fading {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.6s;
 }
 
 .preloader-grain-overlay {
@@ -45,13 +53,7 @@
   height: clamp(520px, 48vw, 750px);
   filter: blur(45px);
   border-radius: 50%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(103, 36, 95, 0.65) 0%,
-    rgba(103, 36, 95, 0.42) 32%,
-    rgba(103, 36, 95, 0.22) 58%,
-    transparent 85%
-  );
+  background: radial-gradient(ellipse at center, rgba(103, 36, 95, 0.65) 0%, rgba(103, 36, 95, 0.42) 32%, rgba(103, 36, 95, 0.22) 58%, transparent 85%);
 }
 
 .preloader-glow-purple-topright {
@@ -62,12 +64,7 @@
   height: clamp(550px, 60vw, 900px);
   filter: blur(75px);
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(103, 36, 95, 0.62) 0%,
-    rgba(103, 36, 95, 0.35) 45%,
-    transparent 75%
-  );
+  background: radial-gradient(circle, rgba(103, 36, 95, 0.62) 0%, rgba(103, 36, 95, 0.35) 45%, transparent 75%);
 }
 
 .preloader-glow-green-bottomleft {
@@ -78,12 +75,7 @@
   height: clamp(580px, 65vw, 950px);
   filter: blur(80px);
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(4, 70, 48, 0.65) 0%,
-    rgba(4, 70, 48, 0.35) 50%,
-    transparent 75%
-  );
+  background: radial-gradient(circle, rgba(4, 70, 48, 0.65) 0%, rgba(4, 70, 48, 0.35) 50%, transparent 75%);
 }
 
 .preloader-glow-green-bottomright {
@@ -94,12 +86,7 @@
   height: clamp(450px, 52vw, 800px);
   filter: blur(70px);
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(4, 70, 48, 0.58) 0%,
-    rgba(4, 70, 48, 0.28) 45%,
-    transparent 75%
-  );
+  background: radial-gradient(circle, rgba(4, 70, 48, 0.58) 0%, rgba(4, 70, 48, 0.28) 45%, transparent 75%);
 }
 
 .preloader-glow-gold-center {
@@ -111,12 +98,7 @@
   height: clamp(300px, 35vw, 500px);
   filter: blur(50px);
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(245, 189, 26, 0.22) 0%,
-    rgba(245, 189, 26, 0.08) 45%,
-    transparent 70%
-  );
+  background: radial-gradient(circle, rgba(245, 189, 26, 0.22) 0%, rgba(245, 189, 26, 0.08) 45%, transparent 70%);
 }
 
 .preloader-artistic-wrap {
@@ -138,31 +120,31 @@
   justify-content: center;
 }
 
-.preloader-halo-svg {
+/* One ring only. No SVG, no second/static ring, no dash-offset animation. */
+.preloader-halo-ring {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
+  border: 2.5px solid rgba(245, 189, 26, 0.14);
+  border-top-color: #F5BD1A;
+  border-right-color: #F5BD1A;
+  border-radius: 50%;
   filter: drop-shadow(0 0 20px rgba(245, 189, 26, 0.65));
-  overflow: visible;
+  animation: preloader-ring-spin 1.15s linear infinite;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
-/* The ring itself carries the moving gap. This is visually stable across browsers. */
-.preloader-halo-svg circle {
-  stroke-dasharray: 510 43;
-  stroke-dashoffset: 0;
-  animation: preloader-ring-dash 1.15s linear infinite;
-  will-change: stroke-dashoffset;
-}
-
-@keyframes preloader-ring-dash {
-  from { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: -553; }
+@keyframes preloader-ring-spin {
+  from { transform: translateZ(0) rotate(0deg); }
+  to { transform: translateZ(0) rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .preloader-halo-svg circle {
-    animation: preloader-ring-dash 2.3s linear infinite;
+  .preloader-halo-ring {
+    animation-duration: 2.3s;
   }
 }
 
@@ -173,6 +155,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  z-index: 2;
 }
 
 .preloader-logo {
