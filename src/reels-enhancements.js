@@ -53,19 +53,9 @@ const updateSoundButton = (video) => {
   button.setAttribute('title', video.muted ? 'تشغيل الصوت' : 'كتم الصوت');
 };
 
-const notifyReactMuteState = (video) => {
-  window.dispatchEvent(new CustomEvent('iris-reel-mute-change', {
-    detail: { muted: video.muted }
-  }));
-};
-
-const toggleVideoMute = (video) => {
-  if (!video) return;
-  const nextMuted = !video.muted;
-  video.muted = nextMuted;
-  video.defaultMuted = nextMuted;
-  updateSoundButton(video);
-  notifyReactMuteState(video);
+const syncSoundButtonAfterReactUpdate = (frame) => {
+  const current = getActiveVideo(frame);
+  if (current) updateSoundButton(current);
 };
 
 const buildControls = (frame, video) => {
@@ -84,10 +74,15 @@ const buildControls = (frame, video) => {
     soundButton.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      // Resolve at click time so a reused control always operates the current Reel video.
-      const current = getActiveVideo(frame) || activeVideo;
-      if (!current || current.closest('.reel-frame') !== frame) return;
-      toggleVideoMute(current);
+
+      // React owns the `muted` state of the video. Trigger the existing React
+      // sound control instead of mutating the media element behind React's back.
+      const reactSoundButton = frame.querySelector('.reels-action-rail .reels-action-btn-group-single:nth-child(4) button');
+      if (!reactSoundButton) return;
+      reactSoundButton.click();
+
+      // React updates the controlled video property on the next render.
+      window.requestAnimationFrame(() => syncSoundButtonAfterReactUpdate(frame));
     });
 
     const playButton = document.createElement('button');
@@ -139,7 +134,6 @@ const bindVideo = (video) => {
   video.muted = false;
   video.defaultMuted = false;
   video.playsInline = true;
-  notifyReactMuteState(video);
 
   video.addEventListener('play', () => {
     if (getActiveVideo(frame) !== video) {
@@ -162,9 +156,8 @@ const bindVideo = (video) => {
     event.stopPropagation();
     if (getActiveVideo(frame) !== video) return;
     video.pause();
-    video.muted = false;
+    // Keep the current mute state exactly as selected by the user.
     updateSoundButton(video);
-    notifyReactMuteState(video);
   });
 
   const start = () => {
