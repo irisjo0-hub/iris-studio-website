@@ -1,0 +1,78 @@
+/* Persistent Reel profile badge: visually attached to the caption, but independent from each sliding Reel. */
+.iris-reels-viewer-wrapper .reels-persistent-ui-layer::before {
+  content: "";
+  position: absolute;
+  z-index: 36;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(103, 36, 95, 0.96) url('../assets/iris_logo.png') center / 24px 24px no-repeat;
+  border: 1.5px solid rgba(245, 189, 26, 0.9);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.iris-reels-viewer-wrapper .reels-persistent-ui-layer::after {
+  content: "IRIS HOME\A@iris.jo";
+  white-space: pre;
+  position: absolute;
+  z-index: 36;
+  font-family: var(--font-primary, sans-serif);
+  font-weight: 700;
+  font-size: 0.68rem;
+  line-height: 1.25;
+  color: #ECEBE7;
+  text-align: right;
+  pointer-events: none;
+}
+
+.reel-frame[data-locale="ar"] .reels-persistent-ui-layer::before {
+  right: 18px;
+  bottom: 128px;
+}
+
+.reel-frame[data-locale="ar"] .reels-persistent-ui-layer::after {
+  right: 62px;
+  bottom: 132px;
+}
+
+.reel-frame[data-locale="en"] .reels-persistent-ui-layer::before {
+  left: 18px;
+  bottom: 128px;
+}
+
+.reel-frame[data-locale="en"] .reels-persistent-ui-layer::after {
+  left: 62px;
+  bottom: 132px;
+  text-align: left;
+}
+
+@media (max-width: 767px) {
+  .iris-reels-viewer-wrapper .reels-persistent-ui-layer::before {
+    width: 36px;
+    height: 36px;
+    background-size: 22px 22px;
+  }
+
+  .iris-reels-viewer-wrapper .reels-persistent-ui-layer::after {
+    font-size: 0.64rem;
+  }
+
+  .reel-frame[data-locale="ar"] .reels-persistent-ui-layer::before {
+    bottom: 124px;
+  }
+
+  .reel-frame[data-locale="ar"] .reels-persistent-ui-layer::after {
+    right: 58px;
+    bottom: 128px;
+  }
+
+  .reel-frame[data-locale="en"] .reels-persistent-ui-layer::before {
+    bottom: 124px;
+  }
+
+  .reel-frame[data-locale="en"] .reels-persistent-ui-layer::after {
+    left: 58px;
+    bottom: 128px;
+  }
+}
