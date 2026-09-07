@@ -7,6 +7,7 @@ let syncQueued = false;
 
 const getActiveFrame = () => document.querySelector('.iris-reels-viewer-wrapper .reel-frame');
 const isInteractiveTarget = (target) => Boolean(target?.closest?.('.reels-persistent-ui-layer, .reels-floating-skip-pill, .reels-feedback-drawer-overlay, button, a, input, textarea, select'));
+
 const showPlaybackIndicator = (frame, isPlaying) => {
   if (!frame) return;
   let indicator = frame.querySelector('.iris-reel-playback-indicator');
@@ -19,36 +20,46 @@ const showPlaybackIndicator = (frame, isPlaying) => {
   indicator.classList.remove('is-visible');
   requestAnimationFrame(() => indicator.classList.add('is-visible'));
 };
-const getSoundToggleButton = (frame) => frame?.querySelector('.reels-action-rail .reels-action-btn-group-single:nth-child(4) button') || null;
+
+const showSoundIndicator = (frame, isMuted) => {
+  if (!frame) return;
+  let indicator = frame.querySelector('.iris-reel-sound-indicator');
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.className = 'iris-reel-sound-indicator';
+    frame.appendChild(indicator);
+  }
+  indicator.textContent = isMuted ? '🔇' : '🔊';
+  indicator.classList.remove('is-visible');
+  requestAnimationFrame(() => indicator.classList.add('is-visible'));
+};
+
 const syncStaticProfile = () => {
   const frame = getActiveFrame();
   if (!frame) return;
+
   const source = frame.querySelector(PROFILE_SELECTOR);
   const layer = frame.querySelector('.reels-persistent-ui-layer');
   if (!source || !layer) return;
-  let staticProfile = layer.querySelector(`.${STATIC_PROFILE_CLASS}`);
-  const sourceMarkup = source.innerHTML;
-  if (!staticProfile) {
-    staticProfile = source.cloneNode(true);
-    staticProfile.classList.add(STATIC_PROFILE_CLASS);
-    staticProfile.setAttribute('aria-hidden', 'true');
-    staticProfile.dataset.sourceMarkup = sourceMarkup;
-    staticProfile.querySelectorAll('button, a, input, textarea, select').forEach((el) => {
-      el.setAttribute('tabindex', '-1');
-      el.setAttribute('aria-hidden', 'true');
-    });
-    layer.appendChild(staticProfile);
-  } else if (staticProfile.dataset.sourceMarkup !== sourceMarkup) {
-    staticProfile.innerHTML = sourceMarkup;
-    staticProfile.dataset.sourceMarkup = sourceMarkup;
-    staticProfile.classList.add(STATIC_PROFILE_CLASS);
-    staticProfile.setAttribute('aria-hidden', 'true');
-    staticProfile.querySelectorAll('button, a, input, textarea, select').forEach((el) => {
-      el.setAttribute('tabindex', '-1');
-      el.setAttribute('aria-hidden', 'true');
-    });
+
+  const existing = layer.querySelector(`.${STATIC_PROFILE_CLASS}`);
+  source.classList.add(STATIC_PROFILE_CLASS);
+  source.setAttribute('aria-hidden', 'true');
+  source.querySelectorAll('button, a, input, textarea, select').forEach((el) => {
+    el.setAttribute('tabindex', '-1');
+    el.setAttribute('aria-hidden', 'true');
+  });
+
+  // Move the REAL profile node into the persistent UI layer instead of cloning it.
+  // This keeps the original visual position while preventing it from sliding with the Reel canvas.
+  if (existing && existing !== source) {
+    existing.remove();
+    layer.appendChild(source);
+  } else if (!existing) {
+    layer.appendChild(source);
   }
 };
+
 const scheduleProfileSync = () => {
   if (syncQueued) return;
   syncQueued = true;
@@ -57,22 +68,26 @@ const scheduleProfileSync = () => {
     syncStaticProfile();
   });
 };
+
 const handleMediaClick = (event) => {
   const video = event.target.closest?.('.reel-canvas-layer video');
   if (!video || event.defaultPrevented || isInteractiveTarget(event.target)) return;
+
   window.clearTimeout(gestureClickTimer);
   gestureClickTimer = window.setTimeout(() => {
     const frame = video.closest('.reel-frame');
-    const soundButton = getSoundToggleButton(frame);
-    if (soundButton) soundButton.click();
-    else video.muted = !video.muted;
+    video.muted = !video.muted;
+    showSoundIndicator(frame, video.muted);
   }, 220);
 };
+
 const handleMediaDoubleClick = (event) => {
   const video = event.target.closest?.('.reel-canvas-layer video');
   if (!video || isInteractiveTarget(event.target)) return;
+
   window.clearTimeout(gestureClickTimer);
   gestureClickTimer = null;
+
   if (video.paused) {
     video.play().catch(() => {});
     showPlaybackIndicator(video.closest('.reel-frame'), true);
@@ -81,12 +96,18 @@ const handleMediaDoubleClick = (event) => {
     showPlaybackIndicator(video.closest('.reel-frame'), false);
   }
 };
+
 const setupObserver = () => {
   const observer = new MutationObserver(() => scheduleProfileSync());
   observer.observe(document.body, { childList: true, subtree: true });
   scheduleProfileSync();
 };
+
 document.addEventListener('click', handleMediaClick, true);
 document.addEventListener('dblclick', handleMediaDoubleClick, true);
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupObserver, { once: true });
-else setupObserver();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupObserver, { once: true });
+} else {
+  setupObserver();
+}
