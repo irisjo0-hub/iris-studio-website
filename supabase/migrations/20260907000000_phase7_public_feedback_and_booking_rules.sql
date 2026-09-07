@@ -5,19 +5,11 @@
 
 BEGIN;
 
--- ------------------------------------------------------------
--- 1. Public booking configuration
--- ------------------------------------------------------------
 INSERT INTO public.site_settings (key, value)
 VALUES
   ('booking_delivery_config', '{"enabled": true, "cost": 2.00}'::jsonb)
 ON CONFLICT (key) DO NOTHING;
 
--- ------------------------------------------------------------
--- 2. Keep delivery cost authoritative at DB level.
--- Current client flow stores delivery selection in the notes payload
--- to preserve the existing bookings schema.
--- ------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.apply_booking_delivery_total()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -41,9 +33,6 @@ BEGIN
     END IF;
   END IF;
 
-  -- Rebuild totals from already-authoritative booking components.
-  -- Existing RPC calculates package + companions + extras.
-  -- This trigger adds the delivery component only when selected.
   IF v_is_delivery THEN
     NEW.subtotal := COALESCE(NEW.subtotal, 0) + v_delivery_cost;
     NEW.remaining_amount := GREATEST(0, NEW.subtotal - COALESCE(NEW.deposit_amount, 0));
@@ -62,10 +51,6 @@ EXECUTE FUNCTION public.apply_booking_delivery_total();
 REVOKE ALL ON FUNCTION public.apply_booking_delivery_total() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.apply_booking_delivery_total() TO authenticated;
 
--- ------------------------------------------------------------
--- 3. Enforce future-safe status/payment values without breaking
---    any legacy rows that may already contain older values.
--- ------------------------------------------------------------
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -99,9 +84,6 @@ BEGIN
   END IF;
 END $$;
 
--- ------------------------------------------------------------
--- 4. Real visitor feedback table
--- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.flow_feedback (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   flow_item_id TEXT NOT NULL,
@@ -134,7 +116,7 @@ DROP POLICY IF EXISTS "Admin delete flow feedback" ON public.flow_feedback;
 CREATE POLICY "Public insert flow feedback"
   ON public.flow_feedback
   FOR INSERT
-  TO anon, authenticated
+  TO anon
   WITH CHECK (
     status = 'pending'
     AND char_length(name) BETWEEN 1 AND 80
@@ -144,7 +126,7 @@ CREATE POLICY "Public insert flow feedback"
 CREATE POLICY "Public read approved flow feedback"
   ON public.flow_feedback
   FOR SELECT
-  TO anon, authenticated
+  TO anon
   USING (status = 'approved');
 
 CREATE POLICY "Admin read flow feedback"
@@ -166,9 +148,6 @@ CREATE POLICY "Admin delete flow feedback"
   TO authenticated
   USING (public.is_admin() = true);
 
--- ------------------------------------------------------------
--- 5. Public RPC returns only approved, non-sensitive fields.
--- ------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.get_public_flow_feedback()
 RETURNS TABLE (
   id BIGINT,
@@ -194,10 +173,8 @@ AS $$
 $$;
 
 REVOKE ALL ON FUNCTION public.get_public_flow_feedback() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.get_public_flow_feedback() TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.get_public_flow_feedback() TO anon;
 
--- Direct table SELECT is intentionally limited to authenticated clients;
--- public visitors use the RPC above so the public surface stays explicit.
 GRANT SELECT ON public.flow_feedback TO authenticated;
 REVOKE SELECT ON public.flow_feedback FROM anon;
 
