@@ -79,10 +79,11 @@ export const HeroLivingCollage = () => {
   ];
 
   const N = pool.length;
-  const travelDuration = 26;
-  const staggerStep = N === 1 ? 26 : 4.5;
-  const totalLoopCycle = N === 1 ? 26 : Math.max(travelDuration + staggerStep, N * staggerStep);
-  const repeatDelay = totalLoopCycle - travelDuration;
+  const travelDuration = 24;
+  const staggerStep = N === 1 ? 24 : 4.5;
+  const totalLoopCycle = N === 1 ? 24 : Math.max(travelDuration + staggerStep, N * staggerStep);
+  // The initial appearance was brought forward by 1s, so reduce the cycle pause by 1s too.
+  const repeatDelay = Math.max(0, totalLoopCycle - travelDuration - 1);
 
   return (
     <div ref={stageRef} className={`iris-hero-lower-stage ${isPaused ? 'is-paused' : ''}`}>
@@ -92,8 +93,7 @@ export const HeroLivingCollage = () => {
           const startX = isRtl ? '-130vw' : '130vw';
           const midX = '0vw';
           const endX = isRtl ? '130vw' : '-130vw';
-          // Keep the 4.5s spacing intact, bring first appearance forward by 1s,
-          // and hold each card centered briefly before it continues across.
+          // Keep the original movement and center timing; only advance each card's start by 1s.
           const cardDelay = Math.max(0, index * staggerStep - 1);
           const isInitialFrame = index < channelConfigs.length;
 
@@ -110,15 +110,14 @@ export const HeroLivingCollage = () => {
               }}
               initial={{ x: startX, y: 0, opacity: 0, filter: 'blur(12px)' }}
               animate={isPaused ? {} : {
-                x: [startX, midX, midX, endX],
+                x: [startX, midX, endX],
                 y: config.floatY,
                 rotateZ: config.rotateZ,
-                opacity: [0, 1, 1, 0],
-                filter: ['blur(12px)', 'blur(0px)', 'blur(0px)', 'blur(12px)']
+                opacity: [0, 1, 0],
+                filter: ['blur(12px)', 'blur(0px)', 'blur(12px)']
               }}
               transition={{
                 duration: travelDuration,
-                times: [0, 12 / 26, 14 / 26, 1],
                 repeat: Infinity,
                 repeatType: 'loop',
                 repeatDelay,
