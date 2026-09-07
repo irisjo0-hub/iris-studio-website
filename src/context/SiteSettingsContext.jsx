@@ -4,6 +4,63 @@ import heroMediaImg from '../assets/hero.png';
 
 const SiteSettingsContext = createContext(null);
 
+export const PUBLIC_SETTING_KEYS = [
+  'whatsapp_number',
+  'facebook_link',
+  'instagram_link',
+  'slogan_line_1_ar',
+  'slogan_line_1_en',
+  'slogan_line_2_ar',
+  'slogan_line_2_en',
+  'slogan_line_1',
+  'slogan_line_2',
+  'supporting_text_ar',
+  'supporting_text_en',
+  'supporting_text',
+  'hero_primary_cta_ar',
+  'hero_primary_cta_en',
+  'studio_address_ar',
+  'studio_address_en',
+  'studio_address',
+  'location_map_url',
+  'office_hours_ar',
+  'office_hours_en',
+  'office_hours',
+  'logo_url',
+  'hero_logo_url',
+  'hero_desktop_video_url',
+  'hero_mobile_video_url',
+  'hero_division_media_image',
+  'hero_division_studio_image',
+  'hero_division_print_image',
+  'hero_motion_media_image',
+  'hero_motion_studio_image',
+  'hero_motion_print_image',
+  'hero_motion_images',
+  'hero_image_display_count',
+  'division_media_image',
+  'division_studio_image',
+  'division_print_image',
+  'division_media_title_ar',
+  'division_media_title_en',
+  'division_media_subtitle_ar',
+  'division_media_subtitle_en',
+  'division_studio_title_ar',
+  'division_studio_title_en',
+  'division_studio_subtitle_ar',
+  'division_studio_subtitle_en',
+  'division_print_title_ar',
+  'division_print_title_en',
+  'division_print_subtitle_ar',
+  'division_print_subtitle_en',
+  'division_media_url',
+  'division_studio_url',
+  'division_print_url',
+  'preloader_text',
+  'booking_companion_config',
+  'booking_delivery_config'
+];
+
 export const DEFAULT_HERO_MOTION_IMAGES = [
   { id: 'h-1', image: heroMediaImg, alt_ar: 'إنتاج ميديا سينمائي', alt_en: 'Cinematic Media Production', url_optional: '/work' },
   { id: 'h-2', image: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1000&q=80', alt_ar: 'تصوير بورتريـه استوديو', alt_en: 'Studio Portrait Photography', url_optional: '/booking' },
@@ -67,14 +124,21 @@ export const DEFAULT_SETTINGS = {
   division_media_url: "/work",
   division_studio_url: "/booking",
   division_print_url: "/printing-products",
-  preloader_text: "آيـرس • اسـتـوديـو إبـداعـي"
+  preloader_text: "آيـرس • اسـتـوديـو إبـداعـي",
+  booking_companion_config: { free_companions: 5, extra_companion_price: 2 },
+  booking_delivery_config: { enabled: true, cost: 2 }
 };
+
+const pickPublicSettings = (settings) => Object.fromEntries(
+  PUBLIC_SETTING_KEYS
+    .filter((key) => Object.prototype.hasOwnProperty.call(settings || {}, key))
+    .map((key) => [key, settings[key]])
+);
 
 export const SiteSettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
 
-  // Persistent Language State ('ar' or 'en')
   const [lang, setLangState] = useState(() => {
     const saved = localStorage.getItem('iris_language');
     return saved === 'en' ? 'en' : 'ar';
@@ -88,9 +152,7 @@ export const SiteSettingsProvider = ({ children }) => {
     document.documentElement.dir = targetLang === 'ar' ? 'rtl' : 'ltr';
   };
 
-  const toggleLanguage = () => {
-    setLanguage(lang === 'ar' ? 'en' : 'ar');
-  };
+  const toggleLanguage = () => setLanguage(lang === 'ar' ? 'en' : 'ar');
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -104,49 +166,40 @@ export const SiteSettingsProvider = ({ children }) => {
       let baseSettings = DEFAULT_SETTINGS;
       if (cached) {
         try {
-          baseSettings = { ...DEFAULT_SETTINGS, ...JSON.parse(cached) };
+          baseSettings = { ...DEFAULT_SETTINGS, ...pickPublicSettings(JSON.parse(cached)) };
         } catch {}
       }
 
       const { data, error } = await supabase
         .from('site_settings')
-        .select('*');
-      
-      if (error) {
-        throw error;
-      }
+        .select('key,value')
+        .in('key', PUBLIC_SETTING_KEYS);
+
+      if (error) throw error;
 
       if (data && data.length > 0) {
         const dbSettings = {};
-        data.forEach(item => {
-          if (item && item.key && item.value !== null && item.value !== undefined) {
-            let val = item.value;
-            if (typeof val === 'string' && (val.trim().startsWith('[') || val.trim().startsWith('{'))) {
-              try {
-                val = JSON.parse(val);
-              } catch {
-                // Keep raw string if not JSON
-              }
-            }
-            dbSettings[item.key] = val;
+        data.forEach((item) => {
+          if (!item?.key || item.value === null || item.value === undefined) return;
+          let val = item.value;
+          if (typeof val === 'string' && (val.trim().startsWith('[') || val.trim().startsWith('{'))) {
+            try { val = JSON.parse(val); } catch {}
           }
+          dbSettings[item.key] = val;
         });
 
-        const merged = {
-          ...DEFAULT_SETTINGS,
-          ...dbSettings
-        };
+        const merged = { ...DEFAULT_SETTINGS, ...pickPublicSettings(dbSettings) };
         setSettings(merged);
         localStorage.setItem('cached_site_settings', JSON.stringify(merged));
       } else {
         setSettings(baseSettings);
       }
     } catch (err) {
-      console.warn("Could not load settings from database. Using cached local settings.", err.message);
+      console.warn('Could not load settings from database. Using cached local settings.', err?.message || err);
       const cached = localStorage.getItem('cached_site_settings');
       if (cached) {
         try {
-          setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(cached) });
+          setSettings({ ...DEFAULT_SETTINGS, ...pickPublicSettings(JSON.parse(cached)) });
         } catch {
           setSettings(DEFAULT_SETTINGS);
         }
@@ -159,8 +212,8 @@ export const SiteSettingsProvider = ({ children }) => {
   };
 
   const updateSettingsLocally = (newSettings) => {
-    setSettings(prev => {
-      const updated = { ...prev, ...newSettings };
+    setSettings((prev) => {
+      const updated = { ...prev, ...pickPublicSettings(newSettings) };
       localStorage.setItem('cached_site_settings', JSON.stringify(updated));
       return updated;
     });
@@ -170,7 +223,7 @@ export const SiteSettingsProvider = ({ children }) => {
     const cached = localStorage.getItem('cached_site_settings');
     if (cached) {
       try {
-        setSettings(JSON.parse(cached));
+        setSettings({ ...DEFAULT_SETTINGS, ...pickPublicSettings(JSON.parse(cached)) });
       } catch {}
     }
     fetchSettings();
@@ -178,15 +231,7 @@ export const SiteSettingsProvider = ({ children }) => {
 
   return (
     <SiteSettingsContext.Provider
-      value={{
-        settings,
-        loading,
-        lang,
-        setLanguage,
-        toggleLanguage,
-        refreshSettings: fetchSettings,
-        updateSettingsLocally
-      }}
+      value={{ settings, loading, lang, setLanguage, toggleLanguage, refreshSettings: fetchSettings, updateSettingsLocally }}
     >
       {children}
     </SiteSettingsContext.Provider>
@@ -195,8 +240,6 @@ export const SiteSettingsProvider = ({ children }) => {
 
 export const useSiteSettings = () => {
   const context = useContext(SiteSettingsContext);
-  if (!context) {
-    throw new Error('useSiteSettings must be used within a SiteSettingsProvider');
-  }
+  if (!context) throw new Error('useSiteSettings must be used within a SiteSettingsProvider');
   return context;
 };
