@@ -1,6 +1,9 @@
 {
   "name": "IRIS Studio",
-  "short_name": "IRIS Studio",
+  "short_name": "IRIS",
+  "description": "IRIS Studio — Photography, Media & Printing",
+  "lang": "ar",
+  "dir": "rtl",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -13,8 +16,10 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#6e267b",
-  "background_color": "#ecebe7",
+  "theme_color": "#000000",
+  "background_color": "#000000",
   "display": "standalone",
-  "start_url": "/"
+  "start_url": "/",
+  "scope": "/",
+  "orientation": "portrait-primary"
 }

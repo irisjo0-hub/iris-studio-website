@@ -23,7 +23,6 @@ const formatTriggerDate = (value) => {
 const getSelectedDate = (section) =>
   section.querySelector('.selected-date-display strong')?.textContent?.trim() || '';
 
-// Lucide CalendarDays SVG markup. No nested React root is created here.
 const CALENDAR_ICON_SVG = `
   <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
     <path d="M8 2v4" />
@@ -155,8 +154,12 @@ const scheduleInit = () => {
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   const start = () => {
     scheduleInit();
+
+    // Observe only the React root. The previous body-wide observer reacted to
+    // unrelated DOM changes across the entire application.
+    const root = document.getElementById('root') || document.body;
     const observer = new MutationObserver(scheduleInit);
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(root, { childList: true, subtree: true });
   };
 
   if (document.readyState === 'loading') {

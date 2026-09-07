@@ -93,6 +93,7 @@ export const HeroLivingCollage = () => {
           const midX = '0vw';
           const endX = isRtl ? '130vw' : '-130vw';
           const cardDelay = index * staggerStep;
+          const isInitialFrame = index < channelConfigs.length;
 
           return (
             <motion.div
@@ -124,7 +125,13 @@ export const HeroLivingCollage = () => {
               whileHover={{ scale: 1.08, zIndex: 60, transition: { duration: 0.3 } }}
               onClick={() => handleCardClick(work.url_optional)}
             >
-              <img src={work.image} alt={isRtl ? work.alt_ar : work.alt_en} className="stream-card-img" loading="eager" />
+              <img
+                src={work.image}
+                alt={isRtl ? work.alt_ar : work.alt_en}
+                className="stream-card-img"
+                loading={isInitialFrame ? 'eager' : 'lazy'}
+                fetchPriority={isInitialFrame ? 'high' : 'auto'}
+              />
             </motion.div>
           );
         })}

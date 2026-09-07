@@ -5,9 +5,8 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
-const legacyIgnores = [
+const projectIgnores = [
   'dist',
-  'src/components/premium/IrisReelsStage.jsx',
 ]
 
 const sharedRules = {
@@ -22,7 +21,7 @@ const sharedRules = {
 }
 
 export default defineConfig([
-  globalIgnores(legacyIgnores),
+  globalIgnores(projectIgnores),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
