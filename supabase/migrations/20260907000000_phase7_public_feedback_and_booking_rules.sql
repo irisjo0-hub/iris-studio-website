@@ -196,7 +196,9 @@ $$;
 REVOKE ALL ON FUNCTION public.get_public_flow_feedback() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.get_public_flow_feedback() TO anon, authenticated;
 
--- Direct SELECT remains RLS-protected and exposes only approved rows to anon.
-GRANT SELECT ON public.flow_feedback TO anon, authenticated;
+-- Direct table SELECT is intentionally limited to authenticated clients;
+-- public visitors use the RPC above so the public surface stays explicit.
+GRANT SELECT ON public.flow_feedback TO authenticated;
+REVOKE SELECT ON public.flow_feedback FROM anon;
 
 COMMIT;
