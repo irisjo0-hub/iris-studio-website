@@ -45,7 +45,7 @@
 .reel-frame[data-locale="ar"] .iris-reels-profile-badge {
   right: 18px;
   bottom: 124px;
-  flex-direction: row;
+  flex-direction: row-reverse;
 }
 
 .reel-frame[data-locale="ar"] .iris-reels-profile-badge__meta {
