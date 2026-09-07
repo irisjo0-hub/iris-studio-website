@@ -7,8 +7,6 @@ const PLAY_BUTTON_CLASS = 'iris-reel-play-button';
 const SOUND_BUTTON_CLASS = 'iris-reel-sound-button';
 let syncQueued = false;
 let activeVideo = null;
-let gesture = null;
-let suppressNextClick = false;
 
 const getFrame = () => document.querySelector('.iris-reels-viewer-wrapper .reel-frame');
 const getCanvasLayers = (frame = getFrame()) => Array.from(frame?.querySelectorAll(':scope > .reel-canvas-layer, .reel-canvas-layer') || []);
@@ -20,8 +18,7 @@ const getVideos = () => Array.from(document.querySelectorAll('.iris-reels-viewer
 
 const getActiveVideo = (frame = getFrame()) => {
   const currentCanvas = getCurrentCanvas(frame);
-  if (!currentCanvas) return null;
-  return currentCanvas.querySelector('video');
+  return currentCanvas?.querySelector('video') || null;
 };
 
 const icon = (name) => {
@@ -34,7 +31,6 @@ const stopAllVideosExcept = (keep = null) => {
   getVideos().forEach((video) => {
     if (video === keep) return;
     video.pause();
-    video.muted = true;
   });
 };
 
@@ -51,11 +47,6 @@ const updateSoundButton = (video) => {
   button.innerHTML = video.muted ? icon('muted') : icon('volume');
   button.setAttribute('aria-label', video.muted ? 'تشغيل الصوت' : 'كتم الصوت');
   button.setAttribute('title', video.muted ? 'تشغيل الصوت' : 'كتم الصوت');
-};
-
-const syncSoundButtonAfterReactUpdate = (frame) => {
-  const current = getActiveVideo(frame);
-  if (current) updateSoundButton(current);
 };
 
 const buildControls = (frame, video) => {
@@ -75,14 +66,15 @@ const buildControls = (frame, video) => {
       event.preventDefault();
       event.stopPropagation();
 
-      // React owns the `muted` state of the video. Trigger the existing React
-      // sound control instead of mutating the media element behind React's back.
+      // React owns mute state. Reuse its existing control instead of mutating
+      // the video directly, preventing React and this enhancement from fighting.
       const reactSoundButton = frame.querySelector('.reels-action-rail .reels-action-btn-group-single:nth-child(4) button');
       if (!reactSoundButton) return;
       reactSoundButton.click();
-
-      // React updates the controlled video property on the next render.
-      window.requestAnimationFrame(() => syncSoundButtonAfterReactUpdate(frame));
+      window.requestAnimationFrame(() => {
+        const current = getActiveVideo(frame);
+        if (current) updateSoundButton(current);
+      });
     });
 
     const playButton = document.createElement('button');
@@ -122,23 +114,16 @@ const bindVideo = (video) => {
   const frame = video?.closest('.reel-frame');
   if (!frame || video === activeVideo) return;
 
-  if (activeVideo) {
-    activeVideo.pause();
-    activeVideo.muted = true;
-  }
-
+  if (activeVideo) activeVideo.pause();
   activeVideo = video;
   buildControls(frame, video);
   stopAllVideosExcept(video);
 
-  video.muted = false;
-  video.defaultMuted = false;
-  video.playsInline = true;
-
+  // Playback and mute are controlled by React. This enhancement only observes
+  // the media element and provides the visual controls.
   video.addEventListener('play', () => {
     if (getActiveVideo(frame) !== video) {
       video.pause();
-      video.muted = true;
       return;
     }
     stopAllVideosExcept(video);
@@ -156,101 +141,8 @@ const bindVideo = (video) => {
     event.stopPropagation();
     if (getActiveVideo(frame) !== video) return;
     video.pause();
-    // Keep the current mute state exactly as selected by the user.
     updateSoundButton(video);
   });
-
-  const start = () => {
-    if (getActiveVideo(frame) !== video) return;
-    stopAllVideosExcept(video);
-    video.muted = false;
-    video.play()
-      .then(() => setControlsVisible(frame, false))
-      .catch(() => setControlsVisible(frame, true));
-  };
-
-  if (video.readyState >= 1) start();
-  else video.addEventListener('loadedmetadata', start, { once: true });
-};
-
-const cancelAnimations = (element) => {
-  if (!element?.getAnimations) return;
-  element.getAnimations().forEach((animation) => animation.cancel());
-};
-
-const animateLayer = (layer, fromY, toY, duration = 440) => {
-  if (!layer) return Promise.resolve();
-  cancelAnimations(layer);
-  layer.style.willChange = 'transform';
-  layer.style.backfaceVisibility = 'hidden';
-  return layer.animate(
-    [
-      { transform: `translate3d(0, ${fromY}px, 0)` },
-      { transform: `translate3d(0, ${toY}px, 0)` }
-    ],
-    { duration, easing: 'cubic-bezier(0.22, 0.9, 0.24, 1)', fill: 'forwards' }
-  ).finished.catch(() => {});
-};
-
-const finishNativeSwipe = (frame, deltaY) => {
-  const layers = getCanvasLayers(frame);
-  if (layers.length < 2) return;
-  const incoming = layers[layers.length - 1];
-  const outgoing = layers[layers.length - 2];
-  const height = frame.clientHeight || frame.getBoundingClientRect().height || window.innerHeight;
-  const direction = deltaY < 0 ? 1 : -1;
-
-  cancelAnimations(incoming);
-  cancelAnimations(outgoing);
-  incoming.style.transform = `translate3d(0, ${direction * height}px, 0)`;
-  outgoing.style.transform = 'translate3d(0, 0, 0)';
-
-  void incoming.offsetWidth;
-  animateLayer(outgoing, 0, -direction * height, 420);
-  animateLayer(incoming, direction * height, 0, 420);
-};
-
-const bindGestureDriver = () => {
-  const wrapper = document.querySelector('.iris-reels-viewer-wrapper');
-  if (!wrapper || wrapper.dataset.gestureDriverBound === 'true') return;
-  wrapper.dataset.gestureDriverBound = 'true';
-
-  wrapper.addEventListener('touchstart', (event) => {
-    if (event.touches.length !== 1) return;
-    const frame = getFrame();
-    if (!frame || !frame.contains(event.target)) return;
-    gesture = {
-      startY: event.touches[0].clientY,
-      lastY: event.touches[0].clientY,
-      frame,
-      layer: getCurrentCanvas(frame)
-    };
-    if (gesture.layer) gesture.layer.style.transition = 'none';
-  }, { passive: true });
-
-  wrapper.addEventListener('touchmove', (event) => {
-    if (!gesture || event.touches.length !== 1) return;
-    const currentY = event.touches[0].clientY;
-    gesture.lastY = currentY;
-    const delta = currentY - gesture.startY;
-    if (Math.abs(delta) < 3 || !gesture.layer) return;
-    gesture.layer.style.transform = `translate3d(0, ${delta}px, 0)`;
-  }, { passive: false });
-
-  wrapper.addEventListener('touchend', () => {
-    if (!gesture) return;
-    const deltaY = gesture.lastY - gesture.startY;
-    const frame = gesture.frame;
-    const layer = gesture.layer;
-    gesture = null;
-    if (Math.abs(deltaY) < 50) {
-      if (layer) layer.style.transform = '';
-      return;
-    }
-    suppressNextClick = true;
-    window.setTimeout(() => { suppressNextClick = false; }, 500);
-    window.requestAnimationFrame(() => finishNativeSwipe(frame, deltaY));
-  }, { passive: true });
 };
 
 const sync = () => {
@@ -272,8 +164,6 @@ const sync = () => {
     activeVideo = null;
     setControlsVisible(frame, false);
   }
-
-  bindGestureDriver();
 };
 
 const scheduleSync = () => {
@@ -285,12 +175,6 @@ const scheduleSync = () => {
 };
 
 new MutationObserver(scheduleSync).observe(document.body, { childList: true, subtree: true });
-document.addEventListener('click', (event) => {
-  if (suppressNextClick) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-}, true);
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') stopAllVideosExcept();
 });
