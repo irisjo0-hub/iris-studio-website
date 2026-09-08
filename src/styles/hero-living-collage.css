@@ -26,54 +26,30 @@
   width: 100%;
   height: calc(100% - 20px);
   overflow: visible;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
-/* Individual Edge Floating Stream Card */
+/* Individual Edge Floating Stream Card — visual only, no click interaction */
 .lower-stream-card.edge-floating-stream-card {
   position: absolute !important;
   border-radius: 22px !important;
   border: none !important;
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(103, 36, 95, 0.35) !important;
-  cursor: pointer;
-  pointer-events: auto;
+  cursor: default;
+  pointer-events: none;
   will-change: transform, opacity, filter;
 }
 
-.lower-stream-card.edge-floating-stream-card:hover {
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95), 0 0 50px rgba(245, 189, 26, 0.6) !important;
-}
-
-/* Individual Floating Card inside Stream */
-.lower-stream-card.floating-stream-loop-card {
-  position: relative !important;
-  flex-shrink: 0;
-  border-radius: 22px !important;
-  border: none !important;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(103, 36, 95, 0.35) !important;
-  cursor: pointer;
-  pointer-events: auto;
-}
-
-.lower-stream-card.role-focal-card:hover,
-.lower-stream-card.floating-collage-card:hover,
-.lower-stream-card.floating-stream-loop-card:hover {
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95), 0 0 50px rgba(245, 189, 26, 0.6) !important;
-}
-
-/* Card Image Element */
+/* Card Image Element — preserve the source aspect ratio; no crop/stretch */
 .stream-card-img {
+  display: block;
   width: 100%;
-  height: auto;
+  height: auto !important;
+  aspect-ratio: auto !important;
   object-fit: contain;
   border-radius: 20px;
-  display: block;
   filter: brightness(0.98) contrast(1.02);
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.lower-stream-card:hover .stream-card-img {
-  transform: scale(1.04);
+  transition: none;
 }
 
 /* Division Badge */
