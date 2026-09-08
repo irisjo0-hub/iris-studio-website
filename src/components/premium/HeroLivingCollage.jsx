@@ -95,23 +95,30 @@ export const HeroLivingCollage = () => {
       observer.observe(stageRef.current);
     }
 
+    // The flag is deliberately set in an effect, not during render. This is
+    // important in React StrictMode so the first real page load still starts
+    // from the off-screen positions instead of a negative animation delay.
+    if (pool.length > 0) {
+      heroHasMounted = true;
+    }
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (stageRef.current) {
         observer.unobserve(stageRef.current);
       }
     };
-  }, []);
+  }, [pool.length]);
 
   // If Admin deleted all photos (pool is empty), render NOTHING
   if (pool.length === 0) {
     return null;
   }
 
-  // Mark that the Hero has been mounted once in this SPA session.
-  // Subsequent route navigation/remounts preserve the current animation phase.
+  // On the very first Hero mount after a full page load, use the original
+  // positive stagger. When returning through SPA navigation, resume from the
+  // shared clock instead of restarting from frame 0.
   const isFirstHeroMount = !heroHasMounted;
-  heroHasMounted = true;
 
   // 3 Clean Non-Overlapping Parallel Floating Lanes across Lower Hero Stage
   const channelConfigs = [
