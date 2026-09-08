@@ -16,16 +16,6 @@ import heroMediaImg from '../../assets/hero.png';
 import '../../styles/iris-reels-viewer.css';
 import '../../styles/iris-dark-hero.css';
 
-/**
- * IRIS REELS VIEWER — AUTHENTIC INSTAGRAM REELS EXPERIENCE
- * Features:
- * 1. Native Instagram Reel 9:16 layout without Story lines
- * 2. Directional spring vertical slide transitions (Lockstep Reel motion)
- * 3. Dynamic Action Button on top of side rail (Booking / Order / Print / Studio per Reel)
- * 4. Shared Visitor Feedback drawer across all 8 Reels
- * 5. RTL (Arabic) & LTR (English) spatial alignment
- */
-
 export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const navigate = useNavigate();
   const { settings, lang, toggleLanguage } = useSiteSettings();
@@ -33,21 +23,19 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const [items, setItems] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [direction, setDirection] = useState(1); // 1 = down/next, -1 = up/prev
+  const [direction, setDirection] = useState(1);
   const [isLocked, setIsLocked] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isStageActive, setIsStageActive] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
 
-  // Shared Feedback State across all 8 Reels
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [allFeedbackList, setAllFeedbackList] = useState([]);
   const [feedbackInput, setFeedbackInput] = useState('');
   const [feedbackName, setFeedbackName] = useState('');
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
-  // Toast Notification State
   const [toastMessage, setToastMessage] = useState('');
   const [videoErrorMap, setVideoErrorMap] = useState({});
 
@@ -58,8 +46,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const activeIndexRef = useRef(0);
   const isSkippingRef = useRef(false);
 
-  // Sync external media-control mute changes back into React so a later render
-  // never overwrites the button action with stale state.
   useEffect(() => {
     const handleReelMuteChange = (event) => {
       if (typeof event.detail?.muted === 'boolean') {
@@ -71,8 +57,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     return () => window.removeEventListener('iris-reel-mute-change', handleReelMuteChange);
   }, []);
 
-  // Start the active Reel when entering/changing Reels.
-  // Mute changes are intentionally handled separately so toggling sound never restarts playback.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -93,7 +77,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     }
   }, [isStageActive, activeIndex]);
 
-  // Update only the muted property; never call play/pause here.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -115,18 +98,14 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
+      if (videoRef.current) videoRef.current.pause();
     };
   }, [isStageActive]);
 
-  // Keep activeIndexRef synced for non-passive listeners
   useEffect(() => {
     activeIndexRef.current = activeIndex;
   }, [activeIndex]);
 
-  // Expose global window reset helper for Hero CTA
   useEffect(() => {
     window.__resetReelToHero = () => {
       setDirection(-1);
@@ -142,7 +121,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     };
   }, []);
 
-  // Load items from Supabase Cloud on mount for all devices
   useEffect(() => {
     const loaded = getFlowItems().filter((it) => it.enabled);
     const initialItems = loaded.length > 0 ? loaded : getFlowItems();
@@ -155,10 +133,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       }
     });
 
-    // Load shared approved feedback for all reels
     getAllApprovedFeedbackAsync().then(setAllFeedbackList).catch(() => {});
 
-    // Evaluate URL Deep Link
     const currentHash = window.location.hash;
     if (currentHash && currentHash.startsWith('#flow-')) {
       const targetSlug = currentHash.replace('#flow-', '');
@@ -172,7 +148,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     setActiveIndex(0);
   }, []);
 
-  // Sync URL hash with active Reel
   useEffect(() => {
     if (items.length === 0) return;
     const currentItem = items[activeIndex];
@@ -181,55 +156,22 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     }
   }, [activeIndex, items]);
 
-  // Refresh Shared Approved Feedback
   const refreshFeedback = () => {
     getAllApprovedFeedbackAsync().then(setAllFeedbackList).catch(() => {});
   };
 
-  // Helper used only when entering/leaving the Reels section.
-  // Inner Reel scrolling is blocked by preventDefault; repeated window.scrollTo calls are deliberately avoided.
-  const lockWindowToStage = () => {
-    if (isSkippingRef.current) return;
-    if (stageRef.current) {
-      const stageTop = stageRef.current.offsetTop;
-      if (Math.abs(window.scrollY - stageTop) > 3) {
-        window.scrollTo({ top: stageTop, behavior: 'instant' in window ? 'instant' : 'auto' });
-      }
-    }
-  };
-
-  // IntersectionObserver to detect entry mode, auto-snap to stage top & control main navbar
+  // Section visibility only. Do not start a competing smooth-scroll animation here.
   useEffect(() => {
-    let wasIntersecting = false;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsStageActive(entry.isIntersecting);
-
-        if (entry.isIntersecting) {
-          const navbar = document.querySelector('.navbar-container, header.site-navbar, .app-header');
-          if (navbar) navbar.style.display = 'none';
-
-          if (!wasIntersecting && stageRef.current) {
-            const stageTop = stageRef.current.offsetTop;
-            const scrollY = window.scrollY;
-            if (Math.abs(scrollY - stageTop) > 50) {
-              window.scrollTo({ top: stageTop, behavior: 'smooth' });
-            }
-          }
-          wasIntersecting = true;
-        } else {
-          wasIntersecting = false;
-          const navbar = document.querySelector('.navbar-container, header.site-navbar, .app-header');
-          if (navbar) navbar.style.display = '';
-        }
+        const navbar = document.querySelector('.navbar-container, header.site-navbar, .app-header');
+        if (navbar) navbar.style.display = entry.isIntersecting ? 'none' : '';
       },
       { threshold: 0.25 }
     );
 
-    if (stageRef.current) {
-      observer.observe(stageRef.current);
-    }
+    if (stageRef.current) observer.observe(stageRef.current);
 
     return () => {
       observer.disconnect();
@@ -238,7 +180,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     };
   }, [items.length]);
 
-  // Trigger Cooldown Lock on Index Change
   const navigateToIndex = (newIndex, customDirection = null) => {
     if (isLocked || cooldownRef.current) return;
     const dir = customDirection !== null ? customDirection : (newIndex > activeIndex ? 1 : -1);
@@ -253,7 +194,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     }, 500);
   };
 
-  // NON-PASSIVE WHEEL & TOUCH EVENT LISTENERS WITH PINNED WINDOW LOCK
+  // Desktop wheel navigation remains non-passive. Mobile touch no longer uses a
+  // per-touchmove preventDefault loop; CSS touch-action owns the gesture instead.
   useEffect(() => {
     const stageEl = stageRef.current;
     if (!stageEl) return;
@@ -264,9 +206,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         e.preventDefault();
         return;
       }
-      if (feedbackOpen) {
-        return;
-      }
+      if (feedbackOpen) return;
 
       const currIndex = activeIndexRef.current;
       const totalCount = items.length > 0 ? items.length : 8;
@@ -275,20 +215,13 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
       if (Math.abs(deltaY) < 25) return;
 
-      // Inner Reels Navigation: block browser page scroll and let Framer Motion animate only the Reel canvas.
       if (currIndex > 0 && currIndex < maxIndex) {
         e.preventDefault();
         if (cooldownRef.current) return;
-
-        if (deltaY > 0) {
-          navigateToIndex(currIndex + 1, 1);
-        } else {
-          navigateToIndex(currIndex - 1, -1);
-        }
+        navigateToIndex(deltaY > 0 ? currIndex + 1 : currIndex - 1, deltaY > 0 ? 1 : -1);
         return;
       }
 
-      // Reel 01 (index 0)
       if (currIndex === 0) {
         if (deltaY < 0) {
           if (cooldownRef.current) {
@@ -299,14 +232,11 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           }
         } else {
           e.preventDefault();
-          if (!cooldownRef.current) {
-            navigateToIndex(1, 1);
-          }
+          if (!cooldownRef.current) navigateToIndex(1, 1);
         }
         return;
       }
 
-      // Last Reel (maxIndex)
       if (currIndex === maxIndex) {
         if (deltaY > 0) {
           if (cooldownRef.current) {
@@ -317,43 +247,15 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           }
         } else {
           e.preventDefault();
-          if (!cooldownRef.current) {
-            navigateToIndex(maxIndex - 1, -1);
-          }
+          if (!cooldownRef.current) navigateToIndex(maxIndex - 1, -1);
         }
-        return;
-      }
-    };
-
-    const handleTouchMoveNonPassive = (e) => {
-      if (!isStageActive || isSkippingRef.current) return;
-      if (menuOpen) {
-        e.preventDefault();
-        return;
-      }
-      if (feedbackOpen) {
-        return;
-      }
-
-      const currIndex = activeIndexRef.current;
-      const totalCount = items.length > 0 ? items.length : 8;
-      const maxIndex = totalCount - 1;
-
-      if (currIndex >= 0 && currIndex <= maxIndex) {
-        e.preventDefault();
       }
     };
 
     stageEl.addEventListener('wheel', handleWheelNonPassive, { passive: false });
-    stageEl.addEventListener('touchmove', handleTouchMoveNonPassive, { passive: false });
-
-    return () => {
-      stageEl.removeEventListener('wheel', handleWheelNonPassive);
-      stageEl.removeEventListener('touchmove', handleTouchMoveNonPassive);
-    };
+    return () => stageEl.removeEventListener('wheel', handleWheelNonPassive);
   }, [isStageActive, menuOpen, feedbackOpen, items.length]);
 
-  // Touch Swipe Gesture End Handling
   const handleTouchStart = (e) => {
     touchStartY.current = e.touches[0].clientY;
   };
@@ -368,7 +270,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     const currIndex = activeIndex;
 
     if (diff > 0) {
-      // Swipe UP (Downward Intent -> Next Reel)
       const maxIndex = items.length - 1;
       if (currIndex < maxIndex) {
         navigateToIndex(currIndex + 1, 1);
@@ -377,7 +278,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     } else {
-      // Swipe DOWN (Upward Intent -> Prev Reel)
       if (currIndex > 0) {
         navigateToIndex(currIndex - 1, -1);
       } else if (currIndex === 0 && !cooldownRef.current) {
@@ -387,23 +287,20 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     }
   };
 
-  // Keyboard Arrow Navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (feedbackOpen || menuOpen || !isStageActive || cooldownRef.current) return;
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
         e.preventDefault();
-        if (activeIndex < items.length - 1) {
-          navigateToIndex(activeIndex + 1, 1);
-        } else if (activeIndex === items.length - 1) {
+        if (activeIndex < items.length - 1) navigateToIndex(activeIndex + 1, 1);
+        else if (activeIndex === items.length - 1) {
           const divisionsSec = document.getElementById('iris-divisions-section');
           if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
         e.preventDefault();
-        if (activeIndex > 0) {
-          navigateToIndex(activeIndex - 1, -1);
-        } else if (activeIndex === 0) {
+        if (activeIndex > 0) navigateToIndex(activeIndex - 1, -1);
+        else if (activeIndex === 0) {
           const heroSec = document.getElementById('iris-dark-hero-root');
           if (heroSec) heroSec.scrollIntoView({ behavior: 'smooth' });
         }
@@ -414,7 +311,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeIndex, items.length, feedbackOpen, menuOpen, isStageActive]);
 
-  // Action Icon Mapping
   const getActionIcon = (iconType) => {
     switch (iconType) {
       case 'project': return <FolderKanban size={20} />;
@@ -427,9 +323,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   };
 
   const handlePrimaryAction = (url) => {
-    if (url) {
-      navigate(url);
-    }
+    if (url) navigate(url);
   };
 
   const handleToggleFeedback = () => {
@@ -453,9 +347,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       setFeedbackName('');
       setFeedbackSubmitted(true);
       refreshFeedback();
-      setTimeout(() => {
-        setFeedbackSubmitted(false);
-      }, 3500);
+      setTimeout(() => setFeedbackSubmitted(false), 3500);
     }
   };
 
@@ -484,6 +376,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       setTimeout(() => setToastMessage(''), 3000);
     }
   };
+
   const handleReturnHome = (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -499,9 +392,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     } else {
       window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
     }
-    setTimeout(() => {
-      isSkippingRef.current = false;
-    }, 1000);
+    setTimeout(() => { isSkippingRef.current = false; }, 1000);
   };
 
   const handleSkipUp = () => {
@@ -514,37 +405,17 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    setTimeout(() => {
-      isSkippingRef.current = false;
-    }, 1000);
+    setTimeout(() => { isSkippingRef.current = false; }, 1000);
   };
 
   if (items.length === 0) return null;
 
   const currentReel = items[activeIndex] || items[0];
 
-  // Instagram/TikTok silky vertical slide engine: smoother snap with no repeated window scrolling.
   const slideVariants = {
-    initial: (dir) => ({
-      y: dir > 0 ? '100%' : '-100%',
-      opacity: 1
-    }),
-    animate: {
-      y: '0%',
-      opacity: 1,
-      transition: {
-        duration: 0.48,
-        ease: [0.22, 1, 0.36, 1]
-      }
-    },
-    exit: (dir) => ({
-      y: dir > 0 ? '-100%' : '100%',
-      opacity: 1,
-      transition: {
-        duration: 0.48,
-        ease: [0.22, 1, 0.36, 1]
-      }
-    })
+    initial: (dir) => ({ y: dir > 0 ? '100%' : '-100%', opacity: 1 }),
+    animate: { y: '0%', opacity: 1, transition: { duration: 0.48, ease: [0.22, 1, 0.36, 1] } },
+    exit: (dir) => ({ y: dir > 0 ? '-100%' : '100%', opacity: 1, transition: { duration: 0.48, ease: [0.22, 1, 0.36, 1] } })
   };
 
   return (
@@ -552,10 +423,10 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       id={id}
       ref={stageRef}
       className="iris-reels-viewer-wrapper"
+      style={{ touchAction: feedbackOpen ? 'auto' : 'none' }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* VIBRANT IRIS BRAND ATMOSPHERE BACKGROUND (OPTION 2: KINETIC AMBIENT MESH) */}
       <div className="reels-bg-ambient-layer">
         <div className="reels-glow-purple-top" />
         <div className="reels-glow-green-bottom" />
@@ -564,21 +435,12 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       </div>
 
       <div className="reels-stage-container">
-        {/* OUTER FLOATING TOP SKIP PILL (FLOATING IN AMBIENT BACKGROUND ABOVE REEL) */}
-        <button
-          type="button"
-          className="reels-floating-skip-pill reels-skip-top-pill-outer"
-          onClick={handleSkipUp}
-          aria-label={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
-          title={isRtl ? 'تخطي للأعلى' : 'Skip Up'}
-        >
+        <button type="button" className="reels-floating-skip-pill reels-skip-top-pill-outer" onClick={handleSkipUp} aria-label={isRtl ? 'تخطي للأعلى' : 'Skip Up'} title={isRtl ? 'تخطي للأعلى' : 'Skip Up'}>
           <span>{isRtl ? 'تخطي' : 'Skip'}</span>
           <ChevronUp size={16} className="skip-up-arrow-anim" />
         </button>
 
-        {/* ===== TRUE 9:16 REEL FRAME CANVAS WITH EXPLICIT BILINGUAL LOCALE ===== */}
         <div className="reel-frame" data-locale={isRtl ? 'ar' : 'en'}>
-          {/* ===== 1. ACTIVE 9:16 REEL CANVAS (LOCKSTEP INSTAGRAM SPRING SLIDE) ===== */}
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={`reel-canvas-${currentReel.id}`}
@@ -593,13 +455,10 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               {(() => {
                 const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv|avi)($|\?)/i.test(url) || url.startsWith('data:video') || url.startsWith('blob:video'));
                 const mediaSrc = currentReel.media_url || currentReel.image || '';
-                
+
                 let validImage = heroMediaImg;
-                if (currentReel.image && !isVidUrl(currentReel.image) && !currentReel.image.startsWith('blob:')) {
-                  validImage = currentReel.image;
-                } else if (currentReel.media_url && !isVidUrl(currentReel.media_url) && !currentReel.media_url.startsWith('blob:')) {
-                  validImage = currentReel.media_url;
-                }
+                if (currentReel.image && !isVidUrl(currentReel.image) && !currentReel.image.startsWith('blob:')) validImage = currentReel.image;
+                else if (currentReel.media_url && !isVidUrl(currentReel.media_url) && !currentReel.media_url.startsWith('blob:')) validImage = currentReel.media_url;
 
                 const isVideo = (currentReel.media_type === 'video' || isVidUrl(mediaSrc) || isVidUrl(currentReel.media_url)) && !videoErrorMap[currentReel.id];
 
@@ -609,7 +468,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                       ref={videoRef}
                       src={mediaSrc}
                       poster={validImage}
-                      preload="auto"
+                      preload="metadata"
                       autoPlay={isStageActive}
                       loop
                       muted={isMuted}
@@ -621,19 +480,11 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                     />
                   );
                 }
-                return (
-                  <img
-                    src={validImage}
-                    alt={isRtl ? currentReel.alt_ar : currentReel.alt_en}
-                    className="reel-static-img"
-                  />
-                );
+                return <img src={validImage} alt={isRtl ? currentReel.alt_ar : currentReel.alt_en} className="reel-static-img" />;
               })()}
               <div className="reel-darkness-gradient" />
 
-              {/* INSTAGRAM REEL BOTTOM CAPTION BLOCK (FLUID FLEX LAYOUT) */}
               <div className="instagram-reel-caption-block" dir={isRtl ? 'rtl' : 'ltr'}>
-                {/* PROFILE IDENTITY ROW */}
                 <div className="instagram-caption-profile-row">
                   <div className="instagram-avatar-ring">
                     <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="instagram-avatar-img" />
@@ -644,225 +495,80 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                   </div>
                 </div>
 
-                <span className="reel-item-number">
-                  <span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / 0{activeIndex + 1}
-                </span>
-
-                <h2 className="reel-headline-text">
-                  {isRtl ? currentReel.headline_ar : currentReel.headline_en}
-                </h2>
-
-                {currentReel.secondary_text_ar && (
-                  <p className="reel-secondary-text">
-                    {isRtl ? currentReel.secondary_text_ar : currentReel.secondary_text_en}
-                  </p>
-                )}
+                <span className="reel-item-number"><span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / 0{activeIndex + 1}</span>
+                <h2 className="reel-headline-text">{isRtl ? currentReel.headline_ar : currentReel.headline_en}</h2>
+                {currentReel.secondary_text_ar && <p className="reel-secondary-text">{isRtl ? currentReel.secondary_text_ar : currentReel.secondary_text_en}</p>}
               </div>
             </motion.div>
           </AnimatePresence>
 
-          {/* ===== 2. PERSISTENT SPATIAL OVERLAYS INSIDE 9:16 FRAME ===== */}
           <div className="reels-persistent-ui-layer">
-
-            {/* Top Bar Controls */}
             <div className="reels-top-bar">
-              <button
-                type="button"
-                className="reels-hamburger-btn"
-                onClick={() => setMenuOpen(true)}
-                aria-label="Open Navigation Menu"
-              >
-                <Menu size={20} />
-              </button>
-
-              <div className="reels-counter-pill-tag">
-                <span className="gold-accent-line" />
-                <span className="bidi-isolate" dir="ltr">0{activeIndex + 1} / 08</span>
-              </div>
+              <button type="button" className="reels-hamburger-btn" onClick={() => setMenuOpen(true)} aria-label="Open Navigation Menu"><Menu size={20} /></button>
+              <div className="reels-counter-pill-tag"><span className="gold-accent-line" /><span className="bidi-isolate" dir="ltr">0{activeIndex + 1} / 08</span></div>
             </div>
 
-            {/* ACTION RAIL (PINNED STRICTLY TO SIDE EDGE) */}
             <div className="reels-action-rail">
-              {/* 1. DYNAMIC PRIMARY ACTION BUTTON (ICON ON TOP, TEXT UNDERNEATH) */}
               <div className="reels-action-btn-group-single">
-                <button
-                  type="button"
-                  className="reels-action-circle-btn primary-action-btn"
-                  onClick={() => handlePrimaryAction(currentReel.cta_url)}
-                  aria-label={isRtl ? currentReel.cta_label_ar : currentReel.cta_label_en}
-                  title={isRtl ? currentReel.cta_label_ar : currentReel.cta_label_en}
-                >
-                  {getActionIcon(currentReel.cta_icon_type)}
-                </button>
-                {currentReel.cta_label_ar && (
-                  <span
-                    className="reels-action-counter reels-action-cta-text"
-                    onClick={() => handlePrimaryAction(currentReel.cta_url)}
-                  >
-                    {isRtl ? currentReel.cta_label_ar : currentReel.cta_label_en}
-                  </span>
-                )}
+                <button type="button" className="reels-action-circle-btn primary-action-btn" onClick={() => handlePrimaryAction(currentReel.cta_url)} aria-label={isRtl ? currentReel.cta_label_ar : currentReel.cta_label_en} title={isRtl ? currentReel.cta_label_ar : currentReel.cta_label_en}>{getActionIcon(currentReel.cta_icon_type)}</button>
+                {currentReel.cta_label_ar && <span className="reels-action-counter reels-action-cta-text" onClick={() => handlePrimaryAction(currentReel.cta_url)}>{isRtl ? currentReel.cta_label_ar : currentReel.cta_label_en}</span>}
               </div>
 
-              {/* 2. SHARED VISITOR FEEDBACK BUTTON */}
               <div className="reels-action-btn-group-single">
-                <button
-                  type="button"
-                  className="reels-action-circle-btn feedback-btn"
-                  onClick={handleToggleFeedback}
-                  aria-label="Feedback"
-                  title={isRtl ? "فيدباك" : "Feedback"}
-                >
-                  <MessageSquare size={20} />
-                </button>
-                <span className="reels-action-counter" onClick={handleToggleFeedback}>
-                  {isRtl ? 'فيدباك' : 'Feedback'}
-                </span>
+                <button type="button" className="reels-action-circle-btn feedback-btn" onClick={handleToggleFeedback} aria-label="Feedback" title={isRtl ? "فيدباك" : "Feedback"}><MessageSquare size={20} /></button>
+                <span className="reels-action-counter" onClick={handleToggleFeedback}>{isRtl ? 'فيدباك' : 'Feedback'}</span>
               </div>
 
-              {/* 3. SHARE BUTTON */}
               <div className="reels-action-btn-group-single">
-                <button
-                  type="button"
-                  className="reels-action-circle-btn"
-                  onClick={handleShare}
-                  aria-label="Share"
-                  title={isRtl ? "شير" : "Share"}
-                >
-                  <Share2 size={20} />
-                </button>
-                <span className="reels-action-counter" onClick={handleShare}>
-                  {isRtl ? 'شير' : 'Share'}
-                </span>
+                <button type="button" className="reels-action-circle-btn" onClick={handleShare} aria-label="Share" title={isRtl ? "شير" : "Share"}><Share2 size={20} /></button>
+                <span className="reels-action-counter" onClick={handleShare}>{isRtl ? 'شير' : 'Share'}</span>
               </div>
 
-              {/* 4. MUTE / UNMUTE SOUND BUTTON */}
               <div className="reels-action-btn-group-single">
-                <button
-                  type="button"
-                  className="reels-action-circle-btn"
-                  onClick={() => setIsMuted((prev) => !prev)}
-                  aria-label={isMuted ? (isRtl ? "تشغيل الصوت" : "Unmute") : (isRtl ? "كتم الصوت" : "Mute")}
-                  title={isMuted ? (isRtl ? "تشغيل الصوت" : "Unmute") : (isRtl ? "كتم الصوت" : "Mute")}
-                >
+                <button type="button" className="reels-action-circle-btn" onClick={() => setIsMuted((prev) => !prev)} aria-label={isMuted ? (isRtl ? "تشغيل الصوت" : "Unmute") : (isRtl ? "كتم الصوت" : "Mute")} title={isMuted ? (isRtl ? "تشغيل الصوت" : "Unmute") : (isRtl ? "كتم الصوت" : "Mute")}>
                   {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
                 </button>
-                <span className="reels-action-counter" onClick={() => setIsMuted((prev) => !prev)}>
-                  {isMuted ? (isRtl ? 'مكتوم' : 'Muted') : (isRtl ? 'مسموع' : 'Sound')}
-                </span>
+                <span className="reels-action-counter" onClick={() => setIsMuted((prev) => !prev)}>{isMuted ? (isRtl ? 'مكتوم' : 'Muted') : (isRtl ? 'مسموع' : 'Sound')}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* OUTER FLOATING BOTTOM SKIP PILL (FLOATING IN AMBIENT BACKGROUND BELOW REEL) */}
-        <button
-          type="button"
-          className="reels-floating-skip-pill reels-skip-bottom-pill-outer"
-          onClick={handleSkipReels}
-          aria-label={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
-          title={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}
-        >
+        <button type="button" className="reels-floating-skip-pill reels-skip-bottom-pill-outer" onClick={handleSkipReels} aria-label={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'} title={isRtl ? 'تخطي الريلز والنزول لأسفل' : 'Skip Reels'}>
           <span>{isRtl ? 'تخطي' : 'Skip'}</span>
           <ChevronDown size={16} className="skip-arrow-anim" />
         </button>
       </div>
 
-      {/* ===== 3. SHARED VISITOR FEEDBACK BOTTOM SHEET (MOBILE) / DRAWER (DESKTOP) ===== */}
       {feedbackOpen && (
-        <div 
-          className="reels-feedback-drawer-overlay" 
-          onClick={() => setFeedbackOpen(false)}
-          onWheel={(e) => e.stopPropagation()}
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchMove={(e) => e.stopPropagation()}
-          onTouchEnd={(e) => e.stopPropagation()}
-        >
-          <div 
-            className="reels-feedback-sheet" 
-            onClick={(e) => e.stopPropagation()} 
-            onWheel={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchMove={(e) => e.stopPropagation()}
-            onTouchEnd={(e) => e.stopPropagation()}
-            dir={isRtl ? 'rtl' : 'ltr'}
-          >
+        <div className="reels-feedback-drawer-overlay" onClick={() => setFeedbackOpen(false)} onWheel={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()} onTouchMove={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()}>
+          <div className="reels-feedback-sheet" onClick={(e) => e.stopPropagation()} onWheel={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()} onTouchMove={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()} dir={isRtl ? 'rtl' : 'ltr'}>
             <div className="reels-feedback-header">
-              <h3 className="reels-feedback-title">
-                <MessageSquare size={20} />
-                <span>{isRtl ? 'آراء وتقييمات الزوار (IRIS)' : 'IRIS Visitor Reviews'}</span>
-              </h3>
-              <button
-                type="button"
-                onClick={() => setFeedbackOpen(false)}
-                className="reels-feedback-close-btn"
-                aria-label="Close Feedback"
-              >
-                <X size={18} />
-              </button>
+              <h3 className="reels-feedback-title"><MessageSquare size={20} /><span>{isRtl ? 'آراء وتقييمات الزوار (IRIS)' : 'IRIS Visitor Reviews'}</span></h3>
+              <button type="button" onClick={() => setFeedbackOpen(false)} className="reels-feedback-close-btn" aria-label="Close Feedback"><X size={18} /></button>
             </div>
 
-            {/* Instant Success Banner */}
             {feedbackSubmitted && (
-              <div style={{
-                padding: '10px 14px',
-                marginBottom: '16px',
-                borderRadius: '14px',
-                backgroundColor: 'rgba(245, 189, 26, 0.18)',
-                border: '1px solid rgba(245, 189, 26, 0.4)',
-                color: '#F5BD1A',
-                fontSize: '0.85rem',
-                fontWeight: 'bold',
-                textAlign: 'center'
-              }}>
-                {isRtl
-                  ? '✨ تم نشر تقييمك بنجاح ونزل في القائمة أدناه!'
-                  : '✨ Your review has been published successfully below!'}
+              <div style={{ padding: '10px 14px', marginBottom: '16px', borderRadius: '14px', backgroundColor: 'rgba(245, 189, 26, 0.18)', border: '1px solid rgba(245, 189, 26, 0.4)', color: '#F5BD1A', fontSize: '0.85rem', fontWeight: 'bold', textAlign: 'center' }}>
+                {isRtl ? '✨ تم نشر تقييمك بنجاح ونزل في القائمة أدناه!' : '✨ Your review has been published successfully below!'}
               </div>
             )}
 
-            {/* Always Visible Form (Unlimited Feedback Submissions) */}
             <form onSubmit={handleFeedbackSubmit} className="reels-feedback-form">
-              <input
-                type="text"
-                placeholder={isRtl ? 'الاسم (اختياري)...' : 'Name (Optional)...'}
-                value={feedbackName}
-                onChange={(e) => setFeedbackName(e.target.value)}
-                className="reels-feedback-input"
-              />
-              <textarea
-                required
-                rows={3}
-                placeholder={isRtl ? 'اكتب رأيك أو تقييمك...' : 'Write feedback or review...'}
-                value={feedbackInput}
-                onChange={(e) => setFeedbackInput(e.target.value)}
-                className="reels-feedback-textarea"
-              />
-              <button
-                type="submit"
-                className="reels-feedback-submit-btn"
-              >
-                {isRtl ? 'إرسال التقييم' : 'Submit Review'}
-              </button>
+              <input type="text" placeholder={isRtl ? 'الاسم (اختياري)...' : 'Name (Optional)...'} value={feedbackName} onChange={(e) => setFeedbackName(e.target.value)} className="reels-feedback-input" />
+              <textarea required rows={3} placeholder={isRtl ? 'اكتب رأيك أو تقييمك...' : 'Write feedback or review...'} value={feedbackInput} onChange={(e) => setFeedbackInput(e.target.value)} className="reels-feedback-textarea" />
+              <button type="submit" className="reels-feedback-submit-btn">{isRtl ? 'إرسال التقييم' : 'Submit Review'}</button>
             </form>
 
-            {/* Scrollable Real Visitor Feedback List */}
             <div className="reels-feedback-section">
-              <h4 className="reels-feedback-section-title">
-                {isRtl ? `آراء الزوار الحقيقية (${allFeedbackList.length})` : `Real Visitor Reviews (${allFeedbackList.length})`}
-              </h4>
+              <h4 className="reels-feedback-section-title">{isRtl ? `آراء الزوار الحقيقية (${allFeedbackList.length})` : `Real Visitor Reviews (${allFeedbackList.length})`}</h4>
               {allFeedbackList.length === 0 ? (
-                <p style={{ fontSize: '0.85rem', opacity: 0.5, fontStyle: 'italic', padding: '16px 0', textAlign: 'center' }}>
-                  {isRtl ? 'لا توجد تقييمات حتى الآن. كن أول من يكتب تقييمه!' : 'No reviews yet. Be the first to leave a review!'}
-                </p>
+                <p style={{ fontSize: '0.85rem', opacity: 0.5, fontStyle: 'italic', padding: '16px 0', textAlign: 'center' }}>{isRtl ? 'لا توجد تقييمات حتى الآن. كن أول من يكتب تقييمه!' : 'No reviews yet. Be the first to leave a review!'}</p>
               ) : (
                 <div className="reels-feedback-list">
                   {allFeedbackList.map((fb) => (
                     <div key={fb.id} className="reels-feedback-card">
-                      <div className="reels-feedback-card-header">
-                        <span className="reels-feedback-author">{fb.name}</span>
-                        <span className="reels-feedback-badge">IRIS</span>
-                      </div>
+                      <div className="reels-feedback-card-header"><span className="reels-feedback-author">{fb.name}</span><span className="reels-feedback-badge">IRIS</span></div>
                       <p className="reels-feedback-message">{fb.message}</p>
                     </div>
                   ))}
@@ -873,111 +579,32 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         </div>
       )}
 
-      {/* ===== 4. FULLSCREEN NAVIGATION OVERLAY ===== */}
-      {menuOpen &&
-        createPortal(
-          <motion.div
-            className={`iris-portal-fullscreen-overlay dir-${isRtl ? 'rtl' : 'ltr'}`}
-            dir={isRtl ? 'rtl' : 'ltr'}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.28 }}
-          >
-            {/* Top Bar: IRIS Logo (Left), Close X (Right) */}
-            <div className="overlay-top-bar">
-              <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" />
+      {menuOpen && createPortal(
+        <motion.div className={`iris-portal-fullscreen-overlay dir-${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
+          <div className="overlay-top-bar">
+            <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" />
+            <button type="button" className="overlay-close-btn" onClick={() => setMenuOpen(false)} aria-label="Close Menu"><X size={24} /></button>
+          </div>
 
-              <button
-                type="button"
-                className="overlay-close-btn"
-                onClick={() => setMenuOpen(false)}
-                aria-label="Close Menu"
-              >
-                <X size={24} />
-              </button>
-            </div>
+          <nav className="overlay-vertical-menu">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}><Link to="/" className="overlay-nav-item active" onClick={() => setMenuOpen(false)}>{isRtl ? "الرئيسية" : "Home"}</Link></motion.div>
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}><Link to="/media" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>{isRtl ? "ميديا" : "Media"}</Link></motion.div>
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}><Link to="/studio" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>{isRtl ? "الاستوديو" : "Studio"}</Link></motion.div>
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}><Link to="/print" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>{isRtl ? "المطبوعات" : "Print"}</Link></motion.div>
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}><Link to="/work" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>{isRtl ? "أعمالنا" : "Our Work"}</Link></motion.div>
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}><Link to="/packages" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>{isRtl ? "البكجات والعروض" : "Packages & Offers"}</Link></motion.div>
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}><a href="#iris-footer-root" className="overlay-nav-item" onClick={() => { setMenuOpen(false); const footerEl = document.getElementById('iris-footer-root'); if (footerEl) footerEl.scrollIntoView({ behavior: 'smooth' }); }}>{isRtl ? "تواصل معنا" : "Contact Us"}</a></motion.div>
+          </nav>
 
-            {/* Vertical Menu List (One Item Per Row) */}
-            <nav className="overlay-vertical-menu">
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
-                <Link to="/" className="overlay-nav-item active" onClick={() => setMenuOpen(false)}>
-                  {isRtl ? "الرئيسية" : "Home"}
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
-                <Link to="/media" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
-                  {isRtl ? "ميديا" : "Media"}
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-                <Link to="/studio" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
-                  {isRtl ? "الاستوديو" : "Studio"}
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
-                <Link to="/print" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
-                  {isRtl ? "المطبوعات" : "Print"}
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}>
-                <Link to="/work" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
-                  {isRtl ? "أعمالنا" : "Our Work"}
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}>
-                <Link to="/packages" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>
-                  {isRtl ? "البكجات والعروض" : "Packages & Offers"}
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}>
-                <a
-                  href="#iris-footer-root"
-                  className="overlay-nav-item"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    const footerEl = document.getElementById('iris-footer-root');
-                    if (footerEl) footerEl.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                >
-                  {isRtl ? "تواصل معنا" : "Contact Us"}
-                </a>
-              </motion.div>
-            </nav>
-
-            {/* Bottom Row: Language Control & Brand Signature */}
-            <div className="overlay-bottom-bar">
-              <button
-                type="button"
-                className="overlay-lang-btn"
-                onClick={toggleLanguage}
-                aria-label={isRtl ? "Switch to English" : "التحويل إلى العربية"}
-              >
-                <Globe size={16} />
-                <span>{isRtl ? 'EN English' : 'ع العربية'}</span>
-              </button>
-
-              <div className="overlay-brand-signature">
-                <span>WE BREAK THE BOX</span>
-                <span className="gold-dot" />
-              </div>
-            </div>
-          </motion.div>,
-          document.body
-        )}
-
-      {/* ===== 5. TOAST NOTIFICATION ===== */}
-      {toastMessage && (
-        <div className="reels-toast-notification">
-          <span>{toastMessage}</span>
-        </div>
+          <div className="overlay-bottom-bar">
+            <button type="button" className="overlay-lang-btn" onClick={toggleLanguage} aria-label={isRtl ? "Switch to English" : "التحويل إلى العربية"}><Globe size={16} /><span>{isRtl ? 'EN English' : 'ع العربية'}</span></button>
+            <div className="overlay-brand-signature"><span>WE BREAK THE BOX</span><span className="gold-dot" /></div>
+          </div>
+        </motion.div>,
+        document.body
       )}
+
+      {toastMessage && <div className="reels-toast-notification"><span>{toastMessage}</span></div>}
     </section>
   );
 };
