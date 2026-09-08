@@ -129,6 +129,14 @@
   color: #ECEBE7;
 }
 
+/* Desktop: keep the lowest floating lane fully inside the hero viewport.
+   This only changes vertical placement; horizontal travel and timing stay untouched. */
+@media (min-width: 769px) {
+  .lower-stream-card.edge-floating-stream-card:nth-child(3n + 3) {
+    margin-top: clamp(-140px, -10vh, -80px);
+  }
+}
+
 /* Mobile Responsiveness & Clean Non-Colliding Layout */
 @media (max-width: 768px) {
   .lower-stream-card.edge-floating-stream-card {
