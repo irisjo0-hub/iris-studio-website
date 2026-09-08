@@ -20,6 +20,7 @@ import '../../styles/hero-living-collage.css';
 // Shared only for the lifetime of the SPA module: navigation back to Hero keeps
 // the same animation clock, while a full browser reload creates a fresh clock.
 let heroAnimationEpoch = null;
+let heroHasMounted = false;
 
 export const HeroLivingCollage = () => {
   const { settings, lang } = useSiteSettings();
@@ -27,12 +28,6 @@ export const HeroLivingCollage = () => {
 
   const stageRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
-
-  // Keep one shared animation clock across SPA route changes/remounts.
-  // Do not persist it to localStorage: a real page reload must restart the Hero.
-  if (heroAnimationEpoch === null) {
-    heroAnimationEpoch = Date.now();
-  }
 
   // Full Dynamic Admin Pool Parsing
   let parsedPool = [];
@@ -73,6 +68,12 @@ export const HeroLivingCollage = () => {
     };
   }).filter(item => Boolean(item.image));
 
+  // Start the shared clock only when the Hero actually has photos to animate.
+  // This guarantees a fresh page load starts with the first card off-screen.
+  if (pool.length > 0 && heroAnimationEpoch === null) {
+    heroAnimationEpoch = Date.now();
+  }
+
   // Auto-pause when tab is hidden or element scrolled out of viewport
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -106,6 +107,11 @@ export const HeroLivingCollage = () => {
   if (pool.length === 0) {
     return null;
   }
+
+  // Mark that the Hero has been mounted once in this SPA session.
+  // Subsequent route navigation/remounts preserve the current animation phase.
+  const isFirstHeroMount = !heroHasMounted;
+  heroHasMounted = true;
 
   // 3 Clean Non-Overlapping Parallel Floating Lanes across Lower Hero Stage
   const channelConfigs = [
@@ -155,7 +161,7 @@ export const HeroLivingCollage = () => {
           const cardDelay = index * staggerStep;
           const cycleDuration = travelDuration + repeatDelay;
           const animationPhase = ((elapsedCycle - cardDelay) % cycleDuration + cycleDuration) % cycleDuration;
-          const initialDelay = -animationPhase;
+          const initialDelay = isFirstHeroMount ? cardDelay : -animationPhase;
 
           return (
             <motion.div
