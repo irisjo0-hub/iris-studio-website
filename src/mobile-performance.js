@@ -1,9 +1,7 @@
 /* IRIS MOBILE PERFORMANCE + REELS STABILITY FIX
  * Keeps the visual design intact while removing expensive mobile work,
- * restoring the missing pause/mute controls, and making Reel media lifecycle safe.
+ * restoring the missing pause/mute controls, and keeping Reel media lifecycle lightweight.
  */
-
-const MOBILE_QUERY = '(max-width: 768px)';
 
 const installPerformanceStyles = () => {
   if (document.getElementById('iris-mobile-performance-fix')) return;
@@ -11,7 +9,6 @@ const installPerformanceStyles = () => {
   const style = document.createElement('style');
   style.id = 'iris-mobile-performance-fix';
   style.textContent = `
-    /* Mobile GPU budget: remove decorative effects that do not affect content. */
     @media (max-width: 768px) {
       .iris-reels-viewer-wrapper .reels-bg-ambient-layer,
       .iris-reels-viewer-wrapper .reels-grain-overlay { display: none !important; }
@@ -22,21 +19,17 @@ const installPerformanceStyles = () => {
       .iris-reels-viewer-wrapper .reels-action-circle-btn,
       .iris-reels-viewer-wrapper .reels-hamburger-btn,
       .iris-reels-viewer-wrapper .reels-counter-pill-tag { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-
       .iris-dark-hero-root .lower-stream-card,
       .iris-dark-hero-root .lower-stream-card * { filter: none !important; }
       .iris-dark-hero-root .stream-card-img { transition: none !important; will-change: auto !important; }
-
       .home-page { overscroll-behavior-x: none; }
-      .iris-reels-viewer-wrapper { -webkit-overflow-scrolling: touch; }
     }
 
-    /* Restore the sound action that was hidden by the previous enhancement layer. */
+    /* The previous enhancement CSS hid the fourth action group (sound). */
     .iris-reels-viewer-wrapper .reels-action-rail .reels-action-btn-group-single:nth-child(4) {
       display: flex !important;
     }
 
-    /* Missing pause/sound controls: use the classes already designed for them. */
     .iris-reels-viewer-wrapper .iris-reel-media-controls {
       position: absolute;
       left: 50%;
@@ -74,17 +67,10 @@ const installPerformanceStyles = () => {
 };
 
 const prepareMedia = (root = document) => {
-  root.querySelectorAll('img').forEach((img) => {
-    if (img.closest('.reel-canvas-layer')) {
-      img.loading = 'eager';
-      img.decoding = 'async';
-      return;
-    }
-    if (img.closest('.lower-stream-card')) {
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      img.setAttribute('fetchpriority', 'low');
-    }
+  root.querySelectorAll('.lower-stream-card img').forEach((img) => {
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.setAttribute('fetchpriority', 'low');
   });
 
   root.querySelectorAll('.reel-canvas-layer video').forEach((video) => {
@@ -95,25 +81,10 @@ const prepareMedia = (root = document) => {
   });
 };
 
-const playIcon = () => `
-  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M8 5.2v13.6c0 .9 1 1.45 1.8.98l10-6.8a1.18 1.18 0 0 0 0-1.96l-10-6.8C9 3.75 8 4.3 8 5.2Z"/>
-  </svg>`;
-
-const pauseIcon = () => `
-  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M7 5.5A1.5 1.5 0 0 1 8.5 4h1A1.5 1.5 0 0 1 11 5.5v13A1.5 1.5 0 0 1 9.5 20h-1A1.5 1.5 0 0 1 7 18.5v-13Zm6 0A1.5 1.5 0 0 1 14.5 4h1A1.5 1.5 0 0 1 17 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-13Z"/>
-  </svg>`;
-
-const soundOnIcon = () => `
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M4 10v4h3l4 3V7l-4 3H4Z"/><path d="M15 9.5a3.8 3.8 0 0 1 0 5"/><path d="M17.5 7a7.5 7.5 0 0 1 0 10"/>
-  </svg>`;
-
-const soundOffIcon = () => `
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M4 10v4h3l4 3V7l-4 3H4Z"/><path d="m16 10 4 4"/><path d="m20 10-4 4"/>
-  </svg>`;
+const playIcon = () => `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6c0 .9 1 1.45 1.8.98l10-6.8a1.18 1.18 0 0 0 0-1.96l-10-6.8C9 3.75 8 4.3 8 5.2Z"/></svg>`;
+const pauseIcon = () => `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5.5A1.5 1.5 0 0 1 8.5 4h1A1.5 1.5 0 0 1 11 5.5v13A1.5 1.5 0 0 1 9.5 20h-1A1.5 1.5 0 0 1 7 18.5v-13Zm6 0A1.5 1.5 0 0 1 14.5 4h1A1.5 1.5 0 0 1 17 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-13Z"/></svg>`;
+const soundOnIcon = () => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4h3l4 3V7l-4 3H4Z"/><path d="M15 9.5a3.8 3.8 0 0 1 0 5"/><path d="M17.5 7a7.5 7.5 0 0 1 0 10"/></svg>`;
+const soundOffIcon = () => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4h3l4 3V7l-4 3H4Z"/><path d="m16 10 4 4"/><path d="m20 10-4 4"/></svg>`;
 
 const installMediaControls = (root) => {
   const frame = root?.querySelector('.reel-frame');
@@ -146,11 +117,8 @@ const installMediaControls = (root) => {
     playButton.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      if (video.paused) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
+      if (video.paused) video.play().catch(() => {});
+      else video.pause();
     });
 
     video.addEventListener('play', () => {
@@ -169,9 +137,7 @@ const installMediaControls = (root) => {
     soundButton.innerHTML = video.muted ? soundOffIcon() : soundOnIcon();
     soundButton.setAttribute('aria-label', video.muted ? 'Unmute' : 'Mute');
   }
-  if (playButton) {
-    playButton.innerHTML = video.paused ? playIcon() : pauseIcon();
-  }
+  if (playButton) playButton.innerHTML = video.paused ? playIcon() : pauseIcon();
 };
 
 const installReelLifecycle = () => {
@@ -182,54 +148,45 @@ const installReelLifecycle = () => {
   let userChangedSound = false;
   let firstVideoHandled = false;
 
-  const setMutedState = (muted) => {
-    const video = root.querySelector('.reel-canvas-layer video');
-    if (!video) return;
-    video.muted = muted;
-    video.defaultMuted = muted;
-    if (muted) video.setAttribute('muted', '');
-    else video.removeAttribute('muted');
-  };
-
-  const notifyReactMute = (muted) => {
-    window.dispatchEvent(new CustomEvent('iris-reel-mute-change', { detail: { muted } }));
-  };
-
   const syncActiveVideo = () => {
     const video = root.querySelector('.reel-canvas-layer video');
     if (!video) return;
-
     video.preload = 'metadata';
     video.playsInline = true;
 
     if (!firstVideoHandled) {
       firstVideoHandled = true;
       userChangedSound = false;
-      setMutedState(true);
-      notifyReactMute(true);
+      video.muted = true;
+      video.defaultMuted = true;
+      video.setAttribute('muted', '');
+      window.dispatchEvent(new CustomEvent('iris-reel-mute-change', { detail: { muted: true } }));
     } else if (!userChangedSound) {
-      setMutedState(true);
+      video.muted = true;
+      video.defaultMuted = true;
     }
 
     installMediaControls(root);
   };
 
   root.addEventListener('click', (event) => {
-    if (event.target.closest('.reels-action-btn-group-single:nth-child(4)')) {
-      userChangedSound = true;
-    }
+    if (event.target.closest('.reels-action-btn-group-single:nth-child(4)')) userChangedSound = true;
   }, { passive: true });
 
-  const observer = new MutationObserver(() => {
-    prepareMedia(root);
+  /* Watch only the active media container, not the entire reels subtree.
+     The old broad observer fired on animation/DOM churn and caused long main-thread stalls. */
+  const mediaObserver = new MutationObserver(() => syncActiveVideo());
+  const observeMedia = () => {
+    const mediaLayer = root.querySelector('.reel-canvas-layer');
+    if (!mediaLayer) return;
+    mediaObserver.disconnect();
+    mediaObserver.observe(mediaLayer, { childList: true });
     syncActiveVideo();
-  });
-  observer.observe(root, { childList: true, subtree: true });
+  };
 
   const visibilityObserver = new IntersectionObserver(([entry]) => {
     const video = root.querySelector('.reel-canvas-layer video');
     if (!video) return;
-
     if (entry.isIntersecting && document.visibilityState === 'visible') {
       syncActiveVideo();
       video.play().catch(() => {});
@@ -243,12 +200,12 @@ const installReelLifecycle = () => {
 
   document.addEventListener('visibilitychange', () => {
     const video = root.querySelector('.reel-canvas-layer video');
-    if (!video) return;
-    if (document.visibilityState !== 'visible') video.pause();
+    if (!video || document.visibilityState === 'visible') return;
+    video.pause();
   }, { passive: true });
 
   prepareMedia(root);
-  syncActiveVideo();
+  observeMedia();
 };
 
 const boot = () => {
@@ -257,15 +214,5 @@ const boot = () => {
   installReelLifecycle();
 };
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', boot, { once: true });
-} else {
-  boot();
-}
-
-const appObserver = new MutationObserver(() => {
-  installPerformanceStyles();
-  prepareMedia(document);
-  installReelLifecycle();
-});
-appObserver.observe(document.getElementById('root') || document.body, { childList: true, subtree: true });
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
+else boot();
