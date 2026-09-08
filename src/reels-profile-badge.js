@@ -32,7 +32,9 @@ const mountProfileBadge = () => {
   layer.appendChild(badge);
 };
 
+const appRoot = document.getElementById('root');
+const observerTarget = appRoot || document.body;
 const observer = new MutationObserver(() => mountProfileBadge());
-observer.observe(document.body, { childList: true, subtree: true });
+observer.observe(observerTarget, { childList: true, subtree: true });
 
 mountProfileBadge();

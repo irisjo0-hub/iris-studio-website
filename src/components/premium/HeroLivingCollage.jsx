@@ -26,18 +26,6 @@ export const HeroLivingCollage = () => {
   const stageRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  // 8 Curated Fallback Works for Dynamic Admin Pool
-  const default8Works = [
-    { id: 'h-1', image: heroMediaImg, alt_ar: 'إنتاج ميديا سينمائي', alt_en: 'Cinematic Media Production', url_optional: '/work' },
-    { id: 'h-2', image: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=1000&q=80', alt_ar: 'تصوير بورتريـه استوديو', alt_en: 'Studio Portrait Photography', url_optional: '/booking' },
-    { id: 'h-3', image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1000&q=80', alt_ar: 'تغطية الفعاليات والمؤتمرات', alt_en: 'Event Coverage', url_optional: '/work' },
-    { id: 'h-4', image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1000&q=80', alt_ar: 'كتب تخرج فاخرة', alt_en: 'Luxury Graduation Books', url_optional: '/graduation-books' },
-    { id: 'h-5', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80', alt_ar: 'جلسات تصوير شخصية', alt_en: 'Portrait Sessions', url_optional: '/booking' },
-    { id: 'h-6', image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1000&q=80', alt_ar: 'إنتاج إعلاني إبداعي', alt_en: 'Creative Production', url_optional: '/work' },
-    { id: 'h-7', image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80', alt_ar: 'تصوير خارجي احترافي', alt_en: 'Outdoor Photography', url_optional: '/booking' },
-    { id: 'h-8', image: 'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=1000&q=80', alt_ar: 'مطبوعات وتغليف البراند', alt_en: 'Brand Print & Packaging', url_optional: '/printing-products' }
-  ];
-
   // Full Dynamic Admin Pool Parsing
   let parsedPool = [];
   if (Array.isArray(settings.hero_motion_images)) {
@@ -52,7 +40,7 @@ export const HeroLivingCollage = () => {
   const rawPool = Array.isArray(parsedPool) ? parsedPool : [];
 
   // Respect hero_image_display_count if specified by Admin
-  const displayCount = settings.hero_image_display_count 
+  const displayCount = settings.hero_image_display_count
     ? Math.max(1, parseInt(settings.hero_image_display_count, 10))
     : rawPool.length;
 
@@ -76,11 +64,6 @@ export const HeroLivingCollage = () => {
       url_optional: item?.url_optional || item?.link || '/work'
     };
   }).filter(item => Boolean(item.image));
-
-  // If Admin deleted all photos (pool is empty), render NOTHING
-  if (pool.length === 0) {
-    return null;
-  }
 
   // Auto-pause when tab is hidden or element scrolled out of viewport
   useEffect(() => {
@@ -110,6 +93,11 @@ export const HeroLivingCollage = () => {
       }
     };
   }, []);
+
+  // If Admin deleted all photos (pool is empty), render NOTHING
+  if (pool.length === 0) {
+    return null;
+  }
 
   const handleCardClick = (url) => {
     if (url) {
