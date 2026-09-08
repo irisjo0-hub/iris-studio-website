@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import heroMediaImg from '../../assets/hero.png';
@@ -17,18 +18,15 @@ import '../../styles/hero-living-collage.css';
  * 8. Cards enter from one side off-screen, float across lower stage, exit out opposite side off-screen.
  */
 
-// Shared only for the lifetime of the SPA module: navigation back to Hero keeps
-// the same animation clock, while a full browser reload creates a fresh clock.
-let heroAnimationEpoch = null;
-let heroHasMounted = false;
-
 export const HeroLivingCollage = () => {
+  const navigate = useNavigate();
   const { settings, lang } = useSiteSettings();
   const isRtl = lang === 'ar';
 
   const stageRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Full Dynamic Admin Pool Parsing
   let parsedPool = [];
   if (Array.isArray(settings.hero_motion_images)) {
     parsedPool = settings.hero_motion_images;
@@ -66,10 +64,8 @@ export const HeroLivingCollage = () => {
     };
   }).filter(item => Boolean(item.image));
 
-  if (pool.length > 0 && heroAnimationEpoch === null) {
-    heroAnimationEpoch = Date.now();
-  }
-
+  // Auto-pause when tab is hidden or element scrolled out of viewport.
+  // Keep this hook unconditional so React hook order remains stable.
   useEffect(() => {
     const handleVisibilityChange = () => {
       setIsPaused(document.hidden);
@@ -98,15 +94,15 @@ export const HeroLivingCollage = () => {
     };
   }, []);
 
-  // The flag is set after the first real mount. Browser reloads create a new module,
-  // while SPA route changes keep this flag and therefore resume the shared clock.
-  useEffect(() => {
-    heroHasMounted = true;
-  }, []);
-
   if (pool.length === 0) {
     return null;
   }
+
+  const handleCardClick = (url) => {
+    if (url) {
+      navigate(url);
+    }
+  };
 
   const channelConfigs = [
     {
@@ -134,9 +130,6 @@ export const HeroLivingCollage = () => {
   const staggerStep = N === 1 ? 24 : 4.5;
   const totalLoopCycle = N === 1 ? 24 : Math.max(travelDuration + staggerStep, N * staggerStep);
   const repeatDelay = totalLoopCycle - travelDuration;
-  const elapsedCycle = heroAnimationEpoch
-    ? Math.max(0, (Date.now() - heroAnimationEpoch) / 1000)
-    : 0;
 
   return (
     <div
@@ -150,27 +143,12 @@ export const HeroLivingCollage = () => {
           const startX = isRtl ? '-130vw' : '130vw';
           const midX = '0vw';
           const endX = isRtl ? '130vw' : '-130vw';
-
           const cardDelay = index * staggerStep;
-          const cycleDuration = travelDuration + repeatDelay;
-          const animationPhase = ((elapsedCycle - cardDelay) % cycleDuration + cycleDuration) % cycleDuration;
-          const initialDelay = heroHasMounted ? -animationPhase : cardDelay;
 
           return (
             <motion.div
               key={`edge-stream-${work.id}-${index}`}
               className="lower-stream-card edge-floating-stream-card"
-              initial={
-                heroHasMounted
-                  ? false
-                  : {
-                      x: startX,
-                      y: config.floatY[0],
-                      rotateZ: config.rotateZ[0],
-                      opacity: 0,
-                      filter: 'blur(12px)'
-                    }
-              }
               style={{
                 top: config.top,
                 width: config.width,
@@ -195,8 +173,14 @@ export const HeroLivingCollage = () => {
                 repeatType: 'loop',
                 repeatDelay: repeatDelay,
                 ease: 'easeInOut',
-                delay: initialDelay
+                delay: cardDelay
               }}
+              whileHover={{
+                scale: 1.08,
+                zIndex: 60,
+                transition: { duration: 0.3 }
+              }}
+              onClick={() => handleCardClick(work.url_optional)}
             >
               <img
                 src={work.image}
