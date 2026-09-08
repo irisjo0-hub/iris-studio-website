@@ -82,8 +82,7 @@ export const HeroLivingCollage = () => {
   const travelDuration = 24;
   const staggerStep = N === 1 ? 24 : 4.5;
   const totalLoopCycle = N === 1 ? 24 : Math.max(travelDuration + staggerStep, N * staggerStep);
-  // The initial appearance was brought forward by 1s, so reduce the cycle pause by 1s too.
-  const repeatDelay = Math.max(0, totalLoopCycle - travelDuration - 1);
+  const repeatDelay = totalLoopCycle - travelDuration;
 
   return (
     <div ref={stageRef} className={`iris-hero-lower-stage ${isPaused ? 'is-paused' : ''}`}>
@@ -93,8 +92,7 @@ export const HeroLivingCollage = () => {
           const startX = isRtl ? '-130vw' : '130vw';
           const midX = '0vw';
           const endX = isRtl ? '130vw' : '-130vw';
-          // Keep the original movement and center timing; only advance each card's start by 1s.
-          const cardDelay = Math.max(0, index * staggerStep - 1);
+          const cardDelay = index * staggerStep;
           const isInitialFrame = index < channelConfigs.length;
 
           return (
