@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import heroMediaImg from '../../assets/hero.png';
@@ -19,7 +18,6 @@ import '../../styles/hero-living-collage.css';
  */
 
 export const HeroLivingCollage = () => {
-  const navigate = useNavigate();
   const { settings, lang } = useSiteSettings();
   const isRtl = lang === 'ar';
 
@@ -99,12 +97,6 @@ export const HeroLivingCollage = () => {
     return null;
   }
 
-  const handleCardClick = (url) => {
-    if (url) {
-      navigate(url);
-    }
-  };
-
   // 3 Clean Non-Overlapping Parallel Floating Lanes across Lower Hero Stage
   const channelConfigs = [
     {
@@ -179,12 +171,6 @@ export const HeroLivingCollage = () => {
                 ease: 'easeInOut',
                 delay: cardDelay
               }}
-              whileHover={{
-                scale: 1.08,
-                zIndex: 60,
-                transition: { duration: 0.3 }
-              }}
-              onClick={() => handleCardClick(work.url_optional)}
             >
               <img
                 src={work.image}
