@@ -69,7 +69,7 @@ export const HeroLivingCollage = () => {
   }).filter(item => Boolean(item.image));
 
   // Start the shared clock only when the Hero actually has photos to animate.
-  // This guarantees a fresh page load starts with the first card off-screen.
+  // A browser reload creates a new module and therefore a fresh epoch.
   if (pool.length > 0 && heroAnimationEpoch === null) {
     heroAnimationEpoch = Date.now();
   }
@@ -95,30 +95,24 @@ export const HeroLivingCollage = () => {
       observer.observe(stageRef.current);
     }
 
-    // The flag is deliberately set in an effect, not during render. This is
-    // important in React StrictMode so the first real page load still starts
-    // from the off-screen positions instead of a negative animation delay.
-    if (pool.length > 0) {
-      heroHasMounted = true;
-    }
-
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (stageRef.current) {
         observer.unobserve(stageRef.current);
       }
     };
-  }, [pool.length]);
+  }, []);
+
+  // Mark the SPA Hero as mounted only after the first real mount.
+  // This avoids treating a browser reload as a resumed animation.
+  useEffect(() => {
+    heroHasMounted = true;
+  }, []);
 
   // If Admin deleted all photos (pool is empty), render NOTHING
   if (pool.length === 0) {
     return null;
   }
-
-  // On the very first Hero mount after a full page load, use the original
-  // positive stagger. When returning through SPA navigation, resume from the
-  // shared clock instead of restarting from frame 0.
-  const isFirstHeroMount = !heroHasMounted;
 
   // 3 Clean Non-Overlapping Parallel Floating Lanes across Lower Hero Stage
   const channelConfigs = [
@@ -136,7 +130,7 @@ export const HeroLivingCollage = () => {
     },
     {
       top: '68%',
-      width: 'clamp(185px, 20vw, 290px)',
+      width: 'clamp(185px, 20vw, 290px]',
       rotateZ: [-2, 3, -2],
       floatY: [-6, 6, -6]
     }
@@ -168,12 +162,23 @@ export const HeroLivingCollage = () => {
           const cardDelay = index * staggerStep;
           const cycleDuration = travelDuration + repeatDelay;
           const animationPhase = ((elapsedCycle - cardDelay) % cycleDuration + cycleDuration) % cycleDuration;
-          const initialDelay = isFirstHeroMount ? cardDelay : -animationPhase;
+          const initialDelay = heroHasMounted ? -animationPhase : cardDelay;
 
           return (
             <motion.div
               key={`edge-stream-${work.id}-${index}`}
               className="lower-stream-card edge-floating-stream-card"
+              initial={
+                heroHasMounted
+                  ? false
+                  : {
+                      x: startX,
+                      y: config.floatY[0],
+                      rotateZ: config.rotateZ[0],
+                      opacity: 0,
+                      filter: 'blur(12px)'
+                    }
+              }
               style={{
                 top: config.top,
                 width: config.width,
