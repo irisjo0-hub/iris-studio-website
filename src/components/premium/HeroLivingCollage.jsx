@@ -101,19 +101,16 @@ export const HeroLivingCollage = () => {
   const channelConfigs = [
     {
       top: '4%',
-      width: 'clamp(175px, 19vw, 280px)',
       rotateZ: [-3, 2, -3],
       floatY: [-6, 6, -6]
     },
     {
       top: '36%',
-      width: 'clamp(210px, 22vw, 320px)',
       rotateZ: [2, -3, 2],
       floatY: [7, -7, 7]
     },
     {
       top: '68%',
-      width: 'clamp(185px, 20vw, 290px)',
       rotateZ: [-2, 3, -2],
       floatY: [-6, 6, -6]
     }
@@ -147,8 +144,6 @@ export const HeroLivingCollage = () => {
               className="lower-stream-card edge-floating-stream-card"
               style={{
                 top: config.top,
-                width: config.width,
-                aspectRatio: 'auto',
                 left: '50%',
                 translateX: '-50%'
               }}
