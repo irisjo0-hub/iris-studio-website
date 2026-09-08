@@ -29,7 +29,6 @@ export const HeroLivingCollage = () => {
   const stageRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Full Dynamic Admin Pool Parsing
   let parsedPool = [];
   if (Array.isArray(settings.hero_motion_images)) {
     parsedPool = settings.hero_motion_images;
@@ -42,7 +41,6 @@ export const HeroLivingCollage = () => {
 
   const rawPool = Array.isArray(parsedPool) ? parsedPool : [];
 
-  // Respect hero_image_display_count if specified by Admin
   const displayCount = settings.hero_image_display_count
     ? Math.max(1, parseInt(settings.hero_image_display_count, 10))
     : rawPool.length;
@@ -68,13 +66,10 @@ export const HeroLivingCollage = () => {
     };
   }).filter(item => Boolean(item.image));
 
-  // Start the shared clock only when the Hero actually has photos to animate.
-  // A browser reload creates a new module and therefore a fresh epoch.
   if (pool.length > 0 && heroAnimationEpoch === null) {
     heroAnimationEpoch = Date.now();
   }
 
-  // Auto-pause when tab is hidden or element scrolled out of viewport
   useEffect(() => {
     const handleVisibilityChange = () => {
       setIsPaused(document.hidden);
@@ -103,18 +98,16 @@ export const HeroLivingCollage = () => {
     };
   }, []);
 
-  // Mark the SPA Hero as mounted only after the first real mount.
-  // This avoids treating a browser reload as a resumed animation.
+  // The flag is set after the first real mount. Browser reloads create a new module,
+  // while SPA route changes keep this flag and therefore resume the shared clock.
   useEffect(() => {
     heroHasMounted = true;
   }, []);
 
-  // If Admin deleted all photos (pool is empty), render NOTHING
   if (pool.length === 0) {
     return null;
   }
 
-  // 3 Clean Non-Overlapping Parallel Floating Lanes across Lower Hero Stage
   const channelConfigs = [
     {
       top: '4%',
@@ -130,13 +123,12 @@ export const HeroLivingCollage = () => {
     },
     {
       top: '68%',
-      width: 'clamp(185px, 20vw, 290px]',
+      width: 'clamp(185px, 20vw, 290px)',
       rotateZ: [-2, 3, -2],
       floatY: [-6, 6, -6]
     }
   ];
 
-  // Dynamic calculations based on exact photo count N
   const N = pool.length;
   const travelDuration = 24;
   const staggerStep = N === 1 ? 24 : 4.5;
