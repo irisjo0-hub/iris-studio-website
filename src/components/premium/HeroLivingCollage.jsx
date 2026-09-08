@@ -17,12 +17,23 @@ import '../../styles/hero-living-collage.css';
  * 8. Cards enter from one side off-screen, float across lower stage, exit out opposite side off-screen.
  */
 
+const HERO_ANIMATION_EPOCH_KEY = 'iris-hero-animation-epoch';
+
 export const HeroLivingCollage = () => {
   const { settings, lang } = useSiteSettings();
   const isRtl = lang === 'ar';
 
   const stageRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
+
+  // Keep one shared animation clock so a normal reload/new mount does not jump back to frame 0.
+  const animationEpochRef = useRef(null);
+  if (animationEpochRef.current === null && typeof window !== 'undefined') {
+    const storedEpoch = window.localStorage.getItem(HERO_ANIMATION_EPOCH_KEY);
+    const epoch = Number(storedEpoch);
+    animationEpochRef.current = Number.isFinite(epoch) && epoch > 0 ? epoch : Date.now();
+    window.localStorage.setItem(HERO_ANIMATION_EPOCH_KEY, String(animationEpochRef.current));
+  }
 
   // Full Dynamic Admin Pool Parsing
   let parsedPool = [];
@@ -125,6 +136,9 @@ export const HeroLivingCollage = () => {
   const staggerStep = N === 1 ? 24 : 4.5;
   const totalLoopCycle = N === 1 ? 24 : Math.max(travelDuration + staggerStep, N * staggerStep);
   const repeatDelay = totalLoopCycle - travelDuration;
+  const elapsedCycle = animationEpochRef.current
+    ? Math.max(0, (Date.now() - animationEpochRef.current) / 1000)
+    : 0;
 
   return (
     <div
@@ -140,6 +154,9 @@ export const HeroLivingCollage = () => {
           const endX = isRtl ? '130vw' : '-130vw';
 
           const cardDelay = index * staggerStep;
+          const cycleDuration = travelDuration + repeatDelay;
+          const animationPhase = ((elapsedCycle - cardDelay) % cycleDuration + cycleDuration) % cycleDuration;
+          const initialDelay = -animationPhase;
 
           return (
             <motion.div
@@ -169,7 +186,7 @@ export const HeroLivingCollage = () => {
                 repeatType: 'loop',
                 repeatDelay: repeatDelay,
                 ease: 'easeInOut',
-                delay: cardDelay
+                delay: initialDelay
               }}
             >
               <img
