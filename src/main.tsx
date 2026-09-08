@@ -12,6 +12,7 @@ import './styles/iris-responsive-system.css'
 import './styles/iris-hero-responsive-polish.css'
 import './lib/irisCalendarPicker'
 import './mobile-performance.js'
+import './reels-video-budget.js'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
