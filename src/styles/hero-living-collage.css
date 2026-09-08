@@ -1,7 +1,7 @@
 /* src/styles/hero-living-collage.css
  * IRIS HERO LOWER VIEWPORT LIVING STREAM ENGINE
  * Restricted strictly to the empty lower Hero space below the CTA button (0 text/CTA overlap).
- * Image cards keep their own native aspect ratios and are never cropped or stretched.
+ * Larger portrait cards (240-340px wide) with 3 entry directions (Left, Right, Bottom; 0 from Top).
  */
 
 .iris-hero-lower-stage {
@@ -29,11 +29,9 @@
   pointer-events: none;
 }
 
-/* Individual Edge Floating Stream Card — size comes from the image itself */
+/* Individual Edge Floating Stream Card */
 .lower-stream-card.edge-floating-stream-card {
   position: absolute !important;
-  width: auto !important;
-  height: auto !important;
   border-radius: 22px !important;
   border: none !important;
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(103, 36, 95, 0.35) !important;
@@ -42,16 +40,30 @@
   will-change: transform, opacity, filter;
 }
 
-/* Card Image Element — preserve the source's exact aspect ratio; no crop/stretch */
+/* Individual Floating Card inside Stream */
+.lower-stream-card.floating-stream-loop-card {
+  position: relative !important;
+  flex-shrink: 0;
+  border-radius: 22px !important;
+  border: none !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(103, 36, 95, 0.35) !important;
+  cursor: default;
+  pointer-events: none;
+}
+
+.lower-stream-card.role-focal-card:hover,
+.lower-stream-card.floating-collage-card:hover,
+.lower-stream-card.floating-stream-loop-card:hover {
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95), 0 0 50px rgba(245, 189, 26, 0.6) !important;
+}
+
+/* Card Image Element — preserve each source's aspect ratio */
 .stream-card-img {
-  display: block;
-  width: auto !important;
-  height: auto !important;
-  max-width: none !important;
-  max-height: none !important;
-  aspect-ratio: auto !important;
+  width: 100%;
+  height: auto;
   object-fit: contain;
   border-radius: 20px;
+  display: block;
   filter: brightness(0.98) contrast(1.02);
   transition: none;
 }
@@ -117,9 +129,10 @@
   }
 }
 
-/* Mobile: preserve each image's native dimensions; do not impose a viewport width. */
+/* Mobile: preserve the original card width limit while keeping image aspect ratio. */
 @media (max-width: 768px) {
   .lower-stream-card.edge-floating-stream-card {
+    max-width: 48vw !important;
     border-radius: 16px !important;
     border-width: 1px !important;
   }
