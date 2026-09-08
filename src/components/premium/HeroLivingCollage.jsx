@@ -17,7 +17,9 @@ import '../../styles/hero-living-collage.css';
  * 8. Cards enter from one side off-screen, float across lower stage, exit out opposite side off-screen.
  */
 
-const HERO_ANIMATION_EPOCH_KEY = 'iris-hero-animation-epoch';
+// Shared only for the lifetime of the SPA module: navigation back to Hero keeps
+// the same animation clock, while a full browser reload creates a fresh clock.
+let heroAnimationEpoch = null;
 
 export const HeroLivingCollage = () => {
   const { settings, lang } = useSiteSettings();
@@ -26,13 +28,10 @@ export const HeroLivingCollage = () => {
   const stageRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Keep one shared animation clock so a normal reload/new mount does not jump back to frame 0.
-  const animationEpochRef = useRef(null);
-  if (animationEpochRef.current === null && typeof window !== 'undefined') {
-    const storedEpoch = window.localStorage.getItem(HERO_ANIMATION_EPOCH_KEY);
-    const epoch = Number(storedEpoch);
-    animationEpochRef.current = Number.isFinite(epoch) && epoch > 0 ? epoch : Date.now();
-    window.localStorage.setItem(HERO_ANIMATION_EPOCH_KEY, String(animationEpochRef.current));
+  // Keep one shared animation clock across SPA route changes/remounts.
+  // Do not persist it to localStorage: a real page reload must restart the Hero.
+  if (heroAnimationEpoch === null) {
+    heroAnimationEpoch = Date.now();
   }
 
   // Full Dynamic Admin Pool Parsing
@@ -136,8 +135,8 @@ export const HeroLivingCollage = () => {
   const staggerStep = N === 1 ? 24 : 4.5;
   const totalLoopCycle = N === 1 ? 24 : Math.max(travelDuration + staggerStep, N * staggerStep);
   const repeatDelay = totalLoopCycle - travelDuration;
-  const elapsedCycle = animationEpochRef.current
-    ? Math.max(0, (Date.now() - animationEpochRef.current) / 1000)
+  const elapsedCycle = heroAnimationEpoch
+    ? Math.max(0, (Date.now() - heroAnimationEpoch) / 1000)
     : 0;
 
   return (
