@@ -1,0 +1,1 @@
+Phase 3B was rolled back because its reel video budget observer could pause the active reel during AnimatePresence transitions and was associated with the reported mobile layout regression. The Phase 3A performance changes remain intact.
