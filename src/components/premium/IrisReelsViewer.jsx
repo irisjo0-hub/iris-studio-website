@@ -160,13 +160,42 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     getAllApprovedFeedbackAsync().then(setAllFeedbackList).catch(() => {});
   };
 
-  // Section visibility only. Do not start a competing smooth-scroll animation here.
+  // Keep the whole Reels stage aligned to the viewport when it is first entered.
+  // This restores the original stage snap without reintroducing the mobile touchmove preventDefault loop.
+  const lockWindowToStage = () => {
+    if (isSkippingRef.current) return;
+    if (stageRef.current) {
+      const stageTop = stageRef.current.offsetTop;
+      if (Math.abs(window.scrollY - stageTop) > 3) {
+        window.scrollTo({ top: stageTop, behavior: 'instant' in window ? 'instant' : 'auto' });
+      }
+    }
+  };
+
   useEffect(() => {
+    let wasIntersecting = false;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsStageActive(entry.isIntersecting);
-        const navbar = document.querySelector('.navbar-container, header.site-navbar, .app-header');
-        if (navbar) navbar.style.display = entry.isIntersecting ? 'none' : '';
+
+        if (entry.isIntersecting) {
+          const navbar = document.querySelector('.navbar-container, header.site-navbar, .app-header');
+          if (navbar) navbar.style.display = 'none';
+
+          if (!wasIntersecting && stageRef.current) {
+            const stageTop = stageRef.current.offsetTop;
+            const scrollY = window.scrollY;
+            if (Math.abs(scrollY - stageTop) > 50) {
+              window.scrollTo({ top: stageTop, behavior: 'smooth' });
+            }
+          }
+          wasIntersecting = true;
+        } else {
+          wasIntersecting = false;
+          const navbar = document.querySelector('.navbar-container, header.site-navbar, .app-header');
+          if (navbar) navbar.style.display = '';
+        }
       },
       { threshold: 0.25 }
     );
