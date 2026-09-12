@@ -8,8 +8,6 @@ const ProtectedAdminRoute = () => {
 
   useEffect(() => {
     let active = true;
-    let verificationTimer;
-
     const verifyAdmin = async () => {
       if (!active) return;
       setLoading(true);
@@ -33,7 +31,6 @@ const ProtectedAdminRoute = () => {
         }
 
         if (active) {
-          clearTimeout(verificationTimer);
           setAuthorized(true);
           setLoading(false);
         }
@@ -45,12 +42,6 @@ const ProtectedAdminRoute = () => {
         }
       }
     };
-
-    verificationTimer = setTimeout(() => {
-      if (active && !authorized) {
-        setLoading(false);
-      }
-    }, 15000);
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!active) return;
@@ -68,7 +59,6 @@ const ProtectedAdminRoute = () => {
 
     return () => {
       active = false;
-      clearTimeout(verificationTimer);
       authListener.subscription.unsubscribe();
     };
   }, []);
