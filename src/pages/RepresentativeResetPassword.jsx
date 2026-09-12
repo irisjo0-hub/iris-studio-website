@@ -1,0 +1,14 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { LockKeyhole, CheckCircle2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import '../styles/representatives.css';
+
+const RepresentativeResetPassword=()=>{
+ const navigate=useNavigate(),[email,setEmail]=useState(''),[password,setPassword]=useState(''),[confirm,setConfirm]=useState(''),[recovery,setRecovery]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState(''),[loading,setLoading]=useState(false);
+ useEffect(()=>{const {data:{subscription}}=supabase.auth.onAuthStateChange(event=>{if(event==='PASSWORD_RECOVERY')setRecovery(true)});supabase.auth.getSession().then(({data:{session}})=>{if(session)setRecovery(true)});return()=>subscription.unsubscribe()},[]);
+ const send=async(e)=>{e.preventDefault();setLoading(true);setError('');const {error:e1}=await supabase.auth.resetPasswordForEmail(email.trim(),{redirectTo:window.location.origin+'/representative/reset-password'});if(e1)setError(e1.message);else setMessage('تم إرسال رابط تغيير كلمة المرور إلى البريد.');setLoading(false)};
+ const update=async(e)=>{e.preventDefault();setLoading(true);setError('');if(password.length<8){setError('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');setLoading(false);return}if(password!==confirm){setError('كلمتا المرور غير متطابقتين.');setLoading(false);return}const {error:e1}=await supabase.auth.updateUser({password});if(e1)setError(e1.message);else{setMessage('تم تغيير كلمة المرور بنجاح.');setTimeout(()=>navigate('/representative/login',{replace:true}),1200)}setLoading(false)};
+ return <div className="rep-login" dir="rtl"><div className="rep-login-card"><div className="rep-reset-icon"><LockKeyhole size={25}/></div><span className="rep-eyebrow">ACCOUNT SECURITY</span><h1>{recovery?'تعيين كلمة مرور جديدة':'استعادة كلمة المرور'}</h1><p>{recovery?'أدخل كلمة المرور الجديدة لحسابك.':'أدخل البريد الإلكتروني لإرسال رابط آمن لتغيير كلمة المرور.'}</p>{!recovery?<form onSubmit={send}><label>البريد الإلكتروني<input type="email" value={email} onChange={e=>setEmail(e.target.value)} required/></label><button className="rep-primary-btn" disabled={loading}>{loading?'جاري الإرسال...':'إرسال الرابط'}</button></form>:<form onSubmit={update}><label>كلمة المرور الجديدة<input type="password" value={password} onChange={e=>setPassword(e.target.value)} required/></label><label>تأكيد كلمة المرور<input type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} required/></label><button className="rep-primary-btn" disabled={loading}>{loading?'جاري الحفظ...':'حفظ كلمة المرور'}</button></form>}{error&&<div className="rep-error">{error}</div>}{message&&<div className="rep-success"><CheckCircle2 size={16}/>{message}</div>}</div></div>;
+};
+export default RepresentativeResetPassword;
