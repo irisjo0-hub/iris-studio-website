@@ -97,8 +97,14 @@ const prepareReelMedia = (root) => {
 
   const videos = frame.querySelectorAll('.reel-canvas-layer video');
   videos.forEach((video, index) => {
-    /* The last/currently mounted canvas is the one allowed to load normally. */
-    prepareVideo(video, index === videos.length - 1);
+    const isActive = index === videos.length - 1;
+    /* The last/currently mounted canvas is the only one allowed to play/load normally. */
+    if (!isActive) {
+      video.pause();
+      video.autoplay = false;
+      video.preload = 'metadata';
+    }
+    prepareVideo(video, isActive);
   });
 };
 
