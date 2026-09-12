@@ -45,6 +45,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const cooldownRef = useRef(false);
   const activeIndexRef = useRef(0);
   const isSkippingRef = useRef(false);
+  const isMobileRef = useRef(typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches);
 
   useEffect(() => {
     const handleReelMuteChange = (event) => {
@@ -65,7 +66,9 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       video.muted = isMuted;
       video.defaultMuted = isMuted;
       video.playsInline = true;
-      video.preload = 'auto';
+      // Metadata is enough for the active reel; forcing "auto" makes mobile
+      // aggressively buffer large videos and causes jank during reel changes.
+      video.preload = 'metadata';
       const promise = video.play();
       if (promise !== undefined) {
         promise.catch((err) => {
@@ -211,6 +214,14 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const navigateToIndex = (newIndex, customDirection = null) => {
     if (isLocked || cooldownRef.current) return;
+
+    // Stop the outgoing video immediately. AnimatePresence keeps exiting
+    // elements mounted for their exit animation, so without this two videos
+    // can decode/play at the same time on mobile.
+    stageRef.current?.querySelectorAll('.reel-canvas-layer video').forEach((video) => {
+      video.pause();
+      video.preload = 'metadata';
+    });
     const dir = customDirection !== null ? customDirection : (newIndex > activeIndex ? 1 : -1);
     setDirection(dir);
     setIsLocked(true);
@@ -441,10 +452,11 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const currentReel = items[activeIndex] || items[0];
 
+  const slideDuration = isMobileRef.current ? 0.28 : 0.48;
   const slideVariants = {
     initial: (dir) => ({ y: dir > 0 ? '100%' : '-100%', opacity: 1 }),
-    animate: { y: '0%', opacity: 1, transition: { duration: 0.48, ease: [0.22, 1, 0.36, 1] } },
-    exit: (dir) => ({ y: dir > 0 ? '-100%' : '100%', opacity: 1, transition: { duration: 0.48, ease: [0.22, 1, 0.36, 1] } })
+    animate: { y: '0%', opacity: 1, transition: { duration: slideDuration, ease: [0.22, 1, 0.36, 1] } },
+    exit: (dir) => ({ y: dir > 0 ? '-100%' : '100%', opacity: 1, transition: { duration: slideDuration, ease: [0.22, 1, 0.36, 1] } })
   };
 
   return (
@@ -470,7 +482,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         </button>
 
         <div className="reel-frame" data-locale={isRtl ? 'ar' : 'en'}>
-          <AnimatePresence initial={false} custom={direction}>
+          <AnimatePresence initial={false} custom={direction} mode={isMobileRef.current ? 'wait' : 'sync'}>
             <motion.div
               key={`reel-canvas-${currentReel.id}`}
               className="reel-canvas-layer"
