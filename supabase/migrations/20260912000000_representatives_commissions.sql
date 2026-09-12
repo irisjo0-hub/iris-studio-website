@@ -157,3 +157,24 @@ for select to authenticated
 using (representative_id = (select auth.uid()) and (select private.is_representative((select auth.uid()))));
 
 create index if not exists idx_commission_withdrawals_processed_by on public.commission_withdrawals(processed_by);
+
+
+create or replace function public.request_commission_withdrawal(p_amount numeric, p_wallet_type text, p_wallet_number text)
+returns public.commission_withdrawals
+language plpgsql security invoker set search_path = ''
+as $$
+declare
+  v_uid uuid := auth.uid(); v_available numeric; v_row public.commission_withdrawals; v_wallet text := trim(coalesce(p_wallet_number,''));
+begin
+  if v_uid is null then raise exception 'Authentication required'; end if;
+  perform pg_advisory_xact_lock(hashtextextended(v_uid::text, 0));
+  if not private.is_representative(v_uid) then raise exception 'Representative account is not active'; end if;
+  if p_amount is null or p_amount <= 0 then raise exception 'Withdrawal amount must be greater than zero'; end if;
+  if p_wallet_type is null or length(trim(p_wallet_type)) < 2 then raise exception 'Wallet type is required'; end if;
+  if length(v_wallet) < 3 or length(v_wallet) > 100 then raise exception 'Valid wallet number or wallet identifier is required'; end if;
+  if p_wallet_type in ('Zain Cash','Orange Money','UWallet','Dinarak') and v_wallet !~ '^[A-Za-z0-9@._+ -]+$' then raise exception 'Invalid wallet number or identifier'; end if;
+  v_available := private.rep_available_balance(v_uid);
+  if p_amount > v_available then raise exception 'Insufficient available commission balance'; end if;
+  insert into public.commission_withdrawals(representative_id, amount, wallet_type, wallet_number) values (v_uid, round(p_amount,2), trim(p_wallet_type), v_wallet) returning * into v_row;
+  return v_row;
+end; $$;
