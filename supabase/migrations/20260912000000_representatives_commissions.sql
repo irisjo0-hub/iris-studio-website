@@ -54,6 +54,7 @@ drop trigger if exists representatives_touch_updated_at on public.representative
 create trigger representatives_touch_updated_at before update on public.representatives
 for each row execute function public.touch_representative_updated_at();
 create schema if not exists private;
+grant usage on schema private to authenticated;
 create or replace function private.is_representative(p_user_id uuid default null)
 returns boolean language sql stable security definer set search_path = ''
 as $$
