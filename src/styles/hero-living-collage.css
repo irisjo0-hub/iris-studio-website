@@ -37,7 +37,7 @@
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(103, 36, 95, 0.35) !important;
   cursor: default;
   pointer-events: none;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 
 /* Individual Floating Card inside Stream */
