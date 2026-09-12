@@ -124,6 +124,13 @@ const AppRouter = () => (
         <Route path="/admin/settings" element={<AdminSettings />} />
         <Route path="/admin/representatives" element={<AdminRepresentatives />} />
       </Route>
+
+      <Route element={<ProtectedRepresentativeRoute />}>
+        <Route path="/representative/dashboard" element={<RepresentativeDashboard />} />
+        <Route path="/representative/sales" element={<RepresentativeSales />} />
+        <Route path="/representative/withdrawals" element={<RepresentativeWithdrawals />} />
+        <Route path="/representative/profile" element={<RepresentativeProfile />} />
+      </Route>
     </Routes>
   </Suspense>
 );
