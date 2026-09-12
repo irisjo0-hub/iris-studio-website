@@ -133,8 +133,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       }
     });
 
-    getAllApprovedFeedbackAsync().then(setAllFeedbackList).catch(() => {});
-
+    // Feedback is loaded only when the visitor opens the feedback drawer.
+    // Avoid an extra RPC on every homepage visit.
     const currentHash = window.location.hash;
     if (currentHash && currentHash.startsWith('#flow-')) {
       const targetSlug = currentHash.replace('#flow-', '');
