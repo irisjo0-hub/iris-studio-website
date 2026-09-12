@@ -1,13 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-
-export function createRepresentativeAuthClient() {
-  return createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY, {
-    auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
-  });
-}
+import { supabase } from './supabase';
 
 export async function createRepresentativeAccount({ email, password, fullName }) {
-  const { data, error } = await createRepresentativeAuthClient().functions.invoke('create-representative', {
+  const { data, error } = await supabase.functions.invoke('create-representative', {
     body: { email, password, fullName },
   });
   if (error) return { data: null, error: new Error(data?.error || error.message) };
