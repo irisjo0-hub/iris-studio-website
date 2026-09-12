@@ -7,13 +7,10 @@ export function createRepresentativeAuthClient() {
 }
 
 export async function createRepresentativeAccount({ email, password, fullName }) {
-  const client = createRepresentativeAuthClient();
-  return client.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { full_name: fullName, role: 'representative' },
-      emailRedirectTo: window.location.origin + '/representative/login',
-    },
+  const { data, error } = await createRepresentativeAuthClient().functions.invoke('create-representative', {
+    body: { email, password, fullName },
   });
+  if (error) return { data: null, error: new Error(data?.error || error.message) };
+  if (data?.error) return { data: null, error: new Error(data.error) };
+  return { data, error: null };
 }
