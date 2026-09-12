@@ -178,3 +178,22 @@ begin
   insert into public.commission_withdrawals(representative_id, amount, wallet_type, wallet_number) values (v_uid, round(p_amount,2), trim(p_wallet_type), v_wallet) returning * into v_row;
   return v_row;
 end; $$;
+
+
+-- Commission catalog and bulk quantities
+create table if not exists public.commission_catalog (
+ id uuid primary key default gen_random_uuid(), name text not null,
+ item_type text not null default 'product' check (item_type in ('product','service')),
+ division text, unit_price numeric(12,2) not null default 0 check (unit_price >= 0),
+ commission_rate numeric(5,2) not null default 10 check (commission_rate >= 0 and commission_rate <= 100),
+ active boolean not null default true, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+alter table public.commission_sales add column if not exists quantity integer not null default 1;
+alter table public.commission_sales add constraint commission_sales_quantity_check check (quantity > 0) not valid;
+create index if not exists idx_commission_catalog_active on public.commission_catalog(active);
+alter table public.commission_catalog enable row level security;
+grant select,insert,update,delete on public.commission_catalog to authenticated;
+drop policy if exists "Admins manage commission catalog" on public.commission_catalog;
+create policy "Admins manage commission catalog" on public.commission_catalog for all to authenticated using ((select public.is_admin())) with check ((select public.is_admin()));
+drop policy if exists "Representatives view active commission catalog" on public.commission_catalog;
+create policy "Representatives view active commission catalog" on public.commission_catalog for select to authenticated using (active = true);
