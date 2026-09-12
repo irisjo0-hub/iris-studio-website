@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from '../components/Layout';
-import ProtectedAdminRoute from '../components/ProtectedAdminRoute';
+import ProtectedAdminRoute from '../components/ProtectedAdminRoute';\nimport ProtectedRepresentativeRoute from '../components/ProtectedRepresentativeRoute';
 
 // Keep the landing shell eager; load secondary routes on demand so the initial
 // bundle does not pull every customer/admin page into the first render.
@@ -40,7 +40,7 @@ const AdminProducts = lazy(() => import('../pages/AdminProducts'));
 const AdminPrintingOrders = lazy(() => import('../pages/AdminPrintingOrders'));
 const AdminSettings = lazy(() => import('../pages/AdminSettings'));
 const AdminFlow = lazy(() => import('../pages/AdminFlow'));
-const AdminFlowFeedback = lazy(() => import('../pages/AdminFlowFeedback'));
+const AdminFlowFeedback = lazy(() => import('../pages/AdminFlowFeedback'));\nconst AdminRepresentatives = lazy(() => import('../pages/AdminRepresentatives'));\nconst RepresentativeLogin = lazy(() => import('../pages/RepresentativeLogin'));\nconst RepresentativeResetPassword = lazy(() => import('../pages/RepresentativeResetPassword'));\nconst RepresentativeDashboard = lazy(() => import('../pages/RepresentativeDashboard'));\nconst RepresentativeSales = lazy(() => import('../pages/RepresentativeSales'));\nconst RepresentativeWithdrawals = lazy(() => import('../pages/RepresentativeWithdrawals'));\nconst RepresentativeProfile = lazy(() => import('../pages/RepresentativeProfile'));
 
 const AppRouter = () => (
   <Suspense fallback={null}>
@@ -93,7 +93,7 @@ const AppRouter = () => (
         <Route path="*" element={<NotFound />} />
       </Route>
 
-      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/login" element={<AdminLogin />} />\n      <Route path="/representative/login" element={<RepresentativeLogin />} />\n      <Route path="/representative/reset-password" element={<RepresentativeResetPassword />} />
 
       <Route element={<ProtectedAdminRoute />}>
         <Route path="/admin" element={<Admin />} />
@@ -111,7 +111,7 @@ const AppRouter = () => (
         <Route path="/admin/book-extras" element={<AdminBookExtras />} />
         <Route path="/admin/flow" element={<AdminFlow />} />
         <Route path="/admin/flow-feedback" element={<AdminFlowFeedback />} />
-        <Route path="/admin/settings" element={<AdminSettings />} />
+        <Route path="/admin/settings" element={<AdminSettings />} />\n        <Route path="/admin/representatives" element={<AdminRepresentatives />} />
       </Route>
     </Routes>
   </Suspense>
