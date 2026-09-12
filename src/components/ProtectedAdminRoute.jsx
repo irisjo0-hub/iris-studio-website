@@ -12,21 +12,17 @@ const ProtectedAdminRoute = () => {
       if (!active) return;
       setLoading(true);
       try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) {
-          if (active) {
-            setAuthorized(false);
-            setLoading(false);
-          }
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+        if (!session?.user) {
+          if (active) { setAuthorized(false); setLoading(false); }
           return;
         }
 
         const { data: isAdmin, error: rpcError } = await supabase.rpc('is_admin');
-        if (rpcError || !isAdmin) {
-          if (active) {
-            setAuthorized(false);
-            setLoading(false);
-          }
+        if (rpcError) throw rpcError;
+        if (!isAdmin) {
+          if (active) { setAuthorized(false); setLoading(false); }
           return;
         }
 
@@ -37,7 +33,7 @@ const ProtectedAdminRoute = () => {
       } catch (err) {
         console.error('Admin verification error:', err);
         if (active) {
-          setAuthorized(false);
+          // Do not log the admin out because of a transient tab/network/RPC failure.
           setLoading(false);
         }
       }
@@ -45,11 +41,12 @@ const ProtectedAdminRoute = () => {
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!active) return;
-      if (event === 'SIGNED_OUT' || !session) {
+      if (event === 'SIGNED_OUT') {
         setAuthorized(false);
         setLoading(false);
         return;
       }
+      if (!session) return;
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
         void verifyAdmin();
       }
