@@ -119,3 +119,38 @@ using (representative_id = (select auth.uid()));
 create index if not exists idx_commission_sales_rep_date on public.commission_sales(representative_id, sale_date);
 create index if not exists idx_commission_withdrawals_rep_status on public.commission_withdrawals(representative_id, status);
 create index if not exists idx_commission_withdrawals_requested_at on public.commission_withdrawals(requested_at);
+
+create or replace function private.handle_new_representative()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if coalesce(new.raw_user_meta_data ->> 'role','') = 'representative' then
+    insert into public.representatives (user_id, employee_code, email, full_name, status)
+    values (new.id, 'REP-' || upper(substr(new.id::text,1,8)), lower(new.email),
+            coalesce(nullif(new.raw_user_meta_data ->> 'full_name',''), 'Representative'), 'active')
+    on conflict (user_id) do nothing;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created_representative on auth.users;
+create trigger on_auth_user_created_representative
+after insert on auth.users
+for each row execute function private.handle_new_representative();
+
+create unique index if not exists representatives_email_unique
+on public.representatives(lower(email)) where email is not null;
+
+drop policy if exists "Representatives view own sales" on public.commission_sales;
+create policy "Representatives view own sales" on public.commission_sales
+for select to authenticated
+using (representative_id = (select auth.uid()) and (select private.is_representative((select auth.uid()))));
+
+drop policy if exists "Representatives view own withdrawals" on public.commission_withdrawals;
+create policy "Representatives view own withdrawals" on public.commission_withdrawals
+for select to authenticated
+using (representative_id = (select auth.uid()) and (select private.is_representative((select auth.uid()))));
