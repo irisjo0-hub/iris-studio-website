@@ -5,19 +5,93 @@ import { supabase } from '../lib/supabase';
 import irisLogo from '../assets/iris_logo.png';
 import '../styles/representatives.css';
 
+const verifyRepresentativeWithRetry = async (userId) => {
+  const delays = [0, 400, 900, 1600];
+
+  for (let attempt = 0; attempt < delays.length; attempt += 1) {
+    if (delays[attempt]) {
+      await new Promise((resolve) => window.setTimeout(resolve, delays[attempt]));
+    }
+
+    const { data: rep, error } = await supabase
+      .from('representatives')
+      .select('user_id,status')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (!error) return { rep, error: null };
+  }
+
+  return { rep: null, error: new Error('تعذر التحقق من حساب المندوب مؤقتاً.') };
+};
+
 const RepresentativeLogin = () => {
-  const navigate=useNavigate(),[email,setEmail]=useState(''),[password,setPassword]=useState(''),[show,setShow]=useState(false),[loading,setLoading]=useState(false),[error,setError]=useState('');
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  useEffect(()=>{(async()=>{const {data:{user}}=await supabase.auth.getUser();if(!user)return;const {data:rep}=await supabase.from('representatives').select('user_id').eq('user_id',user.id).eq('status','active').maybeSingle();if(rep)navigate('/representative/dashboard',{replace:true})})()},[navigate]);
+  useEffect(() => {
+    let active = true;
 
-  const submit=async(e)=>{
-    e.preventDefault();setLoading(true);setError('');
-    const {error:e1}=await supabase.auth.signInWithPassword({email:email.trim(),password});
-    if(e1){setError('البريد الإلكتروني أو كلمة المرور غير صحيحة.');setLoading(false);return;}
-    const {data:{user}}=await supabase.auth.getUser();
-    const {data:rep}=await supabase.from('representatives').select('user_id').eq('user_id',user?.id).eq('status','active').maybeSingle();
-    if(!rep){await supabase.auth.signOut();setError('هذا الحساب غير مفعل كمندوب.');setLoading(false);return;}
-    navigate('/representative/dashboard',{replace:true});
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !active) return;
+
+      const { rep } = await verifyRepresentativeWithRetry(user.id);
+      if (active && rep?.status === 'active') {
+        navigate('/representative/dashboard', { replace: true });
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [navigate]);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    const { error: loginError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    if (loginError) {
+      setError('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+      setLoading(false);
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      setError('تم تسجيل الدخول لكن تعذر تحميل الجلسة. حاول مرة أخرى.');
+      setLoading(false);
+      return;
+    }
+
+    const { rep, error: verifyError } = await verifyRepresentativeWithRetry(user.id);
+
+    if (verifyError) {
+      setError('تم تسجيل الدخول، لكن تعذر التحقق من حساب المندوب مؤقتاً. حاول مرة أخرى.');
+      setLoading(false);
+      return;
+    }
+
+    if (rep?.status !== 'active') {
+      await supabase.auth.signOut({ scope: 'local' });
+      setError('هذا الحساب غير مفعل كمندوب.');
+      setLoading(false);
+      return;
+    }
+
+    navigate('/representative/dashboard', { replace: true });
+    setLoading(false);
   };
 
   return <div className="rep-login" dir="rtl"><div className="rep-login-card">
