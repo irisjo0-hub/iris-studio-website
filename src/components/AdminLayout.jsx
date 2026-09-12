@@ -51,7 +51,7 @@ const AdminLayout = ({ children }) => {
     {
       title: 'التقارير الرئيسية',
       links: [
-        { to: '/admin/dashboard',         label: 'لوحة الإحصائيات', icon: LayoutDashboard },
+        { to: '/admin/dashboard',         label: 'لوحة الإحصائيات', icon: LayoutDashboard },\n        { to: '/admin/representatives',   label: 'المندوبون والعمولات', icon: UsersRound },
       ]
     },
     {
