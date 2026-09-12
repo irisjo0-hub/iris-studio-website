@@ -4,6 +4,7 @@ import AdminLayout from '../components/AdminLayout';
 import { supabase } from '../lib/supabase';
 import { createRepresentativeAccount } from '../lib/representativeAuth';
 import '../styles/admin.css';
+import '../styles/representatives.css';
 
 const money=n=>Number(n||0).toFixed(2)+' JOD';
 const blank={full_name:'',email:'',password:'',phone:'',commission_rate:10,wallet_type:'',wallet_number:'',status:'active'};
