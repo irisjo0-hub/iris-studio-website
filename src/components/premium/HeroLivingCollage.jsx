@@ -163,8 +163,7 @@ export const HeroLivingCollage = () => {
                       x: [startX, midX, endX],
                       y: config.floatY,
                       rotateZ: config.rotateZ,
-                      opacity: [0, 1, 0],
-                      filter: ['blur(12px)', 'blur(0px)', 'blur(12px)']
+                      opacity: [0, 1, 0]
                     }
               }
               transition={{
@@ -186,7 +185,9 @@ export const HeroLivingCollage = () => {
                 src={work.image}
                 alt={isRtl ? work.alt_ar : work.alt_en}
                 className="stream-card-img"
-                loading="eager"
+                loading={index < 2 ? 'eager' : 'lazy'}
+                decoding="async"
+                fetchPriority={index === 0 ? 'high' : 'low'}
               />
             </motion.div>
           );
