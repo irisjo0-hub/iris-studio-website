@@ -1,4 +1,30 @@
 import { lazy, Suspense } from 'react';
+
+const lazyRetry = (importer) =>
+  lazy(() =>
+    importer()
+      .then((module) => {
+        try { sessionStorage.removeItem('iris-chunk-reload'); } catch {}
+        return module;
+      })
+      .catch((error) => {
+        const message = String(error?.message || error || '');
+        const isChunkError =
+          /dynamically imported module|failed to fetch|importing a module script/i.test(message);
+
+        if (isChunkError) {
+          try {
+            if (!sessionStorage.getItem('iris-chunk-reload')) {
+              sessionStorage.setItem('iris-chunk-reload', '1');
+              window.location.reload();
+              return new Promise(() => {});
+            }
+            sessionStorage.removeItem('iris-chunk-reload');
+          } catch {}
+        }
+        throw error;
+      })
+  );
 import { Routes, Route } from 'react-router-dom';
 import Layout from '../components/Layout';
 import ProtectedAdminRoute from '../components/ProtectedAdminRoute';
@@ -10,45 +36,45 @@ import Home from '../pages/Home';
 import AdminLogin from '../pages/AdminLogin';
 import NotFound from '../pages/NotFound';
 
-const Work = lazy(() => import('../pages/Work'));
-const Packages = lazy(() => import('../pages/Packages'));
-const GraduationBooks = lazy(() => import('../pages/GraduationBooks'));
-const GraduationBookOrder = lazy(() => import('../pages/GraduationBookOrder'));
-const TemplatesGallery = lazy(() => import('../pages/TemplatesGallery'));
-const Booking = lazy(() => import('../pages/Booking'));
-const PrintingProducts = lazy(() => import('../pages/PrintingProducts'));
-const ProductPhotography = lazy(() => import('../pages/ProductPhotography'));
-const OutdoorPhotography = lazy(() => import('../pages/OutdoorPhotography'));
-const Events = lazy(() => import('../pages/Events'));
-const GraduationPackage = lazy(() => import('../pages/GraduationPackage'));
-const MediaPortal = lazy(() => import('../pages/MediaPortal'));
-const StudioPortal = lazy(() => import('../pages/StudioPortal'));
-const PrintPortal = lazy(() => import('../pages/PrintPortal'));
-const Checkout = lazy(() => import('../pages/Checkout'));
+const Work = lazyRetry(() => import('../pages/Work'));
+const Packages = lazyRetry(() => import('../pages/Packages'));
+const GraduationBooks = lazyRetry(() => import('../pages/GraduationBooks'));
+const GraduationBookOrder = lazyRetry(() => import('../pages/GraduationBookOrder'));
+const TemplatesGallery = lazyRetry(() => import('../pages/TemplatesGallery'));
+const Booking = lazyRetry(() => import('../pages/Booking'));
+const PrintingProducts = lazyRetry(() => import('../pages/PrintingProducts'));
+const ProductPhotography = lazyRetry(() => import('../pages/ProductPhotography'));
+const OutdoorPhotography = lazyRetry(() => import('../pages/OutdoorPhotography'));
+const Events = lazyRetry(() => import('../pages/Events'));
+const GraduationPackage = lazyRetry(() => import('../pages/GraduationPackage'));
+const MediaPortal = lazyRetry(() => import('../pages/MediaPortal'));
+const StudioPortal = lazyRetry(() => import('../pages/StudioPortal'));
+const PrintPortal = lazyRetry(() => import('../pages/PrintPortal'));
+const Checkout = lazyRetry(() => import('../pages/Checkout'));
 
-const Admin = lazy(() => import('../pages/Admin'));
-const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
-const AdminBookings = lazy(() => import('../pages/AdminBookings'));
-const AdminSchedule = lazy(() => import('../pages/AdminSchedule'));
-const AdminGraduationOrders = lazy(() => import('../pages/AdminGraduationOrders'));
-const AdminWork = lazy(() => import('../pages/AdminWork'));
-const AdminPackages = lazy(() => import('../pages/AdminPackages'));
-const AdminTemplates = lazy(() => import('../pages/AdminTemplates'));
-const AdminExtras = lazy(() => import('../pages/AdminExtras'));
-const AdminBookExtras = lazy(() => import('../pages/AdminBookExtras'));
-const AdminOffers = lazy(() => import('../pages/AdminOffers'));
-const AdminProducts = lazy(() => import('../pages/AdminProducts'));
-const AdminPrintingOrders = lazy(() => import('../pages/AdminPrintingOrders'));
-const AdminSettings = lazy(() => import('../pages/AdminSettings'));
-const AdminFlow = lazy(() => import('../pages/AdminFlow'));
-const AdminFlowFeedback = lazy(() => import('../pages/AdminFlowFeedback'));
-const AdminRepresentatives = lazy(() => import('../pages/AdminRepresentatives'));
-const RepresentativeLogin = lazy(() => import('../pages/RepresentativeLogin'));
-const RepresentativeResetPassword = lazy(() => import('../pages/RepresentativeResetPassword'));
-const RepresentativeDashboard = lazy(() => import('../pages/RepresentativeDashboard'));
-const RepresentativeSales = lazy(() => import('../pages/RepresentativeSales'));
-const RepresentativeWithdrawals = lazy(() => import('../pages/RepresentativeWithdrawals'));
-const RepresentativeProfile = lazy(() => import('../pages/RepresentativeProfile'));
+const Admin = lazyRetry(() => import('../pages/Admin'));
+const AdminDashboard = lazyRetry(() => import('../pages/AdminDashboard'));
+const AdminBookings = lazyRetry(() => import('../pages/AdminBookings'));
+const AdminSchedule = lazyRetry(() => import('../pages/AdminSchedule'));
+const AdminGraduationOrders = lazyRetry(() => import('../pages/AdminGraduationOrders'));
+const AdminWork = lazyRetry(() => import('../pages/AdminWork'));
+const AdminPackages = lazyRetry(() => import('../pages/AdminPackages'));
+const AdminTemplates = lazyRetry(() => import('../pages/AdminTemplates'));
+const AdminExtras = lazyRetry(() => import('../pages/AdminExtras'));
+const AdminBookExtras = lazyRetry(() => import('../pages/AdminBookExtras'));
+const AdminOffers = lazyRetry(() => import('../pages/AdminOffers'));
+const AdminProducts = lazyRetry(() => import('../pages/AdminProducts'));
+const AdminPrintingOrders = lazyRetry(() => import('../pages/AdminPrintingOrders'));
+const AdminSettings = lazyRetry(() => import('../pages/AdminSettings'));
+const AdminFlow = lazyRetry(() => import('../pages/AdminFlow'));
+const AdminFlowFeedback = lazyRetry(() => import('../pages/AdminFlowFeedback'));
+const AdminRepresentatives = lazyRetry(() => import('../pages/AdminRepresentatives'));
+const RepresentativeLogin = lazyRetry(() => import('../pages/RepresentativeLogin'));
+const RepresentativeResetPassword = lazyRetry(() => import('../pages/RepresentativeResetPassword'));
+const RepresentativeDashboard = lazyRetry(() => import('../pages/RepresentativeDashboard'));
+const RepresentativeSales = lazyRetry(() => import('../pages/RepresentativeSales'));
+const RepresentativeWithdrawals = lazyRetry(() => import('../pages/RepresentativeWithdrawals'));
+const RepresentativeProfile = lazyRetry(() => import('../pages/RepresentativeProfile'));
 
 const AppRouter = () => (
   <Suspense fallback={null}>
