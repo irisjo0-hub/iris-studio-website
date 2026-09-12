@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -21,8 +21,10 @@ export const IrisDarkHero = () => {
   const isRtl = lang === 'ar';
   const [heroMenuOpen, setHeroMenuOpen] = useState(false);
 
-  // Desktop Pointer Parallax & Magnetic CTA State
-  const [glowOffset, setGlowOffset] = useState({ x: 0, y: 0 });
+  // Desktop pointer effects. Keep glow transforms off React state so mouse movement
+  // does not re-render the entire hero/collage tree on every pointer event.
+  const glowRafRef = useRef(null);
+  const glowOffsetRef = useRef({ x: 0, y: 0 });
   const [ctaOffset, setCtaOffset] = useState({ x: 0, y: 0 });
   const [isCtaHovered, setIsCtaHovered] = useState(false);
 
@@ -44,14 +46,32 @@ export const IrisDarkHero = () => {
   // Lerp Mouse Parallax Handler (Desktop Pointer Only)
   const handleHeroMouseMove = (e) => {
     if (window.innerWidth < 1024) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
-    const y = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
-    setGlowOffset({ x: x * 16, y: y * 16 });
+    const hero = e.currentTarget;
+    const rect = hero.getBoundingClientRect();
+    const x = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 16;
+    const y = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * 16;
+    glowOffsetRef.current = { x, y };
+    if (glowRafRef.current) return;
+    glowRafRef.current = window.requestAnimationFrame(() => {
+      glowRafRef.current = null;
+      const { x: gx, y: gy } = glowOffsetRef.current;
+      const glows = hero.querySelectorAll('.hero-v2-ambient-layer .ambient-glow');
+      const multipliers = [[-0.5, -0.5], [0.8, 0.8], [-0.9, -0.9], [0.6, 0.6], [1.2, 1.2]];
+      glows.forEach((glow, index) => {
+        const [mx, my] = multipliers[index] || [1, 1];
+        glow.style.transform = 'translate(' + (gx * mx) + 'px, ' + (gy * my) + 'px)';
+      });
+    });
   };
 
-  const handleHeroMouseLeave = () => {
-    setGlowOffset({ x: 0, y: 0 });
+  const handleHeroMouseLeave = (e) => {
+    if (glowRafRef.current) {
+      window.cancelAnimationFrame(glowRafRef.current);
+      glowRafRef.current = null;
+    }
+    e.currentTarget.querySelectorAll('.hero-v2-ambient-layer .ambient-glow').forEach((glow) => {
+      glow.style.transform = 'translate(0px, 0px)';
+    });
     setCtaOffset({ x: 0, y: 0 });
     setIsCtaHovered(false);
   };
@@ -111,23 +131,23 @@ export const IrisDarkHero = () => {
       <div className="hero-v2-ambient-layer">
         <div
           className="ambient-glow glow-purple-topleft"
-          style={{ transform: `translate(${-glowOffset.x * 0.5}px, ${-glowOffset.y * 0.5}px)` }}
+
         />
         <div
           className="ambient-glow glow-purple-topright"
-          style={{ transform: `translate(${glowOffset.x * 0.8}px, ${glowOffset.y * 0.8}px)` }}
+
         />
         <div
           className="ambient-glow glow-green-bottomleft"
-          style={{ transform: `translate(${-glowOffset.x * 0.9}px, ${-glowOffset.y * 0.9}px)` }}
+
         />
         <div
           className="ambient-glow glow-green-bottomright"
-          style={{ transform: `translate(${glowOffset.x * 0.6}px, ${glowOffset.y * 0.6}px)` }}
+
         />
         <div
           className="ambient-glow glow-gold-accent"
-          style={{ transform: `translate(${glowOffset.x * 1.2}px, ${glowOffset.y * 1.2}px)` }}
+
         />
       </div>
 
