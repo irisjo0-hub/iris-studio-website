@@ -113,7 +113,7 @@ using (representative_id = (select auth.uid()));
 drop policy if exists "Admins manage withdrawals" on public.commission_withdrawals;
 create policy "Admins manage withdrawals" on public.commission_withdrawals for all to authenticated
 using ((select public.is_admin())) with check ((select public.is_admin()));
-drop policy if exists "Representatives view own withdrawals" on public.commission_withdrawals;
+drop policy if exists "Representatives can request withdrawals" on public.commission_withdrawals;\ncreate policy "Representatives can request withdrawals" on public.commission_withdrawals for insert to authenticated\nwith check (representative_id = (select auth.uid()) and (select private.is_representative((select auth.uid()))));\n\ndrop policy if exists "Representatives view own withdrawals" on public.commission_withdrawals;
 create policy "Representatives view own withdrawals" on public.commission_withdrawals for select to authenticated
 using (representative_id = (select auth.uid()));
 create index if not exists idx_commission_sales_rep_date on public.commission_sales(representative_id, sale_date);
