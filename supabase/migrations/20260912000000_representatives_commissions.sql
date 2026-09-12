@@ -155,3 +155,5 @@ drop policy if exists "Representatives view own withdrawals" on public.commissio
 create policy "Representatives view own withdrawals" on public.commission_withdrawals
 for select to authenticated
 using (representative_id = (select auth.uid()) and (select private.is_representative((select auth.uid()))));
+
+create index if not exists idx_commission_withdrawals_processed_by on public.commission_withdrawals(processed_by);
