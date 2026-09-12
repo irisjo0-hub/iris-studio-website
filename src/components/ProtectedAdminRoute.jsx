@@ -33,6 +33,7 @@ const ProtectedAdminRoute = () => {
         }
 
         if (active) {
+          clearTimeout(verificationTimer);
           setAuthorized(true);
           setLoading(false);
         }
@@ -46,11 +47,10 @@ const ProtectedAdminRoute = () => {
     };
 
     verificationTimer = setTimeout(() => {
-      if (active) {
-        setAuthorized(false);
+      if (active && !authorized) {
         setLoading(false);
       }
-    }, 5000);
+    }, 15000);
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!active) return;
