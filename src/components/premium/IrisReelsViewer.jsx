@@ -482,7 +482,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         </button>
 
         <div className="reel-frame" data-locale={isRtl ? 'ar' : 'en'}>
-          <AnimatePresence initial={false} custom={direction} mode={isMobileRef.current ? 'wait' : 'sync'}>
+          <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={`reel-canvas-${currentReel.id}`}
               className="reel-canvas-layer"
