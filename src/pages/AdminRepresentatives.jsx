@@ -1,4 +1,4 @@
-import { useEffect,useMemo,useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Plus, Pencil, Trash2, KeyRound, Check, X, Search, WalletCards } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
 import { supabase } from '../lib/supabase';
@@ -6,39 +6,1052 @@ import { createRepresentativeAccount } from '../lib/representativeAuth';
 import '../styles/admin.css';
 import '../styles/representatives.css';
 
-const money=n=>Number(n||0).toFixed(2)+' JOD';
-const blank={full_name:'',email:'',password:'',phone:'',commission_rate:10,wallet_type:'',wallet_number:'',status:'active'};
+const money = (n) => Number(n || 0).toFixed(2) + ' JOD';
 
-const AdminRepresentatives=()=>{
- const[reps,setReps]=useState([]),[sales,setSales]=useState([]),[withdrawals,setWithdrawals]=useState([]),[catalog,setCatalog]=useState([]),[tab,setTab]=useState('overview'),[form,setForm]=useState(blank),[editing,setEditing]=useState(null),[showForm,setShowForm]=useState(false),[catalogEditing,setCatalogEditing]=useState(null),[showCatalogForm,setShowCatalogForm]=useState(false),[search,setSearch]=useState(''),[message,setMessage]=useState(''),[error,setError]=useState('');
- const[sale,setSale]=useState({representative_id:'',sale_date:new Date().toISOString().slice(0,10),customer_name:'',catalog_id:'',quantity:1,service_name:'',division:'',amount:'',commission_rate:''});
- const[catForm,setCatForm]=useState({name:'',item_type:'product',division:'',unit_price:'',commission_rate:10,active:true});
- const load=async()=>{const[r,s,w,catalogRes]=await Promise.all([supabase.from('representatives').select('*').order('created_at',{ascending:false}),supabase.from('commission_sales').select('*').order('sale_date',{ascending:false}),supabase.from('commission_withdrawals').select('*').order('requested_at',{ascending:false}),supabase.from('commission_catalog').select('*').order('created_at',{ascending:false})]);setReps(r.data||[]);setSales(s.data||[]);setWithdrawals(w.data||[]);setCatalog(catalogRes.data||[])};
- useEffect(()=>{load()},[]);
- const totals=useMemo(()=>({sales:sales.reduce((a,x)=>a+Number(x.amount),0),commission:sales.reduce((a,x)=>a+Number(x.commission_amount),0),paid:withdrawals.filter(x=>x.status==='paid').reduce((a,x)=>a+Number(x.amount),0),pending:withdrawals.filter(x=>x.status==='pending').reduce((a,x)=>a+Number(x.amount),0)}),[sales,withdrawals]);
- const balances=useMemo(()=>Object.fromEntries(reps.map(r=>{const earned=sales.filter(s=>s.representative_id===r.user_id).reduce((a,x)=>a+Number(x.commission_amount),0);const out=withdrawals.filter(w=>w.representative_id===r.user_id&&['pending','approved','paid'].includes(w.status)).reduce((a,x)=>a+Number(x.amount),0);return[r.user_id,Math.max(0,earned-out)]})),[reps,sales,withdrawals]);
- const notify=(ok,msg)=>{if(ok){setError('');setMessage(msg)}else{setMessage('');setError(msg)}};
- const saveRep=async e=>{e.preventDefault();setMessage('');setError('');
-   if(editing){const{error:e1}=await supabase.from('representatives').update({full_name:form.full_name,phone:form.phone||null,commission_rate:Number(form.commission_rate),wallet_type:form.wallet_type||null,wallet_number:form.wallet_number||null,status:form.status}).eq('user_id',editing.user_id);if(e1)notify(false,e1.message);else{notify(true,'تم تحديث بيانات المندوب.');setShowForm(false);load()}}
-   else{if(form.password.length<8){notify(false,'كلمة المرور يجب أن تكون 8 أحرف على الأقل.');return}const{data,error:e1}=await createRepresentativeAccount({email:form.email,password:form.password,fullName:form.full_name});if(e1||!data?.user){notify(false,e1?.message||'تعذر إنشاء الحساب.');return}const{error:e2}=await supabase.from('representatives').update({phone:form.phone||null,commission_rate:Number(form.commission_rate),wallet_type:form.wallet_type||null,wallet_number:form.wallet_number||null}).eq('user_id',data.user.id);if(e2)notify(false,e2.message);else{notify(true,'تم إنشاء حساب المندوب بنجاح.');setShowForm(false);load()}}};
- const edit=r=>{setEditing(r);setForm({...r,password:''});setShowForm(true)};
- const remove=async r=>{if(!window.confirm('سيتم تعطيل الحساب مع الاحتفاظ بالسجل المالي. متابعة؟'))return;const{error:e1}=await supabase.from('representatives').update({status:'deleted'}).eq('user_id',r.user_id);if(e1)notify(false,e1.message);else{notify(true,'تم تعطيل الحساب.');load()}};
- const reset=async r=>{const{error:e1}=await supabase.auth.resetPasswordForEmail(r.email,{redirectTo:window.location.origin+'/representative/reset-password'});if(e1)notify(false,e1.message);else notify(true,'تم إرسال رابط تغيير كلمة المرور إلى البريد.')};
- const addSale=async e=>{e.preventDefault();const r=reps.find(x=>x.user_id===sale.representative_id);const item=catalog.find(x=>x.id===sale.catalog_id);const qty=Math.max(1,Number(sale.quantity)||1);const serviceName=item?.name||sale.service_name;if(!item){notify(false,'اختر خدمة أو منتج أولاً.');return}const amount=Number((Number(item.unit_price)*qty).toFixed(2));const rate=Number(sale.commission_rate||item.commission_rate||r?.commission_rate||10);const{error:e1}=await supabase.from('commission_sales').insert({representative_id:sale.representative_id,sale_date:sale.sale_date,customer_name:sale.customer_name||null,division:item.division||sale.division||null,service_name:serviceName,amount,commission_rate:rate,quantity:qty});if(e1)notify(false,e1.message);else{notify(true,'تم تسجيل البيع وحساب العمولة تلقائياً.');setSale({...sale,representative_id:'',catalog_id:'',quantity:1,service_name:'',amount:'',customer_name:'',division:'',commission_rate:''});load()}};
- const saveCatalog=async e=>{e.preventDefault();const payload={name:catForm.name.trim(),item_type:catForm.item_type,division:catForm.division||null,unit_price:Number(catForm.unit_price),commission_rate:Number(catForm.commission_rate),active:!!catForm.active};const q=catalogEditing?supabase.from('commission_catalog').update(payload).eq('id',catalogEditing.id):supabase.from('commission_catalog').insert(payload);const{error:e1}=await q;if(e1)notify(false,e1.message);else{notify(true,catalogEditing?'تم تحديث المنتج/الخدمة.':'تمت إضافة المنتج/الخدمة.');setShowCatalogForm(false);setCatalogEditing(null);setCatForm({name:'',item_type:'product',division:'',unit_price:'',commission_rate:10,active:true});load()}};
- const deleteCatalog=async item=>{if(!window.confirm('حذف هذا المنتج/الخدمة من القائمة؟'))return;const{error:e1}=await supabase.from('commission_catalog').update({active:false}).eq('id',item.id);if(e1)notify(false,e1.message);else{notify(true,'تم إيقاف المنتج/الخدمة.');load()}};
- const updateWithdrawal=async(w,status)=>{const{data:{user}}=await supabase.auth.getUser();const{error:e1}=await supabase.from('commission_withdrawals').update({status,processed_at:new Date().toISOString(),processed_by:user?.id}).eq('id',w.id);if(e1)notify(false,e1.message);else{notify(true,'تم تحديث حالة السحب.');load()}};
- const filtered=reps.filter(r=>(r.full_name+' '+r.email+' '+r.employee_code).toLowerCase().includes(search.toLowerCase()));
- return <AdminLayout><section className="admin-dashboard" dir="rtl">
-  <div className="rep-admin-heading"><div><h2 className="section-title">المندوبين والعمولات</h2><p className="section-subtitle">إدارة الحسابات والمبيعات والسحوبات.</p></div><button className="admin-primary-btn" onClick={()=>{setEditing(null);setForm(blank);setShowForm(true)}}><Plus size={17}/> إضافة مندوب</button></div>
-  {message&&<div className="admin-inline-success"><Check size={16}/>{message}</div>}{error&&<div className="admin-inline-error"><X size={16}/>{error}</div>}
-  <div className="rep-admin-tabs">{[['overview','نظرة عامة'],['reps','المندوبون'],['catalog','المنتجات والخدمات'],['sales','المبيعات'],['withdrawals','السحوبات']].map(([k,l])=><button key={k} className={tab===k?'active':''} onClick={()=>setTab(k)}>{l}</button>)}</div>
-  {tab==='overview'&&<><div className="rep-stat-grid"><div className="rep-stat"><span>💰</span><small>إجمالي المبيعات</small><strong>{money(totals.sales)}</strong></div><div className="rep-stat"><span>🪙</span><small>إجمالي العمولات</small><strong>{money(totals.commission)}</strong></div><div className="rep-stat"><span>✓</span><small>المدفوع</small><strong>{money(totals.paid)}</strong></div><div className="rep-stat accent"><span>⏳</span><small>قيد المراجعة</small><strong>{money(totals.pending)}</strong></div></div><div className="rep-admin-table"><h3>أداء المندوبين</h3>{reps.map(r=><div className="rep-admin-row" key={r.user_id}><div><strong>{r.full_name}</strong><small>{r.employee_code} · {r.commission_rate}%</small></div><span>المبيعات: {money(sales.filter(s=>s.representative_id===r.user_id).reduce((a,x)=>a+Number(x.amount),0))}</span><b>متاح: {money(balances[r.user_id])}</b></div>)}</div></>}
-  {tab==='reps'&&<><div className="rep-search"><Search size={17}/><input placeholder="ابحث عن مندوب..." value={search} onChange={e=>setSearch(e.target.value)}/></div><div className="rep-admin-table">{filtered.map(r=><div className="rep-admin-row" key={r.user_id}><div><strong>{r.full_name}</strong><small>{r.email} · {r.employee_code}</small></div><span>{r.commission_rate}% · {r.status==='active'?'فعال':r.status==='inactive'?'موقوف':'محذوف'}</span><b>{money(balances[r.user_id])}</b><div className="rep-row-actions"><button onClick={()=>edit(r)}><Pencil size={15}/></button><button onClick={()=>reset(r)}><KeyRound size={15}/></button><button onClick={()=>remove(r)}><Trash2 size={15}/></button></div></div>)}</div></>}
-  {tab==='catalog'&&<><div className="rep-catalog-head"><div><h3>الخدمات والمنتجات</h3><p>القائمة التي تظهر عند تسجيل أي عملية بيع.</p></div><button className="admin-primary-btn" onClick={()=>{setCatalogEditing(null);setCatForm({name:'',item_type:'product',division:'',unit_price:'',commission_rate:10,active:true});setShowCatalogForm(true)}}><Plus size={16}/> إضافة منتج / خدمة</button></div><div className="rep-catalog-grid">{catalog.map(item=><div className="rep-catalog-card" key={item.id}><div><span>{item.item_type==='product'?'منتج':'خدمة'}</span><strong>{item.name}</strong><small>{item.division||'—'} · عمولة {item.commission_rate}%</small></div><b>{Number(item.unit_price).toFixed(2)} JOD</b><div className="rep-row-actions"><button onClick={()=>{setCatalogEditing(item);setCatForm({...item,unit_price:item.unit_price,commission_rate:item.commission_rate});setShowCatalogForm(true)}}><Pencil size={15}/></button>{item.active&&<button onClick={()=>deleteCatalog(item)}><Trash2 size={15}/></button>}</div></div>)}</div>{showCatalogForm&&<div className="rep-modal-backdrop" onClick={()=>setShowCatalogForm(false)}><div className="rep-modal" onClick={e=>e.stopPropagation()}><div className="rep-modal-head"><h3>{catalogEditing?'تعديل':'إضافة'} منتج / خدمة</h3><button onClick={()=>setShowCatalogForm(false)}><X size={19}/></button></div><form onSubmit={saveCatalog}><label>الاسم<input value={catForm.name} onChange={e=>setCatForm({...catForm,name:e.target.value})} required/></label><div className="rep-form-grid"><label>النوع<select value={catForm.item_type} onChange={e=>setCatForm({...catForm,item_type:e.target.value})}><option value="product">منتج</option><option value="service">خدمة</option></select></label><label>القسم<input value={catForm.division||''} onChange={e=>setCatForm({...catForm,division:e.target.value})}/></label><label>السعر للوحدة<input type="number" min="0" step="0.01" value={catForm.unit_price} onChange={e=>setCatForm({...catForm,unit_price:e.target.value})} required/></label><label>نسبة العمولة %<input type="number" min="0" max="100" step="0.01" value={catForm.commission_rate} onChange={e=>setCatForm({...catForm,commission_rate:e.target.value})}/></label></div><label className="rep-check"><input type="checkbox" checked={catForm.active} onChange={e=>setCatForm({...catForm,active:e.target.checked})}/> فعال</label><button className="admin-primary-btn"><Check size={16}/> حفظ</button></form></div></div>}</>}
-  {tab==='sales'&&<><form className="rep-admin-form" onSubmit={addSale}><h3>تسجيل عملية بيع</h3><div className="rep-form-grid"><label>المندوب<select value={sale.representative_id} onChange={e=>setSale({...sale,representative_id:e.target.value})} required><option value="">اختر</option>{reps.filter(r=>r.status==='active').map(r=><option key={r.user_id} value={r.user_id}>{r.full_name}</option>)}</select></label><label>التاريخ<input type="date" value={sale.sale_date} onChange={e=>setSale({...sale,sale_date:e.target.value})}/></label><label>الخدمة / المنتج<select value={sale.catalog_id} onChange={e=>{const item=catalog.find(x=>x.id===e.target.value);setSale({...sale,catalog_id:e.target.value,service_name:item?.name||'',division:item?.division||'',commission_rate:item?.commission_rate??''})}} required><option value="">اختر المنتج أو الخدمة</option>{catalog.filter(x=>x.active).map(x=><option key={x.id} value={x.id}>{x.name} · {Number(x.unit_price).toFixed(2)} JOD</option>)}</select></label><label>العدد<input type="number" min="1" step="1" value={sale.quantity} onChange={e=>setSale({...sale,quantity:e.target.value})}/></label><label>العميل <small>(اختياري)</small><input value={sale.customer_name} onChange={e=>setSale({...sale,customer_name:e.target.value})}/></label><label>إجمالي البيع<input value={sale.catalog_id?((Number(catalog.find(x=>x.id===sale.catalog_id)?.unit_price||0)*Number(sale.quantity||1)).toFixed(2)+' JOD':''} readOnly/></label><label>نسبة العمولة<input type="number" min="0" max="100" step="0.01" placeholder="من المنتج" value={sale.commission_rate} onChange={e=>setSale({...sale,commission_rate:e.target.value})}/></label></div><button className="admin-primary-btn"><Plus size={16}/> تسجيل البيع</button></form><div className="rep-admin-table">{sales.slice(0,50).map(s=><div className="rep-admin-row" key={s.id}><div><strong>{reps.find(r=>r.user_id===s.representative_id)?.full_name||'مندوب'}</strong><small>{s.sale_date} · {s.service_name} · العدد: {s.quantity||1}</small></div><span>{money(s.amount)}</span><b>{money(s.commission_amount)}</b></div>)}</div></>}
-  {tab==='withdrawals'&&<div className="rep-admin-table">{withdrawals.map(w=><div className="rep-admin-row" key={w.id}><div><strong>{reps.find(r=>r.user_id===w.representative_id)?.full_name||'مندوب'}</strong><small>{w.wallet_type} · {w.wallet_number}</small></div><b>{money(w.amount)}</b><span className={'rep-status '+w.status}>{w.status==='paid'?'تم الدفع':w.status==='approved'?'موافق':w.status==='rejected'?'مرفوض':'قيد المراجعة'}</span>{w.status==='pending'&&<div className="rep-row-actions"><button onClick={()=>updateWithdrawal(w,'approved')}><Check size={15}/></button><button onClick={()=>updateWithdrawal(w,'rejected')}><X size={15}/></button><button onClick={()=>updateWithdrawal(w,'paid')}><WalletCards size={15}/></button></div>}</div>)}</div>}
-  {showForm&&<div className="rep-modal-backdrop" onClick={()=>setShowForm(false)}><div className="rep-modal" onClick={e=>e.stopPropagation()}><div className="rep-modal-head"><h3>{editing?'تعديل المندوب':'إنشاء حساب مندوب'}</h3><button onClick={()=>setShowForm(false)}><X size={19}/></button></div><form onSubmit={saveRep}><label>الاسم الكامل<input value={form.full_name||''} onChange={e=>setForm({...form,full_name:e.target.value})} required/></label>{!editing&&<><label>البريد الإلكتروني<input type="email" value={form.email||''} onChange={e=>setForm({...form,email:e.target.value})} required/></label><label>كلمة المرور المؤقتة<input type="password" value={form.password||''} onChange={e=>setForm({...form,password:e.target.value})} minLength="8" required/></label></>}<div className="rep-form-grid"><label>الهاتف<input value={form.phone||''} onChange={e=>setForm({...form,phone:e.target.value})}/></label><label>نسبة العمولة %<input type="number" min="0" max="100" step="0.01" value={form.commission_rate??10} onChange={e=>setForm({...form,commission_rate:e.target.value})}/></label><label>نوع المحفظة<select value={form.wallet_type||''} onChange={e=>setForm({...form,wallet_type:e.target.value})}><option value="">—</option><option>Zain Cash</option><option>Orange Money</option><option>UWallet</option><option>Dinarak</option></select></label><label>رقم المحفظة<input value={form.wallet_number||''} onChange={e=>setForm({...form,wallet_number:e.target.value})}/></label>{editing&&<label>الحالة<select value={form.status||'active'} onChange={e=>setForm({...form,status:e.target.value})}><option value="active">فعال</option><option value="inactive">موقوف</option><option value="deleted">محذوف</option></select></label>}</div><button className="admin-primary-btn">{editing?'حفظ التعديلات':'إنشاء الحساب'}</button></form></div></div>}
- </section></AdminLayout>;
+const blank = {
+  full_name: '',
+  email: '',
+  password: '',
+  phone: '',
+  commission_rate: 10,
+  wallet_type: '',
+  wallet_number: '',
+  status: 'active',
 };
+
+const emptyCatForm = {
+  name: '',
+  item_type: 'product',
+  division: '',
+  unit_price: '',
+  commission_rate: 10,
+  active: true,
+};
+
+const AdminRepresentatives = () => {
+  const [reps, setReps] = useState([]);
+  const [sales, setSales] = useState([]);
+  const [withdrawals, setWithdrawals] = useState([]);
+  const [catalog, setCatalog] = useState([]);
+  const [tab, setTab] = useState('overview');
+
+  const [form, setForm] = useState(blank);
+  const [editing, setEditing] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+
+  const [catalogEditing, setCatalogEditing] = useState(null);
+  const [showCatalogForm, setShowCatalogForm] = useState(false);
+  const [catForm, setCatForm] = useState(emptyCatForm);
+
+  const [search, setSearch] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  const [sale, setSale] = useState({
+    representative_id: '',
+    sale_date: new Date().toISOString().slice(0, 10),
+    customer_name: '',
+    catalog_id: '',
+    quantity: 1,
+    service_name: '',
+    division: '',
+    amount: '',
+    commission_rate: '',
+  });
+
+  const load = async () => {
+    const [r, s, w, c] = await Promise.all([
+      supabase.from('representatives').select('*').order('created_at', { ascending: false }),
+      supabase.from('commission_sales').select('*').order('sale_date', { ascending: false }),
+      supabase.from('commission_withdrawals').select('*').order('requested_at', { ascending: false }),
+      supabase.from('commission_catalog').select('*').order('created_at', { ascending: false }),
+    ]);
+
+    setReps(r.data || []);
+    setSales(s.data || []);
+    setWithdrawals(w.data || []);
+    setCatalog(c.data || []);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const totals = useMemo(
+    () => ({
+      sales: sales.reduce((a, x) => a + Number(x.amount || 0), 0),
+      commission: sales.reduce((a, x) => a + Number(x.commission_amount || 0), 0),
+      paid: withdrawals
+        .filter((x) => x.status === 'paid')
+        .reduce((a, x) => a + Number(x.amount || 0), 0),
+      pending: withdrawals
+        .filter((x) => x.status === 'pending')
+        .reduce((a, x) => a + Number(x.amount || 0), 0),
+    }),
+    [sales, withdrawals]
+  );
+
+  const balances = useMemo(() => {
+    return Object.fromEntries(
+      reps.map((r) => {
+        const earned = sales
+          .filter((s) => s.representative_id === r.user_id)
+          .reduce((a, x) => a + Number(x.commission_amount || 0), 0);
+
+        const out = withdrawals
+          .filter(
+            (w) =>
+              w.representative_id === r.user_id &&
+              ['pending', 'approved', 'paid'].includes(w.status)
+          )
+          .reduce((a, x) => a + Number(x.amount || 0), 0);
+
+        return [r.user_id, Math.max(0, earned - out)];
+      })
+    );
+  }, [reps, sales, withdrawals]);
+
+  const notify = (ok, msg) => {
+    if (ok) {
+      setError('');
+      setMessage(msg);
+    } else {
+      setMessage('');
+      setError(msg);
+    }
+  };
+
+  const saveRep = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    setError('');
+
+    if (editing) {
+      const { error: e1 } = await supabase
+        .from('representatives')
+        .update({
+          full_name: form.full_name,
+          phone: form.phone || null,
+          commission_rate: Number(form.commission_rate),
+          wallet_type: form.wallet_type || null,
+          wallet_number: form.wallet_number || null,
+          status: form.status,
+        })
+        .eq('user_id', editing.user_id);
+
+      if (e1) {
+        notify(false, e1.message);
+        return;
+      }
+
+      notify(true, 'تم تحديث بيانات المندوب.');
+      setShowForm(false);
+      load();
+      return;
+    }
+
+    if (form.password.length < 8) {
+      notify(false, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
+      return;
+    }
+
+    const { data, error: e1 } = await createRepresentativeAccount({
+      email: form.email,
+      password: form.password,
+      fullName: form.full_name,
+    });
+
+    if (e1 || !data?.user) {
+      notify(false, e1?.message || 'تعذر إنشاء الحساب.');
+      return;
+    }
+
+    const { error: e2 } = await supabase
+      .from('representatives')
+      .update({
+        phone: form.phone || null,
+        commission_rate: Number(form.commission_rate),
+        wallet_type: form.wallet_type || null,
+        wallet_number: form.wallet_number || null,
+      })
+      .eq('user_id', data.user.id);
+
+    if (e2) {
+      notify(false, e2.message);
+      return;
+    }
+
+    notify(true, 'تم إنشاء حساب المندوب بنجاح.');
+    setShowForm(false);
+    load();
+  };
+
+  const edit = (r) => {
+    setEditing(r);
+    setForm({ ...r, password: '' });
+    setShowForm(true);
+  };
+
+  const remove = async (r) => {
+    if (!window.confirm('سيتم تعطيل الحساب مع الاحتفاظ بالسجل المالي. متابعة؟')) return;
+
+    const { error: e1 } = await supabase
+      .from('representatives')
+      .update({ status: 'deleted' })
+      .eq('user_id', r.user_id);
+
+    if (e1) {
+      notify(false, e1.message);
+      return;
+    }
+
+    notify(true, 'تم تعطيل الحساب.');
+    load();
+  };
+
+  const reset = async (r) => {
+    const { error: e1 } = await supabase.auth.resetPasswordForEmail(r.email, {
+      redirectTo: window.location.origin + '/representative/reset-password',
+    });
+
+    if (e1) {
+      notify(false, e1.message);
+      return;
+    }
+
+    notify(true, 'تم إرسال رابط تغيير كلمة المرور إلى البريد.');
+  };
+
+  const addSale = async (e) => {
+    e.preventDefault();
+
+    const rep = reps.find((x) => x.user_id === sale.representative_id);
+    const item = catalog.find((x) => x.id === sale.catalog_id);
+    const qty = Math.max(1, Number(sale.quantity) || 1);
+
+    if (!rep) {
+      notify(false, 'اختر المندوب أولاً.');
+      return;
+    }
+
+    if (!item) {
+      notify(false, 'اختر خدمة أو منتج أولاً.');
+      return;
+    }
+
+    const amount = Number((Number(item.unit_price) * qty).toFixed(2));
+    const rate = Number(
+      sale.commission_rate || item.commission_rate || rep.commission_rate || 10
+    );
+
+    const { error: e1 } = await supabase.from('commission_sales').insert({
+      representative_id: sale.representative_id,
+      sale_date: sale.sale_date,
+      customer_name: sale.customer_name || null,
+      division: item.division || sale.division || null,
+      service_name: item.name,
+      amount,
+      commission_rate: rate,
+      quantity: qty,
+    });
+
+    if (e1) {
+      notify(false, e1.message);
+      return;
+    }
+
+    notify(true, 'تم تسجيل البيع وحساب العمولة تلقائياً.');
+
+    setSale({
+      representative_id: '',
+      sale_date: new Date().toISOString().slice(0, 10),
+      customer_name: '',
+      catalog_id: '',
+      quantity: 1,
+      service_name: '',
+      division: '',
+      amount: '',
+      commission_rate: '',
+    });
+
+    load();
+  };
+
+  const saveCatalog = async (e) => {
+    e.preventDefault();
+
+    if (!catForm.name.trim()) {
+      notify(false, 'اكتب اسم المنتج أو الخدمة.');
+      return;
+    }
+
+    const unitPrice = Number(catForm.unit_price);
+    const commissionRate = Number(catForm.commission_rate);
+
+    if (!Number.isFinite(unitPrice) || unitPrice < 0) {
+      notify(false, 'سعر الوحدة غير صحيح.');
+      return;
+    }
+
+    if (!Number.isFinite(commissionRate) || commissionRate < 0 || commissionRate > 100) {
+      notify(false, 'نسبة العمولة يجب أن تكون بين 0 و100%.');
+      return;
+    }
+
+    const payload = {
+      name: catForm.name.trim(),
+      item_type: catForm.item_type,
+      division: catForm.division?.trim() || null,
+      unit_price: unitPrice,
+      commission_rate: commissionRate,
+      active: !!catForm.active,
+    };
+
+    const query = catalogEditing
+      ? supabase.from('commission_catalog').update(payload).eq('id', catalogEditing.id)
+      : supabase.from('commission_catalog').insert(payload);
+
+    const { error: e1 } = await query;
+
+    if (e1) {
+      notify(false, e1.message);
+      return;
+    }
+
+    notify(true, catalogEditing ? 'تم تحديث المنتج/الخدمة.' : 'تمت إضافة المنتج/الخدمة.');
+    setShowCatalogForm(false);
+    setCatalogEditing(null);
+    setCatForm(emptyCatForm);
+    load();
+  };
+
+  const openCatalogCreate = () => {
+    setCatalogEditing(null);
+    setCatForm(emptyCatForm);
+    setShowCatalogForm(true);
+  };
+
+  const openCatalogEdit = (item) => {
+    setCatalogEditing(item);
+    setCatForm({
+      name: item.name || '',
+      item_type: item.item_type || 'product',
+      division: item.division || '',
+      unit_price: item.unit_price ?? '',
+      commission_rate: item.commission_rate ?? 10,
+      active: item.active !== false,
+    });
+    setShowCatalogForm(true);
+  };
+
+  const deleteCatalog = async (item) => {
+    if (!window.confirm('إيقاف هذا المنتج/الخدمة من قائمة المبيعات؟')) return;
+
+    const { error: e1 } = await supabase
+      .from('commission_catalog')
+      .update({ active: false })
+      .eq('id', item.id);
+
+    if (e1) {
+      notify(false, e1.message);
+      return;
+    }
+
+    notify(true, 'تم إيقاف المنتج/الخدمة.');
+    load();
+  };
+
+  const updateWithdrawal = async (w, status) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const { error: e1 } = await supabase
+      .from('commission_withdrawals')
+      .update({
+        status,
+        processed_at: new Date().toISOString(),
+        processed_by: user?.id,
+      })
+      .eq('id', w.id);
+
+    if (e1) {
+      notify(false, e1.message);
+      return;
+    }
+
+    notify(true, 'تم تحديث حالة السحب.');
+    load();
+  };
+
+  const filtered = reps.filter((r) =>
+    [r.full_name, r.email, r.employee_code]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+  const activeCatalog = catalog.filter((item) => item.active);
+  const selectedCatalogItem = catalog.find((item) => item.id === sale.catalog_id);
+
+  const calculatedSaleTotal = selectedCatalogItem
+    ? Number(selectedCatalogItem.unit_price || 0) * Math.max(1, Number(sale.quantity) || 1)
+    : 0;
+
+  return (
+    <AdminLayout>
+      <section className="admin-dashboard" dir="rtl">
+        <div className="rep-admin-heading">
+          <div>
+            <h2 className="section-title">المندوبين والعمولات</h2>
+            <p className="section-subtitle">إدارة الحسابات والمبيعات والسحوبات.</p>
+          </div>
+
+          <button
+            className="admin-primary-btn"
+            onClick={() => {
+              setEditing(null);
+              setForm(blank);
+              setShowForm(true);
+            }}
+          >
+            <Plus size={17} />
+            إضافة مندوب
+          </button>
+        </div>
+
+        {message && (
+          <div className="admin-inline-success">
+            <Check size={16} />
+            {message}
+          </div>
+        )}
+
+        {error && (
+          <div className="admin-inline-error">
+            <X size={16} />
+            {error}
+          </div>
+        )}
+
+        <div className="rep-admin-tabs">
+          {[
+            ['overview', 'نظرة عامة'],
+            ['reps', 'المندوبون'],
+            ['catalog', 'المنتجات والخدمات'],
+            ['sales', 'المبيعات'],
+            ['withdrawals', 'السحوبات'],
+          ].map(([key, label]) => (
+            <button
+              key={key}
+              className={tab === key ? 'active' : ''}
+              onClick={() => setTab(key)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'overview' && (
+          <>
+            <div className="rep-stat-grid">
+              <div className="rep-stat">
+                <span>💰</span>
+                <small>إجمالي المبيعات</small>
+                <strong>{money(totals.sales)}</strong>
+              </div>
+
+              <div className="rep-stat">
+                <span>🪙</span>
+                <small>إجمالي العمولات</small>
+                <strong>{money(totals.commission)}</strong>
+              </div>
+
+              <div className="rep-stat">
+                <span>✓</span>
+                <small>المدفوع</small>
+                <strong>{money(totals.paid)}</strong>
+              </div>
+
+              <div className="rep-stat accent">
+                <span>⏳</span>
+                <small>قيد المراجعة</small>
+                <strong>{money(totals.pending)}</strong>
+              </div>
+            </div>
+
+            <div className="rep-admin-table">
+              <h3>أداء المندوبين</h3>
+
+              {reps.length === 0 ? (
+                <div className="rep-empty">لا يوجد مندوبون حتى الآن.</div>
+              ) : (
+                reps.map((r) => (
+                  <div className="rep-admin-row" key={r.user_id}>
+                    <div>
+                      <strong>{r.full_name}</strong>
+                      <small>
+                        {r.employee_code} · {r.commission_rate}%
+                      </small>
+                    </div>
+
+                    <span>
+                      المبيعات:{' '}
+                      {money(
+                        sales
+                          .filter((s) => s.representative_id === r.user_id)
+                          .reduce((a, x) => a + Number(x.amount || 0), 0)
+                      )}
+                    </span>
+
+                    <b>متاح: {money(balances[r.user_id])}</b>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+
+        {tab === 'reps' && (
+          <>
+            <div className="rep-search">
+              <Search size={17} />
+              <input
+                placeholder="ابحث عن مندوب..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+
+            <div className="rep-admin-table">
+              {filtered.length === 0 ? (
+                <div className="rep-empty">لا توجد نتائج.</div>
+              ) : (
+                filtered.map((r) => (
+                  <div className="rep-admin-row" key={r.user_id}>
+                    <div>
+                      <strong>{r.full_name}</strong>
+                      <small>
+                        {r.email} · {r.employee_code}
+                      </small>
+                    </div>
+
+                    <span>
+                      {r.commission_rate}% ·{' '}
+                      {r.status === 'active'
+                        ? 'فعال'
+                        : r.status === 'inactive'
+                          ? 'موقوف'
+                          : 'محذوف'}
+                    </span>
+
+                    <b>{money(balances[r.user_id])}</b>
+
+                    <div className="rep-row-actions">
+                      <button onClick={() => edit(r)} title="تعديل">
+                        <Pencil size={15} />
+                      </button>
+                      <button onClick={() => reset(r)} title="إعادة كلمة المرور">
+                        <KeyRound size={15} />
+                      </button>
+                      <button onClick={() => remove(r)} title="تعطيل">
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+
+        {tab === 'catalog' && (
+          <>
+            <div className="rep-catalog-head">
+              <div>
+                <h3>الخدمات والمنتجات</h3>
+                <p>أضف كل منتج أو خدمة مرة واحدة، ثم استخدم العداد عند تسجيل البيع.</p>
+              </div>
+
+              <button className="admin-primary-btn" onClick={openCatalogCreate}>
+                <Plus size={16} />
+                إضافة منتج / خدمة
+              </button>
+            </div>
+
+            <div className="rep-catalog-grid">
+              {catalog.length === 0 ? (
+                <div className="rep-empty">لم تتم إضافة أي منتجات أو خدمات بعد.</div>
+              ) : (
+                catalog.map((item) => (
+                  <div className="rep-catalog-card" key={item.id}>
+                    <div>
+                      <span>{item.item_type === 'product' ? 'منتج' : 'خدمة'}</span>
+                      <strong>{item.name}</strong>
+                      <small>
+                        {item.division || 'بدون قسم'} · عمولة {item.commission_rate}%
+                        {!item.active && ' · متوقف'}
+                      </small>
+                    </div>
+
+                    <b>{Number(item.unit_price || 0).toFixed(2)} JOD</b>
+
+                    <div className="rep-row-actions">
+                      <button onClick={() => openCatalogEdit(item)} title="تعديل">
+                        <Pencil size={15} />
+                      </button>
+
+                      {item.active && (
+                        <button onClick={() => deleteCatalog(item)} title="إيقاف">
+                          <Trash2 size={15} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {showCatalogForm && (
+              <div
+                className="rep-modal-backdrop"
+                onClick={() => setShowCatalogForm(false)}
+              >
+                <div className="rep-modal" onClick={(e) => e.stopPropagation()}>
+                  <div className="rep-modal-head">
+                    <h3>
+                      {catalogEditing ? 'تعديل منتج / خدمة' : 'إضافة منتج / خدمة'}
+                    </h3>
+
+                    <button onClick={() => setShowCatalogForm(false)}>
+                      <X size={19} />
+                    </button>
+                  </div>
+
+                  <form onSubmit={saveCatalog}>
+                    <label>
+                      الاسم
+                      <input
+                        value={catForm.name}
+                        onChange={(e) =>
+                          setCatForm({ ...catForm, name: e.target.value })
+                        }
+                        required
+                      />
+                    </label>
+
+                    <div className="rep-form-grid">
+                      <label>
+                        النوع
+                        <select
+                          value={catForm.item_type}
+                          onChange={(e) =>
+                            setCatForm({ ...catForm, item_type: e.target.value })
+                          }
+                        >
+                          <option value="product">منتج</option>
+                          <option value="service">خدمة</option>
+                        </select>
+                      </label>
+
+                      <label>
+                        القسم
+                        <input
+                          value={catForm.division}
+                          onChange={(e) =>
+                            setCatForm({ ...catForm, division: e.target.value })
+                          }
+                        />
+                      </label>
+
+                      <label>
+                        السعر للوحدة
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={catForm.unit_price}
+                          onChange={(e) =>
+                            setCatForm({ ...catForm, unit_price: e.target.value })
+                          }
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        نسبة العمولة %
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="0.01"
+                          value={catForm.commission_rate}
+                          onChange={(e) =>
+                            setCatForm({
+                              ...catForm,
+                              commission_rate: e.target.value,
+                            })
+                          }
+                        />
+                      </label>
+                    </div>
+
+                    <label className="rep-check">
+                      <input
+                        type="checkbox"
+                        checked={catForm.active}
+                        onChange={(e) =>
+                          setCatForm({ ...catForm, active: e.target.checked })
+                        }
+                      />
+                      فعال
+                    </label>
+
+                    <button className="admin-primary-btn" type="submit">
+                      <Check size={16} />
+                      حفظ
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {tab === 'sales' && (
+          <>
+            <form className="rep-admin-form" onSubmit={addSale}>
+              <h3>تسجيل عملية بيع</h3>
+
+              <div className="rep-form-grid">
+                <label>
+                  المندوب
+                  <select
+                    value={sale.representative_id}
+                    onChange={(e) =>
+                      setSale({
+                        ...sale,
+                        representative_id: e.target.value,
+                      })
+                    }
+                    required
+                  >
+                    <option value="">اختر المندوب</option>
+                    {reps
+                      .filter((r) => r.status === 'active')
+                      .map((r) => (
+                        <option key={r.user_id} value={r.user_id}>
+                          {r.full_name}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+
+                <label>
+                  التاريخ
+                  <input
+                    type="date"
+                    value={sale.sale_date}
+                    onChange={(e) =>
+                      setSale({ ...sale, sale_date: e.target.value })
+                    }
+                  />
+                </label>
+
+                <label>
+                  الخدمة / المنتج
+                  <select
+                    value={sale.catalog_id}
+                    onChange={(e) => {
+                      const item = catalog.find((x) => x.id === e.target.value);
+
+                      setSale({
+                        ...sale,
+                        catalog_id: e.target.value,
+                        service_name: item?.name || '',
+                        division: item?.division || '',
+                        commission_rate: item?.commission_rate ?? '',
+                      });
+                    }}
+                    required
+                  >
+                    <option value="">اختر المنتج أو الخدمة</option>
+                    {activeCatalog.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name} · {Number(item.unit_price || 0).toFixed(2)} JOD
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label>
+                  العدد
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={sale.quantity}
+                    onChange={(e) =>
+                      setSale({ ...sale, quantity: e.target.value })
+                    }
+                  />
+                </label>
+
+                <label>
+                  العميل <small>(اختياري)</small>
+                  <input
+                    value={sale.customer_name}
+                    onChange={(e) =>
+                      setSale({ ...sale, customer_name: e.target.value })
+                    }
+                  />
+                </label>
+
+                <label>
+                  إجمالي البيع
+                  <input
+                    value={
+                      selectedCatalogItem
+                        ? calculatedSaleTotal.toFixed(2) + ' JOD'
+                        : ''
+                    }
+                    readOnly
+                  />
+                </label>
+
+                <label>
+                  نسبة العمولة
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="من المنتج"
+                    value={sale.commission_rate}
+                    onChange={(e) =>
+                      setSale({ ...sale, commission_rate: e.target.value })
+                    }
+                  />
+                </label>
+              </div>
+
+              <button className="admin-primary-btn" type="submit">
+                <Plus size={16} />
+                تسجيل البيع
+              </button>
+            </form>
+
+            <div className="rep-admin-table">
+              {sales.length === 0 ? (
+                <div className="rep-empty">لا توجد عمليات بيع حتى الآن.</div>
+              ) : (
+                sales.slice(0, 50).map((s) => (
+                  <div className="rep-admin-row" key={s.id}>
+                    <div>
+                      <strong>
+                        {reps.find((r) => r.user_id === s.representative_id)
+                          ?.full_name || 'مندوب'}
+                      </strong>
+                      <small>
+                        {s.sale_date} · {s.service_name} · العدد: {s.quantity || 1}
+                        {s.customer_name ? ' · العميل: ' + s.customer_name : ''}
+                      </small>
+                    </div>
+
+                    <span>{money(s.amount)}</span>
+                    <b>{money(s.commission_amount)}</b>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+
+        {tab === 'withdrawals' && (
+          <div className="rep-admin-table">
+            {withdrawals.length === 0 ? (
+              <div className="rep-empty">لا توجد طلبات سحب حتى الآن.</div>
+            ) : (
+              withdrawals.map((w) => (
+                <div className="rep-admin-row" key={w.id}>
+                  <div>
+                    <strong>
+                      {reps.find((r) => r.user_id === w.representative_id)
+                        ?.full_name || 'مندوب'}
+                    </strong>
+                    <small>
+                      {w.wallet_type} · {w.wallet_number}
+                    </small>
+                  </div>
+
+                  <b>{money(w.amount)}</b>
+
+                  <span className={'rep-status ' + w.status}>
+                    {w.status === 'paid'
+                      ? 'تم الدفع'
+                      : w.status === 'approved'
+                        ? 'موافق'
+                        : w.status === 'rejected'
+                          ? 'مرفوض'
+                          : 'قيد المراجعة'}
+                  </span>
+
+                  {w.status === 'pending' && (
+                    <div className="rep-row-actions">
+                      <button onClick={() => updateWithdrawal(w, 'approved')}>
+                        <Check size={15} />
+                      </button>
+                      <button onClick={() => updateWithdrawal(w, 'rejected')}>
+                        <X size={15} />
+                      </button>
+                      <button onClick={() => updateWithdrawal(w, 'paid')}>
+                        <WalletCards size={15} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {showForm && (
+          <div
+            className="rep-modal-backdrop"
+            onClick={() => setShowForm(false)}
+          >
+            <div className="rep-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="rep-modal-head">
+                <h3>{editing ? 'تعديل المندوب' : 'إنشاء حساب مندوب'}</h3>
+
+                <button onClick={() => setShowForm(false)}>
+                  <X size={19} />
+                </button>
+              </div>
+
+              <form onSubmit={saveRep}>
+                <label>
+                  الاسم الكامل
+                  <input
+                    value={form.full_name || ''}
+                    onChange={(e) =>
+                      setForm({ ...form, full_name: e.target.value })
+                    }
+                    required
+                  />
+                </label>
+
+                {!editing && (
+                  <>
+                    <label>
+                      البريد الإلكتروني
+                      <input
+                        type="email"
+                        value={form.email || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, email: e.target.value })
+                        }
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      كلمة المرور المؤقتة
+                      <input
+                        type="password"
+                        value={form.password || ''}
+                        onChange={(e) =>
+                          setForm({ ...form, password: e.target.value })
+                        }
+                        minLength="8"
+                        required
+                      />
+                    </label>
+                  </>
+                )}
+
+                <div className="rep-form-grid">
+                  <label>
+                    الهاتف
+                    <input
+                      value={form.phone || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, phone: e.target.value })
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    نسبة العمولة %
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.01"
+                      value={form.commission_rate ?? 10}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          commission_rate: e.target.value,
+                        })
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    نوع المحفظة
+                    <select
+                      value={form.wallet_type || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, wallet_type: e.target.value })
+                      }
+                    >
+                      <option value="">—</option>
+                      <option>Zain Cash</option>
+                      <option>Orange Money</option>
+                      <option>UWallet</option>
+                      <option>Dinarak</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    رقم المحفظة
+                    <input
+                      value={form.wallet_number || ''}
+                      onChange={(e) =>
+                        setForm({ ...form, wallet_number: e.target.value })
+                      }
+                    />
+                  </label>
+
+                  {editing && (
+                    <label>
+                      الحالة
+                      <select
+                        value={form.status || 'active'}
+                        onChange={(e) =>
+                          setForm({ ...form, status: e.target.value })
+                        }
+                      >
+                        <option value="active">فعال</option>
+                        <option value="inactive">موقوف</option>
+                        <option value="deleted">محذوف</option>
+                      </select>
+                    </label>
+                  )}
+                </div>
+
+                <button className="admin-primary-btn" type="submit">
+                  {editing ? 'حفظ التعديلات' : 'إنشاء الحساب'}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+      </section>
+    </AdminLayout>
+  );
+};
+
 export default AdminRepresentatives;
