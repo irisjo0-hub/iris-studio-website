@@ -177,7 +177,11 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsStageActive(entry.isIntersecting);
+        // Only keep playback active while the Reels stage is almost fully visible.
+        // This prevents the outgoing stage from briefly replaying video/audio while
+        // the page is scrolling to the section above or below.
+        const isPlaybackActive = entry.isIntersecting && entry.intersectionRatio >= 0.9;
+        setIsStageActive(isPlaybackActive);
 
         if (entry.isIntersecting) {
           const navbar = document.querySelector('.navbar-container, header.site-navbar, .app-header');
@@ -197,7 +201,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           if (navbar) navbar.style.display = '';
         }
       },
-      { threshold: 0.25 }
+      { threshold: [0, 0.9] }
     );
 
     if (stageRef.current) observer.observe(stageRef.current);
