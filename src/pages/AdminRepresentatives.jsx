@@ -46,6 +46,10 @@ const AdminRepresentatives = () => {
   const [search, setSearch] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [passwordRep, setPasswordRep] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
 
   const [sale, setSale] = useState({
     representative_id: '',
@@ -209,17 +213,53 @@ const AdminRepresentatives = () => {
     load();
   };
 
-  const reset = async (r) => {
-    const { error: e1 } = await supabase.auth.resetPasswordForEmail(r.email, {
-      redirectTo: window.location.origin + '/representative/reset-password',
-    });
+  const reset = (r) => {
+    setPasswordRep(r);
+    setNewPassword('');
+    setConfirmPassword('');
+    setMessage('');
+    setError('');
+  };
 
-    if (e1) {
-      notify(false, e1.message);
+  const savePassword = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    setError('');
+
+    if (newPassword.length < 8) {
+      notify(false, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
       return;
     }
 
-    notify(true, 'تم إرسال رابط تغيير كلمة المرور إلى البريد.');
+    if (newPassword !== confirmPassword) {
+      notify(false, 'كلمتا المرور غير متطابقتين.');
+      return;
+    }
+
+    setSavingPassword(true);
+
+    const { data, error: invokeError } = await supabase.functions.invoke(
+      'manage-representatives',
+      {
+        body: {
+          action: 'reset_password',
+          user_id: passwordRep.user_id,
+          password: newPassword,
+        },
+      }
+    );
+
+    setSavingPassword(false);
+
+    if (invokeError || data?.error) {
+      notify(false, data?.error || invokeError?.message || 'تعذر تغيير كلمة المرور.');
+      return;
+    }
+
+    setPasswordRep(null);
+    setNewPassword('');
+    setConfirmPassword('');
+    notify(true, 'تم تغيير كلمة مرور المندوب بنجاح.');
   };
 
   const addSale = async (e) => {
@@ -913,6 +953,69 @@ const AdminRepresentatives = () => {
                 </div>
               ))
             )}
+          </div>
+        )}
+
+        {passwordRep && (
+          <div
+            className="rep-modal-backdrop"
+            onClick={() => !savingPassword && setPasswordRep(null)}
+          >
+            <div className="rep-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="rep-modal-head">
+                <div>
+                  <h3>تغيير كلمة المرور</h3>
+                  <small>{passwordRep.full_name} · {passwordRep.email}</small>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => !savingPassword && setPasswordRep(null)}
+                  disabled={savingPassword}
+                >
+                  <X size={19} />
+                </button>
+              </div>
+
+              <form onSubmit={savePassword}>
+                <label>
+                  كلمة المرور الجديدة
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    minLength="8"
+                    autoComplete="new-password"
+                    placeholder="8 أحرف على الأقل"
+                    required
+                    disabled={savingPassword}
+                  />
+                </label>
+
+                <label>
+                  تأكيد كلمة المرور
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    minLength="8"
+                    autoComplete="new-password"
+                    placeholder="أعد كتابة كلمة المرور"
+                    required
+                    disabled={savingPassword}
+                  />
+                </label>
+
+                <button
+                  className="admin-primary-btn"
+                  type="submit"
+                  disabled={savingPassword}
+                >
+                  <KeyRound size={16} />
+                  {savingPassword ? 'جاري الحفظ...' : 'تعيين كلمة المرور'}
+                </button>
+              </form>
+            </div>
           </div>
         )}
 
