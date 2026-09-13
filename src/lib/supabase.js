@@ -48,7 +48,18 @@ function validateUploadFile(file) {
 export async function uploadFile(bucket, path, file) {
   if (!bucket || typeof bucket !== 'string') throw new Error('A valid storage bucket is required.');
   if (!path || typeof path !== 'string') throw new Error('A valid storage path is required.');
-  validateUploadFile(file);
+  // Public website images may be large originals because we compress them locally first.
+  // Other uploads keep the existing strict pre-upload size validation.
+  if (IMAGE_COMPRESSION_BUCKETS.has(bucket) && file.type?.startsWith('image/')) {
+    if (!ALLOWED_IMAGE_TYPES.has(String(file.type).toLowerCase())) {
+      throw new Error('Only JPG, PNG, and WebP images are allowed.');
+    }
+    if (Number(file.size || 0) > 100 * 1024 * 1024) {
+      throw new Error('Image exceeds the 100 MB source limit.');
+    }
+  } else {
+    validateUploadFile(file);
+  }
 
   // Compress public website images before they ever reach Supabase.
   // This keeps admin uploads small without affecting private documents/receipts.
@@ -60,6 +71,8 @@ export async function uploadFile(bucket, path, file) {
       quality: 0.78
     });
   }
+
+  validateUploadFile(uploadFileObject);
 
   const sanitizedPath = path
     .split('/')
