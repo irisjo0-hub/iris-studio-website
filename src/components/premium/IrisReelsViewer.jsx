@@ -228,10 +228,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     cooldownRef.current = true;
     setActiveIndex(newIndex);
 
-    setTimeout(() => {
-      setIsLocked(false);
-      cooldownRef.current = false;
-    }, 500);
+    // Navigation remains locked until AnimatePresence confirms the outgoing
+    // reel has fully completed its exit animation.
   };
 
   // Desktop wheel navigation remains non-passive. Mobile touch no longer uses a
@@ -482,7 +480,14 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         </button>
 
         <div className="reel-frame" data-locale={isRtl ? 'ar' : 'en'}>
-          <AnimatePresence initial={false} custom={direction}>
+          <AnimatePresence
+            initial={false}
+            custom={direction}
+            onExitComplete={() => {
+              setIsLocked(false);
+              cooldownRef.current = false;
+            }}
+          >
             <motion.div
               key={`reel-canvas-${currentReel.id}`}
               className="reel-canvas-layer"
