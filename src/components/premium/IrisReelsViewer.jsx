@@ -41,6 +41,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const stageRef = useRef(null);
   const videoRef = useRef(null);
+  const preloadVideoRef = useRef(null);
+  const preloadIndexRef = useRef(null);
   const touchStartY = useRef(0);
   const cooldownRef = useRef(false);
   const activeIndexRef = useRef(0);
@@ -66,15 +68,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       video.muted = isMuted;
       video.defaultMuted = isMuted;
       video.playsInline = true;
-      // Metadata is enough for the active reel; forcing "auto" makes mobile
-      // aggressively buffer large videos and causes jank during reel changes.
       video.preload = 'metadata';
-      const promise = video.play();
-      if (promise !== undefined) {
-        promise.catch((err) => {
-          console.warn("Mobile autoplay notice:", err);
-        });
-      }
+      video.load();
     } else {
       video.pause();
     }
@@ -211,6 +206,39 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       if (navbar) navbar.style.display = '';
     };
   }, [items.length]);
+
+  useEffect(() => {
+    if (!isStageActive || items.length < 2) return;
+
+    const nextIndex = Math.min(activeIndex + 1, items.length - 1);
+    if (nextIndex === activeIndex || preloadIndexRef.current === nextIndex) return;
+
+    const nextItem = items[nextIndex];
+    const nextSrc = nextItem?.media_url || nextItem?.image || '';
+    const isVideoUrl = typeof nextSrc === 'string' && /\.(mp4|mov|webm|m4v|mkv|avi)($|\?)/i.test(nextSrc);
+    const isVideo = nextItem?.media_type === 'video' || isVideoUrl;
+    if (!isVideo || !nextSrc) return;
+
+    if (preloadVideoRef.current) {
+      preloadVideoRef.current.pause();
+      preloadVideoRef.current.removeAttribute('src');
+      preloadVideoRef.current.load();
+    }
+
+    const preloadVideo = document.createElement('video');
+    preloadVideo.muted = true;
+    preloadVideo.playsInline = true;
+    preloadVideo.preload = 'metadata';
+    preloadVideo.src = nextSrc;
+    preloadVideo.load();
+
+    preloadVideoRef.current = preloadVideo;
+    preloadIndexRef.current = nextIndex;
+
+    return () => {
+      if (preloadVideoRef.current === preloadVideo) preloadVideo.pause();
+    };
+  }, [activeIndex, isStageActive, items]);
 
   const navigateToIndex = (newIndex, customDirection = null) => {
     if (isLocked || cooldownRef.current) return;
