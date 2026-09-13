@@ -322,7 +322,7 @@ export const IrisReelsViewerNative = ({ id = 'iris-reels-viewer-root' }) => {
                       <video
                         src={mediaSrc}
                         poster={poster}
-                        preload="none"
+                        preload="metadata"
                         loop
                         muted={isMuted}
                         playsInline
