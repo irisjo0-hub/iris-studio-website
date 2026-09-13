@@ -68,14 +68,11 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       video.muted = isMuted;
       video.defaultMuted = isMuted;
       video.playsInline = true;
+      // Keep the browser's existing media resource/cache intact.
+      // Do not call load() here: reinitializing the media element on every
+      // reel change causes mobile to flash/decode from the beginning again.
+      // Playback is started after the enter animation completes below.
       video.preload = 'metadata';
-      video.load();
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          console.warn("Mobile autoplay notice:", err);
-        });
-      }
     } else {
       video.pause();
     }
@@ -525,6 +522,16 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               initial="initial"
               animate="animate"
               exit="exit"
+              onAnimationComplete={(definition) => {
+                if (definition !== 'animate' || !isStageActive || document.visibilityState !== 'visible') return;
+
+                const video = videoRef.current;
+                if (!video) return;
+
+                video.muted = isMuted;
+                video.defaultMuted = isMuted;
+                video.play().catch(() => {});
+              }}
               style={{ willChange: 'transform', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
             >
               {(() => {
