@@ -1,6 +1,9 @@
 import React, { lazy, Suspense } from 'react';
 import IrisDarkHero from "../components/premium/IrisDarkHero";
 import IrisReelsViewer from "../components/premium/IrisReelsViewer";
+import IrisReelsViewerV2 from "../components/premium/IrisReelsViewerV2";
+
+const USE_REELS_V2 = true;
 import "../styles/home.css";
 import "../styles/animation.css";
 
@@ -10,7 +13,7 @@ const Footer = lazy(() => import("../components/Footer"));
 const Home = () => (
   <div className="home-page" dir="rtl">
     <IrisDarkHero />
-    <IrisReelsViewer id="iris-reels-viewer-root" />
+    {USE_REELS_V2 ? <IrisReelsViewerV2 id="iris-reels-viewer-root" /> : <IrisReelsViewer id="iris-reels-viewer-root" />}
     <Suspense fallback={null}>
       <IrisDivisionsSwitcher id="iris-divisions-section" />
       <Footer />
