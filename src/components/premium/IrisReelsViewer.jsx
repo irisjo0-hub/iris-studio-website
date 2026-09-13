@@ -69,12 +69,9 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       // Metadata is enough for the active reel; forcing "auto" makes mobile
       // aggressively buffer large videos and causes jank during reel changes.
       video.preload = 'metadata';
-      const promise = video.play();
-      if (promise !== undefined) {
-        promise.catch((err) => {
-          console.warn("Mobile autoplay notice:", err);
-        });
-      }
+      // Playback is intentionally started after the Framer Motion
+      // enter animation completes. This keeps video startup work out of
+      // the transition's busiest frame.
     } else {
       video.pause();
     }
@@ -491,6 +488,25 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               initial="initial"
               animate="animate"
               exit="exit"
+              onAnimationComplete={(definition) => {
+                if (
+                  definition !== 'animate' ||
+                  !isStageActive ||
+                  document.visibilityState !== 'visible'
+                ) return;
+
+                const video = videoRef.current;
+                if (!video) return;
+
+                video.muted = isMuted;
+                video.defaultMuted = isMuted;
+                video.playsInline = true;
+                video.preload = 'metadata';
+
+                video.play().catch((err) => {
+                  console.warn("Mobile autoplay notice:", err);
+                });
+              }}
               style={{ willChange: 'transform', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
             >
               {(() => {
