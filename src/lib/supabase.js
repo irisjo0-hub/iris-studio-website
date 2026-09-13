@@ -90,7 +90,12 @@ export async function uploadFile(bucket, path, file) {
 
   const isPrivate = PRIVATE_BUCKETS.includes(bucket);
   let finalPath = sanitizedPath;
-  // Use the compressed file's WebP extension when conversion changed the file.\n  if (uploadFileObject !== file && /\.[^./]+$/.test(finalPath)) {\n    finalPath = finalPath.replace(/\.[^./]+$/, '.webp');\n  }\n\n  let uploadResult = await supabase.storage.from(bucket).upload(finalPath, uploadFileObject, { upsert: false });
+  // Keep the storage extension consistent with the compressed WebP payload.
+  if (uploadFileObject !== file && /\.[^./]+$/.test(finalPath)) {
+    finalPath = finalPath.replace(/\.[^./]+$/, '.webp');
+  }
+
+  let uploadResult = await supabase.storage.from(bucket).upload(finalPath, uploadFileObject, { upsert: false });
 
   if (uploadResult.error) {
     const statusCode = Number(uploadResult.error.statusCode ?? uploadResult.error.status);
