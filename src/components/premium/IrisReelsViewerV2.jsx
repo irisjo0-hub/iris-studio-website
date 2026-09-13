@@ -179,7 +179,7 @@ const ReelSection = ({
       ref={onVisible}
       aria-label={`Reel ${String(index + 1).padStart(2, '0')} of ${String(total).padStart(2, '0')}`}
     >
-      <div className="reel-media-wrap" onClick={handleMediaClick}>
+      <div className="reel-media-wrap" onClick={isVideo ? handleMediaClick : undefined}>
         {isVideo && mediaSrc ? (
           <video
             ref={videoRef}
@@ -360,7 +360,6 @@ const IrisReelsViewerV2 = ({ id = 'iris-reels-viewer-root' }) => {
   const [feedbackName, setFeedbackName] = useState('');
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [toast, setToast] = useState('');
-  const [videoErrors, setVideoErrors] = useState({});
 
   const containerRef = useRef(null);
   const sectionRefs = useRef([]);
@@ -600,9 +599,7 @@ const IrisReelsViewerV2 = ({ id = 'iris-reels-viewer-root' }) => {
             onPrimaryAction={primaryAction}
             onSkipUp={skipUp}
             onSkipDown={skipDown}
-            onVideoError={() =>
-              setVideoErrors((current) => ({ ...current, [item.id]: true }))
-            }
+            onVideoError={() => {}}
             onVisible={(node) => {
               setSectionRef(index, node);
               if (node) {
