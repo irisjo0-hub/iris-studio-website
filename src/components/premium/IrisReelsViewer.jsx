@@ -40,7 +40,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const [videoErrorMap, setVideoErrorMap] = useState({});
 
   const stageRef = useRef(null);
-  const videoRef = useRef(null);
+  const videoRefs = useRef(new Map());
+  const exitingVideoRef = useRef(null);
   const touchStartY = useRef(0);
   const cooldownRef = useRef(false);
   const activeIndexRef = useRef(0);
@@ -59,7 +60,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   }, []);
 
   useEffect(() => {
-    const video = videoRef.current;
+    const video = videoRefs.current.get(items[activeIndex]?.id);
     if (!video) return;
 
     if (isStageActive && document.visibilityState === 'visible') {
@@ -72,18 +73,19 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     } else {
       video.pause();
     }
-  }, [isStageActive]);
+  }, [isStageActive, activeIndex]);
 
   useEffect(() => {
-    const video = videoRef.current;
+    const video = videoRefs.current.get(items[activeIndex]?.id);
     if (!video) return;
     video.muted = isMuted;
     video.defaultMuted = isMuted;
   }, [isMuted]);
 
   useEffect(() => {
+    const videos = videoRefs.current;
     const handleVisibilityChange = () => {
-      const video = videoRef.current;
+      const video = videos.get(items[activeIndex]?.id);
       if (!video) return;
       if (document.visibilityState === 'hidden' || !isStageActive) {
         video.pause();
@@ -95,9 +97,21 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (videoRef.current) videoRef.current.pause();
+      videos.get(items[activeIndex]?.id)?.pause();
     };
-  }, [isStageActive]);
+  }, [isStageActive, activeIndex, items]);
+
+  useEffect(() => {
+    const videos = videoRefs.current;
+    return () => {
+      videos.forEach((video) => {
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+      });
+      videos.clear();
+    };
+  }, []);
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -209,13 +223,14 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const navigateToIndex = (newIndex, customDirection = null) => {
     if (isLocked || cooldownRef.current) return;
 
-    // Stop the outgoing video immediately. AnimatePresence keeps exiting
-    // elements mounted for their exit animation, so without this two videos
-    // can decode/play at the same time on mobile.
-    stageRef.current?.querySelectorAll('.reel-canvas-layer video').forEach((video) => {
-      video.pause();
-      video.preload = 'metadata';
-    });
+    // Keep a reference to the exiting reel's video. AnimatePresence keeps it
+    // mounted until exit completes, while the entering reel receives its own ref.
+    const outgoingVideo = videoRefs.current.get(items[activeIndex]?.id);
+    if (outgoingVideo) {
+      exitingVideoRef.current = outgoingVideo;
+      outgoingVideo.pause();
+      outgoingVideo.preload = 'metadata';
+    }
     const dir = customDirection !== null ? customDirection : (newIndex > activeIndex ? 1 : -1);
     setDirection(dir);
     setIsLocked(true);
@@ -478,6 +493,13 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
             initial={false}
             custom={direction}
             onExitComplete={() => {
+              const exitingVideo = exitingVideoRef.current;
+              if (exitingVideo) {
+                exitingVideo.pause();
+                exitingVideo.removeAttribute('src');
+                exitingVideo.load();
+                exitingVideoRef.current = null;
+              }
               setIsLocked(false);
               cooldownRef.current = false;
             }}
@@ -493,7 +515,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               onAnimationComplete={(definition) => {
                 if (definition !== 'animate' || !isStageActive || document.visibilityState !== 'visible') return;
 
-                videoRef.current?.play().catch(() => {});
+                videoRefs.current.get(currentReel.id)?.play().catch(() => {});
               }}
               style={{ willChange: 'transform', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
             >
@@ -510,7 +532,10 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 if (isVideo && mediaSrc) {
                   return (
                     <video
-                      ref={videoRef}
+                      ref={(node) => {
+                        if (node) videoRefs.current.set(currentReel.id, node);
+                        else videoRefs.current.delete(currentReel.id);
+                      }}
                       src={mediaSrc}
                       poster={validImage}
                       preload="metadata"
