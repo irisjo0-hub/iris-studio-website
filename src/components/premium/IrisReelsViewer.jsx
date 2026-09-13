@@ -70,6 +70,12 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       video.playsInline = true;
       video.preload = 'metadata';
       video.load();
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn("Mobile autoplay notice:", err);
+        });
+      }
     } else {
       video.pause();
     }
