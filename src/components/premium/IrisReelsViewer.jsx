@@ -510,8 +510,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                       src={mediaSrc}
                       poster={validImage}
                       preload="metadata"
-                      autoPlay={isStageActive}
-                      loop
+                                          loop
                       muted={isMuted}
                       playsInline
                       webkit-playsinline="true"
