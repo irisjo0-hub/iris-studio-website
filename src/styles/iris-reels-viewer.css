@@ -1104,3 +1104,73 @@
   border-radius: 50%;
   object-fit: contain;
 }
+
+
+/* ===== NATIVE SCROLL-SNAP REELS ===== */
+.iris-reels-native-wrapper {
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.reels-native-stage {
+  overflow: hidden;
+}
+
+.reels-scroll-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto;
+  scrollbar-width: none;
+  touch-action: pan-y;
+  scroll-padding: 0;
+}
+
+.reels-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.reel-section {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.reel-section .reel-frame {
+  width: min(100vw, calc(100dvh * 9 / 16));
+  height: calc(min(100vw, calc(100dvh * 9 / 16)) * 16 / 9);
+  max-height: 100%;
+}
+
+@media (min-width: 1024px) {
+  .reel-section .reel-frame {
+    height: calc(100dvh - 32px);
+    width: calc((100dvh - 32px) * 9 / 16);
+    max-width: 520px;
+  }
+}
+
+.iris-reels-native-wrapper .reel-canvas-layer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.iris-reels-native-wrapper .reel-static-img {
+  transform: scale(1.02);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reels-scroll-container {
+    scroll-behavior: auto;
+  }
+}
