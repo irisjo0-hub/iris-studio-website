@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { compressImageForUpload } from './imageCompressor';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -21,6 +22,7 @@ const VIDEO_MAX_UPLOAD_BYTES = 45 * 1024 * 1024;
 const OTHER_MAX_UPLOAD_BYTES = 12 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const ALLOWED_VIDEO_TYPES = new Set(['video/mp4', 'video/webm', 'video/quicktime']);
+const IMAGE_COMPRESSION_BUCKETS = new Set(['packages', 'portfolio', 'templates']);
 
 function validateUploadFile(file) {
   if (!file || typeof file !== 'object') throw new Error('A valid file is required.');
@@ -48,6 +50,17 @@ export async function uploadFile(bucket, path, file) {
   if (!path || typeof path !== 'string') throw new Error('A valid storage path is required.');
   validateUploadFile(file);
 
+  // Compress public website images before they ever reach Supabase.
+  // This keeps admin uploads small without affecting private documents/receipts.
+  let uploadFileObject = file;
+  if (IMAGE_COMPRESSION_BUCKETS.has(bucket) && file.type?.startsWith('image/')) {
+    uploadFileObject = await compressImageForUpload(file, {
+      maxWidth: 1920,
+      maxHeight: 1920,
+      quality: 0.78
+    });
+  }
+
   const sanitizedPath = path
     .split('/')
     .filter((segment) => segment && segment !== '.' && segment !== '..')
@@ -64,7 +77,7 @@ export async function uploadFile(bucket, path, file) {
 
   const isPrivate = PRIVATE_BUCKETS.includes(bucket);
   let finalPath = sanitizedPath;
-  let uploadResult = await supabase.storage.from(bucket).upload(finalPath, file, { upsert: false });
+  // Use the compressed file's WebP extension when conversion changed the file.\n  if (uploadFileObject !== file && /\.[^./]+$/.test(finalPath)) {\n    finalPath = finalPath.replace(/\.[^./]+$/, '.webp');\n  }\n\n  let uploadResult = await supabase.storage.from(bucket).upload(finalPath, uploadFileObject, { upsert: false });
 
   if (uploadResult.error) {
     const statusCode = Number(uploadResult.error.statusCode ?? uploadResult.error.status);
@@ -81,7 +94,7 @@ export async function uploadFile(bucket, path, file) {
     parts.push(`${base}_${uniqueSuffix}${ext}`);
     finalPath = parts.join('/');
 
-    uploadResult = await supabase.storage.from(bucket).upload(finalPath, file, { upsert: false });
+    uploadResult = await supabase.storage.from(bucket).upload(finalPath, uploadFileObject, { upsert: false });
     if (uploadResult.error) throw uploadResult.error;
   }
 
