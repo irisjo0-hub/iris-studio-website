@@ -128,6 +128,7 @@ const AppRouter = () => (
       </Route>
 
       <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/representative" element={<RepresentativeLogin />} />
       <Route path="/representative/login" element={<RepresentativeLogin />} />
       <Route path="/representative/reset-password" element={<RepresentativeResetPassword />} />
 
