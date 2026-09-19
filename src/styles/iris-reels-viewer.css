@@ -186,6 +186,7 @@
 
 /* Full-Screen 9:16 Background Image */
 .reel-canvas-layer {
+  view-transition-name: iris-reel-canvas;
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1178,7 +1179,8 @@
 
 
 /* ===== NATIVE REEL VIEW TRANSITION =====
-   Direction is explicit so every navigation uses the same vertical motion.
+   Mobile keeps the existing canvas transition exactly as-is.
+   Desktop isolates the transition to the media layer so the frame/UI stays fixed.
  */
 ::view-transition-group(iris-reel-canvas),
 ::view-transition-image-pair(iris-reel-canvas) {
@@ -1212,6 +1214,63 @@
 @keyframes iris-reel-slide-in-from-top {
   from { transform: translateY(-100%); }
   to { transform: translateY(0); }
+}
+
+@media (min-width: 768px) {
+  .reel-frame {
+    container-type: inline-size;
+  }
+
+  /* Keep desktop typography proportional to the actual 9:16 reel frame,
+     not the full monitor width. */
+  .reel-item-number {
+    font-size: clamp(0.72rem, 2.6cqw, 0.85rem);
+  }
+
+  .reel-headline-text {
+    font-size: clamp(0.98rem, 5.4cqw, 1.75rem);
+  }
+
+  .reel-secondary-text {
+    font-size: clamp(0.72rem, 2.7cqw, 0.88rem);
+  }
+
+  /* Prevent the document/root snapshot from moving on desktop. */
+  html:active-view-transition {
+    view-transition-name: none;
+  }
+
+  .reel-canvas-layer {
+    view-transition-name: none;
+  }
+
+  .reel-static-img {
+    view-transition-name: iris-reel-media;
+  }
+
+  ::view-transition-group(iris-reel-media),
+  ::view-transition-image-pair(iris-reel-media) {
+    width: 100%;
+    height: 100%;
+    animation-duration: 0.48s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  :root[data-reel-direction="forward"]::view-transition-old(iris-reel-media) {
+    animation: iris-reel-slide-out-up 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  :root[data-reel-direction="forward"]::view-transition-new(iris-reel-media) {
+    animation: iris-reel-slide-in-from-bottom 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  :root[data-reel-direction="backward"]::view-transition-old(iris-reel-media) {
+    animation: iris-reel-slide-out-down 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  :root[data-reel-direction="backward"]::view-transition-new(iris-reel-media) {
+    animation: iris-reel-slide-in-from-top 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
 }
 
 @media (max-width: 767px) {
