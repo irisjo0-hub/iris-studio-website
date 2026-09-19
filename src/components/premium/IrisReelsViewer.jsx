@@ -514,7 +514,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           <div
               key={`reel-canvas-${currentReel.id}`}
               className="reel-canvas-layer"
-              style={{ viewTransitionName: 'iris-reel-canvas' }}
             >
               {(() => {
                 const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv|avi)($|\?)/i.test(url) || url.startsWith('data:video') || url.startsWith('blob:video'));
@@ -538,12 +537,12 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                       playsInline
                       webkit-playsinline="true"
                       className="reel-static-img"
-                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      style={{ objectFit: 'cover', width: '100%', height: '100%', viewTransitionName: 'iris-reel-media' }}
                       onError={() => setVideoErrorMap(prev => ({ ...prev, [currentReel.id]: true }))}
                     />
                   );
                 }
-                return <img src={validImage} alt={isRtl ? currentReel.alt_ar : currentReel.alt_en} className="reel-static-img" decoding="async" />;
+                return <img src={validImage} alt={isRtl ? currentReel.alt_ar : currentReel.alt_en} className="reel-static-img" decoding="async" style={{ viewTransitionName: 'iris-reel-media' }} />;
               })()}
               <div className="reel-darkness-gradient" />
 
