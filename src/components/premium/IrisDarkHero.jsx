@@ -20,6 +20,7 @@ export const IrisDarkHero = () => {
   const { settings, lang, toggleLanguage } = useSiteSettings();
   const isRtl = lang === 'ar';
   const [heroMenuOpen, setHeroMenuOpen] = useState(false);
+  const [isHeroActive, setIsHeroActive] = useState(true);
 
   // Desktop pointer effects. Keep glow transforms off React state so mouse movement
   // does not re-render the entire hero/collage tree on every pointer event.
@@ -109,6 +110,19 @@ export const IrisDarkHero = () => {
   };
 
   useEffect(() => {
+    const hero = document.getElementById('iris-dark-hero-root');
+    if (!hero) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsHeroActive(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     if (heroMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -122,7 +136,7 @@ export const IrisDarkHero = () => {
   return (
     <section
       id="iris-dark-hero-root"
-      className={`iris-dark-hero-v2-wrapper dir-${isRtl ? 'rtl' : 'ltr'}`}
+      className={`iris-dark-hero-v2-wrapper dir-${isRtl ? 'rtl' : 'ltr'} ${!isHeroActive ? 'is-offscreen' : 'is-active'}`}
       dir={isRtl ? 'rtl' : 'ltr'}
       onMouseMove={handleHeroMouseMove}
       onMouseLeave={handleHeroMouseLeave}
