@@ -612,7 +612,7 @@
   height: 7px;
   border-radius: 50%;
   background: #F5BD1A;
-  box-shadow: 0 0 10px #F5BD1A;
+  box-shadow: 0 0 8px #F5BD1A;
   flex-shrink: 0;
   animation: pillDotBreathing 3s ease-in-out infinite alternate;
 }
