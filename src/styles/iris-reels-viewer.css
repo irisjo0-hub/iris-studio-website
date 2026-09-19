@@ -922,6 +922,12 @@
   animation: skipArrowBounce 1.6s infinite ease-in-out;
 }
 
+/* Skip controls are irrelevant while the reels section is offscreen. */
+.iris-reels-viewer-wrapper.is-offscreen .skip-arrow-anim,
+.iris-reels-viewer-wrapper.is-offscreen .skip-up-arrow-anim {
+  animation-play-state: paused !important;
+}
+
 .skip-up-arrow-anim {
   animation: skipUpArrowBounce 1.6s infinite ease-in-out;
 }
