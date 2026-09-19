@@ -204,6 +204,12 @@
   }
 }
 
+/* Pause expensive ambient layers while the hero is offscreen. */
+.iris-dark-hero-v2-wrapper.is-offscreen .ambient-glow {
+  animation-play-state: paused !important;
+  transition: none !important;
+}
+
 /* Keyframes for Organic Un-synchronized Atmospheric Drift & Slow Breathing */
 @keyframes purpleLogoGlowFloat {
   0% { opacity: 0.85; transform: scale(1) translate(0, 0); }
