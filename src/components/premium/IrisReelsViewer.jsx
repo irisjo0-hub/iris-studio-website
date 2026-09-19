@@ -533,14 +533,14 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                     />
                   );
                 }
-                return <img src={validImage} alt={isRtl ? currentReel.alt_ar : currentReel.alt_en} className="reel-static-img" />;
+                return <img src={validImage} alt={isRtl ? currentReel.alt_ar : currentReel.alt_en} className="reel-static-img" decoding="async" />;
               })()}
               <div className="reel-darkness-gradient" />
 
               <div className="instagram-reel-caption-block" dir={isRtl ? 'rtl' : 'ltr'}>
                 <div className="instagram-caption-profile-row">
                   <div className="instagram-avatar-ring">
-                    <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="instagram-avatar-img" />
+                    <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="instagram-avatar-img" decoding="async" />
                   </div>
                   <div className="instagram-user-meta">
                     <span className="instagram-username">IRIS HOME</span>
@@ -635,7 +635,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       {menuOpen && createPortal(
         <motion.div className={`iris-portal-fullscreen-overlay dir-${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
           <div className="overlay-top-bar">
-            <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" />
+            <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" decoding="async" />
             <button type="button" className="overlay-close-btn" onClick={() => setMenuOpen(false)} aria-label="Close Menu"><X size={24} /></button>
           </div>
 
