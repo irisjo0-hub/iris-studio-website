@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring, useReducedMotion } from 'framer-motion';
 
 export const PremiumCursorGlow = ({
@@ -8,6 +8,7 @@ export const PremiumCursorGlow = ({
 }) => {
   const shouldReduceMotion = useReducedMotion();
   const [isVisible, setIsVisible] = useState(false);
+  const visibleRef = useRef(false);
   const [isMobile, setIsMobile] = useState(true);
 
   // Motion positions
@@ -34,11 +35,20 @@ export const PremiumCursorGlow = ({
     const handleMouseMove = (e) => {
       cursorX.set(e.clientX - size / 2);
       cursorY.set(e.clientY - size / 2);
-      if (!isVisible) setIsVisible(true);
+      if (!visibleRef.current) {
+        visibleRef.current = true;
+        setIsVisible(true);
+      }
     };
 
-    const handleMouseLeave = () => setIsVisible(false);
-    const handleMouseEnter = () => setIsVisible(true);
+    const handleMouseLeave = () => {
+      visibleRef.current = false;
+      setIsVisible(false);
+    };
+    const handleMouseEnter = () => {
+      visibleRef.current = true;
+      setIsVisible(true);
+    };
 
     window.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseleave', handleMouseLeave);
@@ -50,7 +60,7 @@ export const PremiumCursorGlow = ({
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
     };
-  }, [cursorX, cursorY, isVisible, isMobile, shouldReduceMotion, size]);
+  }, [cursorX, cursorY, isMobile, shouldReduceMotion, size]);
 
   if (isMobile || shouldReduceMotion || !isVisible) return null;
 
