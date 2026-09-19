@@ -831,6 +831,10 @@
   animation: pulseBar 2s ease-in-out infinite;
 }
 
+.iris-reels-viewer-wrapper.is-offscreen .progress-segment-fill.active {
+  animation-play-state: paused !important;
+}
+
 @keyframes pulseBar {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
