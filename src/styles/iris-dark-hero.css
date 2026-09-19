@@ -581,7 +581,7 @@
   border-radius: 100px;
   background: transparent !important;
   border: 1px solid rgba(245, 189, 26, 0.55);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px);
   max-width: max-content;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
