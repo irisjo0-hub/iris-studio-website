@@ -131,7 +131,7 @@
   }
 
   .reels-grain-overlay {
-    opacity: 0.02;
+    display: none;
   }
 }
 
