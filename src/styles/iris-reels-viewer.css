@@ -1252,6 +1252,8 @@
     height: calc(100dvh - 32px);
     left: calc(50% - min(calc((100dvh - 32px) * 9 / 16), 520px) / 2);
     top: 16px;
+    margin: 0;
+    box-sizing: border-box;
     transform: none !important;
     animation: none !important;
   }
