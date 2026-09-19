@@ -23,7 +23,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const [items, setItems] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
   const [isLocked, setIsLocked] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isStageActive, setIsStageActive] = useState(false);
@@ -246,7 +245,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
     videoRef.current?.pause();
     const dir = customDirection !== null ? customDirection : (newIndex > activeIndex ? 1 : -1);
-    setDirection(dir);
     setIsLocked(true);
     cooldownRef.current = true;
 

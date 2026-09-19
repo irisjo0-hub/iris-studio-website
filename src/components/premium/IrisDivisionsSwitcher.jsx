@@ -69,6 +69,44 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
 
   const activeDivision = divisions[activeIdx] || divisions[0];
 
+  const mediaPreloadStartedRef = useRef(false);
+
+  useEffect(() => {
+    const section = containerRef.current;
+    if (!section || mediaPreloadStartedRef.current) return;
+
+    const preloadImages = () => {
+      if (mediaPreloadStartedRef.current) return;
+      mediaPreloadStartedRef.current = true;
+
+      divisions.forEach((division, index) => {
+        const src = division.image;
+        if (!src) return;
+        const img = new Image();
+        img.decoding = 'async';
+        img.fetchPriority = index === activeIdx ? 'high' : 'low';
+        img.src = src;
+        if (typeof img.decode === 'function') {
+          img.decode().catch(() => {});
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          preloadImages();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '700px 0px', threshold: 0.01 }
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, [divisions, activeIdx]);
+
   // Dual Action Row Handler: 1st click activates state, 2nd click on active row navigates
   const handleRowClick = (idx, route) => {
     if (idx !== activeIdx) {
