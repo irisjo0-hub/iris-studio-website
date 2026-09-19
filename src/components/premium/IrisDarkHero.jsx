@@ -90,6 +90,7 @@ export const IrisDarkHero = () => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left - rect.width / 2) * 0.25;
     const y = (e.clientY - rect.top - rect.height / 2) * 0.25;
+    if (ctaRef.current) ctaRef.current.style.willChange = 'transform';
     ctaOffsetRef.current = { x, y };
     if (!ctaRafRef.current) {
       ctaRafRef.current = window.requestAnimationFrame(() => {
@@ -108,7 +109,10 @@ export const IrisDarkHero = () => {
       window.cancelAnimationFrame(ctaRafRef.current);
       ctaRafRef.current = null;
     }
-    if (ctaRef.current) ctaRef.current.style.transform = 'translate3d(0,0,0)';
+    if (ctaRef.current) {
+      ctaRef.current.style.transform = 'translate3d(0,0,0)';
+      ctaRef.current.style.willChange = 'auto';
+    }
     setIsCtaHovered(false);
   };
 
