@@ -748,6 +748,16 @@
   animation: ctaArrowPulse 1.8s infinite ease-in-out;
 }
 
+/* The hero is outside the viewport; pause its decorative animations until it returns. */
+.iris-dark-hero-v2-wrapper.is-offscreen .glow-purple-topright,
+.iris-dark-hero-v2-wrapper.is-offscreen .glow-green-bottomleft,
+.iris-dark-hero-v2-wrapper.is-offscreen .glow-gold-accent,
+.iris-dark-hero-v2-wrapper.is-offscreen .pill-dot,
+.iris-dark-hero-v2-wrapper.is-offscreen .cta-arrow-badge svg,
+.iris-dark-hero-v2-wrapper.is-offscreen .cta-arrow-icon svg {
+  animation-play-state: paused !important;
+}
+
 .hero-v2-discover-cta:hover .cta-arrow-badge,
 .hero-v2-discover-cta:hover .cta-arrow-icon {
   background: #f7ca45;
