@@ -203,6 +203,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   };
 
   useEffect(() => {
+    if (items.length === 0 || !stageRef.current) return;
+
     let wasIntersecting = false;
 
     const observer = new IntersectionObserver(
@@ -214,7 +216,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           if (navbar) navbar.style.display = 'none';
 
           if (!wasIntersecting && stageRef.current) {
-            const stageTop = stageRef.current.offsetTop;
+            const stageTop = stageRef.current.getBoundingClientRect().top + window.pageYOffset;
             const scrollY = window.scrollY;
             if (Math.abs(scrollY - stageTop) > 50) {
               window.scrollTo({ top: stageTop, behavior: 'smooth' });
@@ -230,30 +232,22 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       { threshold: 0.25 }
     );
 
-    if (stageRef.current) observer.observe(stageRef.current);
+    observer.observe(stageRef.current);
 
     return () => {
       observer.disconnect();
       const navbar = document.querySelector('.navbar-container, header.site-navbar, .app-header');
       if (navbar) navbar.style.display = '';
     };
-  }, []);
+  }, [items.length]);
 
   const navigateToIndex = (newIndex, customDirection = null) => {
     if (isLocked || cooldownRef.current) return;
 
-    // Stop the outgoing video immediately. AnimatePresence keeps exiting
-    // elements mounted for their exit animation, so without this two videos
-    // can decode/play at the same time on mobile.
-    // Fully release the outgoing video before mounting the next reel.
-    // AnimatePresence keeps the old layer mounted during its exit animation;
-    // pausing alone can still leave a large video decoder/buffer alive and
-    // cause a main-thread/GPU hitch on mobile.
-    stageRef.current?.querySelectorAll('.reel-canvas-layer video').forEach((video) => {
-      video.pause();
-      video.removeAttribute('src');
-      video.load();
-    });
+    // Pause the outgoing video while AnimatePresence performs the slide.
+    // Keep its source intact until the exiting layer is removed so the next
+    // reel can mount reliably without breaking navigation.
+    videoRef.current?.pause();
     const dir = customDirection !== null ? customDirection : (newIndex > activeIndex ? 1 : -1);
     setDirection(dir);
     setIsLocked(true);
