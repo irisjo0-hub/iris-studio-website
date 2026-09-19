@@ -186,7 +186,7 @@ export const HeroLivingCollage = () => {
                 src={work.image}
                 alt={isRtl ? work.alt_ar : work.alt_en}
                 className="stream-card-img"
-                loading={index < 2 ? 'eager' : 'lazy'}
+                loading={index === 0 ? 'eager' : 'lazy'}
                 decoding="async"
                 fetchPriority={index === 0 ? 'high' : 'low'}
               />

@@ -130,21 +130,38 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     const initialItems = loaded.length > 0 ? loaded : cachedItems;
     setItems(initialItems);
 
-    getFlowItemsAsync().then((cloudItems) => {
-      if (cloudItems && cloudItems.length > 0) {
-        const filtered = cloudItems.filter((it) => it.enabled);
-        const nextItems = filtered.length > 0 ? filtered : cloudItems;
+    // Local cache renders immediately. Defer the Supabase refresh so the
+    // homepage's first paint is not competing with the initial hero/reels work.
+    const refreshFlowFromCloud = () => {
+      getFlowItemsAsync().then((cloudItems) => {
+        if (cloudItems && cloudItems.length > 0) {
+          const filtered = cloudItems.filter((it) => it.enabled);
+          const nextItems = filtered.length > 0 ? filtered : cloudItems;
 
-        // The local cache already populated the first render. Avoid a second
-        // render when the cloud snapshot is identical.
-        setItems((prevItems) => {
-          if (JSON.stringify(prevItems) === JSON.stringify(nextItems)) {
-            return prevItems;
-          }
-          return nextItems;
-        });
+          setItems((prevItems) => {
+            if (JSON.stringify(prevItems) === JSON.stringify(nextItems)) {
+              return prevItems;
+            }
+            return nextItems;
+          });
+        }
+      });
+    };
+
+    let idleId;
+    let timeoutId;
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      idleId = window.requestIdleCallback(refreshFlowFromCloud, { timeout: 1200 });
+    } else {
+      timeoutId = window.setTimeout(refreshFlowFromCloud, 900);
+    }
+
+    return () => {
+      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleId);
       }
-    });
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+    };
 
     // Feedback is loaded only when the visitor opens the feedback drawer.
     // Avoid an extra RPC on every homepage visit.
