@@ -777,6 +777,11 @@
   transition: none !important;
 }
 
+.iris-dark-hero-v2-wrapper.is-offscreen .hero-v2-discover-cta,
+.iris-dark-hero-v2-wrapper.is-offscreen .hero-discover-btn {
+  will-change: auto;
+}
+
 .hero-v2-discover-cta:hover .cta-arrow-badge,
 .hero-v2-discover-cta:hover .cta-arrow-icon {
   background: #f7ca45;
