@@ -51,10 +51,10 @@ export const IrisDarkHero = () => {
   const handleHeroMouseMove = (e) => {
     if (window.innerWidth < 1024) return;
     const hero = e.currentTarget;
-    const rect = hero.getBoundingClientRect();
     if (!glowElementsRef.current) {
       glowElementsRef.current = hero.querySelectorAll('.hero-v2-ambient-layer .ambient-glow');
     }
+    const rect = hero.getBoundingClientRect();
     const x = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 16;
     const y = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * 16;
     glowOffsetRef.current = { x, y };
