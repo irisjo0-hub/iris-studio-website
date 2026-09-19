@@ -37,7 +37,6 @@
   cursor: pointer;
   /* Parent stage/container are non-interactive, but cards are intentionally clickable. */
   pointer-events: auto;
-  will-change: transform, opacity;
 }
 
 /* Individual Floating Card inside Stream */
