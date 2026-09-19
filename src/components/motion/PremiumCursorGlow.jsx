@@ -37,8 +37,6 @@ export const PremiumCursorGlow = ({
       mediaQuery.addListener(handleMediaChange);
     }
 
-    if (isMobile || shouldReduceMotion) return;
-
     const handleMouseMove = (e) => {
       cursorX.set(e.clientX - size / 2);
       cursorY.set(e.clientY - size / 2);
@@ -57,9 +55,11 @@ export const PremiumCursorGlow = ({
       setIsVisible(true);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('mouseenter', handleMouseEnter);
+    if (!isMobile && !shouldReduceMotion) {
+      window.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseleave', handleMouseLeave);
+      document.addEventListener('mouseenter', handleMouseEnter);
+    }
 
     return () => {
       if (mediaQuery.removeEventListener) {
