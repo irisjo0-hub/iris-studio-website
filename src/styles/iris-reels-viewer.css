@@ -1256,6 +1256,10 @@
     box-sizing: border-box;
     transform: none !important;
     animation: none !important;
+    overflow: hidden;
+    border-radius: 20px;
+    clip-path: inset(0 round 20px);
+    contain: paint;
   }
 
   ::view-transition-image-pair(iris-reel-content) {
@@ -1265,6 +1269,9 @@
     transform: none !important;
     animation: none !important;
     overflow: hidden;
+    border-radius: 20px;
+    clip-path: inset(0 round 20px);
+    contain: paint;
   }
 
   :root[data-reel-direction="forward"]::view-transition-old(iris-reel-content) {
