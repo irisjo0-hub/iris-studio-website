@@ -1177,32 +1177,26 @@
 }
 
 
-/* ===== NATIVE REEL VIEW TRANSITION ===== */
-html:active-view-transition {
-  view-transition-name: none;
-}
-
-html:active-view-transition-type(forwards) {
-  &::view-transition-old(iris-reel-canvas) {
-    animation: iris-reel-slide-out-up 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  &::view-transition-new(iris-reel-canvas) {
-    animation: iris-reel-slide-in-from-bottom 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-}
-
-html:active-view-transition-type(backwards) {
-  &::view-transition-old(iris-reel-canvas) {
-    animation: iris-reel-slide-out-down 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  &::view-transition-new(iris-reel-canvas) {
-    animation: iris-reel-slide-in-from-top 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-}
-
+/* ===== NATIVE REEL VIEW TRANSITION =====
+   Direction is explicit so every navigation uses the same vertical motion.
+ */
 ::view-transition-group(iris-reel-canvas),
 ::view-transition-image-pair(iris-reel-canvas) {
   animation-duration: 0.48s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-reel-direction="forward"]::view-transition-old(iris-reel-canvas) {
+  animation: iris-reel-slide-out-up 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+:root[data-reel-direction="forward"]::view-transition-new(iris-reel-canvas) {
+  animation: iris-reel-slide-in-from-bottom 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+:root[data-reel-direction="backward"]::view-transition-old(iris-reel-canvas) {
+  animation: iris-reel-slide-out-down 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+:root[data-reel-direction="backward"]::view-transition-new(iris-reel-canvas) {
+  animation: iris-reel-slide-in-from-top 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes iris-reel-slide-out-up {
@@ -1221,22 +1215,23 @@ html:active-view-transition-type(backwards) {
 }
 
 @media (max-width: 767px) {
-  html:active-view-transition-type(forwards),
-  html:active-view-transition-type(backwards) {
-    &::view-transition-old(iris-reel-canvas),
-    &::view-transition-new(iris-reel-canvas) {
-      animation-duration: 0.28s;
-    }
-  }
   ::view-transition-group(iris-reel-canvas),
   ::view-transition-image-pair(iris-reel-canvas) {
     animation-duration: 0.28s;
   }
+  :root[data-reel-direction="forward"]::view-transition-old(iris-reel-canvas),
+  :root[data-reel-direction="forward"]::view-transition-new(iris-reel-canvas),
+  :root[data-reel-direction="backward"]::view-transition-old(iris-reel-canvas),
+  :root[data-reel-direction="backward"]::view-transition-new(iris-reel-canvas) {
+    animation-duration: 0.28s;
+  }
 }
+
 @media (prefers-reduced-motion: reduce) {
-  html:active-view-transition-type(forwards),
-  html:active-view-transition-type(backwards) {
-    &::view-transition-old(iris-reel-canvas),
-    &::view-transition-new(iris-reel-canvas) { animation: none; }
+  :root[data-reel-direction="forward"]::view-transition-old(iris-reel-canvas),
+  :root[data-reel-direction="forward"]::view-transition-new(iris-reel-canvas),
+  :root[data-reel-direction="backward"]::view-transition-old(iris-reel-canvas),
+  :root[data-reel-direction="backward"]::view-transition-new(iris-reel-canvas) {
+    animation: none;
   }
 }

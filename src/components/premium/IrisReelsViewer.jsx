@@ -247,14 +247,19 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     setIsLocked(true);
     cooldownRef.current = true;
 
-    const update = () => setActiveIndex(newIndex);
-    const transitionType = dir > 0 ? 'forwards' : 'backwards';
+    const update = () => {
+      if (typeof document !== 'undefined') {
+        document.documentElement.dataset.reelDirection = dir > 0 ? 'forward' : 'backward';
+      }
+      setActiveIndex(newIndex);
+    };
 
     if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
-      document.startViewTransition({
-        update,
-        types: [transitionType]
-      });
+      try {
+        document.startViewTransition(update);
+      } catch {
+        update();
+      }
     } else {
       update();
     }
