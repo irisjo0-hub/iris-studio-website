@@ -22,6 +22,11 @@
   justify-content: center;
 }
 
+/* Keep the ambient GPU animations dormant when the reels stage is outside the viewport. */
+.iris-reels-viewer-wrapper.is-offscreen .reels-bg-ambient-layer > * {
+  animation-play-state: paused !important;
+}
+
 /* Atmospheric Ambient Layer behind Reels Frame (IRIS Theme Option 2) */
 .reels-bg-ambient-layer {
   position: absolute;
