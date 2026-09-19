@@ -101,6 +101,17 @@
 
 /* Reduce expensive large blur surfaces on smaller screens. */
 @media (max-width: 767px) {
+  .reels-hamburger-btn,
+  .reels-counter-pill,
+  .reels-action-circle-btn,
+  .reels-floating-cta-label,
+  .reels-counter-pill-tag,
+  .reels-floating-skip-pill,
+  .reels-sound-btn {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
   .reels-glow-purple-top {
     width: 620px;
     height: 620px;
