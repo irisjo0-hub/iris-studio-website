@@ -10,9 +10,16 @@ const Footer = lazy(() => import("../components/Footer"));
 const Home = () => (
   <div className="home-page" dir="rtl">
     <IrisDarkHero />
+
     <Suspense fallback={null}>
       <IrisReelsViewer id="iris-reels-viewer-root" />
+    </Suspense>
+
+    <Suspense fallback={null}>
       <IrisDivisionsSwitcher id="iris-divisions-section" />
+    </Suspense>
+
+    <Suspense fallback={null}>
       <Footer />
     </Suspense>
   </div>
