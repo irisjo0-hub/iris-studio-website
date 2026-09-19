@@ -135,6 +135,12 @@
     max-width: 48vw !important;
     border-radius: 16px !important;
     border-width: 1px !important;
+    /* Mobile GPU guard: keep the visual depth without two large shadow layers. */
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.72) !important;
+  }
+
+  .lower-stream-card.edge-floating-stream-card:hover {
+    box-shadow: 0 20px 46px rgba(0, 0, 0, 0.78) !important;
   }
 }
 
