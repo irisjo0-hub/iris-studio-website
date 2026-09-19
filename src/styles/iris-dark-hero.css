@@ -157,6 +157,15 @@
     display: none;
   }
 
+  /* Reduce backdrop-filter work on small screens while preserving the glass look. */
+  .hero-v2-eyebrow-pill,
+  .hero-v2-discover-cta.glass-gold-pulse-btn,
+  .hero-v2-discover-cta,
+  .hero-discover-btn {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
   .glow-purple-topleft {
     top: 0;
     left: -60px;
