@@ -778,6 +778,11 @@
   transition: none !important;
 }
 
+/* The SVG turbulence grain is expensive to rasterize; release it while the hero is offscreen. */
+.iris-dark-hero-v2-wrapper.is-offscreen .hero-v2-grain-overlay {
+  display: none;
+}
+
 .iris-dark-hero-v2-wrapper.is-offscreen .hero-v2-discover-cta,
 .iris-dark-hero-v2-wrapper.is-offscreen .hero-discover-btn {
   will-change: auto;
