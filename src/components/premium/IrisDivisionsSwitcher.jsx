@@ -191,12 +191,14 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
                         alt=""
                         aria-hidden="true"
                         className="kinetic-image-backdrop"
+                        decoding="async"
                       />
                       <img
                         src={activeDivision.image}
                         alt={activeDivision.name_en}
                         ref={kineticImageRef}
                         className="kinetic-image"
+                        decoding="async"
                       />
                     </>
                   ) : (
