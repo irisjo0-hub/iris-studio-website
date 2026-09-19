@@ -26,6 +26,7 @@ export const IrisDarkHero = () => {
   // does not re-render the entire hero/collage tree on every pointer event.
   const glowRafRef = useRef(null);
   const glowOffsetRef = useRef({ x: 0, y: 0 });
+  const glowElementsRef = useRef(null);
   const [isCtaHovered, setIsCtaHovered] = useState(false);
   const ctaRef = useRef(null);
 
@@ -49,6 +50,9 @@ export const IrisDarkHero = () => {
     if (window.innerWidth < 1024) return;
     const hero = e.currentTarget;
     const rect = hero.getBoundingClientRect();
+    if (!glowElementsRef.current) {
+      glowElementsRef.current = hero.querySelectorAll('.hero-v2-ambient-layer .ambient-glow');
+    }
     const x = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 16;
     const y = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * 16;
     glowOffsetRef.current = { x, y };
@@ -56,7 +60,7 @@ export const IrisDarkHero = () => {
     glowRafRef.current = window.requestAnimationFrame(() => {
       glowRafRef.current = null;
       const { x: gx, y: gy } = glowOffsetRef.current;
-      const glows = hero.querySelectorAll('.hero-v2-ambient-layer .ambient-glow');
+      const glows = glowElementsRef.current;
       const multipliers = [[-0.5, -0.5], [0.8, 0.8], [-0.9, -0.9], [0.6, 0.6], [1.2, 1.2]];
       glows.forEach((glow, index) => {
         const [mx, my] = multipliers[index] || [1, 1];
@@ -70,7 +74,8 @@ export const IrisDarkHero = () => {
       window.cancelAnimationFrame(glowRafRef.current);
       glowRafRef.current = null;
     }
-    e.currentTarget.querySelectorAll('.hero-v2-ambient-layer .ambient-glow').forEach((glow) => {
+    const glows = glowElementsRef.current || e.currentTarget.querySelectorAll('.hero-v2-ambient-layer .ambient-glow');
+    glows.forEach((glow) => {
       glow.style.transform = 'translate(0px, 0px)';
     });
     if (ctaRef.current) ctaRef.current.style.transform = 'translate3d(0,0,0)';
