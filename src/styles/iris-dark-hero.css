@@ -152,6 +152,11 @@
 
 /* Mobile Specific Atmospheric Art-Direction (390px Viewport) */
 @media (max-width: 767px) {
+  /* SVG turbulence grain is expensive on small screens; keep the clean base texture. */
+  .hero-v2-grain-overlay {
+    display: none;
+  }
+
   .glow-purple-topleft {
     top: 0;
     left: -60px;
