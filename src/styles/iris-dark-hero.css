@@ -121,6 +121,8 @@
 }
 
 .glow-green-bottomright {
+  /* This glow is static; avoid allocating a persistent transform layer. */
+  will-change: auto;
   bottom: -6vw;
   right: 5%;
   width: clamp(450px, 52vw, 800px);
