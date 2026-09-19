@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Touchpad } from 'lucide-react';
@@ -26,8 +26,8 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
   const kineticImageRef = useRef(null);
   const mouseFrameRef = useRef(null);
 
-  // Dynamic Division Data Binds
-  const divisions = [
+  const divisions = useMemo(() => {
+  return [
     {
       id: 'media',
       number: '01',
@@ -65,6 +65,7 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
       clipDirection: 'diagonal'
     }
   ];
+  }, [settings]);
 
   const activeDivision = divisions[activeIdx] || divisions[0];
 
