@@ -110,7 +110,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   useEffect(() => {
     window.__resetReelToHero = () => {
-      setDirection(-1);
       setActiveIndex(0);
       setIsLocked(false);
       cooldownRef.current = false;
