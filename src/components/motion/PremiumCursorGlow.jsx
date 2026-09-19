@@ -27,8 +27,15 @@ export const PremiumCursorGlow = ({
       setIsMobile(mobile);
     };
 
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
     checkDevice();
-    window.addEventListener('resize', checkDevice);
+
+    const handleMediaChange = () => checkDevice();
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleMediaChange);
+    } else {
+      mediaQuery.addListener(handleMediaChange);
+    }
 
     if (isMobile || shouldReduceMotion) return;
 
@@ -55,7 +62,11 @@ export const PremiumCursorGlow = ({
     document.addEventListener('mouseenter', handleMouseEnter);
 
     return () => {
-      window.removeEventListener('resize', checkDevice);
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleMediaChange);
+      } else {
+        mediaQuery.removeListener(handleMediaChange);
+      }
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
