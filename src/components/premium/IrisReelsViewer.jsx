@@ -218,9 +218,14 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     // Stop the outgoing video immediately. AnimatePresence keeps exiting
     // elements mounted for their exit animation, so without this two videos
     // can decode/play at the same time on mobile.
+    // Fully release the outgoing video before mounting the next reel.
+    // AnimatePresence keeps the old layer mounted during its exit animation;
+    // pausing alone can still leave a large video decoder/buffer alive and
+    // cause a main-thread/GPU hitch on mobile.
     stageRef.current?.querySelectorAll('.reel-canvas-layer video').forEach((video) => {
       video.pause();
-      video.preload = 'metadata';
+      video.removeAttribute('src');
+      video.load();
     });
     const dir = customDirection !== null ? customDirection : (newIndex > activeIndex ? 1 : -1);
     setDirection(dir);
