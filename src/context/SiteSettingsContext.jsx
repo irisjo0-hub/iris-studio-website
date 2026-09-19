@@ -232,7 +232,12 @@ export const SiteSettingsProvider = ({ children }) => {
     const cached = localStorage.getItem('cached_site_settings');
     if (cached) {
       try {
-        setSettings({ ...DEFAULT_SETTINGS, ...pickPublicSettings(JSON.parse(cached)) });
+        const cachedSettings = { ...DEFAULT_SETTINGS, ...pickPublicSettings(JSON.parse(cached)) };
+        setSettings((prevSettings) => (
+          JSON.stringify(prevSettings) === JSON.stringify(cachedSettings)
+            ? prevSettings
+            : cachedSettings
+        ));
       } catch {}
     }
     fetchSettings();
