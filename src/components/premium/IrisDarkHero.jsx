@@ -29,6 +29,8 @@ export const IrisDarkHero = () => {
   const glowElementsRef = useRef(null);
   const [isCtaHovered, setIsCtaHovered] = useState(false);
   const ctaRef = useRef(null);
+  const ctaOffsetRef = useRef({ x: 0, y: 0 });
+  const ctaRafRef = useRef(null);
 
   // Dynamic Headline Binds from Site Settings
   const headlinePart1 = isRtl
@@ -88,11 +90,24 @@ export const IrisDarkHero = () => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left - rect.width / 2) * 0.25;
     const y = (e.clientY - rect.top - rect.height / 2) * 0.25;
-    if (ctaRef.current) ctaRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    ctaOffsetRef.current = { x, y };
+    if (!ctaRafRef.current) {
+      ctaRafRef.current = window.requestAnimationFrame(() => {
+        ctaRafRef.current = null;
+        if (ctaRef.current) {
+          const { x: offsetX, y: offsetY } = ctaOffsetRef.current;
+          ctaRef.current.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`;
+        }
+      });
+    }
     if (!isCtaHovered) setIsCtaHovered(true);
   };
 
   const handleCtaMouseLeave = () => {
+    if (ctaRafRef.current) {
+      window.cancelAnimationFrame(ctaRafRef.current);
+      ctaRafRef.current = null;
+    }
     if (ctaRef.current) ctaRef.current.style.transform = 'translate3d(0,0,0)';
     setIsCtaHovered(false);
   };
