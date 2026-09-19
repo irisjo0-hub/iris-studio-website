@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 const CartContext = createContext();
 
@@ -22,7 +22,7 @@ export const CartProvider = ({ children }) => {
     }
   }, [cart]);
 
-  const addToCart = (product) => {
+  const addToCart = useCallback((product) => {
     setCart((prevCart) => {
       const existingIndex = prevCart.findIndex(
         (item) => item.id === product.id && JSON.stringify(item.options) === JSON.stringify(product.options)
@@ -37,13 +37,13 @@ export const CartProvider = ({ children }) => {
       return [...prevCart, { ...product, quantity: product.quantity || 1, cartId: Date.now() }];
     });
     setIsCartOpen(true);
-  };
+  }, []);
 
-  const removeFromCart = (cartId) => {
+  const removeFromCart = useCallback((cartId) => {
     setCart((prevCart) => prevCart.filter((item) => item.cartId !== cartId));
-  };
+  }, []);
 
-  const updateQuantity = (cartId, quantity) => {
+  const updateQuantity = useCallback((cartId, quantity) => {
     if (quantity <= 0) {
       removeFromCart(cartId);
       return;
@@ -51,29 +51,29 @@ export const CartProvider = ({ children }) => {
     setCart((prevCart) =>
       prevCart.map((item) => (item.cartId === cartId ? { ...item, quantity } : item))
     );
-  };
+  }, [removeFromCart]);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCart([]);
-  };
+  }, []);
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = cart.reduce((acc, item) => acc + (parseFloat(item.price || 0) * item.quantity), 0);
 
+  const value = useMemo(() => ({
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    totalItems,
+    subtotal,
+    isCartOpen,
+    setIsCartOpen
+  }), [cart, addToCart, removeFromCart, updateQuantity, clearCart, totalItems, subtotal, isCartOpen]);
+
   return (
-    <CartContext.Provider
-      value={{
-        cart,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        totalItems,
-        subtotal,
-        isCartOpen,
-        setIsCartOpen
-      }}
-    >
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
