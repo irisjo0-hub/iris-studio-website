@@ -132,7 +132,16 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     getFlowItemsAsync().then((cloudItems) => {
       if (cloudItems && cloudItems.length > 0) {
         const filtered = cloudItems.filter((it) => it.enabled);
-        setItems(filtered.length > 0 ? filtered : cloudItems);
+        const nextItems = filtered.length > 0 ? filtered : cloudItems;
+
+        // The local cache already populated the first render. Avoid a second
+        // render when the cloud snapshot is identical.
+        setItems((prevItems) => {
+          if (JSON.stringify(prevItems) === JSON.stringify(nextItems)) {
+            return prevItems;
+          }
+          return nextItems;
+        });
       }
     });
 
