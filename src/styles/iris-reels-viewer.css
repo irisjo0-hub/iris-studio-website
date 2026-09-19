@@ -1242,12 +1242,25 @@
     animation: none !important;
   }
 
-  ::view-transition-group(iris-reel-content),
+  /*
+   * Desktop: lock the transition snapshot geometry.
+   * The old/new snapshots are responsible for the vertical slide;
+   * the group itself must never interpolate width/height/scale.
+   */
+  ::view-transition-group(iris-reel-content) {
+    width: 100%;
+    height: 100%;
+    inset: 0;
+    transform: none !important;
+    animation: none !important;
+  }
+
   ::view-transition-image-pair(iris-reel-content) {
     width: 100%;
     height: 100%;
-    animation-duration: 0.48s;
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    inset: 0;
+    transform: none !important;
+    animation: none !important;
   }
 
   :root[data-reel-direction="forward"]::view-transition-old(iris-reel-content) {
