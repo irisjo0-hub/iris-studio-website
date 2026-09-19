@@ -189,7 +189,16 @@ export const SiteSettingsProvider = ({ children }) => {
         });
 
         const merged = { ...DEFAULT_SETTINGS, ...pickPublicSettings(dbSettings) };
-        setSettings(merged);
+
+        // Avoid a provider-wide render when the fresh DB snapshot matches the
+        // settings already shown from cache/defaults.
+        setSettings((prevSettings) => {
+          if (JSON.stringify(prevSettings) === JSON.stringify(merged)) {
+            return prevSettings;
+          }
+          return merged;
+        });
+
         localStorage.setItem('cached_site_settings', JSON.stringify(merged));
       } else {
         setSettings(baseSettings);
