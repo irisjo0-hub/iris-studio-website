@@ -125,8 +125,9 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   }, []);
 
   useEffect(() => {
-    const loaded = getFlowItems().filter((it) => it.enabled);
-    const initialItems = loaded.length > 0 ? loaded : getFlowItems();
+    const cachedItems = getFlowItems();
+    const loaded = cachedItems.filter((it) => it.enabled);
+    const initialItems = loaded.length > 0 ? loaded : cachedItems;
     setItems(initialItems);
 
     getFlowItemsAsync().then((cloudItems) => {
