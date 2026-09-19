@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import heroMediaImg from '../assets/hero.png';
 
@@ -243,10 +243,21 @@ export const SiteSettingsProvider = ({ children }) => {
     fetchSettings();
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      settings,
+      loading,
+      lang,
+      setLanguage,
+      toggleLanguage,
+      refreshSettings: fetchSettings,
+      updateSettingsLocally
+    }),
+    [settings, loading, lang]
+  );
+
   return (
-    <SiteSettingsContext.Provider
-      value={{ settings, loading, lang, setLanguage, toggleLanguage, refreshSettings: fetchSettings, updateSettingsLocally }}
-    >
+    <SiteSettingsContext.Provider value={contextValue}>
       {children}
     </SiteSettingsContext.Provider>
   );
