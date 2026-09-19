@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { compressImageForUpload } from './imageCompressor';
+import { compressVideoIfNeeded } from './videoCompressor';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -19,10 +20,12 @@ export const PRIVATE_BUCKETS = [
 
 const IMAGE_MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 const VIDEO_MAX_UPLOAD_BYTES = 45 * 1024 * 1024;
+const VIDEO_SOURCE_MAX_UPLOAD_BYTES = 250 * 1024 * 1024;
 const OTHER_MAX_UPLOAD_BYTES = 12 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const ALLOWED_VIDEO_TYPES = new Set(['video/mp4', 'video/webm', 'video/quicktime']);
 const IMAGE_COMPRESSION_BUCKETS = new Set(['packages', 'portfolio', 'templates']);
+const VIDEO_COMPRESSION_BUCKETS = new Set(['packages', 'portfolio']);
 
 function validateUploadFile(file) {
   if (!file || typeof file !== 'object') throw new Error('A valid file is required.');
@@ -45,12 +48,19 @@ function validateUploadFile(file) {
   }
 }
 
-export async function uploadFile(bucket, path, file) {
+export async function uploadFile(bucket, path, file, options = {}) {
   if (!bucket || typeof bucket !== 'string') throw new Error('A valid storage bucket is required.');
   if (!path || typeof path !== 'string') throw new Error('A valid storage path is required.');
   // Public website images may be large originals because we compress them locally first.
   // Other uploads keep the existing strict pre-upload size validation.
-  if (IMAGE_COMPRESSION_BUCKETS.has(bucket) && file.type?.startsWith('image/')) {
+  if (VIDEO_COMPRESSION_BUCKETS.has(bucket) && file.type?.startsWith('video/')) {
+    if (!ALLOWED_VIDEO_TYPES.has(String(file.type).toLowerCase())) {
+      throw new Error('Only MP4, WebM, and QuickTime videos are allowed.');
+    }
+    if (Number(file.size || 0) > VIDEO_SOURCE_MAX_UPLOAD_BYTES) {
+      throw new Error('Video exceeds the 250 MB source limit.');
+    }
+  } else if (IMAGE_COMPRESSION_BUCKETS.has(bucket) && file.type?.startsWith('image/')) {
     if (!ALLOWED_IMAGE_TYPES.has(String(file.type).toLowerCase())) {
       throw new Error('Only JPG, PNG, and WebP images are allowed.');
     }
@@ -61,9 +71,13 @@ export async function uploadFile(bucket, path, file) {
     validateUploadFile(file);
   }
 
-  // Compress public website images before they ever reach Supabase.
-  // This keeps admin uploads small without affecting private documents/receipts.
+  // Optimize public website media before it reaches Supabase.
+  // Print/order uploads in private buckets intentionally keep their source quality.
   let uploadFileObject = file;
+  if (VIDEO_COMPRESSION_BUCKETS.has(bucket) && file.type?.startsWith('video/') && !options.skipVideoOptimization) {
+    const result = await compressVideoIfNeeded(file);
+    uploadFileObject = result.file || file;
+  }
   if (IMAGE_COMPRESSION_BUCKETS.has(bucket) && file.type?.startsWith('image/')) {
     uploadFileObject = await compressImageForUpload(file, {
       maxWidth: 1920,
@@ -90,9 +104,10 @@ export async function uploadFile(bucket, path, file) {
 
   const isPrivate = PRIVATE_BUCKETS.includes(bucket);
   let finalPath = sanitizedPath;
-  // Keep the storage extension consistent with the compressed WebP payload.
+  // Keep the storage extension consistent with the optimized payload.
   if (uploadFileObject !== file && /\.[^./]+$/.test(finalPath)) {
-    finalPath = finalPath.replace(/\.[^./]+$/, '.webp');
+    const optimizedExtension = uploadFileObject.name?.match(/\.[^./]+$/)?.[0] || '.bin';
+    finalPath = finalPath.replace(/\.[^./]+$/, optimizedExtension.toLowerCase());
   }
 
   let uploadResult = await supabase.storage.from(bucket).upload(finalPath, uploadFileObject, { upsert: false });

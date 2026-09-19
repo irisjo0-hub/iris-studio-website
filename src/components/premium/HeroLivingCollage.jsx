@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import heroMediaImg from '../../assets/hero.png';
@@ -21,7 +20,6 @@ import '../../styles/hero-living-collage.css';
 const HERO_IMAGE_PRELOAD_CACHE = new Set();
 
 export const HeroLivingCollage = () => {
-  const navigate = useNavigate();
   const { settings, lang } = useSiteSettings();
   const isRtl = lang === 'ar';
 
@@ -41,13 +39,7 @@ export const HeroLivingCollage = () => {
 
   const rawPool = Array.isArray(parsedPool) ? parsedPool : [];
 
-  const displayCount = settings.hero_image_display_count
-    ? Math.max(1, parseInt(settings.hero_image_display_count, 10))
-    : rawPool.length;
-
-  const limitedPool = rawPool.slice(0, displayCount);
-
-  return limitedPool.map((item, idx) => {
+  return rawPool.map((item, idx) => {
     if (typeof item === 'string') {
       return {
         id: `item-${idx}`,
@@ -65,7 +57,7 @@ export const HeroLivingCollage = () => {
       url_optional: item?.url_optional || item?.link || '/work'
     };
   }).filter(item => Boolean(item.image));
-  }, [settings.hero_motion_images, settings.hero_image_display_count]);
+  }, [settings.hero_motion_images]);
 
   // Auto-pause when tab is hidden or element scrolled out of viewport.
   // Keep this hook unconditional so React hook order remains stable.
@@ -100,12 +92,6 @@ export const HeroLivingCollage = () => {
   if (pool.length === 0) {
     return null;
   }
-
-  const handleCardClick = (url) => {
-    if (url) {
-      navigate(url);
-    }
-  };
 
   const channelConfigs = [
     {
@@ -177,12 +163,6 @@ export const HeroLivingCollage = () => {
                 ease: 'easeInOut',
                 delay: cardDelay
               }}
-              whileHover={{
-                scale: 1.08,
-                zIndex: 60,
-                transition: { duration: 0.3 }
-              }}
-              onClick={() => handleCardClick(work.url_optional)}
             >
               <img
                 src={work.image}

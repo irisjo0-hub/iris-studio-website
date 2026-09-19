@@ -34,9 +34,8 @@
   border-radius: 22px !important;
   border: none !important;
   box-shadow: 0 20px 55px rgba(0, 0, 0, 0.78), 0 0 28px rgba(103, 36, 95, 0.30) !important;
-  cursor: pointer;
-  /* Parent stage/container are non-interactive, but cards are intentionally clickable. */
-  pointer-events: auto;
+  cursor: default;
+  pointer-events: none;
 }
 
 /* Individual Floating Card inside Stream */
@@ -50,11 +49,6 @@
   pointer-events: auto;
 }
 
-.lower-stream-card.role-focal-card:hover,
-.lower-stream-card.floating-collage-card:hover,
-.lower-stream-card.floating-stream-loop-card:hover {
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.88), 0 0 40px rgba(245, 189, 26, 0.5) !important;
-}
 
 /* Card Image Element — preserve each source's aspect ratio */
 .stream-card-img {

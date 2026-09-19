@@ -244,15 +244,23 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const navigateToIndex = (newIndex, customDirection = null) => {
     if (isLocked || cooldownRef.current) return;
 
-    // Pause the outgoing video while AnimatePresence performs the slide.
-    // Keep its source intact until the exiting layer is removed so the next
-    // reel can mount reliably without breaking navigation.
     videoRef.current?.pause();
     const dir = customDirection !== null ? customDirection : (newIndex > activeIndex ? 1 : -1);
     setDirection(dir);
     setIsLocked(true);
     cooldownRef.current = true;
-    setActiveIndex(newIndex);
+
+    const update = () => setActiveIndex(newIndex);
+    const transitionType = dir > 0 ? 'forwards' : 'backwards';
+
+    if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
+      document.startViewTransition({
+        update,
+        types: [transitionType]
+      });
+    } else {
+      update();
+    }
 
     setTimeout(() => {
       setIsLocked(false);
@@ -478,13 +486,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const currentReel = items[activeIndex] || items[0];
 
-  const slideDuration = isMobileRef.current ? 0.28 : 0.48;
-  const slideVariants = {
-    initial: (dir) => ({ y: dir > 0 ? '100%' : '-100%', opacity: 1 }),
-    animate: { y: '0%', opacity: 1, transition: { duration: slideDuration, ease: [0.22, 1, 0.36, 1] } },
-    exit: (dir) => ({ y: dir > 0 ? '-100%' : '100%', opacity: 1, transition: { duration: slideDuration, ease: [0.22, 1, 0.36, 1] } })
-  };
-
   return (
     <section
       id={id}
@@ -508,14 +509,10 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         </button>
 
         <div className="reel-frame" data-locale={isRtl ? 'ar' : 'en'}>
-          <motion.div
+          <div
               key={`reel-canvas-${currentReel.id}`}
               className="reel-canvas-layer"
-              custom={direction}
-              variants={slideVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
+              style={{ viewTransitionName: 'iris-reel-canvas' }}
             >
               {(() => {
                 const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv|avi)($|\?)/i.test(url) || url.startsWith('data:video') || url.startsWith('blob:video'));
@@ -563,7 +560,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 <h2 className="reel-headline-text">{isRtl ? currentReel.headline_ar : currentReel.headline_en}</h2>
                 {currentReel.secondary_text_ar && <p className="reel-secondary-text">{isRtl ? currentReel.secondary_text_ar : currentReel.secondary_text_en}</p>}
               </div>
-            </motion.div>
+          </div>
 
           <div className="reels-persistent-ui-layer">
             <div className="reels-top-bar">
