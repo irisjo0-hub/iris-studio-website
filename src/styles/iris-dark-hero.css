@@ -618,8 +618,8 @@
 }
 
 @keyframes pillDotBreathing {
-  0% { box-shadow: 0 0 6px #F5BD1A, 0 0 12px rgba(245, 189, 26, 0.6); opacity: 0.85; }
-  100% { box-shadow: 0 0 14px #F5BD1A, 0 0 22px rgba(245, 189, 26, 0.95); opacity: 1; }
+  0% { box-shadow: 0 0 5px #F5BD1A, 0 0 9px rgba(245, 189, 26, 0.6); opacity: 0.85; }
+  100% { box-shadow: 0 0 10px #F5BD1A, 0 0 16px rgba(245, 189, 26, 0.95); opacity: 1; }
 }
 
 /* Stage & Content Layout */
