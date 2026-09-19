@@ -1,7 +1,6 @@
 /* src/styles/hero-living-collage.css
  * IRIS HERO LOWER VIEWPORT LIVING STREAM ENGINE
- * Restricted strictly to the empty lower Hero space below the CTA button (0 text/CTA overlap).
- * Larger portrait cards (240-340px wide) with 3 entry directions (Left, Right, Bottom; 0 from Top).
+ * Restricted strictly to the empty lower Hero space below the CTA button.
  */
 
 .iris-hero-lower-stage {
@@ -16,7 +15,7 @@
   box-shadow: none !important;
 }
 
-/* Outer Container - Edge to Edge Unstructured Stream Container */
+/* Keep the stream container non-interactive; individual cards opt back in. */
 .lower-stage-container.edge-to-edge-stream-container {
   position: absolute;
   top: 10px;
@@ -35,8 +34,9 @@
   border-radius: 22px !important;
   border: none !important;
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(103, 36, 95, 0.35) !important;
-  cursor: default;
-  pointer-events: none;
+  cursor: pointer;
+  /* Parent stage/container are non-interactive, but cards are intentionally clickable. */
+  pointer-events: auto;
   will-change: transform, opacity;
 }
 
@@ -47,8 +47,8 @@
   border-radius: 22px !important;
   border: none !important;
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(103, 36, 95, 0.35) !important;
-  cursor: default;
-  pointer-events: none;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .lower-stream-card.role-focal-card:hover,
