@@ -163,7 +163,6 @@
   object-position: center;
   position: relative;
   z-index: 2;
-  will-change: transform;
   transition: transform 0.25s ease-out;
 }
 
