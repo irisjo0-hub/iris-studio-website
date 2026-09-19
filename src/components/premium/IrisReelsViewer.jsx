@@ -515,6 +515,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               key={`reel-canvas-${currentReel.id}`}
               className="reel-canvas-layer"
             >
+              <div className="reel-content-layer">
               {(() => {
                 const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv|avi)($|\?)/i.test(url) || url.startsWith('data:video') || url.startsWith('blob:video'));
                 const mediaSrc = currentReel.media_url || currentReel.image || '';
@@ -537,12 +538,12 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                       playsInline
                       webkit-playsinline="true"
                       className="reel-static-img"
-                      style={{ objectFit: 'cover', width: '100%', height: '100%', viewTransitionName: 'iris-reel-media' }}
+                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                       onError={() => setVideoErrorMap(prev => ({ ...prev, [currentReel.id]: true }))}
                     />
                   );
                 }
-                return <img src={validImage} alt={isRtl ? currentReel.alt_ar : currentReel.alt_en} className="reel-static-img" decoding="async" style={{ viewTransitionName: 'iris-reel-media' }} />;
+                return <img src={validImage} alt={isRtl ? currentReel.alt_ar : currentReel.alt_en} className="reel-static-img" decoding="async" />;
               })()}
               <div className="reel-darkness-gradient" />
 
@@ -560,6 +561,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 <span className="reel-item-number"><span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / 0{activeIndex + 1}</span>
                 <h2 className="reel-headline-text">{isRtl ? currentReel.headline_ar : currentReel.headline_en}</h2>
                 {currentReel.secondary_text_ar && <p className="reel-secondary-text">{isRtl ? currentReel.secondary_text_ar : currentReel.secondary_text_en}</p>}
+              </div>
               </div>
           </div>
 
