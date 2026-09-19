@@ -133,6 +133,13 @@
   .reels-grain-overlay {
     display: none;
   }
+
+  /* Keep the ambient glow static on mobile to avoid continuous transform animation while a video is playing. */
+  .reels-bg-ambient-layer > .reels-glow-purple-top,
+  .reels-bg-ambient-layer > .reels-glow-green-bottom,
+  .reels-bg-ambient-layer > .reels-glow-gold-center {
+    animation: none;
+  }
 }
 
 /* Stage Container (Full Viewport Area) */
