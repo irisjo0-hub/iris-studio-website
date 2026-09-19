@@ -121,7 +121,7 @@
 }
 
 .glow-green-bottomright {
-  /* This glow is static; avoid allocating a persistent transform layer. */
+  /* Static glow: no transform animation, so keep it out of a persistent GPU layer. */
   will-change: auto;
   bottom: -6vw;
   right: 5%;
