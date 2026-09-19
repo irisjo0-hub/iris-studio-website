@@ -22,8 +22,9 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
   const isRtl = lang === 'ar';
 
   const [activeIdx, setActiveIdx] = useState(0);
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
+  const kineticImageRef = useRef(null);
+  const mouseFrameRef = useRef(null);
 
   // Dynamic Division Data Binds
   const divisions = [
@@ -86,15 +87,30 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
 
   // Mouse move handler for internal image parallax (desktop)
   const handleMouseMove = (e) => {
-    if (window.innerWidth < 1024) return;
+    if (window.innerWidth < 1024 || !kineticImageRef.current) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
     const y = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
-    setMouseOffset({ x: x * 12, y: y * 12 });
+    const offsetX = x * 12;
+    const offsetY = y * 12;
+
+    if (mouseFrameRef.current) cancelAnimationFrame(mouseFrameRef.current);
+    mouseFrameRef.current = requestAnimationFrame(() => {
+      if (kineticImageRef.current) {
+        kineticImageRef.current.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`;
+      }
+      mouseFrameRef.current = null;
+    });
   };
 
   const handleMouseLeave = () => {
-    setMouseOffset({ x: 0, y: 0 });
+    if (mouseFrameRef.current) cancelAnimationFrame(mouseFrameRef.current);
+    mouseFrameRef.current = requestAnimationFrame(() => {
+      if (kineticImageRef.current) {
+        kineticImageRef.current.style.transform = 'translate3d(0, 0, 0)';
+      }
+      mouseFrameRef.current = null;
+    });
   };
 
   // Mobile Swipe Gesture Handlers (Swipe left/right on kinetic stage)
@@ -106,6 +122,10 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
       setActiveIdx((prev) => (prev - 1 + divisions.length) % divisions.length);
     }
   };
+
+  useEffect(() => () => {
+    if (mouseFrameRef.current) cancelAnimationFrame(mouseFrameRef.current);
+  }, []);
 
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
@@ -175,10 +195,8 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
                       <img
                         src={activeDivision.image}
                         alt={activeDivision.name_en}
+                        ref={kineticImageRef}
                         className="kinetic-image"
-                        style={{
-                          transform: `translate(${mouseOffset.x}px, ${mouseOffset.y}px)`
-                        }}
                       />
                     </>
                   ) : (
