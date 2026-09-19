@@ -219,7 +219,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       const navbar = document.querySelector('.navbar-container, header.site-navbar, .app-header');
       if (navbar) navbar.style.display = '';
     };
-  }, [items.length]);
+  }, []);
 
   const navigateToIndex = (newIndex, customDirection = null) => {
     if (isLocked || cooldownRef.current) return;
