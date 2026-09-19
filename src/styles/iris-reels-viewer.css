@@ -149,6 +149,12 @@
   border-radius: 0px;
 }
 
+@media (max-width: 767px) {
+  .reel-frame {
+    box-shadow: 0 0 70px rgba(103, 36, 95, 0.55), 0 0 34px rgba(245, 189, 26, 0.24), 0 18px 48px rgba(0, 0, 0, 0.82);
+  }
+}
+
 @media (min-width: 1024px) {
   .reel-frame {
     height: calc(100dvh - 32px);
