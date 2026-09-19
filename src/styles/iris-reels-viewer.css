@@ -99,6 +99,31 @@
   100% { transform: translate(-15px, 15px) scale(0.92); opacity: 0.7; }
 }
 
+/* Reduce expensive large blur surfaces on smaller screens. */
+@media (max-width: 767px) {
+  .reels-glow-purple-top {
+    width: 620px;
+    height: 620px;
+    filter: blur(42px);
+  }
+
+  .reels-glow-green-bottom {
+    width: 640px;
+    height: 640px;
+    filter: blur(44px);
+  }
+
+  .reels-glow-gold-center {
+    width: 430px;
+    height: 430px;
+    filter: blur(36px);
+  }
+
+  .reels-grain-overlay {
+    opacity: 0.02;
+  }
+}
+
 /* Stage Container (Full Viewport Area) */
 .reels-stage-container {
   position: relative;
