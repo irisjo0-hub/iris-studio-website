@@ -1160,6 +1160,10 @@
   animation: spinVinyl 6s linear infinite;
 }
 
+.iris-reels-viewer-wrapper.is-offscreen .instagram-vinyl-disc.spinning {
+  animation-play-state: paused !important;
+}
+
 @keyframes spinVinyl {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
