@@ -187,6 +187,7 @@ export const IrisDarkHero = () => {
               src={settings.hero_logo_url || settings.logo_url || irisLogo}
               alt="IRIS"
               className="hero-v2-logo-img"
+              decoding="async"
             />
           </Link>
 
@@ -260,7 +261,7 @@ export const IrisDarkHero = () => {
           >
             {/* Top Bar: IRIS Logo (Left), Close X (Right) */}
             <div className="overlay-top-bar">
-              <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" />
+              <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" decoding="async" />
 
               <button
                 type="button"
