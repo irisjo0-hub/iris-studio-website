@@ -15,13 +15,29 @@ const Navbar = () => {
   const isRtl = lang === 'ar';
 
   useEffect(() => {
+    // The home page intentionally has no navbar. Do not keep a global scroll
+    // listener alive there.
+    if (isHome) {
+      setScrolled(false);
+      return undefined;
+    }
+
+    let frameId = 0;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
+      if (frameId) return;
+      frameId = window.requestAnimationFrame(() => {
+        frameId = 0;
+        const nextScrolled = window.scrollY > 40;
+        setScrolled((prev) => (prev === nextScrolled ? prev : nextScrolled));
+      });
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (frameId) window.cancelAnimationFrame(frameId);
+    };
+  }, [isHome]);
 
   const handleBack = () => {
     if (window.history.length > 1) {
