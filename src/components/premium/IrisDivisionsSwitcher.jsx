@@ -128,53 +128,6 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
     if (mouseFrameRef.current) cancelAnimationFrame(mouseFrameRef.current);
   }, []);
 
-  useEffect(() => {
-    const urls = divisions
-      .map((division) => division.image)
-      .filter((url) => typeof url === 'string' && url && !url.startsWith('blob:'));
-    const preload = () => {
-      urls.forEach((url) => {
-        const image = new Image();
-        image.decoding = 'async';
-        image.src = url;
-      });
-    };
-    let idleId;
-    let timeoutId;
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      idleId = window.requestIdleCallback(preload, { timeout: 1800 });
-    } else {
-      timeoutId = window.setTimeout(preload, 800);
-    }
-    return () => {
-      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
-        window.cancelIdleCallback(idleId);
-      }
-      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
-    };
-  }, [divisions]);
-
-  useEffect(() => {
-    const prefetchRoutes = () => {
-      void import('../../pages/MediaPortal');
-      void import('../../pages/StudioPortal');
-      void import('../../pages/PrintPortal');
-    };
-    let idleId;
-    let timeoutId;
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      idleId = window.requestIdleCallback(prefetchRoutes, { timeout: 2500 });
-    } else {
-      timeoutId = window.setTimeout(prefetchRoutes, 1400);
-    }
-    return () => {
-      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
-        window.cancelIdleCallback(idleId);
-      }
-      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
-    };
-  }, []);
-
     const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
   return (

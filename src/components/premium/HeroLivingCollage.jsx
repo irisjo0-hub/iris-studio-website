@@ -97,39 +97,6 @@ export const HeroLivingCollage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (pool.length === 0) return;
-    const urls = pool
-      .map((item) => item.image)
-      .filter((url) => typeof url === 'string' && url && !url.startsWith('blob:'))
-      .filter((url) => !HERO_IMAGE_PRELOAD_CACHE.has(url));
-    if (urls.length === 0) return;
-
-    const preload = () => {
-      urls.forEach((url) => {
-        HERO_IMAGE_PRELOAD_CACHE.add(url);
-        const image = new Image();
-        image.decoding = 'async';
-        image.src = url;
-      });
-    };
-
-    let idleId;
-    let timeoutId;
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      idleId = window.requestIdleCallback(preload, { timeout: 2200 });
-    } else {
-      timeoutId = window.setTimeout(preload, 1200);
-    }
-
-    return () => {
-      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
-        window.cancelIdleCallback(idleId);
-      }
-      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
-    };
-  }, [pool]);
-
   if (pool.length === 0) {
     return null;
   }

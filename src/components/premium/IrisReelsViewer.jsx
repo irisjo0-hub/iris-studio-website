@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Menu, X, MessageSquare, Share2, ArrowUpRight, Globe,
   Camera, Calendar, Printer, ShoppingBag, FolderKanban,
@@ -508,8 +508,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         </button>
 
         <div className="reel-frame" data-locale={isRtl ? 'ar' : 'en'}>
-          <AnimatePresence initial={false} custom={direction}>
-            <motion.div
+          <motion.div
               key={`reel-canvas-${currentReel.id}`}
               className="reel-canvas-layer"
               custom={direction}
@@ -565,7 +564,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 {currentReel.secondary_text_ar && <p className="reel-secondary-text">{isRtl ? currentReel.secondary_text_ar : currentReel.secondary_text_en}</p>}
               </div>
             </motion.div>
-          </AnimatePresence>
 
           <div className="reels-persistent-ui-layer">
             <div className="reels-top-bar">
