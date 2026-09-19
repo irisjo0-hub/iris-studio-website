@@ -468,7 +468,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     <section
       id={id}
       ref={stageRef}
-      className="iris-reels-viewer-wrapper"
+      className={`iris-reels-viewer-wrapper ${isStageActive ? 'is-active' : 'is-offscreen'}`}
       style={{ touchAction: feedbackOpen ? 'auto' : 'none' }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
