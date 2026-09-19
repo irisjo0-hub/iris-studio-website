@@ -758,6 +758,11 @@
   animation-play-state: paused !important;
 }
 
+.iris-dark-hero-v2-wrapper.is-offscreen .ambient-glow {
+  will-change: auto;
+  transition: none !important;
+}
+
 .hero-v2-discover-cta:hover .cta-arrow-badge,
 .hero-v2-discover-cta:hover .cta-arrow-icon {
   background: #f7ca45;
