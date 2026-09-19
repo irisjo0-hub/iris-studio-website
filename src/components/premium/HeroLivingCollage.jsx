@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
@@ -26,7 +26,7 @@ export const HeroLivingCollage = () => {
   const stageRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Full Dynamic Admin Pool Parsing
+  const pool = useMemo(() => {
   let parsedPool = [];
   if (Array.isArray(settings.hero_motion_images)) {
     parsedPool = settings.hero_motion_images;
@@ -45,7 +45,7 @@ export const HeroLivingCollage = () => {
 
   const limitedPool = rawPool.slice(0, displayCount);
 
-  const pool = limitedPool.map((item, idx) => {
+  return limitedPool.map((item, idx) => {
     if (typeof item === 'string') {
       return {
         id: `item-${idx}`,
@@ -63,6 +63,7 @@ export const HeroLivingCollage = () => {
       url_optional: item?.url_optional || item?.link || '/work'
     };
   }).filter(item => Boolean(item.image));
+  }, [settings.hero_motion_images, settings.hero_image_display_count]);
 
   // Auto-pause when tab is hidden or element scrolled out of viewport.
   // Keep this hook unconditional so React hook order remains stable.
