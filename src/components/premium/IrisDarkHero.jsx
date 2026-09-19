@@ -25,8 +25,8 @@ export const IrisDarkHero = () => {
   // does not re-render the entire hero/collage tree on every pointer event.
   const glowRafRef = useRef(null);
   const glowOffsetRef = useRef({ x: 0, y: 0 });
-  const [ctaOffset, setCtaOffset] = useState({ x: 0, y: 0 });
   const [isCtaHovered, setIsCtaHovered] = useState(false);
+  const ctaRef = useRef(null);
 
   // Dynamic Headline Binds from Site Settings
   const headlinePart1 = isRtl
@@ -72,7 +72,7 @@ export const IrisDarkHero = () => {
     e.currentTarget.querySelectorAll('.hero-v2-ambient-layer .ambient-glow').forEach((glow) => {
       glow.style.transform = 'translate(0px, 0px)';
     });
-    setCtaOffset({ x: 0, y: 0 });
+    if (ctaRef.current) ctaRef.current.style.transform = 'translate3d(0,0,0)';
     setIsCtaHovered(false);
   };
 
@@ -82,12 +82,12 @@ export const IrisDarkHero = () => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left - rect.width / 2) * 0.25;
     const y = (e.clientY - rect.top - rect.height / 2) * 0.25;
-    setCtaOffset({ x, y });
-    setIsCtaHovered(true);
+    if (ctaRef.current) ctaRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    if (!isCtaHovered) setIsCtaHovered(true);
   };
 
   const handleCtaMouseLeave = () => {
-    setCtaOffset({ x: 0, y: 0 });
+    if (ctaRef.current) ctaRef.current.style.transform = 'translate3d(0,0,0)';
     setIsCtaHovered(false);
   };
 
@@ -216,9 +216,7 @@ export const IrisDarkHero = () => {
               onClick={handleDiscoverScroll}
               onMouseMove={handleCtaMouseMove}
               onMouseLeave={handleCtaMouseLeave}
-              style={{
-                transform: `translate3d(${ctaOffset.x}px, ${ctaOffset.y}px, 0)`
-              }}
+              ref={ctaRef}
               aria-label={ctaLabel}
             >
               <span className="cta-label-text">{ctaLabel}</span>
