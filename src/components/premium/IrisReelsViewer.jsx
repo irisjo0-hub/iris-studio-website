@@ -167,7 +167,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     if (currentItem && currentItem.slug) {
       window.history.replaceState(null, '', `#flow-${currentItem.slug}`);
     }
-  }, [activeIndex, items]);
+  }, [activeIndex, items.length]);
 
   const refreshFeedback = () => {
     getAllApprovedFeedbackAsync().then(setAllFeedbackList).catch(() => {});
