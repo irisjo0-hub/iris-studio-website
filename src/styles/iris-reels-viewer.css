@@ -1074,6 +1074,10 @@
   animation: pulseAudio 1.5s ease-in-out infinite;
 }
 
+.iris-reels-viewer-wrapper.is-offscreen .ticker-icon {
+  animation-play-state: paused !important;
+}
+
 @keyframes pulseAudio {
   0%, 100% { transform: scale(1); opacity: 0.8; }
   50% { transform: scale(1.15); opacity: 1; }
