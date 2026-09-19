@@ -496,7 +496,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               initial="initial"
               animate="animate"
               exit="exit"
-              style={{ willChange: 'transform', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+              style={{ transform: 'translate3d(0,0,0)' }}
             >
               {(() => {
                 const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv|avi)($|\?)/i.test(url) || url.startsWith('data:video') || url.startsWith('blob:video'));
@@ -520,7 +520,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                       playsInline
                       webkit-playsinline="true"
                       className="reel-static-img"
-                      style={{ objectFit: 'cover', width: '100%', height: '100%', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                       onError={() => setVideoErrorMap(prev => ({ ...prev, [currentReel.id]: true }))}
                     />
                   );
