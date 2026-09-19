@@ -7,18 +7,18 @@
   top: 0;
   z-index: 1000;
   background: rgba(24, 12, 23, 0.90);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(236, 235, 231, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.30);
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
 }
 
 .navbar.scrolled {
   background: rgba(24, 12, 23, 0.96);
   border-bottom-color: rgba(245, 189, 26, 0.3);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.48);
 }
 
 .navbar-container {

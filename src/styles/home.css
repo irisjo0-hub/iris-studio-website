@@ -1585,7 +1585,7 @@ body.scroll-lock {
   top: 70px;
   z-index: 90;
   background: rgba(18, 9, 17, 0.95);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(245, 189, 26, 0.25);
   padding: 12px 16px;
   overflow-x: auto;
@@ -1634,8 +1634,8 @@ body.scroll-lock {
   top: 70px;
   z-index: 90;
   background: rgba(23, 13, 22, 0.94);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom: 1px solid rgba(245, 189, 26, 0.25);
   padding: 8px 0;
