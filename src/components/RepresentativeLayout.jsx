@@ -28,7 +28,8 @@ const RepresentativeLayout = ({ children }) => {
     ['/sales/dashboard', 'الرئيسية', LayoutDashboard],
     ['/sales/sales', 'مبيعاتي', ReceiptText],
     ['/sales/withdrawals', 'السحوبات', WalletCards],
-    ['/sales/profile', 'حسابي', UserRound],\n    ['/sales/leads', 'العملاء المستهدفين', UsersRound],
+    ['/sales/profile', 'حسابي', UserRound],
+    ['/sales/leads', 'العملاء المستهدفين', UsersRound],
   ];
 
   return <div className="rep-shell" dir="rtl">
