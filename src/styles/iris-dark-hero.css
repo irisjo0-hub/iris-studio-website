@@ -1211,3 +1211,18 @@
     padding: 16px;
   }
 }
+
+
+/* Final interaction hardening for the single IRIS menu trigger. */
+.hero-v2-hamburger-btn.division-unified-menu-trigger,
+.reels-top-bar .division-unified-menu-trigger {
+  position: relative !important;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  cursor: pointer !important;
+}
+.division-menu-overlay,
+.division-menu-overlay * {
+  pointer-events: auto;
+}
