@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LockKeyhole, CheckCircle2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { salesSupabase as supabase } from '../lib/supabase';
 import '../styles/representatives.css';
 
 const RepresentativeResetPassword=()=>{
