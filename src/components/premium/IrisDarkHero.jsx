@@ -345,7 +345,7 @@ export const IrisDarkHero = () => {
                     if (location.pathname === '/') {
                       requestAnimationFrame(() => goToFooter());
                     } else {
-                      navigate('/').then?.(() => {});
+                      navigate('/');
                       let attempts = 0;
                       const waitForHomeFooter = () => {
                         if (goToFooter() || attempts++ > 30) return;
