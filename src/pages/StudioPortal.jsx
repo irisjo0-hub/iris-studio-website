@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import DivisionMenu from '../components/DivisionMenu';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Camera, GraduationCap, Calendar, Sparkles, Layers, 
@@ -107,7 +108,8 @@ const StudioPortal = () => {
   ];
 
   return (
-    <div className="division-portal-page" dir={isRtl ? 'rtl' : 'ltr'}>
+    <div className="division-portal-page portal-division-menu-host" dir={isRtl ? 'rtl' : 'ltr'}>
+      <DivisionMenu />
       {/* Hero Banner */}
       <section className="portal-hero-banner theme-studio-bg">
         <div className="portal-hero-overlay" />
