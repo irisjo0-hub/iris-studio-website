@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CalendarDays, UserRound, ReceiptText, WalletCards } from 'lucide-react';
 import RepresentativeLayout from '../components/RepresentativeLayout';
-import { supabase } from '../lib/supabase';
+import { salesSupabase as supabase } from '../lib/supabase';
 
 const RepresentativeSales = () => {
   const [rows, setRows] = useState([]);
