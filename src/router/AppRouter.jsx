@@ -25,7 +25,7 @@ const lazyRetry = (importer) =>
         throw error;
       })
   );
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import ProtectedAdminRoute from '../components/ProtectedAdminRoute';
 import ProtectedRepresentativeRoute from '../components/ProtectedRepresentativeRoute';
@@ -151,8 +151,10 @@ const AppRouter = () => (
         <Route path="/admin/flow" element={<AdminFlow />} />
         <Route path="/admin/flow-feedback" element={<AdminFlowFeedback />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
-        <Route path="/admin/representatives" element={<AdminRepresentatives />} />
-        <Route path="/admin/sales-leads" element={<AdminSalesLeads />} />
+        <Route path="/admin/sales" element={<AdminRepresentatives />} />
+        <Route path="/admin/sales/leads" element={<AdminSalesLeads />} />
+        <Route path="/admin/representatives" element={<Navigate to="/admin/sales" replace />} />
+        <Route path="/admin/sales-leads" element={<Navigate to="/admin/sales/leads" replace />} />
       </Route>
 
       <Route element={<ProtectedRepresentativeRoute />}>
