@@ -69,6 +69,7 @@ const AdminSettings = lazyRetry(() => import('../pages/AdminSettings'));
 const AdminFlow = lazyRetry(() => import('../pages/AdminFlow'));
 const AdminFlowFeedback = lazyRetry(() => import('../pages/AdminFlowFeedback'));
 const AdminRepresentatives = lazyRetry(() => import('../pages/AdminRepresentatives'));
+const AdminSalesLeads = lazyRetry(() => import('../pages/AdminSalesLeads'));
 const RepresentativeLogin = lazyRetry(() => import('../pages/RepresentativeLogin'));
 const RepresentativeResetPassword = lazyRetry(() => import('../pages/RepresentativeResetPassword'));
 const RepresentativeDashboard = lazyRetry(() => import('../pages/RepresentativeDashboard'));
@@ -151,6 +152,7 @@ const AppRouter = () => (
         <Route path="/admin/flow-feedback" element={<AdminFlowFeedback />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
         <Route path="/admin/representatives" element={<AdminRepresentatives />} />
+        <Route path="/admin/sales-leads" element={<AdminSalesLeads />} />
       </Route>
 
       <Route element={<ProtectedRepresentativeRoute />}>
