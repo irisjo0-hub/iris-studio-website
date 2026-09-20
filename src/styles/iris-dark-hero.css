@@ -1312,3 +1312,29 @@ body:has(.division-menu-overlay) {
 .division-menu-overlay > .division-menu-bottom {
   max-width: none !important;
 }
+
+
+/* FINAL VIEWPORT OVERRIDE — menu must ignore page/root width constraints. */
+.division-menu-overlay {
+  position: fixed !important;
+  inset: -2px !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+
+.division-menu-overlay::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
