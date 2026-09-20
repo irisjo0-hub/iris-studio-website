@@ -252,29 +252,6 @@
   z-index: 35;
 }
 
-/* Hamburger Button */
-.reels-hamburger-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(26, 13, 24, 0.85);
-  border: 1px solid rgba(236, 235, 231, 0.2);
-  color: #ECEBE7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  backdrop-filter: blur(14px);
-  transition: all 0.25s ease;
-  position: absolute;
-}
-
-.reels-hamburger-btn:hover {
-  border-color: #F5BD1A;
-  color: #F5BD1A;
-  transform: scale(1.05);
-}
-
 /* Progress Counter Micro Pill */
 .reels-counter-pill {
   display: inline-flex;
@@ -526,12 +503,6 @@
 }
 
 /* ===== 1. EXPLICIT ARABIC OVERLAY GRID (data-locale="ar") ===== */
-.reel-frame[data-locale="ar"] .reels-hamburger-btn {
-  right: 18px;
-  left: auto;
-  top: 16px;
-}
-
 .reel-frame[data-locale="ar"] .reels-counter-pill-tag {
   left: 18px;
   right: auto;
@@ -557,12 +528,6 @@
 }
 
 /* ===== 2. EXPLICIT ENGLISH OVERLAY GRID (data-locale="en") ===== */
-.reel-frame[data-locale="en"] .reels-hamburger-btn {
-  left: 18px;
-  right: auto;
-  top: 16px;
-}
-
 .reel-frame[data-locale="en"] .reels-counter-pill-tag {
   right: 18px;
   left: auto;
@@ -616,16 +581,7 @@
     width: 15.9cqw;
   }
 
-  .reel-frame[data-locale="ar"] .reels-hamburger-btn {
-    right: 4.6cqw;
-    top: 4.1cqw;
   }
-
-  .reel-frame[data-locale="en"] .reels-hamburger-btn {
-    left: 4.6cqw;
-    top: 4.1cqw;
-  }
-}
 
 /* ===== FEEDBACK BOTTOM SHEET / DESKTOP DRAWER ===== */
 .reels-feedback-drawer-overlay {
