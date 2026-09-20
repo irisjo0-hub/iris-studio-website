@@ -37,7 +37,7 @@ const RepresentativeDashboard=()=>{
   <section className="rep-page rep-dashboard-page">
    <div className="rep-dashboard-hero">
     <div>
-      <span className="rep-eyebrow">IRIS SALES</span>
+      <span className="rep-sales-badge">IRIS SALES<span className="rep-sales-dot" aria-hidden="true"></span></span>
       <h1>مرحباً، {rep?.full_name?.split(' ')[0]||'مندوب'} <span>👋</span></h1>
       <p>تابع مبيعاتك، عمولاتك والعملاء الذين تعمل عليهم من مكان واحد.</p>
     </div>
