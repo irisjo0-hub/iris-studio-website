@@ -5,7 +5,7 @@ import { Menu, X, Home, Clapperboard, Camera, Printer, MessageCircle, Globe } fr
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import irisLogo from '../assets/iris_logo.png';
-import '../styles/division-menu.css';
+import '../styles/iris-dark-hero.css';
 
 const DivisionMenu = () => {
   const { settings, lang, toggleLanguage } = useSiteSettings();
@@ -30,7 +30,7 @@ const DivisionMenu = () => {
 
   return (
     <>
-      <button type="button" className="division-menu-trigger" onClick={() => setOpen(true)} aria-label={isRtl ? 'فتح القائمة' : 'Open menu'}>
+      <button type="button" className="hero-v2-hamburger-btn division-unified-menu-trigger" onClick={() => setOpen(true)} aria-label={isRtl ? 'فتح القائمة' : 'Open menu'}>
         <Menu size={20} strokeWidth={1.8} />
       </button>
 
