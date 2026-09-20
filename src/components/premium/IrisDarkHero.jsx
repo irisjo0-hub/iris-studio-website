@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Globe, Menu, X, ArrowDown, Home, Clapperboard, Camera, Printer, BriefcaseBusiness, Tags, MessageCircle } from 'lucide-react';
+import { Globe, Menu, X, ArrowDown, Home, Clapperboard, Camera, Printer, MessageCircle } from 'lucide-react';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { HeroLivingCollage } from './HeroLivingCollage';
 import irisLogo from '../../assets/iris_logo.png';
@@ -300,8 +300,7 @@ export const IrisDarkHero = () => {
                 { to: '/media', label: isRtl ? 'ميديا' : 'Media', Icon: Clapperboard },
                 { to: '/studio', label: isRtl ? 'الاستوديو' : 'Studio', Icon: Camera },
                 { to: '/print', label: isRtl ? 'المطبوعات' : 'Print', Icon: Printer },
-                { to: '/work', label: isRtl ? 'أعمالنا' : 'Our Work', Icon: BriefcaseBusiness },
-                { to: '/packages', label: isRtl ? 'البكجات والعروض' : 'Packages & Offers', Icon: Tags },
+
               ].map(({ to, label, Icon }, index) => {
                 const active = to === '/' ? location.pathname === '/' : location.pathname === to || location.pathname.startsWith(to + '/');
                 return (
@@ -318,7 +317,7 @@ export const IrisDarkHero = () => {
                     >
                       <span className="overlay-nav-icon"><Icon size={20} strokeWidth={1.8} /></span>
                       <span className="overlay-nav-label">{label}</span>
-                      <span className="overlay-nav-arrow" aria-hidden="true">↗</span>
+                      
                     </Link>
                   </motion.div>
                 );
@@ -340,7 +339,7 @@ export const IrisDarkHero = () => {
                 >
                   <span className="overlay-nav-icon"><MessageCircle size={20} strokeWidth={1.8} /></span>
                   <span className="overlay-nav-label">{isRtl ? 'تواصل معنا' : 'Contact Us'}</span>
-                  <span className="overlay-nav-arrow" aria-hidden="true">↗</span>
+                  
                 </a>
               </motion.div>
             </nav>
