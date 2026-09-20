@@ -41,3 +41,4 @@
 .rep-lead-bottom span{display:inline-flex;align-items:center;gap:5px}.rep-lead-bottom button{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.055);border:1px solid var(--rep-border);color:#ddd;border-radius:8px;padding:6px 9px;cursor:pointer}
 .rep-modal textarea{width:100%;box-sizing:border-box;min-height:80px;resize:vertical;background:rgba(255,255,255,.045);border:1px solid var(--rep-border);color:#fff;border-radius:10px;padding:11px;outline:none}
 @media(max-width:850px){.rep-leads-grid{grid-template-columns:1fr}}
+.rep-filter-divider{width:1px;height:22px;background:var(--rep-border);margin:0 3px}.rep-lead-filters button.follow.active{background:rgba(70,200,130,.12);border-color:rgba(70,200,130,.25);color:#9ae6bc}
