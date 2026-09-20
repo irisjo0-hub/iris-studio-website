@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LayoutDashboard, ReceiptText, WalletCards, UserRound, LogOut, Menu, X, UsersRound } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { salesSupabase as supabase } from '../lib/supabase';
 import '../styles/representatives.css';
 
 const RepresentativeLayout = ({ children }) => {
