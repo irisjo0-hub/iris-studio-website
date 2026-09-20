@@ -446,7 +446,7 @@ const AdminRepresentatives = () => {
       <section className="admin-dashboard" dir="rtl">
         <div className="rep-admin-heading">
           <div>
-            <h2 className="section-title">المندوبين والعمولات</h2>
+            <h2 className="section-title">المندوبون والمبيعات</h2>
             <p className="section-subtitle">إدارة الحسابات والمبيعات والسحوبات.</p>
           </div>
 
