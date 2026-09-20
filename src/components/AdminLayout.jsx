@@ -21,7 +21,8 @@ import {
   Crown,
   Film,
   MessageSquare,
-  UsersRound
+  UsersRound,
+  UserRound
 } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { supabase } from '../lib/supabase';
@@ -54,6 +55,7 @@ const AdminLayout = ({ children }) => {
       links: [
         { to: '/admin/dashboard',         label: 'لوحة الإحصائيات', icon: LayoutDashboard },
         { to: '/admin/representatives',   label: 'المندوبون والعمولات', icon: UsersRound },
+        { to: '/admin/sales-leads',       label: 'العملاء المستهدفين', icon: UserRound },
       ]
     },
     {
