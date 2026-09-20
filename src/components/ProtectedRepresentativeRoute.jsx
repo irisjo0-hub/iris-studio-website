@@ -75,7 +75,7 @@ const ProtectedRepresentativeRoute = () => {
     return <div className="rep-route-loading">جارٍ التحقق من الحساب...</div>;
   }
 
-  if (state !== 'authorized') return <Navigate to="/representative/login" replace />;
+  if (state !== 'authorized') return <Navigate to="/sales/login" replace />;
   return <Outlet />;
 };
 
