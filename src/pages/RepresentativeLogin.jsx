@@ -37,7 +37,8 @@ const RepresentativeLogin = () => {
     let active = true;
 
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user || !active) return;
 
       const { rep } = await verifyRepresentativeWithRetry(user.id);
