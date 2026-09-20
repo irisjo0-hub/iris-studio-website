@@ -476,7 +476,7 @@
 /* ===== DYNAMIC REEL EDITORIAL OVERLAY ===== */
 .reel-item-number {
   font-family: var(--font-hero, "DegularDisplay", sans-serif);
-  font-size: 2cqw;
+  font-size: clamp(0.72rem, 2cqw, 0.85rem);
   font-weight: 600;
   letter-spacing: 1px;
   color: #F5BD1A;
@@ -485,7 +485,7 @@
 
 .reel-headline-text {
   font-family: var(--font-primary, sans-serif);
-  font-size: 3.6cqw;
+  font-size: clamp(0.98rem, 3.6cqw, 1.75rem);
   font-weight: 700;
   line-height: 1.28;
   color: #ECEBE7;
@@ -500,7 +500,7 @@
 
 .reel-secondary-text {
   font-family: var(--font-primary, sans-serif);
-  font-size: 2.5cqw;
+  font-size: clamp(0.72rem, 2.5cqw, 0.88rem);
   color: rgba(236, 235, 231, 0.8);
   margin: 0;
   line-height: 1.35;
