@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutDashboard, ReceiptText, WalletCards, UserRound, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, ReceiptText, WalletCards, UserRound, LogOut, Menu, X, UsersRound } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import '../styles/representatives.css';
 
@@ -28,7 +28,7 @@ const RepresentativeLayout = ({ children }) => {
     ['/sales/dashboard', 'الرئيسية', LayoutDashboard],
     ['/sales/sales', 'مبيعاتي', ReceiptText],
     ['/sales/withdrawals', 'السحوبات', WalletCards],
-    ['/sales/profile', 'حسابي', UserRound],
+    ['/sales/profile', 'حسابي', UserRound],\n    ['/sales/leads', 'العملاء المستهدفين', UsersRound],
   ];
 
   return <div className="rep-shell" dir="rtl">
