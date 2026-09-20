@@ -1279,3 +1279,36 @@
     height: 44px !important;
   }
 }
+
+
+/* Full-viewport menu shell: never inherit a centered/max-width layout from the page. */
+html:has(.division-menu-overlay),
+body:has(.division-menu-overlay) {
+  overflow: hidden !important;
+}
+
+.division-menu-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  max-width: none !important;
+  min-width: 100vw !important;
+  height: 100dvh !important;
+  max-height: none !important;
+  min-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  transform: none !important;
+  box-sizing: border-box !important;
+}
+
+.division-menu-overlay > .division-menu-top,
+.division-menu-overlay > .division-menu-list,
+.division-menu-overlay > .division-menu-bottom {
+  max-width: none !important;
+}
