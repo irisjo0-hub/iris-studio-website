@@ -276,10 +276,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
     const handleWheelNonPassive = (e) => {
       if (!isStageActive || isSkippingRef.current) return;
-      if (false) {
-        e.preventDefault();
-        return;
-      }
       if (feedbackOpen) return;
 
       const currIndex = activeIndexRef.current;
