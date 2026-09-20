@@ -74,7 +74,7 @@ const RepresentativeResetPassword = lazyRetry(() => import('../pages/Representat
 const RepresentativeDashboard = lazyRetry(() => import('../pages/RepresentativeDashboard'));
 const RepresentativeSales = lazyRetry(() => import('../pages/RepresentativeSales'));
 const RepresentativeWithdrawals = lazyRetry(() => import('../pages/RepresentativeWithdrawals'));
-const RepresentativeProfile = lazyRetry(() => import('../pages/RepresentativeProfile'));
+const RepresentativeProfile = lazyRetry(() => import('../pages/RepresentativeProfile'));\nconst SalesLeads = lazyRetry(() => import('../pages/SalesLeads'));
 
 const AppRouter = () => (
   <Suspense fallback={null}>
@@ -156,7 +156,7 @@ const AppRouter = () => (
         <Route path="/sales/dashboard" element={<RepresentativeDashboard />} />
         <Route path="/sales/sales" element={<RepresentativeSales />} />
         <Route path="/sales/withdrawals" element={<RepresentativeWithdrawals />} />
-        <Route path="/sales/profile" element={<RepresentativeProfile />} />
+        <Route path="/sales/profile" element={<RepresentativeProfile />} />\n        <Route path="/sales/leads" element={<SalesLeads />} />
       </Route>
     </Routes>
   </Suspense>
