@@ -321,3 +321,233 @@
 .admin-sales-lead-modal .admin-primary-btn:hover{background:var(--iris-purple-light)}
 @media(max-width:900px){.admin-sales-leads-stats{grid-template-columns:repeat(2,1fr)}.admin-sales-leads-toolbar{grid-template-columns:1fr 1fr}.admin-sales-leads-search{grid-column:1/-1}.admin-sales-leads-list{grid-template-columns:1fr}}
 @media(max-width:560px){.admin-sales-leads-head h1{font-size:26px}.admin-sales-leads-stats{gap:8px}.admin-sales-leads-stats>div{padding:12px}.admin-sales-leads-stats strong{font-size:19px}.admin-sales-leads-toolbar{grid-template-columns:1fr}.admin-sales-leads-search{grid-column:auto}.admin-sales-leads-footer{align-items:flex-start;flex-direction:column}}
+
+
+/* =========================================================
+   IRIS SALES PORTAL — canonical site theme
+   Matches the main website + Admin Panel palette.
+   ========================================================= */
+:root{
+  --rep-bg:#180C17;
+  --rep-card:rgba(26,13,24,.78);
+  --rep-border:rgba(236,235,231,.10);
+  --rep-text:#ECEBE7;
+  --rep-muted:rgba(236,235,231,.58);
+  --rep-purple:#67245F;
+  --rep-purple-light:#7D2E73;
+  --rep-green:#044630;
+  --rep-gold:#F5BD1A;
+  --rep-milk:#ECEBE7;
+}
+
+.rep-shell{
+  background:
+    radial-gradient(circle at 12% 0%,rgba(103,36,95,.24),transparent 30%),
+    radial-gradient(circle at 88% 88%,rgba(4,70,48,.13),transparent 28%),
+    #180C17!important;
+  color:#ECEBE7!important;
+}
+
+.rep-topbar{
+  background:rgba(24,12,23,.88)!important;
+  border-bottom:1px solid rgba(236,235,231,.09)!important;
+  backdrop-filter:blur(18px);
+}
+
+.rep-brand{color:rgba(236,235,231,.58)!important}
+.rep-brand b{color:#ECEBE7!important}
+.rep-user-mini{color:#ECEBE7!important}
+.rep-user-mini small{color:rgba(236,235,231,.48)!important}
+
+.rep-sidebar{
+  background:rgba(26,13,24,.88)!important;
+  border-left:1px solid rgba(236,235,231,.09)!important;
+}
+.rep-sidebar-head{border-bottom-color:rgba(236,235,231,.09)!important}
+.rep-avatar,.rep-profile-avatar{
+  background:linear-gradient(135deg,#67245F,#7D2E73)!important;
+}
+.rep-nav{color:rgba(236,235,231,.58)!important}
+.rep-nav:hover,.rep-nav.active{
+  background:rgba(103,36,95,.24)!important;
+  color:#ECEBE7!important;
+}
+.rep-nav.active{box-shadow:inset 3px 0 #F5BD1A!important}
+.rep-logout{
+  color:rgba(236,235,231,.58)!important;
+  border-color:rgba(236,235,231,.10)!important;
+}
+.rep-logout:hover{
+  color:#F5BD1A!important;
+  border-color:rgba(245,189,26,.35)!important;
+  background:rgba(103,36,95,.14)!important;
+}
+
+.rep-main{color:#ECEBE7!important}
+.rep-eyebrow{color:#F5BD1A!important}
+.rep-action,.rep-primary-btn,.admin-primary-btn{
+  background:#67245F!important;
+  color:#ECEBE7!important;
+  box-shadow:none!important;
+}
+.rep-action:hover,.rep-primary-btn:hover,.admin-primary-btn:hover{background:#7D2E73!important}
+
+.rep-stat,.rep-panel,.rep-withdraw-card,.rep-profile-card,
+.rep-table-wrap,.rep-admin-table,.rep-admin-form,
+.rep-catalog-card,.rep-lead-card{
+  background:rgba(26,13,24,.72)!important;
+  border-color:rgba(236,235,231,.10)!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.16)!important;
+}
+.rep-stat.accent{
+  background:linear-gradient(145deg,rgba(103,36,95,.24),rgba(26,13,24,.72))!important;
+  border-color:rgba(103,36,95,.40)!important;
+}
+.rep-stat span{
+  background:rgba(103,36,95,.18)!important;
+  color:#D9B5D3!important;
+}
+.rep-stat:nth-child(2) span{
+  background:rgba(4,70,48,.22)!important;
+  color:#72C69F!important;
+}
+.rep-stat:nth-child(3) span{
+  background:rgba(245,189,26,.12)!important;
+  color:#F5BD1A!important;
+}
+.rep-stat:nth-child(4) span{
+  background:rgba(4,70,48,.22)!important;
+  color:#72C69F!important;
+}
+
+.rep-dashboard-page{max-width:1180px}
+.rep-dashboard-hero{padding-top:4px}
+.rep-dashboard-balance{
+  background:
+    radial-gradient(circle at 85% 25%,rgba(103,36,95,.34),transparent 35%),
+    linear-gradient(145deg,rgba(103,36,95,.25),rgba(10,20,16,.76))!important;
+  border:1px solid rgba(103,36,95,.48)!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.22)!important;
+}
+.rep-balance-icon{
+  background:rgba(245,189,26,.12)!important;
+  color:#F5BD1A!important;
+}
+.rep-dashboard-section-head>a,.rep-panel-head a{color:#F5BD1A!important}
+.rep-leads-cta{
+  background:linear-gradient(90deg,rgba(103,36,95,.16),rgba(4,70,48,.10))!important;
+  border-color:rgba(103,36,95,.30)!important;
+}
+.rep-leads-cta-icon{
+  background:rgba(103,36,95,.24)!important;
+  color:#D9B5D3!important;
+}
+.positive{color:#72C69F!important}
+
+.rep-status{background:rgba(236,235,231,.06)!important}
+.rep-status.pending{color:#F5BD1A!important}
+.rep-status.approved{color:#D9B5D3!important}
+.rep-status.paid{color:#72C69F!important}
+.rep-status.rejected{color:#F08E98!important}
+
+.rep-search{
+  background:rgba(26,13,24,.72)!important;
+  border-color:rgba(236,235,231,.10)!important;
+}
+.rep-search input,
+.rep-withdraw-card input,.rep-withdraw-card select,
+.rep-modal input,.rep-modal select,.rep-modal textarea,
+.rep-admin-form input,.rep-admin-form select{
+  background:rgba(236,235,231,.045)!important;
+  border-color:rgba(236,235,231,.10)!important;
+  color:#ECEBE7!important;
+}
+.rep-search input:focus,
+.rep-withdraw-card input:focus,.rep-withdraw-card select:focus,
+.rep-modal input:focus,.rep-modal select:focus,.rep-modal textarea:focus{
+  border-color:#67245F!important;
+}
+
+.rep-lead-filters button{
+  background:rgba(236,235,231,.035)!important;
+  border-color:rgba(236,235,231,.09)!important;
+  color:rgba(236,235,231,.60)!important;
+}
+.rep-lead-filters button.active{
+  background:rgba(103,36,95,.30)!important;
+  border-color:#67245F!important;
+  color:#ECEBE7!important;
+}
+.rep-lead-icon{
+  background:rgba(103,36,95,.22)!important;
+  color:#D9B5D3!important;
+}
+.rep-lead-status.won{
+  background:rgba(4,70,48,.24)!important;
+  color:#72C69F!important;
+}
+.rep-lead-status.lost{
+  background:rgba(245,189,26,.10)!important;
+  color:#F5BD1A!important;
+}
+.rep-lead-status.follow_up,.rep-lead-status.interested{
+  background:rgba(103,36,95,.20)!important;
+  color:#D9B5D3!important;
+}
+
+.rep-modal-backdrop{background:rgba(10,5,10,.76)!important}
+.rep-modal{
+  background:#180C17!important;
+  border-color:rgba(236,235,231,.12)!important;
+}
+.rep-modal-head button{color:rgba(236,235,231,.60)!important}
+
+.rep-reset-icon{
+  background:rgba(103,36,95,.20)!important;
+  color:#F5BD1A!important;
+}
+.rep-login{
+  background:
+    radial-gradient(circle at 15% 0%,rgba(103,36,95,.22),transparent 30%),
+    #180C17!important;
+}
+.rep-login-card{
+  background:rgba(26,13,24,.92)!important;
+  border-color:rgba(236,235,231,.10)!important;
+}
+.rep-login-card input{
+  background:rgba(236,235,231,.045)!important;
+  border-color:rgba(236,235,231,.10)!important;
+  color:#ECEBE7!important;
+}
+
+.rep-sales-summary>div{
+  background:rgba(26,13,24,.72)!important;
+  border-color:rgba(236,235,231,.10)!important;
+}
+.rep-sales-summary>div span{
+  background:rgba(103,36,95,.20)!important;
+  color:#D9B5D3!important;
+}
+.rep-sale-card{
+  background:rgba(26,13,24,.72)!important;
+  border-color:rgba(236,235,231,.10)!important;
+}
+.rep-sale-card:hover,.rep-lead-card:hover{
+  border-color:rgba(103,36,95,.48)!important;
+}
+.rep-sale-icon{
+  background:rgba(103,36,95,.20)!important;
+  color:#D9B5D3!important;
+}
+
+.rep-info-strip{color:rgba(236,235,231,.50)!important}
+
+@media(max-width:900px){
+  .rep-sidebar{background:#1A0D18!important}
+  .rep-menu-btn{
+    background:#67245F!important;
+    border-color:rgba(245,189,26,.35)!important;
+    color:#ECEBE7!important;
+  }
+}
