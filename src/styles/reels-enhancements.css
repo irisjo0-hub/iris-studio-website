@@ -161,19 +161,34 @@
 }
 
 /* Preserve the established Reel typography; interaction fixes must not resize content. */
-.reel-item-number {
-  font-size: 0.82rem !important;
-  letter-spacing: 1.5px !important;
-}
-.reel-headline-text {
-  font-size: clamp(1.2rem, 2.5vw, 1.85rem) !important;
-  line-height: 1.35 !important;
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.8) !important;
-}
-.reel-secondary-text {
-  font-size: 0.88rem !important;
-  line-height: 1.4 !important;
-  color: rgba(236, 235, 231, 0.75) !important;
+/*
+ * Reel typography must scale from the 9:16 frame, not the browser viewport.
+ * These rules intentionally mirror the mobile typography proportions:
+ * 0.70rem / 1.00rem / 0.74rem at a typical 390px-wide phone frame.
+ * The mobile-only typography file still supplies its exact fixed values
+ * under 767px; these frame-relative values cover tablet/desktop.
+ */
+@media (min-width: 768px) {
+  .reel-frame {
+    container-type: inline-size;
+  }
+
+  .reel-item-number {
+    font-size: 2.87cqw !important;
+    letter-spacing: 1px !important;
+  }
+
+  .reel-headline-text {
+    font-size: 4.1cqw !important;
+    line-height: 1.35 !important;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.8) !important;
+  }
+
+  .reel-secondary-text {
+    font-size: 3.03cqw !important;
+    line-height: 1.4 !important;
+    color: rgba(236, 235, 231, 0.75) !important;
+  }
 }
 
 /* The media controls must always win over the temporary swipe-click suppressor. */
