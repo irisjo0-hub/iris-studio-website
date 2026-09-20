@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import DivisionMenu from '../components/DivisionMenu';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Video, Film, Sparkles, Layers, CheckCircle2, 
@@ -122,7 +123,8 @@ const MediaPortal = () => {
   };
 
   return (
-    <div className="division-portal-page" dir={isRtl ? 'rtl' : 'ltr'}>
+    <div className="division-portal-page portal-division-menu-host" dir={isRtl ? 'rtl' : 'ltr'}>
+      <DivisionMenu />
       {/* Hero Banner */}
       <section className="portal-hero-banner theme-media-bg">
         <div className="portal-hero-overlay" />
