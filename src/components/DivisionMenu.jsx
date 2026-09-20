@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Home, Clapperboard, Camera, Printer, MessageCircle, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSiteSettings } from '../context/SiteSettingsContext';
@@ -10,6 +10,7 @@ import '../styles/division-menu.css';
 const DivisionMenu = () => {
   const { settings, lang, toggleLanguage } = useSiteSettings();
   const location = useLocation();
+  const navigate = useNavigate();
   const isRtl = lang === 'ar';
   const [open, setOpen] = useState(false);
 
@@ -61,9 +62,28 @@ const DivisionMenu = () => {
               ))}
 
               <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .22 }}>
-                <a href="#iris-footer-root" className="division-menu-item contact" onClick={() => {
+                <a href="/" className="division-menu-item contact" onClick={() => {
                   setOpen(false);
-                  requestAnimationFrame(() => document.getElementById('iris-footer-root')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+                  const goToFooter = () => {
+                    const footerEl = document.getElementById('iris-footer-root');
+                    if (footerEl) {
+                      window.history.replaceState(null, '', '#iris-footer-root');
+                      footerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      return true;
+                    }
+                    return false;
+                  };
+                  if (location.pathname === '/') {
+                    requestAnimationFrame(() => goToFooter());
+                  } else {
+                    navigate('/').then?.(() => {});
+                    let attempts = 0;
+                    const waitForHomeFooter = () => {
+                      if (goToFooter() || attempts++ > 30) return;
+                      requestAnimationFrame(waitForHomeFooter);
+                    };
+                    requestAnimationFrame(waitForHomeFooter);
+                  }
                 }}>
                   <span className="division-menu-number">05</span>
                   <span className="division-menu-icon"><MessageCircle size={18} strokeWidth={1.7} /></span>
