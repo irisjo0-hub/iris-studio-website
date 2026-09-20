@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import DivisionMenu from '../components/DivisionMenu';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Printer, ShoppingBag, Truck, Layers, Sparkles,
@@ -181,7 +182,8 @@ const PrintPortal = () => {
   };
 
   return (
-    <div className="division-portal-page" dir={isRtl ? 'rtl' : 'ltr'}>
+    <div className="division-portal-page portal-division-menu-host" dir={isRtl ? 'rtl' : 'ltr'}>
+      <DivisionMenu />
       {/* Hero Banner */}
       <section className="portal-hero-banner theme-print-bg">
         <div className="portal-hero-overlay" />
