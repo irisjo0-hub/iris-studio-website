@@ -23,7 +23,9 @@
   -webkit-backface-visibility: hidden;
   transform: translate3d(0, 0, 0);
 }
-.reel-canvas-layer .instagram-caption-profile-row { visibility: visible; }
+.reel-canvas-layer .instagram-caption-profile-row { visibility: hidden; }
+.reels-static-profile-header { display: none !important; }
+.reels-profile-placeholder { display: none !important; }
 .reels-profile-placeholder {
   display: block;
   flex: 0 0 auto;
