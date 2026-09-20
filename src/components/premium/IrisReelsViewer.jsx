@@ -648,7 +648,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         </div>
       )}
 
-      {{toastMessage && <div className="reels-toast-notification"><span>{toastMessage}</span></div>}
+      {toastMessage && <div className="reels-toast-notification"><span>{toastMessage}</span></div>}
     </section>
   );
 };
