@@ -33,3 +33,10 @@
 .rep-leads-nav-btn{display:inline-flex!important;align-items:center!important;gap:6px!important;margin-bottom:12px!important;background:#67245F!important;border:0!important;color:#ECEBE7!important;border-radius:9px!important;padding:8px 12px!important;font-family:inherit!important;font-size:10px!important;cursor:pointer!important}.rep-leads-nav-btn:hover{background:#7D2E73!important}
 @media(max-width:900px){.admin-sales-leads{padding:22px 14px 40px!important}.admin-sales-leads-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}.admin-sales-leads-toolbar{grid-template-columns:1fr 1fr!important}.admin-sales-leads-search{grid-column:1/-1!important}.admin-sales-leads-list{grid-template-columns:1fr!important}}
 @media(max-width:560px){.admin-sales-leads-head h1{font-size:27px!important}.admin-sales-leads-stats{gap:8px!important}.admin-sales-leads-toolbar{grid-template-columns:1fr!important}.admin-sales-leads-search{grid-column:auto!important}}
+
+.admin-sales-lead-actions{display:flex!important;align-items:center!important;gap:6px!important}
+.admin-sales-lead-actions button{display:inline-flex!important;align-items:center!important;gap:5px!important;background:#67245F!important;border:0!important;color:#ECEBE7!important;border-radius:8px!important;padding:7px 10px!important;font-size:10px!important;cursor:pointer!important}
+.admin-sales-lead-actions button:hover{background:#7D2E73!important}
+.admin-sales-lead-actions button.danger{background:rgba(150,38,55,.18)!important;border:1px solid rgba(220,80,95,.28)!important;color:#f0a4ac!important}
+.admin-sales-lead-actions button.danger:hover{background:rgba(150,38,55,.35)!important;border-color:rgba(220,80,95,.5)!important}
+@media(max-width:560px){.admin-sales-lead-footer{align-items:flex-start!important;flex-direction:column!important}.admin-sales-lead-actions{width:100%!important}.admin-sales-lead-actions button{flex:1!important;justify-content:center!important}}
