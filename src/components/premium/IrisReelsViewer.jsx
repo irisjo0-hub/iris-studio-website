@@ -331,7 +331,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   };
 
   const handleTouchEnd = (e) => {
-    if (isLocked || cooldownRef.current || feedbackOpen || menuOpen || !isStageActive) return;
+    if (isLocked || cooldownRef.current || feedbackOpen || !isStageActive) return;
     const touchEndY = e.changedTouches[0].clientY;
     const diff = touchStartY.current - touchEndY;
 
