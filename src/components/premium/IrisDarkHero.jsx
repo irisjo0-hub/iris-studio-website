@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Globe, Menu, X, ArrowDown, Home, Clapperboard, Camera, Printer, MessageCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowDown } from 'lucide-react';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { HeroLivingCollage } from './HeroLivingCollage';
 import irisLogo from '../../assets/iris_logo.png';
+import DivisionMenu from '../DivisionMenu';
 
 import '../../styles/iris-dark-hero.css';
 
@@ -16,11 +15,8 @@ import '../../styles/iris-dark-hero.css';
  */
 
 export const IrisDarkHero = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
   const { settings, lang, toggleLanguage } = useSiteSettings();
   const isRtl = lang === 'ar';
-  const [heroMenuOpen, setHeroMenuOpen] = useState(false);
   const [isHeroActive, setIsHeroActive] = useState(true);
 
   // Desktop pointer effects. Keep glow transforms off React state so mouse movement
@@ -147,17 +143,6 @@ export const IrisDarkHero = () => {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (heroMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [heroMenuOpen]);
-
   return (
     <section
       id="iris-dark-hero-root"
@@ -220,14 +205,7 @@ export const IrisDarkHero = () => {
           </div>
 
           {/* 3. Hamburger Menu Control (Right Edge) */}
-          <button
-            type="button"
-            className="hero-v2-hamburger-btn"
-            onClick={() => setHeroMenuOpen(true)}
-            aria-label="Open Navigation Menu"
-          >
-            <Menu size={20} />
-          </button>
+          <DivisionMenu />
         </header>
 
         {/* 4. Main Hero Content Stage (Simplified & Confident) */}
@@ -268,120 +246,6 @@ export const IrisDarkHero = () => {
         </div>
       </div>
 
-      {/* ===== 5. FULLSCREEN IRIS NAVIGATION OVERLAY (REACT PORTAL) ===== */}
-      {heroMenuOpen &&
-        createPortal(
-          <motion.div
-            className={`iris-portal-fullscreen-overlay dir-${isRtl ? 'rtl' : 'ltr'}`}
-            dir={isRtl ? 'rtl' : 'ltr'}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.28 }}
-          >
-            {/* Top Bar: IRIS Logo (Left), Close X (Right) */}
-            <div className="overlay-top-bar">
-              <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" decoding="async" />
-
-              <button
-                type="button"
-                className="overlay-close-btn"
-                onClick={() => setHeroMenuOpen(false)}
-                aria-label="Close Menu"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            {/* Vertical Menu List (One Item Per Row) */}
-            <nav className="overlay-vertical-menu" aria-label={isRtl ? "القائمة الرئيسية" : "Main navigation"}>
-              {[
-                { to: '/', label: isRtl ? 'الرئيسية' : 'Home', Icon: Home },
-                { to: '/media', label: isRtl ? 'ميديا' : 'Media', Icon: Clapperboard },
-                { to: '/studio', label: isRtl ? 'الاستوديو' : 'Studio', Icon: Camera },
-                { to: '/print', label: isRtl ? 'المطبوعات' : 'Print', Icon: Printer },
-
-              ].map(({ to, label, Icon }, index) => {
-                const active = to === '/' ? location.pathname === '/' : location.pathname === to || location.pathname.startsWith(to + '/');
-                return (
-                  <motion.div
-                    key={to}
-                    initial={{ opacity: 0, x: isRtl ? 18 : -18 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.06 + index * 0.045, duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <Link
-                      to={to}
-                      className={`overlay-nav-item${active ? ' active' : ''}`}
-                      onClick={() => setHeroMenuOpen(false)}
-                    >
-                      <span className="overlay-nav-icon"><Icon size={20} strokeWidth={1.8} /></span>
-                      <span className="overlay-nav-label">{label}</span>
-                      
-                    </Link>
-                  </motion.div>
-                );
-              })}
-
-              <motion.div
-                initial={{ opacity: 0, x: isRtl ? 18 : -18 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.33, duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <a
-                  href="/#iris-footer-root"
-                  className={`overlay-nav-item overlay-nav-contact${location.hash === '#iris-footer-root' ? ' active' : ''}`}
-                  onClick={() => {
-                    setHeroMenuOpen(false);
-                    const goToFooter = () => {
-                      const footerEl = document.getElementById('iris-footer-root');
-                      if (footerEl) {
-                        window.history.replaceState(null, '', '#iris-footer-root');
-                        footerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        return true;
-                      }
-                      return false;
-                    };
-                    if (location.pathname === '/') {
-                      requestAnimationFrame(() => goToFooter());
-                    } else {
-                      navigate('/');
-                      let attempts = 0;
-                      const waitForHomeFooter = () => {
-                        if (goToFooter() || attempts++ > 30) return;
-                        requestAnimationFrame(waitForHomeFooter);
-                      };
-                      requestAnimationFrame(waitForHomeFooter);
-                    }
-                  }}
-                >
-                  <span className="overlay-nav-icon"><MessageCircle size={20} strokeWidth={1.8} /></span>
-                  <span className="overlay-nav-label">{isRtl ? 'تواصل معنا' : 'Contact Us'}</span>
-                  
-                </a>
-              </motion.div>
-            </nav>
-
-            {/* Bottom Row: Language Control & Brand Signature */}
-            <div className="overlay-bottom-bar">
-              <button
-                type="button"
-                className="overlay-lang-btn"
-                onClick={toggleLanguage}
-                aria-label={isRtl ? "Switch to English" : "التحويل إلى العربية"}
-              >
-                <Globe size={16} />
-                <span>{isRtl ? 'EN English' : 'ع العربية'}</span>
-              </button>
-
-              <div className="overlay-brand-signature">
-                <span>WE BREAK THE BOX</span>
-                <span className="gold-dot" />
-              </div>
-            </div>
-          </motion.div>,
-          document.body
-        )}
     </section>
   );
 };
