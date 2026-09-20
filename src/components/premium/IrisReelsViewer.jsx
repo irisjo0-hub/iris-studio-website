@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import DivisionMenu from '../DivisionMenu';
 import {
-  X, MessageSquare, Share2, ArrowUpRight, Globe,
-  Camera, Calendar, Printer, ShoppingBag, FolderKanban,
-  Music, Volume2, VolumeX, Sparkles, ChevronDown, ChevronUp
+  X, MessageSquare, Share2, ArrowUpRight,
+  Camera, Calendar, ShoppingBag, FolderKanban,
+  Volume2, VolumeX, ChevronDown, ChevronUp
 } from 'lucide-react';
 
 import { useSiteSettings } from '../../context/SiteSettingsContext';
