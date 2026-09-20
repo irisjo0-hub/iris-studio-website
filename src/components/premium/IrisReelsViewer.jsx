@@ -276,7 +276,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
     const handleWheelNonPassive = (e) => {
       if (!isStageActive || isSkippingRef.current) return;
-      if (menuOpen) {
+      if (false) {
         e.preventDefault();
         return;
       }
@@ -363,7 +363,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (feedbackOpen || menuOpen || !isStageActive || cooldownRef.current) return;
+      if (feedbackOpen || !isStageActive || cooldownRef.current) return;
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
         e.preventDefault();
         if (activeIndex < items.length - 1) navigateToIndex(activeIndex + 1, 1);
