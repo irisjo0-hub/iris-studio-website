@@ -42,7 +42,7 @@ const RepresentativeLogin = () => {
 
       const { rep } = await verifyRepresentativeWithRetry(user.id);
       if (active && rep?.status === 'active') {
-        navigate('/representative/dashboard', { replace: true });
+        navigate('/sales/dashboard', { replace: true });
       }
     })();
 
@@ -90,7 +90,7 @@ const RepresentativeLogin = () => {
       return;
     }
 
-    navigate('/representative/dashboard', { replace: true });
+    navigate('/sales/dashboard', { replace: true });
     setLoading(false);
   };
 
@@ -105,7 +105,7 @@ const RepresentativeLogin = () => {
       {error&&<div className="rep-error">{error}</div>}
       <button className="rep-primary-btn" disabled={loading}>{loading?'جاري الدخول...':'تسجيل الدخول'} <ArrowLeft size={18}/></button>
     </form>
-    <Link className="rep-forgot" to="/representative/reset-password">نسيت كلمة المرور؟</Link>
+    <Link className="rep-forgot" to="/sales/reset-password">نسيت كلمة المرور؟</Link>
     <div className="rep-secure"><ShieldCheck size={15}/> محمي بواسطة Supabase Auth</div>
   </div></div>;
 };
