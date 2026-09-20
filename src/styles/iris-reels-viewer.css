@@ -517,7 +517,7 @@
   z-index: 25;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 2px;
   pointer-events: auto;
   background: transparent;
   padding: 0;
@@ -1024,8 +1024,8 @@
 .instagram-caption-profile-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 6px;
+  gap: 6px;
+  margin-bottom: 0;
   pointer-events: auto;
 }
 
@@ -1052,6 +1052,7 @@
 .instagram-user-meta {
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .instagram-username {
