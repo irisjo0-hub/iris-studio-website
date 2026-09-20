@@ -144,6 +144,23 @@ export const SiteSettingsProvider = ({ children }) => {
     return saved === 'en' ? 'en' : 'ar';
   });
 
+  // Theme changes are client-side only: no route change and no page reload.
+  const [theme, setThemeState] = useState(() => {
+    const saved = localStorage.getItem('iris_theme');
+    return saved === 'light' ? 'light' : 'dark';
+  });
+
+  const setTheme = (newTheme) => {
+    const targetTheme = newTheme === 'light' ? 'light' : 'dark';
+    setThemeState(targetTheme);
+    localStorage.setItem('iris_theme', targetTheme);
+    document.documentElement.dataset.theme = targetTheme;
+    document.documentElement.classList.toggle('iris-theme-light', targetTheme === 'light');
+    document.documentElement.classList.toggle('iris-theme-dark', targetTheme === 'dark');
+  };
+
+  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+
   const setLanguage = (newLang) => {
     const targetLang = newLang === 'en' ? 'en' : 'ar';
     setLangState(targetLang);
@@ -158,6 +175,14 @@ export const SiteSettingsProvider = ({ children }) => {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   }, [lang]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('iris_theme');
+    const initialTheme = saved === 'light' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = initialTheme;
+    document.documentElement.classList.toggle('iris-theme-light', initialTheme === 'light');
+    document.documentElement.classList.toggle('iris-theme-dark', initialTheme === 'dark');
+  }, []);
 
   const fetchSettings = async () => {
     try {
@@ -250,6 +275,9 @@ export const SiteSettingsProvider = ({ children }) => {
       lang,
       setLanguage,
       toggleLanguage,
+      theme,
+      setTheme,
+      toggleTheme,
       refreshSettings: fetchSettings,
       updateSettingsLocally
     }),
