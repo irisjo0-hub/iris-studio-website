@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Wallet, TrendingUp, CircleDollarSign, ArrowDownToLine, Plus, Clock3, UsersRound, ArrowUpLeft, CheckCircle2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { salesSupabase as supabase } from '../lib/supabase';
 import RepresentativeLayout from '../components/RepresentativeLayout';
 
 const money=n=>Number(n||0).toFixed(2)+' JOD';
