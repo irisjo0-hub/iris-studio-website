@@ -59,12 +59,14 @@ const ProtectedAdminRoute = () => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!active) return;
 
-      if (event === 'SIGNED_OUT' || !session) {
+      // Do not treat a transient auth event without a session as a logout.
+      // Only an explicit SIGNED_OUT event should send an admin to login.
+      if (event === 'SIGNED_OUT') {
         setState('unauthenticated');
         return;
       }
 
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+      if (session && (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED')) {
         void verifyAdmin();
       }
     });
