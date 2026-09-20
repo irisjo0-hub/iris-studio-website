@@ -1036,3 +1036,14 @@
     transition: none !important;
   }
 }
+
+/* Core IRIS menu — editorial division navigation, not app-style UI */
+.overlay-vertical-menu{width:min(680px,calc(100vw - 40px))!important;gap:3px!important}
+.overlay-nav-item{grid-template-columns:42px minmax(0,1fr)!important;min-height:66px!important;padding:8px 12px!important;border-radius:12px!important;background:transparent!important;border:0!important;border-bottom:1px solid rgba(236,235,231,.09)!important;font-size:clamp(23px,5vw,33px)!important}
+.overlay-nav-item::before{inset-inline-start:auto!important;inset-inline-end:0!important;top:9px!important;bottom:9px!important}
+.overlay-nav-item:hover,.overlay-nav-item:focus-visible,.overlay-nav-item.active{transform:none!important;background:linear-gradient(90deg,rgba(103,36,95,.10),rgba(103,36,95,.34))!important;border-color:rgba(245,189,26,.22)!important;box-shadow:none!important}
+.overlay-nav-icon{width:38px!important;height:38px!important;border-radius:10px!important}
+.overlay-nav-arrow{display:none!important}
+.overlay-nav-label{text-align:start!important}
+.overlay-nav-contact{margin-top:8px!important;background:rgba(4,70,48,.12)!important}
+@media(max-width:600px){.overlay-vertical-menu{width:calc(100vw - 34px)!important;gap:2px!important}.overlay-nav-item{grid-template-columns:38px minmax(0,1fr)!important;min-height:57px!important;padding:6px 9px!important;font-size:24px!important}.overlay-nav-icon{width:34px!important;height:34px!important}}
