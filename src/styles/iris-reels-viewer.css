@@ -1291,6 +1291,34 @@
   }
 }
 
+/* Desktop reel typography must scale from the 9:16 frame, not the browser viewport. */
+@media (min-width: 768px) {
+  .reel-frame .reel-item-number {
+    font-size: clamp(0.62rem, 2.2cqw, 0.78rem);
+    line-height: 1.15;
+  }
+
+  .reel-frame .reel-headline-text {
+    font-size: clamp(0.92rem, 4.1cqw, 1.32rem);
+    line-height: 1.18;
+    letter-spacing: 0;
+    font-weight: 700;
+  }
+
+  .reel-frame .reel-secondary-text {
+    font-size: clamp(0.62rem, 2.2cqw, 0.78rem);
+    line-height: 1.3;
+  }
+
+  .reel-frame .instagram-username {
+    font-size: clamp(0.72rem, 2.2cqw, 0.84rem);
+  }
+
+  .reel-frame .instagram-handle {
+    font-size: clamp(0.58rem, 1.7cqw, 0.68rem);
+  }
+}
+
 @media (max-width: 767px) {
   ::view-transition-group(iris-reel-canvas),
   ::view-transition-image-pair(iris-reel-canvas) {
