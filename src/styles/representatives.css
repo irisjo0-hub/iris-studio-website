@@ -551,3 +551,7 @@
     color:#ECEBE7!important;
   }
 }
+
+/* IRIS SALES brand badge — matches the main site's "WE BREAK THE BOX" pill */
+.rep-sales-badge{display:inline-flex!important;align-items:center!important;gap:10px!important;width:max-content!important;padding:8px 15px 8px 16px!important;border:1px solid #F5BD1A!important;border-radius:999px!important;background:rgba(24,12,23,.42)!important;color:#ECEBE7!important;font-size:11px!important;font-weight:800!important;letter-spacing:1.6px!important;line-height:1!important;box-shadow:0 0 0 1px rgba(245,189,26,.04),inset 0 0 18px rgba(103,36,95,.08)!important}
+.rep-sales-dot{width:7px!important;height:7px!important;border-radius:50%!important;background:#F5BD1A!important;box-shadow:0 0 8px rgba(245,189,26,.8)!important;flex:none!important}
