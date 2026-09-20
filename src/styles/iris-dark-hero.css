@@ -1226,3 +1226,56 @@
 .division-menu-overlay * {
   pointer-events: auto;
 }
+
+
+/* ===== MENU HIT-TEST / STACKING FIX =====
+   The menu trigger is shared by the hero and reels. Both sections contain
+   clipping/stacking contexts, so the trigger itself must live above them.
+*/
+.hero-v2-hamburger-btn.division-unified-menu-trigger {
+  position: fixed !important;
+  top: calc(18px + env(safe-area-inset-top, 0px)) !important;
+  inset-inline-end: 18px !important;
+  inset-inline-start: auto !important;
+  width: 46px !important;
+  height: 46px !important;
+  margin: 0 !important;
+  z-index: 2147483646 !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  cursor: pointer !important;
+  isolation: isolate !important;
+}
+
+.hero-v2-hamburger-btn.division-unified-menu-trigger,
+.hero-v2-hamburger-btn.division-unified-menu-trigger *,
+.division-menu-close,
+.division-menu-lang {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.division-menu-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  min-height: 100vh !important;
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+  touch-action: auto !important;
+  isolation: isolate !important;
+}
+
+.division-menu-overlay,
+.division-menu-overlay * {
+  pointer-events: auto !important;
+}
+
+@media (max-width: 767px) {
+  .hero-v2-hamburger-btn.division-unified-menu-trigger {
+    top: calc(14px + env(safe-area-inset-top, 0px)) !important;
+    inset-inline-end: 14px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
