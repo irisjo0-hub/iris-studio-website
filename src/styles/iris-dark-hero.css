@@ -1351,3 +1351,39 @@ body:has(.division-menu-overlay) {
     margin: 18px auto 0 !important;
   }
 }
+
+
+/* Theme switch lives in the menu's own stylesheet so it works even though
+   global.css is not imported by the app entrypoint. */
+.division-menu-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.division-menu-actions .division-menu-lang {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+}
+
+.division-menu-actions .division-menu-theme {
+  display: inline-flex !important;
+  min-width: 72px !important;
+}
+
+@media (max-width: 767px) {
+  .division-menu-actions {
+    gap: 6px !important;
+  }
+
+  .division-menu-actions .division-menu-theme {
+    min-width: 0 !important;
+  }
+}
