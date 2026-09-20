@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Plus, Pencil, Trash2, KeyRound, Check, X, Search, WalletCards } from 'lucide-react';
+import { Plus, Pencil, Trash2, KeyRound, Check, X, Search, WalletCards, Target } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { createRepresentativeAccount } from '../lib/representativeAuth';
 import '../styles/admin.css';
@@ -29,6 +30,7 @@ const emptyCatForm = {
 };
 
 const AdminRepresentatives = () => {
+  const navigate = useNavigate();
   const [reps, setReps] = useState([]);
   const [sales, setSales] = useState([]);
   const [withdrawals, setWithdrawals] = useState([]);
@@ -476,6 +478,9 @@ const AdminRepresentatives = () => {
         )}
 
         <div className="rep-admin-tabs">
+          <button type="button" className="rep-leads-nav-btn" onClick={() => navigate('/admin/sales/leads')}>
+            <Target size={15} /> العملاء المستهدفين
+          </button>
           {[
             ['overview', 'نظرة عامة'],
             ['reps', 'المندوبون'],
