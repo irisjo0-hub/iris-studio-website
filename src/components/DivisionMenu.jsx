@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Home, Clapperboard, Camera, Printer, MessageCircle, Globe } from 'lucide-react';
+import { Menu, X, Home, Clapperboard, Camera, Printer, MessageCircle, Globe, Sun, Moon } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import irisLogo from '../assets/iris_logo.png';
 import '../styles/iris-dark-hero.css';
 
 const DivisionMenu = () => {
-  const { settings, lang, toggleLanguage } = useSiteSettings();
+  const { settings, lang, toggleLanguage, theme, toggleTheme } = useSiteSettings();
   const location = useLocation();
   const navigate = useNavigate();
   const isRtl = lang === 'ar';
@@ -157,14 +157,25 @@ const DivisionMenu = () => {
           </nav>
 
           <div className="division-menu-bottom">
-            <button
-              type="button"
-              className="division-menu-lang"
-              onClick={toggleLanguage}
-            >
-              <Globe size={15} />
-              <span>{isRtl ? 'EN English' : 'ع العربية'}</span>
-            </button>
+            <div className="division-menu-actions">
+              <button
+                type="button"
+                className="division-menu-lang"
+                onClick={toggleLanguage}
+              >
+                <Globe size={15} />
+                <span>{isRtl ? 'EN English' : 'ع العربية'}</span>
+              </button>
+              <button
+                type="button"
+                className="division-menu-lang division-menu-theme"
+                onClick={toggleTheme}
+                aria-label={theme === 'dark' ? (isRtl ? 'تفعيل الوضع الفاتح' : 'Enable light mode') : (isRtl ? 'تفعيل الوضع الداكن' : 'Enable dark mode')}
+              >
+                {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+                <span>{theme === 'dark' ? (isRtl ? 'فاتح' : 'Light') : (isRtl ? 'داكن' : 'Dark')}</span>
+              </button>
+            </div>
             <span className="division-menu-signature">
               <i /> WE BREAK THE BOX
             </span>
