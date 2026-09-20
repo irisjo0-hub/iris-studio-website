@@ -587,6 +587,46 @@
   text-align: left;
 }
 
+/* Desktop/tablet: scale caption geometry with the 9:16 reel frame.
+   Mobile keeps its existing layout untouched. */
+@media (min-width: 768px) {
+  .reel-frame[data-locale="ar"] .instagram-reel-caption-block {
+    right: 4.6cqw;
+    left: 24cqw;
+    bottom: 4.6cqw;
+    gap: 1.3cqw;
+  }
+
+  .reel-frame[data-locale="en"] .instagram-reel-caption-block {
+    left: 4.6cqw;
+    right: 24cqw;
+    bottom: 4.6cqw;
+    gap: 1.3cqw;
+  }
+
+  .reel-frame[data-locale="ar"] .reels-action-rail {
+    left: 4.1cqw;
+    bottom: 10.3cqw;
+    width: 15.9cqw;
+  }
+
+  .reel-frame[data-locale="en"] .reels-action-rail {
+    right: 4.1cqw;
+    bottom: 10.3cqw;
+    width: 15.9cqw;
+  }
+
+  .reel-frame[data-locale="ar"] .reels-hamburger-btn {
+    right: 4.6cqw;
+    top: 4.1cqw;
+  }
+
+  .reel-frame[data-locale="en"] .reels-hamburger-btn {
+    left: 4.6cqw;
+    top: 4.1cqw;
+  }
+}
+
 /* ===== FEEDBACK BOTTOM SHEET / DESKTOP DRAWER ===== */
 .reels-feedback-drawer-overlay {
   position: fixed;
