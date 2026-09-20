@@ -106,7 +106,7 @@ const SalesLeads = () => {
             <div className="rep-lead-title"><strong>{lead.business_name}</strong><small>{lead.category||'مستهدف'}</small></div>
             <span className={'rep-lead-status '+lead.status}>{statusLabel[lead.status]}</span>
           </div>
-          <div className="rep-lead-owner"><UserRound size={13}/> مستهدف بواسطة: <b>{mine?'أنت':(owner?.full_name||'مندوب آخر')}</b></div>
+          <div className="rep-lead-owner"><UserRound size={13}/> مستهدف بواسطة: <b>{mine?'أنت':'مندوب آخر'}</b></div>
           <div className="rep-lead-details">
             {lead.contact_name&&<span><UserRound size={13}/>{lead.contact_name}</span>}
             {lead.phone&&<span dir="ltr"><Phone size={13}/>{lead.phone}</span>}
