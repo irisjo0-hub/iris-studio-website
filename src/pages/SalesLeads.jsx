@@ -3,6 +3,58 @@ import { Building2, Search, Plus, X, Phone, MapPin, CalendarDays, UserRound, Mes
 import { supabase } from '../lib/supabase';
 import RepresentativeLayout from '../components/RepresentativeLayout';
 
+const normalizeArabic = (value='') => value
+  .toString()
+  .toLowerCase()
+  .normalize('NFKD')
+  .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+  .replace(/[أإآٱ]/g, 'ا')
+  .replace(/ة/g, 'ه')
+  .replace(/ى/g, 'ي')
+  .replace(/ؤ/g, 'و')
+  .replace(/ئ/g, 'ي')
+  .replace(/ـ/g, '')
+  .replace(/[ًٌٍَُِّْ]/g, '')
+  .replace(/[^\p{L}\p{N}]+/gu, ' ')
+  .trim();
+
+const editDistance = (a='', b='') => {
+  const prev = Array.from({length:b.length+1}, (_,i)=>i);
+  for (let i=1;i<=a.length;i++) {
+    const curr=[i];
+    for (let j=1;j<=b.length;j++) {
+      curr[j]=Math.min(
+        curr[j-1]+1,
+        prev[j]+1,
+        prev[j-1]+(a[i-1]===b[j-1]?0:1)
+      );
+    }
+    for (let j=0;j<curr.length;j++) prev[j]=curr[j];
+  }
+  return prev[b.length];
+};
+
+const fuzzyWordMatch = (queryWord, textWord) => {
+  if (!queryWord || !textWord) return false;
+  if (textWord.includes(queryWord) || queryWord.includes(textWord)) return true;
+  const distance=editDistance(queryWord,textWord);
+  const maxLen=Math.max(queryWord.length,textWord.length);
+  const allowed=maxLen<=4 ? 1 : maxLen<=7 ? 2 : 3;
+  return distance<=allowed;
+};
+
+const fuzzySearch = (query, text) => {
+  const q=normalizeArabic(query);
+  const hay=normalizeArabic(text);
+  if (!q) return true;
+  if (hay.includes(q)) return true;
+  const queryWords=q.split(' ').filter(Boolean);
+  const textWords=hay.split(' ').filter(Boolean);
+  return queryWords.every(qw =>
+    textWords.some(tw => fuzzyWordMatch(qw,tw))
+  );
+};
+
 const STATUSES = [
   ['all','الكل'],
   ['new','جديد'],
@@ -40,7 +92,7 @@ const SalesLeads = () => {
   useEffect(()=>{load()},[]);
 
   const filtered = useMemo(()=>{
-    const q=search.trim().toLowerCase();
+    const q=search.trim();
     return leads.filter(l=>{
       const matchesStatus=status==='all'||l.status===status;
       const today=new Date().toISOString().slice(0,10);
@@ -48,8 +100,8 @@ const SalesLeads = () => {
         || (followUp==='overdue' && l.follow_up_date && l.follow_up_date<today && !['won','lost'].includes(l.status))
         || (followUp==='today' && l.follow_up_date===today)
         || (followUp==='upcoming' && l.follow_up_date && l.follow_up_date>today && !['won','lost'].includes(l.status));
-      const hay=[l.business_name,l.contact_name,l.phone,l.city,l.category,l.service_interest,l.notes,l.last_response].filter(Boolean).join(' ').toLowerCase();
-      return matchesStatus && matchesFollowUp && (!q || hay.includes(q));
+      const hay=[l.business_name,l.contact_name,l.phone,l.city,l.category,l.service_interest,l.notes,l.last_response].filter(Boolean).join(' ');
+      return matchesStatus && matchesFollowUp && (!q || fuzzySearch(q,hay));
     });
   },[leads,search,status,followUp]);
 
@@ -83,7 +135,7 @@ const SalesLeads = () => {
 
       <div className="rep-search">
         <Search size={17}/>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="ابحث باسم المحل، الشخص، الهاتف، المدينة..." />
+        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="ابحث باسم المحل حتى لو في خطأ بالكتابة..." />
       </div>
 
       <div className="rep-lead-filters">
