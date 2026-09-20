@@ -1045,5 +1045,7 @@
 .overlay-nav-icon{width:38px!important;height:38px!important;border-radius:10px!important}
 .overlay-nav-arrow{display:none!important}
 .overlay-nav-label{text-align:start!important}
-.overlay-nav-contact{margin-top:8px!important;background:rgba(4,70,48,.12)!important}
+.overlay-nav-contact{margin-top:8px!important;background:transparent!important}
 @media(max-width:600px){.overlay-vertical-menu{width:calc(100vw - 34px)!important;gap:2px!important}.overlay-nav-item{grid-template-columns:38px minmax(0,1fr)!important;min-height:57px!important;padding:6px 9px!important;font-size:24px!important}.overlay-nav-icon{width:34px!important;height:34px!important}}
+
+.overlay-nav-contact.active{background:rgba(4,70,48,.22)!important;border-color:rgba(85,214,157,.28)!important}
