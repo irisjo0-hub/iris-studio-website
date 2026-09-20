@@ -157,6 +157,7 @@
 /* ===== TRUE 9:16 REEL FRAME CANVAS GEOMETRY ===== */
 .reel-frame {
   position: relative;
+  container-type: inline-size;
   aspect-ratio: 9 / 16;
   width: min(100vw, calc(100dvh * 9 / 16));
   height: calc(min(100vw, calc(100dvh * 9 / 16)) * 16 / 9);
@@ -475,7 +476,7 @@
 /* ===== DYNAMIC REEL EDITORIAL OVERLAY ===== */
 .reel-item-number {
   font-family: var(--font-hero, "DegularDisplay", sans-serif);
-  font-size: clamp(0.72rem, 2vw, 0.85rem);
+  font-size: clamp(0.72rem, 2cqw, 0.85rem);
   font-weight: 600;
   letter-spacing: 1px;
   color: #F5BD1A;
@@ -484,7 +485,7 @@
 
 .reel-headline-text {
   font-family: var(--font-primary, sans-serif);
-  font-size: clamp(0.98rem, 3.6vw, 1.75rem);
+  font-size: clamp(0.98rem, 3.6cqw, 1.75rem);
   font-weight: 700;
   line-height: 1.28;
   color: #ECEBE7;
@@ -499,7 +500,7 @@
 
 .reel-secondary-text {
   font-family: var(--font-primary, sans-serif);
-  font-size: clamp(0.72rem, 2.5vw, 0.88rem);
+  font-size: clamp(0.72rem, 2.5cqw, 0.88rem);
   color: rgba(236, 235, 231, 0.8);
   margin: 0;
   line-height: 1.35;
@@ -1288,41 +1289,6 @@
 
   :root[data-reel-direction="backward"]::view-transition-new(iris-reel-content) {
     animation: iris-reel-slide-in-from-top 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-}
-
-/* Desktop reel typography: keep the established reel proportions.
-   The frame is only ~520px wide, so viewport-sized type overflows quickly. */
-@media (min-width: 768px) {
-  .reel-frame {
-    container-type: inline-size;
-  }
-
-  .reel-frame .reel-item-number {
-    font-size: clamp(10px, 2.7cqw, 14px);
-    line-height: 1.15;
-  }
-
-  .reel-frame .reel-headline-text {
-    font-size: clamp(20px, 4.8cqw, 25px);
-    line-height: 1.2;
-    letter-spacing: 0;
-    font-weight: 700;
-    max-width: 88%;
-  }
-
-  .reel-frame .reel-secondary-text {
-    font-size: clamp(10px, 2.2cqw, 12px);
-    line-height: 1.35;
-    max-width: 88%;
-  }
-
-  .reel-frame .instagram-username {
-    font-size: clamp(11px, 2.5cqw, 13px);
-  }
-
-  .reel-frame .instagram-handle {
-    font-size: clamp(9px, 2.0cqw, 11px);
   }
 }
 
