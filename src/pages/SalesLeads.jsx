@@ -22,9 +22,9 @@ const emptyForm = {
 };
 
 const SalesLeads = () => {
-  const [user,setUser]=useState(null), [repMap,setRepMap]=useState({}), [leads,setLeads]=useState([]);
+  const [user,setUser]=useState(null), [leads,setLeads]=useState([]);
   const [loading,setLoading]=useState(true), [saving,setSaving]=useState(false);
-  const [search,setSearch]=useState(''), [status,setStatus]=useState('all');
+  const [search,setSearch]=useState(''), [status,setStatus]=useState('all'), [followUp,setFollowUp]=useState('all');
   const [showForm,setShowForm]=useState(false), [editing,setEditing]=useState(null);
   const [form,setForm]=useState(emptyForm), [error,setError]=useState('');
 
@@ -32,14 +32,9 @@ const SalesLeads = () => {
     setLoading(true);
     const {data:{user}} = await supabase.auth.getUser();
     setUser(user);
-    const [{data: rows,error:e1},{data: reps,error:e2}] = await Promise.all([
-      supabase.from('sales_leads').select('*').order('updated_at',{ascending:false}),
-      supabase.from('representatives').select('user_id,full_name,employee_code')
-    ]);
+    const {data: rows,error:e1} = await supabase.from('sales_leads').select('*').order('updated_at',{ascending:false});
     if (e1) setError(e1.message);
-    if (e2) setError(e2.message);
-    const map={}; (reps||[]).forEach(r=>map[r.user_id]=r);
-    setRepMap(map); setLeads(rows||[]); setLoading(false);
+    setLeads(rows||[]); setLoading(false);
   };
 
   useEffect(()=>{load()},[]);
@@ -48,10 +43,15 @@ const SalesLeads = () => {
     const q=search.trim().toLowerCase();
     return leads.filter(l=>{
       const matchesStatus=status==='all'||l.status===status;
+      const today=new Date().toISOString().slice(0,10);
+      const matchesFollowUp=followUp==='all'
+        || (followUp==='overdue' && l.follow_up_date && l.follow_up_date<today && !['won','lost'].includes(l.status))
+        || (followUp==='today' && l.follow_up_date===today)
+        || (followUp==='upcoming' && l.follow_up_date && l.follow_up_date>today && !['won','lost'].includes(l.status));
       const hay=[l.business_name,l.contact_name,l.phone,l.city,l.category,l.service_interest,l.notes,l.last_response].filter(Boolean).join(' ').toLowerCase();
-      return matchesStatus && (!q || hay.includes(q));
+      return matchesStatus && matchesFollowUp && (!q || hay.includes(q));
     });
-  },[leads,search,status]);
+  },[leads,search,status,followUp]);
 
   const openNew=()=>{setEditing(null);setForm(emptyForm);setError('');setShowForm(true)};
   const openEdit=(lead)=>{setEditing(lead);setForm({...emptyForm,...lead});setError('');setShowForm(true)};
@@ -99,7 +99,6 @@ const SalesLeads = () => {
       {loading ? <div className="rep-empty">جاري تحميل العملاء المستهدفين...</div> :
       !filtered.length ? <div className="rep-empty"><Building2 size={30}/><br/>لا توجد نتائج مطابقة.</div> :
       <div className="rep-leads-grid">{filtered.map(lead=>{
-        const owner=repMap[lead.representative_id];
         const mine=lead.representative_id===user?.id;
         return <article className={'rep-lead-card status-'+lead.status} key={lead.id}>
           <div className="rep-lead-top">
