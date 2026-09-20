@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Globe, Menu, X, ArrowDown } from 'lucide-react';
+import { Globe, Menu, X, ArrowDown, Home, Clapperboard, Camera, Printer, BriefcaseBusiness, Tags, MessageCircle } from 'lucide-react';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { HeroLivingCollage } from './HeroLivingCollage';
 import irisLogo from '../../assets/iris_logo.png';
@@ -17,6 +17,7 @@ import '../../styles/iris-dark-hero.css';
 
 export const IrisDarkHero = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { settings, lang, toggleLanguage } = useSiteSettings();
   const isRtl = lang === 'ar';
   const [heroMenuOpen, setHeroMenuOpen] = useState(false);
@@ -293,54 +294,53 @@ export const IrisDarkHero = () => {
             </div>
 
             {/* Vertical Menu List (One Item Per Row) */}
-            <nav className="overlay-vertical-menu">
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
-                <Link to="/" className="overlay-nav-item active" onClick={() => setHeroMenuOpen(false)}>
-                  {isRtl ? "الرئيسية" : "Home"}
-                </Link>
-              </motion.div>
+            <nav className="overlay-vertical-menu" aria-label={isRtl ? "القائمة الرئيسية" : "Main navigation"}>
+              {[
+                { to: '/', label: isRtl ? 'الرئيسية' : 'Home', Icon: Home },
+                { to: '/media', label: isRtl ? 'ميديا' : 'Media', Icon: Clapperboard },
+                { to: '/studio', label: isRtl ? 'الاستوديو' : 'Studio', Icon: Camera },
+                { to: '/print', label: isRtl ? 'المطبوعات' : 'Print', Icon: Printer },
+                { to: '/work', label: isRtl ? 'أعمالنا' : 'Our Work', Icon: BriefcaseBusiness },
+                { to: '/packages', label: isRtl ? 'البكجات والعروض' : 'Packages & Offers', Icon: Tags },
+              ].map(({ to, label, Icon }, index) => {
+                const active = to === '/' ? location.pathname === '/' : location.pathname === to || location.pathname.startsWith(to + '/');
+                return (
+                  <motion.div
+                    key={to}
+                    initial={{ opacity: 0, x: isRtl ? 18 : -18 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.06 + index * 0.045, duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <Link
+                      to={to}
+                      className={`overlay-nav-item${active ? ' active' : ''}`}
+                      onClick={() => setHeroMenuOpen(false)}
+                    >
+                      <span className="overlay-nav-icon"><Icon size={20} strokeWidth={1.8} /></span>
+                      <span className="overlay-nav-label">{label}</span>
+                      <span className="overlay-nav-arrow" aria-hidden="true">↗</span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
 
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
-                <Link to="/media" className="overlay-nav-item" onClick={() => setHeroMenuOpen(false)}>
-                  {isRtl ? "ميديا" : "Media"}
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-                <Link to="/studio" className="overlay-nav-item" onClick={() => setHeroMenuOpen(false)}>
-                  {isRtl ? "الاستوديو" : "Studio"}
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
-                <Link to="/print" className="overlay-nav-item" onClick={() => setHeroMenuOpen(false)}>
-                  {isRtl ? "المطبوعات" : "Print"}
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}>
-                <Link to="/work" className="overlay-nav-item" onClick={() => setHeroMenuOpen(false)}>
-                  {isRtl ? "أعمالنا" : "Our Work"}
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}>
-                <Link to="/packages" className="overlay-nav-item" onClick={() => setHeroMenuOpen(false)}>
-                  {isRtl ? "البكجات والعروض" : "Packages & Offers"}
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}>
+              <motion.div
+                initial={{ opacity: 0, x: isRtl ? 18 : -18 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.33, duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              >
                 <a
                   href="#iris-footer-root"
-                  className="overlay-nav-item"
+                  className={`overlay-nav-item overlay-nav-contact${location.hash === '#iris-footer-root' ? ' active' : ''}`}
                   onClick={() => {
                     setHeroMenuOpen(false);
                     const footerEl = document.getElementById('iris-footer-root');
                     if (footerEl) footerEl.scrollIntoView({ behavior: 'smooth' });
                   }}
                 >
-                  {isRtl ? "تواصل معنا" : "Contact Us"}
+                  <span className="overlay-nav-icon"><MessageCircle size={20} strokeWidth={1.8} /></span>
+                  <span className="overlay-nav-label">{isRtl ? 'تواصل معنا' : 'Contact Us'}</span>
+                  <span className="overlay-nav-arrow" aria-hidden="true">↗</span>
                 </a>
               </motion.div>
             </nav>
