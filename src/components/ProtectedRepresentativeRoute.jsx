@@ -12,7 +12,8 @@ const ProtectedRepresentativeRoute = () => {
     let retryTimer;
 
     const verifyRepresentative = async (attempt = 0) => {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const { data: { session }, error: authError } = await supabase.auth.getSession();
+      const user = session?.user;
 
       if (authError) {
         if (mounted) {
@@ -53,11 +54,14 @@ const ProtectedRepresentativeRoute = () => {
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
-      if (event === 'SIGNED_OUT' || !session) {
+      // Only an explicit SIGNED_OUT event means the user logged out.
+      // Supabase can briefly emit auth events without a session while refreshing
+      // or restoring a persisted session; do not kick the representative to login.
+      if (event === 'SIGNED_OUT') {
         setState('unauthenticated');
         return;
       }
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+      if (session && (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED')) {
         void verifyRepresentative();
       }
     });
