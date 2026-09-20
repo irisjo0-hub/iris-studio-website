@@ -548,15 +548,21 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
               <div className="reel-darkness-gradient" />
 
               <div className="instagram-reel-caption-block" dir={isRtl ? 'rtl' : 'ltr'}>
-                <div className="instagram-caption-profile-row">
+                <a
+                  className="instagram-caption-profile-row instagram-profile-link"
+                  href="https://www.instagram.com/iris.jo0/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open IRIS.JO0 on Instagram"
+                >
                   <div className="instagram-avatar-ring">
                     <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="instagram-avatar-img" decoding="async" />
                   </div>
                   <div className="instagram-user-meta">
                     <span className="instagram-username">IRIS HOME</span>
-                    <span className="instagram-handle bidi-isolate" dir="ltr">@iris.jo</span>
+                    <span className="instagram-handle bidi-isolate" dir="ltr">@iris.jo0</span>
                   </div>
-                </div>
+                </a>
 
                 <div className="reel-caption-text-group">
                   <span className="reel-item-number"><span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / 0{activeIndex + 1}</span>
