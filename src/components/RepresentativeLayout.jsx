@@ -35,7 +35,7 @@ const RepresentativeLayout = ({ children }) => {
   return <div className="rep-shell" dir="rtl">
     <header className="rep-topbar">
       <button className="rep-menu-btn" onClick={() => setOpen(!open)}>{open ? <X size={22}/> : <Menu size={22}/>}</button>
-      <div className="rep-brand"><b>IRIS</b><span>REPRESENTATIVE PORTAL</span></div>
+      <div className="rep-brand"><b>IRIS</b><span>SALES PORTAL</span></div>
       <div className="rep-user-mini">{rep?.full_name || 'مندوب'} <small>{rep?.employee_code || ''}</small></div>
     </header>
     <div className="rep-body">
