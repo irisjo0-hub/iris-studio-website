@@ -128,9 +128,9 @@ const AppRouter = () => (
       </Route>
 
       <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/representative" element={<RepresentativeLogin />} />
-      <Route path="/representative/login" element={<RepresentativeLogin />} />
-      <Route path="/representative/reset-password" element={<RepresentativeResetPassword />} />
+      <Route path="/sales" element={<RepresentativeLogin />} />
+      <Route path="/sales/login" element={<RepresentativeLogin />} />
+      <Route path="/sales/reset-password" element={<RepresentativeResetPassword />} />
 
       <Route element={<ProtectedAdminRoute />}>
         <Route path="/admin" element={<Admin />} />
@@ -153,10 +153,10 @@ const AppRouter = () => (
       </Route>
 
       <Route element={<ProtectedRepresentativeRoute />}>
-        <Route path="/representative/dashboard" element={<RepresentativeDashboard />} />
-        <Route path="/representative/sales" element={<RepresentativeSales />} />
-        <Route path="/representative/withdrawals" element={<RepresentativeWithdrawals />} />
-        <Route path="/representative/profile" element={<RepresentativeProfile />} />
+        <Route path="/sales/dashboard" element={<RepresentativeDashboard />} />
+        <Route path="/sales/sales" element={<RepresentativeSales />} />
+        <Route path="/sales/withdrawals" element={<RepresentativeWithdrawals />} />
+        <Route path="/sales/profile" element={<RepresentativeProfile />} />
       </Route>
     </Routes>
   </Suspense>
