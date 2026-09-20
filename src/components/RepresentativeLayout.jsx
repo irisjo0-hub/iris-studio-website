@@ -21,14 +21,14 @@ const RepresentativeLayout = ({ children }) => {
 
   const logout = async () => {
     await supabase.auth.signOut({ scope: 'local' });
-    navigate('/representative/login', { replace: true });
+    navigate('/sales/login', { replace: true });
   };
 
   const links = [
-    ['/representative/dashboard', 'الرئيسية', LayoutDashboard],
-    ['/representative/sales', 'مبيعاتي', ReceiptText],
-    ['/representative/withdrawals', 'السحوبات', WalletCards],
-    ['/representative/profile', 'حسابي', UserRound],
+    ['/sales/dashboard', 'الرئيسية', LayoutDashboard],
+    ['/sales/sales', 'مبيعاتي', ReceiptText],
+    ['/sales/withdrawals', 'السحوبات', WalletCards],
+    ['/sales/profile', 'حسابي', UserRound],
   ];
 
   return <div className="rep-shell" dir="rtl">
