@@ -1,10 +1,10 @@
 // __IRIS_BOOKING_HARDENING_APPLIED__
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import DivisionMenu from '../DivisionMenu';
 import {
-  Menu, X, MessageSquare, Share2, ArrowUpRight, Globe,
+  X, MessageSquare, Share2, ArrowUpRight, Globe,
   Camera, Calendar, Printer, ShoppingBag, FolderKanban,
   Music, Volume2, VolumeX, Sparkles, ChevronDown, ChevronUp
 } from 'lucide-react';
@@ -24,10 +24,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const [items, setItems] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [isStageActive, setIsStageActive] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [allFeedbackList, setAllFeedbackList] = useState([]);
@@ -330,7 +328,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
     stageEl.addEventListener('wheel', handleWheelNonPassive, { passive: false });
     return () => stageEl.removeEventListener('wheel', handleWheelNonPassive);
-  }, [isStageActive, menuOpen, feedbackOpen, items.length]);
+  }, [isStageActive, feedbackOpen, items.length]);
 
   const handleTouchStart = (e) => {
     touchStartY.current = e.touches[0].clientY;
@@ -385,7 +383,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeIndex, items.length, feedbackOpen, menuOpen, isStageActive]);
+  }, [activeIndex, items.length, feedbackOpen, isStageActive]);
 
   const getActionIcon = (iconType) => {
     switch (iconType) {
@@ -575,7 +573,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
           <div className="reels-persistent-ui-layer">
             <div className="reels-top-bar">
-              <button type="button" className="reels-hamburger-btn" onClick={() => setMenuOpen(true)} aria-label="Open Navigation Menu"><Menu size={20} /></button>
+              <DivisionMenu />
               <div className="reels-counter-pill-tag"><span className="gold-accent-line" /><span className="bidi-isolate" dir="ltr">0{activeIndex + 1} / 08</span></div>
             </div>
 
@@ -650,32 +648,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         </div>
       )}
 
-      {menuOpen && createPortal(
-        <motion.div className={`iris-portal-fullscreen-overlay dir-${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
-          <div className="overlay-top-bar">
-            <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" decoding="async" />
-            <button type="button" className="overlay-close-btn" onClick={() => setMenuOpen(false)} aria-label="Close Menu"><X size={24} /></button>
-          </div>
-
-          <nav className="overlay-vertical-menu">
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}><Link to="/" className="overlay-nav-item active" onClick={() => setMenuOpen(false)}>{isRtl ? "الرئيسية" : "Home"}</Link></motion.div>
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}><Link to="/media" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>{isRtl ? "ميديا" : "Media"}</Link></motion.div>
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}><Link to="/studio" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>{isRtl ? "الاستوديو" : "Studio"}</Link></motion.div>
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}><Link to="/print" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>{isRtl ? "المطبوعات" : "Print"}</Link></motion.div>
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}><Link to="/work" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>{isRtl ? "أعمالنا" : "Our Work"}</Link></motion.div>
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}><Link to="/packages" className="overlay-nav-item" onClick={() => setMenuOpen(false)}>{isRtl ? "البكجات والعروض" : "Packages & Offers"}</Link></motion.div>
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}><a href="#iris-footer-root" className="overlay-nav-item" onClick={() => { setMenuOpen(false); const footerEl = document.getElementById('iris-footer-root'); if (footerEl) footerEl.scrollIntoView({ behavior: 'smooth' }); }}>{isRtl ? "تواصل معنا" : "Contact Us"}</a></motion.div>
-          </nav>
-
-          <div className="overlay-bottom-bar">
-            <button type="button" className="overlay-lang-btn" onClick={toggleLanguage} aria-label={isRtl ? "Switch to English" : "التحويل إلى العربية"}><Globe size={16} /><span>{isRtl ? 'EN English' : 'ع العربية'}</span></button>
-            <div className="overlay-brand-signature"><span>WE BREAK THE BOX</span><span className="gold-dot" /></div>
-          </div>
-        </motion.div>,
-        document.body
-      )}
-
-      {toastMessage && <div className="reels-toast-notification"><span>{toastMessage}</span></div>}
+      {{toastMessage && <div className="reels-toast-notification"><span>{toastMessage}</span></div>}
     </section>
   );
 };
