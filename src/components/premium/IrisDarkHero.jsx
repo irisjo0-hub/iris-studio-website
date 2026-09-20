@@ -329,12 +329,30 @@ export const IrisDarkHero = () => {
                 transition={{ delay: 0.33, duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               >
                 <a
-                  href="#iris-footer-root"
+                  href="/#iris-footer-root"
                   className={`overlay-nav-item overlay-nav-contact${location.hash === '#iris-footer-root' ? ' active' : ''}`}
                   onClick={() => {
                     setHeroMenuOpen(false);
-                    const footerEl = document.getElementById('iris-footer-root');
-                    if (footerEl) footerEl.scrollIntoView({ behavior: 'smooth' });
+                    const goToFooter = () => {
+                      const footerEl = document.getElementById('iris-footer-root');
+                      if (footerEl) {
+                        window.history.replaceState(null, '', '#iris-footer-root');
+                        footerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        return true;
+                      }
+                      return false;
+                    };
+                    if (location.pathname === '/') {
+                      requestAnimationFrame(() => goToFooter());
+                    } else {
+                      navigate('/').then?.(() => {});
+                      let attempts = 0;
+                      const waitForHomeFooter = () => {
+                        if (goToFooter() || attempts++ > 30) return;
+                        requestAnimationFrame(waitForHomeFooter);
+                      };
+                      requestAnimationFrame(waitForHomeFooter);
+                    }
                   }}
                 >
                   <span className="overlay-nav-icon"><MessageCircle size={20} strokeWidth={1.8} /></span>
