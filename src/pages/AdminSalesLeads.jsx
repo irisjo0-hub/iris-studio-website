@@ -16,6 +16,7 @@ import AdminLayout from '../components/AdminLayout';
 import { supabase } from '../lib/supabase';
 import '../styles/admin.css';
 import '../styles/representatives.css';
+import '../styles/admin-sales-leads.css';
 
 const STATUSES = [
   ['all', 'الكل'],
