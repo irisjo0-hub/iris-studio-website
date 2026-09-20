@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, ArrowLeft, ShieldCheck } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { salesSupabase as supabase } from '../lib/supabase';
 import irisLogo from '../assets/iris_logo.png';
 import '../styles/representatives.css';
 
