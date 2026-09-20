@@ -156,3 +156,55 @@
  .rep-dashboard-section-head h2{font-size:16px}
  .rep-leads-cta{align-items:flex-start}
 }
+
+/* Final compact IRIS dashboard: black + purple only */
+.rep-dashboard-page{max-width:1180px}
+.rep-dashboard-hero{padding:4px 0 20px}
+.rep-dashboard-hero h1{font-size:30px;margin:5px 0 6px}
+.rep-dashboard-hero p{font-size:12px}
+.rep-dashboard-balance{
+  min-height:125px;margin-bottom:14px;padding:20px 24px;
+  background:linear-gradient(135deg,rgba(123,79,163,.28),rgba(32,24,40,.78));
+  border:1px solid rgba(143,108,255,.42);box-shadow:0 12px 40px rgba(0,0,0,.28)
+}
+.rep-balance-copy strong{font-size:38px}
+.rep-balance-icon{width:48px;height:48px;background:rgba(143,108,255,.16);color:#B18ACB}
+.rep-dashboard-stats{grid-template-columns:repeat(4,1fr)!important;gap:10px;margin-bottom:22px}
+.rep-dashboard-stats .rep-stat{
+  min-height:105px;padding:14px 15px;border-radius:13px;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.075)
+}
+.rep-dashboard-stats .rep-stat span{width:32px;height:32px;border-radius:9px;margin-bottom:12px}
+.rep-dashboard-stats .rep-stat strong{font-size:18px}
+.rep-dashboard-stats .rep-stat:last-child span{background:rgba(143,108,255,.12);color:#B18ACB}
+.rep-dashboard-section-head{margin:4px 0 10px}
+.rep-dashboard-section-head h2{font-size:16px}
+.rep-dashboard-panels .rep-panel{padding:15px;border-radius:14px}
+.rep-row{padding:10px 0}
+.rep-leads-cta{margin-top:10px;padding:12px 14px;background:rgba(143,108,255,.07);border-color:rgba(143,108,255,.18)}
+.rep-leads-cta-icon{width:34px;height:34px;background:rgba(143,108,255,.12)}
+.rep-info-strip{margin-top:12px}
+@media(max-width:900px){
+ .rep-dashboard-hero h1{font-size:28px}
+ .rep-dashboard-balance{min-height:110px;padding:18px}
+ .rep-dashboard-stats{grid-template-columns:repeat(2,1fr)!important}
+}
+@media(max-width:600px){
+ .rep-dashboard-page{padding-top:18px}
+ .rep-dashboard-hero{padding-bottom:15px}
+ .rep-dashboard-hero h1{font-size:25px}
+ .rep-dashboard-balance{min-height:105px;padding:17px 16px}
+ .rep-balance-copy strong{font-size:31px}
+ .rep-balance-copy span{font-size:9px}
+ .rep-dashboard-stats{gap:8px;margin-bottom:18px}
+ .rep-dashboard-stats .rep-stat{min-height:92px;padding:12px}
+ .rep-dashboard-stats .rep-stat strong{font-size:16px}
+}
+/* Keep IRIS portal palette strictly black + purple */
+:root{--rep-bg:#0b0a0e;--rep-card:rgba(255,255,255,.045);--rep-border:rgba(255,255,255,.09);--rep-text:#f2edf5;--rep-muted:#aaa2b0;--rep-purple:#8f6cff}
+.rep-shell{background:radial-gradient(circle at 12% 0%,rgba(143,108,255,.15),transparent 28%),#0b0a0e}
+.rep-dashboard-balance{background:linear-gradient(135deg,rgba(143,108,255,.27),rgba(21,18,25,.94))}
+.rep-lead-card.status-won{border-color:rgba(143,108,255,.28)}
+.rep-lead-status.won{background:rgba(143,108,255,.12);color:#b99cff}
+.rep-lead-status.lost{background:rgba(255,255,255,.06);color:#aaa2b0}
+.rep-dashboard-stats .rep-stat:last-child span{background:rgba(143,108,255,.12);color:#b99cff}
