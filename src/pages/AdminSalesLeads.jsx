@@ -11,6 +11,7 @@ import {
   MessageSquareText,
   Filter,
   CheckCircle2,
+  Trash2,
 } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
 import { supabase } from '../lib/supabase';
@@ -202,6 +203,29 @@ const AdminSalesLeads = () => {
     setError('');
   };
 
+  const removeLead = async (lead) => {
+    const confirmed = window.confirm(
+      `هل أنت متأكد من حذف العميل المستهدف "${lead.business_name}"؟\n\nسيتم حذف سجل العميل نهائياً.`
+    );
+    if (!confirmed) return;
+
+    setError('');
+    setMessage('');
+
+    const { error: deleteError } = await supabase
+      .from('sales_leads')
+      .delete()
+      .eq('id', lead.id);
+
+    if (deleteError) {
+      setError(deleteError.message);
+      return;
+    }
+
+    setLeads((current) => current.filter((item) => item.id !== lead.id));
+    setMessage('تم حذف العميل المستهدف بنجاح.');
+  };
+
   const save = async (event) => {
     event.preventDefault();
     if (!editing) return;
@@ -363,9 +387,14 @@ const AdminSalesLeads = () => {
                           : 'المتابعة: ' + lead.follow_up_date
                         : 'بدون موعد متابعة'}
                     </span>
-                    <button type="button" onClick={() => openEdit(lead)}>
-                      <Pencil size={14} /> تعديل ومتابعة
-                    </button>
+                    <div className="admin-sales-lead-actions">
+                      <button type="button" onClick={() => openEdit(lead)}>
+                        <Pencil size={14} /> تعديل ومتابعة
+                      </button>
+                      <button type="button" className="danger" onClick={() => removeLead(lead)} title="حذف العميل">
+                        <Trash2 size={14} /> حذف
+                      </button>
+                    </div>
                   </div>
                 </article>
               );
