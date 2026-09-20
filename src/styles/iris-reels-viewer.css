@@ -1291,31 +1291,38 @@
   }
 }
 
-/* Desktop reel typography must scale from the 9:16 frame, not the browser viewport. */
+/* Desktop reel typography: keep the established reel proportions.
+   The frame is only ~520px wide, so viewport-sized type overflows quickly. */
 @media (min-width: 768px) {
+  .reel-frame {
+    container-type: inline-size;
+  }
+
   .reel-frame .reel-item-number {
-    font-size: clamp(0.62rem, 2.2cqw, 0.78rem);
+    font-size: clamp(10px, 2.7cqw, 14px);
     line-height: 1.15;
   }
 
   .reel-frame .reel-headline-text {
-    font-size: clamp(0.92rem, 4.1cqw, 1.32rem);
-    line-height: 1.18;
+    font-size: clamp(24px, 6.0cqw, 31px);
+    line-height: 1.12;
     letter-spacing: 0;
     font-weight: 700;
+    max-width: 92%;
   }
 
   .reel-frame .reel-secondary-text {
-    font-size: clamp(0.62rem, 2.2cqw, 0.78rem);
-    line-height: 1.3;
+    font-size: clamp(11px, 2.8cqw, 14px);
+    line-height: 1.35;
+    max-width: 92%;
   }
 
   .reel-frame .instagram-username {
-    font-size: clamp(0.72rem, 2.2cqw, 0.84rem);
+    font-size: clamp(11px, 2.5cqw, 13px);
   }
 
   .reel-frame .instagram-handle {
-    font-size: clamp(0.58rem, 1.7cqw, 0.68rem);
+    font-size: clamp(9px, 2.0cqw, 11px);
   }
 }
 
