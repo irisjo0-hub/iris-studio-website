@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Building2, Search, Plus, X, Phone, MapPin, CalendarDays, UserRound, MessageSquareText, Pencil, Filter } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { salesSupabase as supabase } from '../lib/supabase';
 import RepresentativeLayout from '../components/RepresentativeLayout';
 
 const normalizeArabic = (value='') => value
