@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Home, Clapperboard, Camera, Printer, MessageCircle, Globe } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import irisLogo from '../assets/iris_logo.png';
 import '../styles/iris-dark-hero.css';
@@ -15,8 +14,21 @@ const DivisionMenu = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = open ? 'hidden' : previousOverflow;
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+
+    if (open) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [open]);
 
   const items = [
@@ -26,7 +38,49 @@ const DivisionMenu = () => {
     { to: '/print', label: isRtl ? 'المطبوعات' : 'Print', Icon: Printer },
   ];
 
-  const isActive = (to) => to === '/' ? location.pathname === '/' : location.pathname === to || location.pathname.startsWith(to + '/');
+  const isActive = (to) =>
+    to === '/'
+      ? location.pathname === '/'
+      : location.pathname === to || location.pathname.startsWith(to + '/');
+
+  const openMenu = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setOpen(true);
+  };
+
+  const stopMenuEvent = (event) => {
+    event.stopPropagation();
+  };
+
+  const closeMenu = () => setOpen(false);
+
+  const goToFooter = () => {
+    const footerEl = document.getElementById('iris-footer-root');
+    if (!footerEl) return false;
+    window.history.replaceState(null, '', '#iris-footer-root');
+    footerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return true;
+  };
+
+  const handleContact = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    closeMenu();
+
+    if (location.pathname === '/') {
+      requestAnimationFrame(goToFooter);
+      return;
+    }
+
+    navigate('/');
+    let attempts = 0;
+    const waitForHomeFooter = () => {
+      if (goToFooter() || attempts++ > 30) return;
+      requestAnimationFrame(waitForHomeFooter);
+    };
+    requestAnimationFrame(waitForHomeFooter);
+  };
 
   return (
     <>
@@ -34,86 +88,90 @@ const DivisionMenu = () => {
         type="button"
         className="hero-v2-hamburger-btn division-unified-menu-trigger"
         data-iris-menu-trigger="true"
-        onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(true); }}
-        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(true); }}
+        onPointerDown={openMenu}
+        onClick={openMenu}
+        onTouchStart={stopMenuEvent}
+        onTouchEnd={openMenu}
         aria-label={isRtl ? 'فتح القائمة' : 'Open menu'}
         aria-expanded={open}
+        aria-controls="iris-division-menu"
       >
         <Menu size={20} strokeWidth={1.8} />
       </button>
 
-      <AnimatePresence>
-        {open && createPortal(
-          <motion.div
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => e.stopPropagation()}
-            className="division-menu-overlay"
-            dir={isRtl ? 'rtl' : 'ltr'}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{ pointerEvents: 'auto' }}
-          >
-            <div className="division-menu-top">
-              <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" />
-              <button type="button" className="division-menu-close" onClick={() => setOpen(false)} aria-label={isRtl ? 'إغلاق القائمة' : 'Close menu'}>
-                <X size={22} />
-              </button>
-            </div>
+      {open && typeof document !== 'undefined' && createPortal(
+        <div
+          id="iris-division-menu"
+          className="division-menu-overlay"
+          dir={isRtl ? 'rtl' : 'ltr'}
+          role="dialog"
+          aria-modal="true"
+          aria-label={isRtl ? 'قائمة آيرس' : 'IRIS navigation'}
+          onPointerDown={stopMenuEvent}
+          onClick={stopMenuEvent}
+          onTouchStart={stopMenuEvent}
+          onTouchMove={stopMenuEvent}
+          onTouchEnd={stopMenuEvent}
+        >
+          <div className="division-menu-top">
+            <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" />
+            <button
+              type="button"
+              className="division-menu-close"
+              onClick={closeMenu}
+              aria-label={isRtl ? 'إغلاق القائمة' : 'Close menu'}
+            >
+              <X size={22} />
+            </button>
+          </div>
 
-            <nav className="division-menu-list">
-              {items.map(({ to, label, Icon }, index) => (
-                <motion.div key={to} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * .055 }}>
-                  <Link to={to} className={`division-menu-item${isActive(to) ? ' active' : ''}`} onClick={() => setOpen(false)}>
-                    <span className="division-menu-number">0{index + 1}</span>
-                    <span className="division-menu-icon"><Icon size={18} strokeWidth={1.7} /></span>
-                    <span className="division-menu-label">{label}</span>
-                  </Link>
-                </motion.div>
-              ))}
+          <nav className="division-menu-list">
+            {items.map(({ to, label, Icon }, index) => (
+              <Link
+                key={to}
+                to={to}
+                className={`division-menu-item${isActive(to) ? ' active' : ''}`}
+                onClick={closeMenu}
+              >
+                <span className="division-menu-number">0{index + 1}</span>
+                <span className="division-menu-icon">
+                  <Icon size={18} strokeWidth={1.7} />
+                </span>
+                <span className="division-menu-label">{label}</span>
+              </Link>
+            ))}
 
-              <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .22 }}>
-                <a href="/" className="division-menu-item contact" onClick={() => {
-                  setOpen(false);
-                  const goToFooter = () => {
-                    const footerEl = document.getElementById('iris-footer-root');
-                    if (footerEl) {
-                      window.history.replaceState(null, '', '#iris-footer-root');
-                      footerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      return true;
-                    }
-                    return false;
-                  };
-                  if (location.pathname === '/') {
-                    requestAnimationFrame(() => goToFooter());
-                  } else {
-                    navigate('/');
-                    let attempts = 0;
-                    const waitForHomeFooter = () => {
-                      if (goToFooter() || attempts++ > 30) return;
-                      requestAnimationFrame(waitForHomeFooter);
-                    };
-                    requestAnimationFrame(waitForHomeFooter);
-                  }
-                }}>
-                  <span className="division-menu-number">05</span>
-                  <span className="division-menu-icon"><MessageCircle size={18} strokeWidth={1.7} /></span>
-                  <span className="division-menu-label">{isRtl ? 'تواصل معنا' : 'Contact Us'}</span>
-                </a>
-              </motion.div>
-            </nav>
+            <a
+              href="/#iris-footer-root"
+              className="division-menu-item contact"
+              onClick={handleContact}
+            >
+              <span className="division-menu-number">05</span>
+              <span className="division-menu-icon">
+                <MessageCircle size={18} strokeWidth={1.7} />
+              </span>
+              <span className="division-menu-label">
+                {isRtl ? 'تواصل معنا' : 'Contact Us'}
+              </span>
+            </a>
+          </nav>
 
-            <div className="division-menu-bottom">
-              <button type="button" className="division-menu-lang" onClick={toggleLanguage}>
-                <Globe size={15} />
-                <span>{isRtl ? 'EN English' : 'ع العربية'}</span>
-              </button>
-              <span className="division-menu-signature"><i /> WE BREAK THE BOX</span>
-            </div>
-          </motion.div>,
-          document.body
-        )}
-      </AnimatePresence>
+          <div className="division-menu-bottom">
+            <button
+              type="button"
+              className="division-menu-lang"
+              onClick={toggleLanguage}
+            >
+              <Globe size={15} />
+              <span>{isRtl ? 'EN English' : 'ع العربية'}</span>
+            </button>
+            <span className="division-menu-signature">
+              <i /> WE BREAK THE BOX
+            </span>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 };
