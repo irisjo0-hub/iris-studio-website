@@ -11,6 +11,19 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'iris-supabase-auth', storage: typeof window !== 'undefined' ? window.localStorage : undefined } });
 
+
+// Separate auth storage for the sales portal so an admin session and a sales
+// representative session can coexist in different tabs without logging each other out.
+export const salesSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storageKey: 'iris-sales-auth',
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+  },
+});
+
 export const PRIVATE_BUCKETS = [
   'payment-receipts',
   'graduation-orders',
