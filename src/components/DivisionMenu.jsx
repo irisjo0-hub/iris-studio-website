@@ -188,3 +188,5 @@ const DivisionMenu = () => {
 };
 
 export default DivisionMenu;
+
+// Vercel production sync trigger: keep Git integration deployment aligned with main.
