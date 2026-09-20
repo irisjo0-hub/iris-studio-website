@@ -1021,6 +1021,12 @@
 }
 
 /* ===== INSTAGRAM CAPTION PROFILE ROW ===== */
+.instagram-profile-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .instagram-caption-profile-row {
   display: flex;
   align-items: center;
