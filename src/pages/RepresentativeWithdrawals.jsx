@@ -1,6 +1,6 @@
 import { useEffect,useMemo,useState } from 'react';
 import RepresentativeLayout from '../components/RepresentativeLayout';
-import { supabase } from '../lib/supabase';
+import { salesSupabase as supabase } from '../lib/supabase';
 const money=n=>Number(n||0).toFixed(2)+' JOD';
 const RepresentativeWithdrawals=()=>{const[rep,setRep]=useState(null),[sales,setSales]=useState([]),[rows,setRows]=useState([]),[amount,setAmount]=useState(''),[wallet,setWallet]=useState(''),[number,setNumber]=useState(''),[confirm,setConfirm]=useState(''),[loading,setLoading]=useState(false),[msg,setMsg]=useState(''),[error,setError]=useState('');
  const load=async()=>{const{data:{user}}=await supabase.auth.getUser();if(!user)return;const[r,s,w]=await Promise.all([supabase.from('representatives').select('*').eq('user_id',user.id).single(),supabase.from('commission_sales').select('commission_amount').eq('representative_id',user.id),supabase.from('commission_withdrawals').select('*').eq('representative_id',user.id).order('requested_at',{ascending:false})]);setRep(r.data);setSales(s.data||[]);setRows(w.data||[])};useEffect(()=>{load()},[]);
