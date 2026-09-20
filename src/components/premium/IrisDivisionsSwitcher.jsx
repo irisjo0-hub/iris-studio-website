@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Touchpad } from 'lucide-react';
@@ -22,11 +22,12 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
   const isRtl = lang === 'ar';
 
   const [activeIdx, setActiveIdx] = useState(0);
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
+  const kineticImageRef = useRef(null);
+  const mouseFrameRef = useRef(null);
 
-  // Dynamic Division Data Binds
-  const divisions = [
+  const divisions = useMemo(() => {
+  return [
     {
       id: 'media',
       number: '01',
@@ -64,8 +65,47 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
       clipDirection: 'diagonal'
     }
   ];
+  }, [settings]);
 
   const activeDivision = divisions[activeIdx] || divisions[0];
+
+  const mediaPreloadStartedRef = useRef(false);
+
+  useEffect(() => {
+    const section = containerRef.current;
+    if (!section || mediaPreloadStartedRef.current) return;
+
+    const preloadImages = () => {
+      if (mediaPreloadStartedRef.current) return;
+      mediaPreloadStartedRef.current = true;
+
+      divisions.forEach((division, index) => {
+        const src = division.image;
+        if (!src) return;
+        const img = new Image();
+        img.decoding = 'async';
+        img.fetchPriority = index === activeIdx ? 'high' : 'low';
+        img.src = src;
+        if (typeof img.decode === 'function') {
+          img.decode().catch(() => {});
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          preloadImages();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '700px 0px', threshold: 0.01 }
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, [divisions, activeIdx]);
 
   // Dual Action Row Handler: 1st click activates state, 2nd click on active row navigates
   const handleRowClick = (idx, route) => {
@@ -86,15 +126,30 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
 
   // Mouse move handler for internal image parallax (desktop)
   const handleMouseMove = (e) => {
-    if (window.innerWidth < 1024) return;
+    if (window.innerWidth < 1024 || !kineticImageRef.current) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
     const y = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
-    setMouseOffset({ x: x * 12, y: y * 12 });
+    const offsetX = x * 12;
+    const offsetY = y * 12;
+
+    if (mouseFrameRef.current) cancelAnimationFrame(mouseFrameRef.current);
+    mouseFrameRef.current = requestAnimationFrame(() => {
+      if (kineticImageRef.current) {
+        kineticImageRef.current.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`;
+      }
+      mouseFrameRef.current = null;
+    });
   };
 
   const handleMouseLeave = () => {
-    setMouseOffset({ x: 0, y: 0 });
+    if (mouseFrameRef.current) cancelAnimationFrame(mouseFrameRef.current);
+    mouseFrameRef.current = requestAnimationFrame(() => {
+      if (kineticImageRef.current) {
+        kineticImageRef.current.style.transform = 'translate3d(0, 0, 0)';
+      }
+      mouseFrameRef.current = null;
+    });
   };
 
   // Mobile Swipe Gesture Handlers (Swipe left/right on kinetic stage)
@@ -107,7 +162,11 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
     }
   };
 
-  const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
+  useEffect(() => () => {
+    if (mouseFrameRef.current) cancelAnimationFrame(mouseFrameRef.current);
+  }, []);
+
+    const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
   return (
     <section
@@ -171,14 +230,14 @@ export const IrisDivisionsSwitcher = ({ id = "iris-divisions-section" }) => {
                         alt=""
                         aria-hidden="true"
                         className="kinetic-image-backdrop"
+                        decoding="async"
                       />
                       <img
                         src={activeDivision.image}
                         alt={activeDivision.name_en}
+                        ref={kineticImageRef}
                         className="kinetic-image"
-                        style={{
-                          transform: `translate(${mouseOffset.x}px, ${mouseOffset.y}px)`
-                        }}
+                        decoding="async"
                       />
                     </>
                   ) : (

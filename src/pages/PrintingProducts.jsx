@@ -796,7 +796,7 @@ const PrintingProducts = () => {
 
       ctx.font = '12px Arial, sans-serif';
       ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.fillText('فاتورة طلب إلكترونية مؤكدة', width / 2, 68);
+      ctx.fillText('فاتورة طلب إلكترونية', width / 2, 68);
 
       // Order Badge Box (Centered Box)
       ctx.beginPath();

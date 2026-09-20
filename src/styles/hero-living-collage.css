@@ -1,7 +1,6 @@
 /* src/styles/hero-living-collage.css
  * IRIS HERO LOWER VIEWPORT LIVING STREAM ENGINE
- * Restricted strictly to the empty lower Hero space below the CTA button (0 text/CTA overlap).
- * Larger portrait cards (240-340px wide) with 3 entry directions (Left, Right, Bottom; 0 from Top).
+ * Restricted strictly to the empty lower Hero space below the CTA button.
  */
 
 .iris-hero-lower-stage {
@@ -16,7 +15,7 @@
   box-shadow: none !important;
 }
 
-/* Outer Container - Edge to Edge Unstructured Stream Container */
+/* Keep the stream container non-interactive; individual cards opt back in. */
 .lower-stage-container.edge-to-edge-stream-container {
   position: absolute;
   top: 10px;
@@ -34,10 +33,9 @@
   position: absolute !important;
   border-radius: 22px !important;
   border: none !important;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(103, 36, 95, 0.35) !important;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.78), 0 0 28px rgba(103, 36, 95, 0.30) !important;
   cursor: default;
   pointer-events: none;
-  will-change: transform, opacity;
 }
 
 /* Individual Floating Card inside Stream */
@@ -46,16 +44,11 @@
   flex-shrink: 0;
   border-radius: 22px !important;
   border: none !important;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(103, 36, 95, 0.35) !important;
-  cursor: default;
-  pointer-events: none;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.78), 0 0 28px rgba(103, 36, 95, 0.30) !important;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
-.lower-stream-card.role-focal-card:hover,
-.lower-stream-card.floating-collage-card:hover,
-.lower-stream-card.floating-stream-loop-card:hover {
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95), 0 0 50px rgba(245, 189, 26, 0.6) !important;
-}
 
 /* Card Image Element — preserve each source's aspect ratio */
 .stream-card-img {
@@ -135,6 +128,12 @@
     max-width: 48vw !important;
     border-radius: 16px !important;
     border-width: 1px !important;
+    /* Mobile GPU guard: keep the visual depth without two large shadow layers. */
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.72) !important;
+  }
+
+  .lower-stream-card.edge-floating-stream-card:hover {
+    box-shadow: 0 20px 46px rgba(0, 0, 0, 0.78) !important;
   }
 }
 

@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { useLocation, Outlet } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import Footer from './Footer';
 import { PremiumCursorGlow } from './motion';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import '../styles/global.css';
+
+const Footer = lazy(() => import('./Footer'));
 
 /**
  * Layout component for public (customer) pages.
@@ -67,7 +68,9 @@ const Layout = () => {
               <Outlet />
             </motion.main>
           </AnimatePresence>
-          <Footer />
+          <Suspense fallback={null}>
+            <Footer />
+          </Suspense>
         </>
       )}
     </div>

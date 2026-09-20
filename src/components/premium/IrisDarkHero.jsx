@@ -20,13 +20,17 @@ export const IrisDarkHero = () => {
   const { settings, lang, toggleLanguage } = useSiteSettings();
   const isRtl = lang === 'ar';
   const [heroMenuOpen, setHeroMenuOpen] = useState(false);
+  const [isHeroActive, setIsHeroActive] = useState(true);
 
   // Desktop pointer effects. Keep glow transforms off React state so mouse movement
   // does not re-render the entire hero/collage tree on every pointer event.
   const glowRafRef = useRef(null);
   const glowOffsetRef = useRef({ x: 0, y: 0 });
-  const [ctaOffset, setCtaOffset] = useState({ x: 0, y: 0 });
+  const glowElementsRef = useRef(null);
   const [isCtaHovered, setIsCtaHovered] = useState(false);
+  const ctaRef = useRef(null);
+  const ctaOffsetRef = useRef({ x: 0, y: 0 });
+  const ctaRafRef = useRef(null);
 
   // Dynamic Headline Binds from Site Settings
   const headlinePart1 = isRtl
@@ -47,6 +51,9 @@ export const IrisDarkHero = () => {
   const handleHeroMouseMove = (e) => {
     if (window.innerWidth < 1024) return;
     const hero = e.currentTarget;
+    if (!glowElementsRef.current) {
+      glowElementsRef.current = hero.querySelectorAll('.hero-v2-ambient-layer .ambient-glow');
+    }
     const rect = hero.getBoundingClientRect();
     const x = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 16;
     const y = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * 16;
@@ -55,7 +62,7 @@ export const IrisDarkHero = () => {
     glowRafRef.current = window.requestAnimationFrame(() => {
       glowRafRef.current = null;
       const { x: gx, y: gy } = glowOffsetRef.current;
-      const glows = hero.querySelectorAll('.hero-v2-ambient-layer .ambient-glow');
+      const glows = glowElementsRef.current;
       const multipliers = [[-0.5, -0.5], [0.8, 0.8], [-0.9, -0.9], [0.6, 0.6], [1.2, 1.2]];
       glows.forEach((glow, index) => {
         const [mx, my] = multipliers[index] || [1, 1];
@@ -69,10 +76,11 @@ export const IrisDarkHero = () => {
       window.cancelAnimationFrame(glowRafRef.current);
       glowRafRef.current = null;
     }
-    e.currentTarget.querySelectorAll('.hero-v2-ambient-layer .ambient-glow').forEach((glow) => {
+    const glows = glowElementsRef.current || e.currentTarget.querySelectorAll('.hero-v2-ambient-layer .ambient-glow');
+    glows.forEach((glow) => {
       glow.style.transform = 'translate(0px, 0px)';
     });
-    setCtaOffset({ x: 0, y: 0 });
+    if (ctaRef.current) ctaRef.current.style.transform = 'translate3d(0,0,0)';
     setIsCtaHovered(false);
   };
 
@@ -82,12 +90,29 @@ export const IrisDarkHero = () => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left - rect.width / 2) * 0.25;
     const y = (e.clientY - rect.top - rect.height / 2) * 0.25;
-    setCtaOffset({ x, y });
-    setIsCtaHovered(true);
+    if (ctaRef.current) ctaRef.current.style.willChange = 'transform';
+    ctaOffsetRef.current = { x, y };
+    if (!ctaRafRef.current) {
+      ctaRafRef.current = window.requestAnimationFrame(() => {
+        ctaRafRef.current = null;
+        if (ctaRef.current) {
+          const { x: offsetX, y: offsetY } = ctaOffsetRef.current;
+          ctaRef.current.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`;
+        }
+      });
+    }
+    if (!isCtaHovered) setIsCtaHovered(true);
   };
 
   const handleCtaMouseLeave = () => {
-    setCtaOffset({ x: 0, y: 0 });
+    if (ctaRafRef.current) {
+      window.cancelAnimationFrame(ctaRafRef.current);
+      ctaRafRef.current = null;
+    }
+    if (ctaRef.current) {
+      ctaRef.current.style.transform = 'translate3d(0,0,0)';
+      ctaRef.current.style.willChange = 'auto';
+    }
     setIsCtaHovered(false);
   };
 
@@ -109,6 +134,19 @@ export const IrisDarkHero = () => {
   };
 
   useEffect(() => {
+    const hero = document.getElementById('iris-dark-hero-root');
+    if (!hero) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsHeroActive(entry.isIntersecting),
+      { threshold: 0.05 }
+    );
+
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     if (heroMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -122,7 +160,7 @@ export const IrisDarkHero = () => {
   return (
     <section
       id="iris-dark-hero-root"
-      className={`iris-dark-hero-v2-wrapper dir-${isRtl ? 'rtl' : 'ltr'}`}
+      className={`iris-dark-hero-v2-wrapper dir-${isRtl ? 'rtl' : 'ltr'} ${!isHeroActive ? 'is-offscreen' : 'is-active'}`}
       dir={isRtl ? 'rtl' : 'ltr'}
       onMouseMove={handleHeroMouseMove}
       onMouseLeave={handleHeroMouseLeave}
@@ -168,6 +206,7 @@ export const IrisDarkHero = () => {
               src={settings.hero_logo_url || settings.logo_url || irisLogo}
               alt="IRIS"
               className="hero-v2-logo-img"
+              decoding="async"
             />
           </Link>
 
@@ -216,9 +255,7 @@ export const IrisDarkHero = () => {
               onClick={handleDiscoverScroll}
               onMouseMove={handleCtaMouseMove}
               onMouseLeave={handleCtaMouseLeave}
-              style={{
-                transform: `translate3d(${ctaOffset.x}px, ${ctaOffset.y}px, 0)`
-              }}
+              ref={ctaRef}
               aria-label={ctaLabel}
             >
               <span className="cta-label-text">{ctaLabel}</span>
@@ -243,7 +280,7 @@ export const IrisDarkHero = () => {
           >
             {/* Top Bar: IRIS Logo (Left), Close X (Right) */}
             <div className="overlay-top-bar">
-              <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" />
+              <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" decoding="async" />
 
               <button
                 type="button"

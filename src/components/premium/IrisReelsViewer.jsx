@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Menu, X, MessageSquare, Share2, ArrowUpRight, Globe,
   Camera, Calendar, Printer, ShoppingBag, FolderKanban,
@@ -23,7 +23,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const [items, setItems] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
   const [isLocked, setIsLocked] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isStageActive, setIsStageActive] = useState(false);
@@ -111,7 +110,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   useEffect(() => {
     window.__resetReelToHero = () => {
-      setDirection(-1);
       setActiveIndex(0);
       setIsLocked(false);
       cooldownRef.current = false;
@@ -125,16 +123,43 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   }, []);
 
   useEffect(() => {
-    const loaded = getFlowItems().filter((it) => it.enabled);
-    const initialItems = loaded.length > 0 ? loaded : getFlowItems();
+    const cachedItems = getFlowItems();
+    const loaded = cachedItems.filter((it) => it.enabled);
+    const initialItems = loaded.length > 0 ? loaded : cachedItems;
     setItems(initialItems);
 
-    getFlowItemsAsync().then((cloudItems) => {
-      if (cloudItems && cloudItems.length > 0) {
-        const filtered = cloudItems.filter((it) => it.enabled);
-        setItems(filtered.length > 0 ? filtered : cloudItems);
+    // Local cache renders immediately. Defer the Supabase refresh so the
+    // homepage's first paint is not competing with the initial hero/reels work.
+    const refreshFlowFromCloud = () => {
+      getFlowItemsAsync().then((cloudItems) => {
+        if (cloudItems && cloudItems.length > 0) {
+          const filtered = cloudItems.filter((it) => it.enabled);
+          const nextItems = filtered.length > 0 ? filtered : cloudItems;
+
+          setItems((prevItems) => {
+            if (JSON.stringify(prevItems) === JSON.stringify(nextItems)) {
+              return prevItems;
+            }
+            return nextItems;
+          });
+        }
+      });
+    };
+
+    let idleId;
+    let timeoutId;
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      idleId = window.requestIdleCallback(refreshFlowFromCloud, { timeout: 1200 });
+    } else {
+      timeoutId = window.setTimeout(refreshFlowFromCloud, 900);
+    }
+
+    return () => {
+      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleId);
       }
-    });
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+    };
 
     // Feedback is loaded only when the visitor opens the feedback drawer.
     // Avoid an extra RPC on every homepage visit.
@@ -157,7 +182,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     if (currentItem && currentItem.slug) {
       window.history.replaceState(null, '', `#flow-${currentItem.slug}`);
     }
-  }, [activeIndex, items]);
+  }, [activeIndex, items.length]);
 
   const refreshFeedback = () => {
     getAllApprovedFeedbackAsync().then(setAllFeedbackList).catch(() => {});
@@ -176,6 +201,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   };
 
   useEffect(() => {
+    if (items.length === 0 || !stageRef.current) return;
+
     let wasIntersecting = false;
 
     const observer = new IntersectionObserver(
@@ -187,7 +214,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           if (navbar) navbar.style.display = 'none';
 
           if (!wasIntersecting && stageRef.current) {
-            const stageTop = stageRef.current.offsetTop;
+            const stageTop = stageRef.current.getBoundingClientRect().top + window.pageYOffset;
             const scrollY = window.scrollY;
             if (Math.abs(scrollY - stageTop) > 50) {
               window.scrollTo({ top: stageTop, behavior: 'smooth' });
@@ -203,7 +230,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       { threshold: 0.25 }
     );
 
-    if (stageRef.current) observer.observe(stageRef.current);
+    observer.observe(stageRef.current);
 
     return () => {
       observer.disconnect();
@@ -215,18 +242,27 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const navigateToIndex = (newIndex, customDirection = null) => {
     if (isLocked || cooldownRef.current) return;
 
-    // Stop the outgoing video immediately. AnimatePresence keeps exiting
-    // elements mounted for their exit animation, so without this two videos
-    // can decode/play at the same time on mobile.
-    stageRef.current?.querySelectorAll('.reel-canvas-layer video').forEach((video) => {
-      video.pause();
-      video.preload = 'metadata';
-    });
+    videoRef.current?.pause();
     const dir = customDirection !== null ? customDirection : (newIndex > activeIndex ? 1 : -1);
-    setDirection(dir);
     setIsLocked(true);
     cooldownRef.current = true;
-    setActiveIndex(newIndex);
+
+    const update = () => {
+      if (typeof document !== 'undefined') {
+        document.documentElement.dataset.reelDirection = dir > 0 ? 'forward' : 'backward';
+      }
+      setActiveIndex(newIndex);
+    };
+
+    if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
+      try {
+        document.startViewTransition(update);
+      } catch {
+        update();
+      }
+    } else {
+      update();
+    }
 
     setTimeout(() => {
       setIsLocked(false);
@@ -452,18 +488,11 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const currentReel = items[activeIndex] || items[0];
 
-  const slideDuration = isMobileRef.current ? 0.28 : 0.48;
-  const slideVariants = {
-    initial: (dir) => ({ y: dir > 0 ? '100%' : '-100%', opacity: 1 }),
-    animate: { y: '0%', opacity: 1, transition: { duration: slideDuration, ease: [0.22, 1, 0.36, 1] } },
-    exit: (dir) => ({ y: dir > 0 ? '-100%' : '100%', opacity: 1, transition: { duration: slideDuration, ease: [0.22, 1, 0.36, 1] } })
-  };
-
   return (
     <section
       id={id}
       ref={stageRef}
-      className="iris-reels-viewer-wrapper"
+      className={`iris-reels-viewer-wrapper ${isStageActive ? 'is-active' : 'is-offscreen'}`}
       style={{ touchAction: feedbackOpen ? 'auto' : 'none' }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -482,17 +511,11 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         </button>
 
         <div className="reel-frame" data-locale={isRtl ? 'ar' : 'en'}>
-          <AnimatePresence initial={false} custom={direction}>
-            <motion.div
+          <div
               key={`reel-canvas-${currentReel.id}`}
               className="reel-canvas-layer"
-              custom={direction}
-              variants={slideVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              style={{ willChange: 'transform', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
             >
+              <div className="reel-content-layer">
               {(() => {
                 const isVidUrl = (url) => typeof url === 'string' && (/\.(mp4|mov|webm|m4v|mkv|avi)($|\?)/i.test(url) || url.startsWith('data:video') || url.startsWith('blob:video'));
                 const mediaSrc = currentReel.media_url || currentReel.image || '';
@@ -515,32 +538,40 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                       playsInline
                       webkit-playsinline="true"
                       className="reel-static-img"
-                      style={{ objectFit: 'cover', width: '100%', height: '100%', transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                       onError={() => setVideoErrorMap(prev => ({ ...prev, [currentReel.id]: true }))}
                     />
                   );
                 }
-                return <img src={validImage} alt={isRtl ? currentReel.alt_ar : currentReel.alt_en} className="reel-static-img" />;
+                return <img src={validImage} alt={isRtl ? currentReel.alt_ar : currentReel.alt_en} className="reel-static-img" decoding="async" />;
               })()}
               <div className="reel-darkness-gradient" />
 
               <div className="instagram-reel-caption-block" dir={isRtl ? 'rtl' : 'ltr'}>
-                <div className="instagram-caption-profile-row">
+                <a
+                  className="instagram-caption-profile-row instagram-profile-link"
+                  href="https://www.instagram.com/iris.jo0/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open IRIS.JO0 on Instagram"
+                >
                   <div className="instagram-avatar-ring">
-                    <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="instagram-avatar-img" />
+                    <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="instagram-avatar-img" decoding="async" />
                   </div>
                   <div className="instagram-user-meta">
                     <span className="instagram-username">IRIS HOME</span>
-                    <span className="instagram-handle bidi-isolate" dir="ltr">@iris.jo</span>
+                    <span className="instagram-handle bidi-isolate" dir="ltr">@iris.jo0</span>
                   </div>
-                </div>
+                </a>
 
-                <span className="reel-item-number"><span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / 0{activeIndex + 1}</span>
-                <h2 className="reel-headline-text">{isRtl ? currentReel.headline_ar : currentReel.headline_en}</h2>
-                {currentReel.secondary_text_ar && <p className="reel-secondary-text">{isRtl ? currentReel.secondary_text_ar : currentReel.secondary_text_en}</p>}
+                <div className="reel-caption-text-group">
+                  <span className="reel-item-number"><span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / 0{activeIndex + 1}</span>
+                  <h2 className="reel-headline-text">{isRtl ? currentReel.headline_ar : currentReel.headline_en}</h2>
+                  {currentReel.secondary_text_ar && <p className="reel-secondary-text">{isRtl ? currentReel.secondary_text_ar : currentReel.secondary_text_en}</p>}
+                </div>
               </div>
-            </motion.div>
-          </AnimatePresence>
+              </div>
+          </div>
 
           <div className="reels-persistent-ui-layer">
             <div className="reels-top-bar">
@@ -622,7 +653,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       {menuOpen && createPortal(
         <motion.div className={`iris-portal-fullscreen-overlay dir-${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.28 }}>
           <div className="overlay-top-bar">
-            <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" />
+            <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" className="overlay-brand-logo" decoding="async" />
             <button type="button" className="overlay-close-btn" onClick={() => setMenuOpen(false)} aria-label="Close Menu"><X size={24} /></button>
           </div>
 

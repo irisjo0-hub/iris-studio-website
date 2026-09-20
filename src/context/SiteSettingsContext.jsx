@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import heroMediaImg from '../assets/hero.png';
 
@@ -189,7 +189,16 @@ export const SiteSettingsProvider = ({ children }) => {
         });
 
         const merged = { ...DEFAULT_SETTINGS, ...pickPublicSettings(dbSettings) };
-        setSettings(merged);
+
+        // Avoid a provider-wide render when the fresh DB snapshot matches the
+        // settings already shown from cache/defaults.
+        setSettings((prevSettings) => {
+          if (JSON.stringify(prevSettings) === JSON.stringify(merged)) {
+            return prevSettings;
+          }
+          return merged;
+        });
+
         localStorage.setItem('cached_site_settings', JSON.stringify(merged));
       } else {
         setSettings(baseSettings);
@@ -223,16 +232,32 @@ export const SiteSettingsProvider = ({ children }) => {
     const cached = localStorage.getItem('cached_site_settings');
     if (cached) {
       try {
-        setSettings({ ...DEFAULT_SETTINGS, ...pickPublicSettings(JSON.parse(cached)) });
+        const cachedSettings = { ...DEFAULT_SETTINGS, ...pickPublicSettings(JSON.parse(cached)) };
+        setSettings((prevSettings) => (
+          JSON.stringify(prevSettings) === JSON.stringify(cachedSettings)
+            ? prevSettings
+            : cachedSettings
+        ));
       } catch {}
     }
     fetchSettings();
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      settings,
+      loading,
+      lang,
+      setLanguage,
+      toggleLanguage,
+      refreshSettings: fetchSettings,
+      updateSettingsLocally
+    }),
+    [settings, loading, lang]
+  );
+
   return (
-    <SiteSettingsContext.Provider
-      value={{ settings, loading, lang, setLanguage, toggleLanguage, refreshSettings: fetchSettings, updateSettingsLocally }}
-    >
+    <SiteSettingsContext.Provider value={contextValue}>
       {children}
     </SiteSettingsContext.Provider>
   );

@@ -22,6 +22,11 @@
   justify-content: center;
 }
 
+/* Keep the ambient GPU animations dormant when the reels stage is outside the viewport. */
+.iris-reels-viewer-wrapper.is-offscreen .reels-bg-ambient-layer > * {
+  animation-play-state: paused !important;
+}
+
 /* Atmospheric Ambient Layer behind Reels Frame (IRIS Theme Option 2) */
 .reels-bg-ambient-layer {
   position: absolute;
@@ -94,6 +99,49 @@
   100% { transform: translate(-15px, 15px) scale(0.92); opacity: 0.7; }
 }
 
+/* Reduce expensive large blur surfaces on smaller screens. */
+@media (max-width: 767px) {
+  .reels-hamburger-btn,
+  .reels-counter-pill,
+  .reels-action-circle-btn,
+  .reels-floating-cta-label,
+  .reels-counter-pill-tag,
+  .reels-floating-skip-pill,
+  .reels-sound-btn {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .reels-glow-purple-top {
+    width: 620px;
+    height: 620px;
+    filter: blur(42px);
+  }
+
+  .reels-glow-green-bottom {
+    width: 640px;
+    height: 640px;
+    filter: blur(44px);
+  }
+
+  .reels-glow-gold-center {
+    width: 430px;
+    height: 430px;
+    filter: blur(36px);
+  }
+
+  .reels-grain-overlay {
+    display: none;
+  }
+
+  /* Keep the ambient glow static on mobile to avoid continuous transform animation while a video is playing. */
+  .reels-bg-ambient-layer > .reels-glow-purple-top,
+  .reels-bg-ambient-layer > .reels-glow-green-bottom,
+  .reels-bg-ambient-layer > .reels-glow-gold-center {
+    animation: none;
+  }
+}
+
 /* Stage Container (Full Viewport Area) */
 .reels-stage-container {
   position: relative;
@@ -109,6 +157,7 @@
 /* ===== TRUE 9:16 REEL FRAME CANVAS GEOMETRY ===== */
 .reel-frame {
   position: relative;
+  container-type: inline-size;
   aspect-ratio: 9 / 16;
   width: min(100vw, calc(100dvh * 9 / 16));
   height: calc(min(100vw, calc(100dvh * 9 / 16)) * 16 / 9);
@@ -117,6 +166,12 @@
   overflow: hidden;
   box-shadow: 0 0 120px rgba(103, 36, 95, 0.75), 0 0 60px rgba(245, 189, 26, 0.4), 0 25px 80px rgba(0, 0, 0, 0.95);
   border-radius: 0px;
+}
+
+@media (max-width: 767px) {
+  .reel-frame {
+    box-shadow: 0 0 70px rgba(103, 36, 95, 0.55), 0 0 34px rgba(245, 189, 26, 0.24), 0 18px 48px rgba(0, 0, 0, 0.82);
+  }
 }
 
 @media (min-width: 1024px) {
@@ -132,6 +187,7 @@
 
 /* Full-Screen 9:16 Background Image */
 .reel-canvas-layer {
+  view-transition-name: iris-reel-canvas;
   position: absolute;
   inset: 0;
   width: 100%;
@@ -147,8 +203,7 @@
   display: block;
   transform: scale(1.02);
   transition: transform 12s ease-out;
-  will-change: transform;
-}
+  }
 
 .reel-canvas-layer:hover .reel-static-img {
   transform: scale(1.04);
@@ -421,7 +476,7 @@
 /* ===== DYNAMIC REEL EDITORIAL OVERLAY ===== */
 .reel-item-number {
   font-family: var(--font-hero, "DegularDisplay", sans-serif);
-  font-size: clamp(0.72rem, 2vw, 0.85rem);
+  font-size: clamp(0.72rem, 2cqw, 0.85rem);
   font-weight: 600;
   letter-spacing: 1px;
   color: #F5BD1A;
@@ -430,7 +485,7 @@
 
 .reel-headline-text {
   font-family: var(--font-primary, sans-serif);
-  font-size: clamp(0.98rem, 3.6vw, 1.75rem);
+  font-size: clamp(0.98rem, 3.6cqw, 1.75rem);
   font-weight: 700;
   line-height: 1.28;
   color: #ECEBE7;
@@ -445,7 +500,7 @@
 
 .reel-secondary-text {
   font-family: var(--font-primary, sans-serif);
-  font-size: clamp(0.72rem, 2.5vw, 0.88rem);
+  font-size: clamp(0.72rem, 2.5cqw, 0.88rem);
   color: rgba(236, 235, 231, 0.8);
   margin: 0;
   line-height: 1.35;
@@ -462,7 +517,7 @@
   z-index: 25;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 2px;
   pointer-events: auto;
   background: transparent;
   padding: 0;
@@ -530,6 +585,46 @@
   right: 95px;
   bottom: calc(18px + env(safe-area-inset-bottom, 0px));
   text-align: left;
+}
+
+/* Desktop/tablet: scale caption geometry with the 9:16 reel frame.
+   Mobile keeps its existing layout untouched. */
+@media (min-width: 768px) {
+  .reel-frame[data-locale="ar"] .instagram-reel-caption-block {
+    right: 4.6cqw;
+    left: 24cqw;
+    bottom: 4.6cqw;
+    gap: 1.3cqw;
+  }
+
+  .reel-frame[data-locale="en"] .instagram-reel-caption-block {
+    left: 4.6cqw;
+    right: 24cqw;
+    bottom: 4.6cqw;
+    gap: 1.3cqw;
+  }
+
+  .reel-frame[data-locale="ar"] .reels-action-rail {
+    left: 4.1cqw;
+    bottom: 10.3cqw;
+    width: 15.9cqw;
+  }
+
+  .reel-frame[data-locale="en"] .reels-action-rail {
+    right: 4.1cqw;
+    bottom: 10.3cqw;
+    width: 15.9cqw;
+  }
+
+  .reel-frame[data-locale="ar"] .reels-hamburger-btn {
+    right: 4.6cqw;
+    top: 4.1cqw;
+  }
+
+  .reel-frame[data-locale="en"] .reels-hamburger-btn {
+    left: 4.6cqw;
+    top: 4.1cqw;
+  }
 }
 
 /* ===== FEEDBACK BOTTOM SHEET / DESKTOP DRAWER ===== */
@@ -778,6 +873,10 @@
   animation: pulseBar 2s ease-in-out infinite;
 }
 
+.iris-reels-viewer-wrapper.is-offscreen .progress-segment-fill.active {
+  animation-play-state: paused !important;
+}
+
 @keyframes pulseBar {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
@@ -869,6 +968,12 @@
   animation: skipArrowBounce 1.6s infinite ease-in-out;
 }
 
+/* Skip controls are irrelevant while the reels section is offscreen. */
+.iris-reels-viewer-wrapper.is-offscreen .skip-arrow-anim,
+.iris-reels-viewer-wrapper.is-offscreen .skip-up-arrow-anim {
+  animation-play-state: paused !important;
+}
+
 .skip-up-arrow-anim {
   animation: skipUpArrowBounce 1.6s infinite ease-in-out;
 }
@@ -916,12 +1021,27 @@
 }
 
 /* ===== INSTAGRAM CAPTION PROFILE ROW ===== */
+.instagram-profile-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .instagram-caption-profile-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 6px;
+  gap: 6px;
+  margin: 0;
   pointer-events: auto;
+  flex: 0 0 auto;
+}
+
+.reel-caption-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
 }
 
 .instagram-avatar-ring {
@@ -947,6 +1067,7 @@
 .instagram-user-meta {
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .instagram-username {
@@ -1009,6 +1130,10 @@
   color: #F5BD1A;
   flex-shrink: 0;
   animation: pulseAudio 1.5s ease-in-out infinite;
+}
+
+.iris-reels-viewer-wrapper.is-offscreen .ticker-icon {
+  animation-play-state: paused !important;
 }
 
 @keyframes pulseAudio {
@@ -1093,6 +1218,10 @@
   animation: spinVinyl 6s linear infinite;
 }
 
+.iris-reels-viewer-wrapper.is-offscreen .instagram-vinyl-disc.spinning {
+  animation-play-state: paused !important;
+}
+
 @keyframes spinVinyl {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -1103,4 +1232,140 @@
   height: 22px;
   border-radius: 50%;
   object-fit: contain;
+}
+
+
+/* ===== REEL VIEW TRANSITION =====
+   Mobile keeps the existing canvas transition exactly as-is.
+   Desktop transitions only the reel content inside the fixed frame.
+ */
+::view-transition-group(iris-reel-canvas),
+::view-transition-image-pair(iris-reel-canvas) {
+  animation-duration: 0.48s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-reel-direction="forward"]::view-transition-old(iris-reel-canvas) {
+  animation: iris-reel-slide-out-up 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+:root[data-reel-direction="forward"]::view-transition-new(iris-reel-canvas) {
+  animation: iris-reel-slide-in-from-bottom 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+:root[data-reel-direction="backward"]::view-transition-old(iris-reel-canvas) {
+  animation: iris-reel-slide-out-down 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+:root[data-reel-direction="backward"]::view-transition-new(iris-reel-canvas) {
+  animation: iris-reel-slide-in-from-top 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes iris-reel-slide-out-up {
+  to { transform: translateY(-100%); }
+}
+@keyframes iris-reel-slide-in-from-bottom {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes iris-reel-slide-out-down {
+  to { transform: translateY(100%); }
+}
+@keyframes iris-reel-slide-in-from-top {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+@media (min-width: 768px) {
+  .reel-frame {
+    container-type: inline-size;
+  }
+
+  /* Prevent the document/root snapshot from moving on desktop. */
+  html:active-view-transition {
+    view-transition-name: none;
+  }
+
+  .reel-canvas-layer {
+    view-transition-name: none;
+  }
+
+  .reel-content-layer {
+    view-transition-name: iris-reel-content;
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The root snapshot contains the fixed frame/UI. Keep it completely still. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+
+  /*
+   * Desktop: the View Transition pseudo-elements live in the viewport,
+   * not inside .reel-frame. Constrain their snapshot to the exact frame
+   * geometry; otherwise the snapshot temporarily expands to the viewport.
+   */
+  ::view-transition-group(iris-reel-content) {
+    width: min(calc((100dvh - 32px) * 9 / 16), 520px);
+    height: calc(100dvh - 32px);
+    left: calc(50% - min(calc((100dvh - 32px) * 9 / 16), 520px) / 2);
+    top: 16px;
+    margin: 0;
+    box-sizing: border-box;
+    transform: none !important;
+    animation: none !important;
+    overflow: hidden;
+    border-radius: 20px;
+    clip-path: inset(0 round 20px);
+    contain: paint;
+  }
+
+  ::view-transition-image-pair(iris-reel-content) {
+    width: 100%;
+    height: 100%;
+    inset: 0;
+    transform: none !important;
+    animation: none !important;
+    overflow: hidden;
+    border-radius: 20px;
+    clip-path: inset(0 round 20px);
+    contain: paint;
+  }
+
+  :root[data-reel-direction="forward"]::view-transition-old(iris-reel-content) {
+    animation: iris-reel-slide-out-up 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  :root[data-reel-direction="forward"]::view-transition-new(iris-reel-content) {
+    animation: iris-reel-slide-in-from-bottom 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  :root[data-reel-direction="backward"]::view-transition-old(iris-reel-content) {
+    animation: iris-reel-slide-out-down 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  :root[data-reel-direction="backward"]::view-transition-new(iris-reel-content) {
+    animation: iris-reel-slide-in-from-top 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@media (max-width: 767px) {
+  ::view-transition-group(iris-reel-canvas),
+  ::view-transition-image-pair(iris-reel-canvas) {
+    animation-duration: 0.28s;
+  }
+  :root[data-reel-direction="forward"]::view-transition-old(iris-reel-canvas),
+  :root[data-reel-direction="forward"]::view-transition-new(iris-reel-canvas),
+  :root[data-reel-direction="backward"]::view-transition-old(iris-reel-canvas),
+  :root[data-reel-direction="backward"]::view-transition-new(iris-reel-canvas) {
+    animation-duration: 0.28s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-reel-direction="forward"]::view-transition-old(iris-reel-canvas),
+  :root[data-reel-direction="forward"]::view-transition-new(iris-reel-canvas),
+  :root[data-reel-direction="backward"]::view-transition-old(iris-reel-canvas),
+  :root[data-reel-direction="backward"]::view-transition-new(iris-reel-canvas) {
+    animation: none;
+  }
 }

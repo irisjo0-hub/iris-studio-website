@@ -77,7 +77,7 @@
   left: -110px;
   width: clamp(600px, 55vw, 850px);
   height: clamp(520px, 48vw, 750px);
-  filter: blur(45px);
+  filter: blur(38px);
   background: radial-gradient(
     ellipse at center,
     rgba(103, 36, 95, 0.65) 0%,
@@ -94,7 +94,7 @@
   right: -8vw;
   width: clamp(550px, 60vw, 900px);
   height: clamp(550px, 60vw, 900px);
-  filter: blur(75px);
+  filter: blur(62px);
   background: radial-gradient(
     circle,
     rgba(103, 36, 95, 0.62) 0%,
@@ -110,7 +110,7 @@
   left: -8vw;
   width: clamp(580px, 65vw, 950px);
   height: clamp(580px, 65vw, 950px);
-  filter: blur(80px);
+  filter: blur(66px);
   background: radial-gradient(
     circle,
     rgba(4, 70, 48, 0.65) 0%,
@@ -121,11 +121,13 @@
 }
 
 .glow-green-bottomright {
+  /* Static glow: no transform animation, so keep it out of a persistent GPU layer. */
+  will-change: auto;
   bottom: -6vw;
   right: 5%;
   width: clamp(450px, 52vw, 800px);
   height: clamp(450px, 52vw, 800px);
-  filter: blur(70px);
+  filter: blur(58px);
   background: radial-gradient(
     circle,
     rgba(4, 70, 48, 0.52) 0%,
@@ -152,6 +154,20 @@
 
 /* Mobile Specific Atmospheric Art-Direction (390px Viewport) */
 @media (max-width: 767px) {
+  /* SVG turbulence grain is expensive on small screens; keep the clean base texture. */
+  .hero-v2-grain-overlay {
+    display: none;
+  }
+
+  /* Reduce backdrop-filter work on small screens while preserving the glass look. */
+  .hero-v2-eyebrow-pill,
+  .hero-v2-discover-cta.glass-gold-pulse-btn,
+  .hero-v2-discover-cta,
+  .hero-discover-btn {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
   .glow-purple-topleft {
     top: 0;
     left: -60px;
@@ -202,6 +218,12 @@
       transparent 75%
     );
   }
+}
+
+/* Pause expensive ambient layers while the hero is offscreen. */
+.iris-dark-hero-v2-wrapper.is-offscreen .ambient-glow {
+  animation-play-state: paused !important;
+  transition: none !important;
 }
 
 /* Keyframes for Organic Un-synchronized Atmospheric Drift & Slow Breathing */
@@ -371,7 +393,7 @@
   border-radius: 50% !important;
   background: rgba(26, 13, 24, 0.78) !important;
   border: 1px solid rgba(236, 235, 231, 0.16) !important;
-  box-shadow: 0 0 18px rgba(103, 36, 95, 0.16) !important;
+  box-shadow: 0 0 14px rgba(103, 36, 95, 0.16) !important;
   color: #ECEBE7 !important;
   display: flex !important;
   align-items: center !important;
@@ -559,7 +581,7 @@
   border-radius: 100px;
   background: transparent !important;
   border: 1px solid rgba(245, 189, 26, 0.55);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px);
   max-width: max-content;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -590,14 +612,14 @@
   height: 7px;
   border-radius: 50%;
   background: #F5BD1A;
-  box-shadow: 0 0 10px #F5BD1A;
+  box-shadow: 0 0 8px #F5BD1A;
   flex-shrink: 0;
   animation: pillDotBreathing 3s ease-in-out infinite alternate;
 }
 
 @keyframes pillDotBreathing {
-  0% { box-shadow: 0 0 6px #F5BD1A, 0 0 12px rgba(245, 189, 26, 0.6); opacity: 0.85; }
-  100% { box-shadow: 0 0 14px #F5BD1A, 0 0 22px rgba(245, 189, 26, 0.95); opacity: 1; }
+  0% { box-shadow: 0 0 5px #F5BD1A, 0 0 9px rgba(245, 189, 26, 0.6); opacity: 0.85; }
+  100% { box-shadow: 0 0 10px #F5BD1A, 0 0 16px rgba(245, 189, 26, 0.95); opacity: 1; }
 }
 
 /* Stage & Content Layout */
@@ -624,7 +646,7 @@
   letter-spacing: -0.5px;
   color: #ECEBE7;
   margin: 0;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 .dir-ltr .hero-v2-editorial-title {
@@ -643,7 +665,7 @@
 .headline-line-2 {
   display: block;
   color: #F5BD1A;
-  text-shadow: 0 0 25px rgba(245, 189, 26, 0.35);
+  text-shadow: 0 0 16px rgba(245, 189, 26, 0.35);
 }
 
 .hero-v2-supporting-desc {
@@ -683,13 +705,12 @@
   font-size: clamp(0.92rem, 2.5vw, 1.08rem);
   font-weight: 800;
   text-decoration: none;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 22px rgba(245, 189, 26, 0.22);
   cursor: pointer;
   margin: 0 auto;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
   outline: none;
 }
 
@@ -739,7 +760,32 @@
 
 .cta-arrow-badge svg,
 .cta-arrow-icon svg {
-  animation: ctaArrowPulse 1.8s infinite ease-in-out;
+  animation: ctaArrowPulse 2.2s infinite ease-in-out;
+}
+
+/* The hero is outside the viewport; pause its decorative animations until it returns. */
+.iris-dark-hero-v2-wrapper.is-offscreen .glow-purple-topright,
+.iris-dark-hero-v2-wrapper.is-offscreen .glow-green-bottomleft,
+.iris-dark-hero-v2-wrapper.is-offscreen .glow-gold-accent,
+.iris-dark-hero-v2-wrapper.is-offscreen .pill-dot,
+.iris-dark-hero-v2-wrapper.is-offscreen .cta-arrow-badge svg,
+.iris-dark-hero-v2-wrapper.is-offscreen .cta-arrow-icon svg {
+  animation-play-state: paused !important;
+}
+
+.iris-dark-hero-v2-wrapper.is-offscreen .ambient-glow {
+  will-change: auto;
+  transition: none !important;
+}
+
+/* The SVG turbulence grain is expensive to rasterize; release it while the hero is offscreen. */
+.iris-dark-hero-v2-wrapper.is-offscreen .hero-v2-grain-overlay {
+  display: none;
+}
+
+.iris-dark-hero-v2-wrapper.is-offscreen .hero-v2-discover-cta,
+.iris-dark-hero-v2-wrapper.is-offscreen .hero-discover-btn {
+  will-change: auto;
 }
 
 .hero-v2-discover-cta:hover .cta-arrow-badge,

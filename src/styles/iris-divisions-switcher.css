@@ -103,6 +103,13 @@
 }
 
 @media (max-width: 1023px) {
+  .kinetic-image-backdrop {
+    inset: -6%;
+    width: 112%;
+    height: 112%;
+    filter: blur(12px) brightness(0.55);
+  }
+
   .switcher-composition-grid {
     display: flex;
     flex-direction: column;
@@ -138,12 +145,12 @@
 
 .kinetic-image-backdrop {
   position: absolute;
-  inset: -15%;
-  width: 130%;
-  height: 130%;
+  inset: -8%;
+  width: 116%;
+  height: 116%;
   object-fit: cover;
   object-position: center;
-  filter: blur(28px) brightness(0.55);
+  filter: blur(18px) brightness(0.55);
   opacity: 0.75;
   pointer-events: none;
   z-index: 1;
@@ -156,7 +163,6 @@
   object-position: center;
   position: relative;
   z-index: 2;
-  will-change: transform;
   transition: transform 0.25s ease-out;
 }
 

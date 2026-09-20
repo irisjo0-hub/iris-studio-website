@@ -97,7 +97,7 @@ export const AdminFlow = () => {
       const cleanFileName = fileToUpload.name.replace(/[^a-zA-Z0-9.-]/g, '_');
       const filePath = `reels/${timeStamp}-${cleanFileName}`;
 
-      const videoPublicUrl = await uploadFile('portfolio', filePath, fileToUpload);
+      const videoPublicUrl = await uploadFile('portfolio', filePath, fileToUpload, { skipVideoOptimization: true });
 
       let posterPublicUrl = videoPublicUrl;
       if (posterBlob && isVideo) {

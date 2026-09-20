@@ -16,6 +16,16 @@
 #Purple_top-left_piece {
   transform-box: fill-box;
   transform-origin: center;
+}
+
+.break-box-banner.animate #We_Break,
+.break-box-banner.animate #The_Box,
+.break-box-banner.animate #Purple_right_piece,
+.break-box-banner.animate #Green_bottom_piece,
+.break-box-banner.animate #Yellow_piece_left,
+.break-box-banner.animate #Yellow_piece_right,
+.break-box-banner.animate #Green_top_piece,
+.break-box-banner.animate #Purple_top-left_piece {
   will-change: transform, opacity;
 }
 
