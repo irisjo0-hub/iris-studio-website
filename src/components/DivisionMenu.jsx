@@ -30,18 +30,29 @@ const DivisionMenu = () => {
 
   return (
     <>
-      <button type="button" className="hero-v2-hamburger-btn division-unified-menu-trigger" onClick={() => setOpen(true)} aria-label={isRtl ? 'فتح القائمة' : 'Open menu'}>
+      <button
+        type="button"
+        className="hero-v2-hamburger-btn division-unified-menu-trigger"
+        data-iris-menu-trigger="true"
+        onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(true); }}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(true); }}
+        aria-label={isRtl ? 'فتح القائمة' : 'Open menu'}
+        aria-expanded={open}
+      >
         <Menu size={20} strokeWidth={1.8} />
       </button>
 
       <AnimatePresence>
         {open && createPortal(
           <motion.div
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             className="division-menu-overlay"
             dir={isRtl ? 'rtl' : 'ltr'}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            style={{ pointerEvents: 'auto' }}
           >
             <div className="division-menu-top">
               <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" />
