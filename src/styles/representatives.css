@@ -42,3 +42,64 @@
 .rep-modal textarea{width:100%;box-sizing:border-box;min-height:80px;resize:vertical;background:rgba(255,255,255,.045);border:1px solid var(--rep-border);color:#fff;border-radius:10px;padding:11px;outline:none}
 @media(max-width:850px){.rep-leads-grid{grid-template-columns:1fr}}
 .rep-filter-divider{width:1px;height:22px;background:var(--rep-border);margin:0 3px}.rep-lead-filters button.follow.active{background:rgba(70,200,130,.12);border-color:rgba(70,200,130,.25);color:#9ae6bc}
+/* IRIS brand theme — Black Iris inspired */
+:root{
+  --rep-bg:#111214;
+  --rep-card:rgba(245,242,232,.055);
+  --rep-border:rgba(245,242,232,.12);
+  --rep-text:#F4F1E8;
+  --rep-muted:#AAA99F;
+  --rep-purple:#7B4FA3;
+  --iris-purple:#7B4FA3;
+  --iris-green:#526B45;
+  --iris-orange:#D99A3D;
+  --iris-milk:#F4F1E8;
+  --iris-grey:#777A73;
+}
+.rep-shell{
+  background:
+    radial-gradient(circle at 12% 0%,rgba(123,79,163,.20),transparent 27%),
+    radial-gradient(circle at 92% 12%,rgba(82,107,69,.13),transparent 24%),
+    var(--rep-bg);
+}
+.rep-topbar{background:rgba(17,18,20,.88)}
+.rep-brand b{color:var(--iris-milk)}
+.rep-avatar,.rep-profile-avatar{background:linear-gradient(135deg,var(--iris-purple),#56336f)}
+.rep-nav:hover,.rep-nav.active{background:rgba(123,79,163,.14)}
+.rep-nav.active{box-shadow:inset 3px 0 var(--iris-purple)}
+.rep-action,.rep-primary-btn{
+  background:linear-gradient(135deg,var(--iris-purple),#624080);
+}
+.rep-eyebrow{color:#A47CC2}
+.rep-stat.accent{
+  background:linear-gradient(145deg,rgba(123,79,163,.22),rgba(82,107,69,.08));
+  border-color:rgba(123,79,163,.32)
+}
+.rep-panel-head a,.rep-catalog-card span{color:#B18ACB}
+.rep-stat span,.rep-sales-summary span,.rep-sale-icon,.rep-lead-icon{
+  background:rgba(123,79,163,.13);
+  color:#B18ACB;
+}
+.rep-balance-big{
+  background:rgba(123,79,163,.11);
+  border-color:rgba(123,79,163,.22)
+}
+.rep-lead-card.status-won{border-color:rgba(82,107,69,.42)}
+.rep-lead-card.status-lost{border-color:rgba(210,90,80,.28)}
+.rep-lead-status.won{background:rgba(82,107,69,.18);color:#A8C196}
+.rep-lead-status.lost{background:rgba(210,90,80,.12);color:#F0A19A}
+.rep-lead-status.follow_up,.rep-lead-status.interested{color:#B18ACB}
+.rep-success{background:rgba(82,107,69,.13);color:#B7D2A7}
+.positive,.rep-sale-values em{color:#A8C196}
+.rep-status.approved{color:#B18ACB}
+.rep-status.paid{color:#A8C196}
+.admin-primary-btn{background:var(--iris-purple)}
+.rep-admin-tabs button.active{border-bottom-color:var(--iris-purple)}
+.rep-reset-icon{background:rgba(123,79,163,.13);color:#B18ACB}
+.rep-menu-btn{background:#19191b!important;border-color:rgba(123,79,163,.42)!important}
+.rep-back-btn:hover{background:rgba(123,79,163,.14);border-color:rgba(123,79,163,.35)}
+.rep-catalog-card span{background:rgba(123,79,163,.12)}
+.rep-filter-divider{background:var(--rep-border)}
+.rep-lead-filters button.active{background:rgba(123,79,163,.15);border-color:rgba(123,79,163,.38)}
+.rep-lead-filters button.follow.active{background:rgba(82,107,69,.16);border-color:rgba(82,107,69,.35);color:#B7D2A7}
+.rep-lead-card:hover{border-color:rgba(123,79,163,.35)}
