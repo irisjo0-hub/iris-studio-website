@@ -114,6 +114,16 @@ export const HeroLivingCollage = () => {
     }
   ];
 
+  // Preload the exact first collage image as soon as the hero component mounts.
+  // The card itself still starts outside the viewport, so this does not change its motion.
+  useEffect(() => {
+    const firstImage = pool[0]?.image;
+    if (!firstImage || firstImage.startsWith('data:') || firstImage.startsWith('blob:')) return;
+    const img = new Image();
+    img.src = firstImage;
+    if (img.decode) img.decode().catch(() => {});
+  }, [pool]);
+
   const N = pool.length;
   const travelDuration = 24;
   const staggerStep = N === 1 ? 24 : 4.5;
@@ -152,7 +162,7 @@ export const HeroLivingCollage = () => {
                       x: [startX, midX, endX],
                       y: config.floatY,
                       rotateZ: config.rotateZ,
-                      opacity: [0, 1, 0]
+                      opacity: index === 0 ? [1, 1, 0] : [0, 1, 0]
                     }
               }
               transition={{
