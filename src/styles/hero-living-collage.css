@@ -1,6 +1,4 @@
-/* IRIS HERO — THREE FLOATING FRAMES
- * Clean abstract frames. No imagery, no logo, no captions.
- */
+/* IRIS HERO — THREE FLOATING FRAMES */
 
 .iris-hero-lower-stage.iris-floating-frames-stage {
   position: absolute;
@@ -15,27 +13,21 @@
 .floating-frames {
   position: absolute;
   left: 50%;
-  bottom: 2%;
-  width: min(980px, 88vw);
-  height: 42%;
+  bottom: 5%;
+  width: min(760px, 78vw);
+  height: 38%;
   transform: translateX(-50%);
-  perspective: 1400px;
 }
 
 .floating-frame {
   position: absolute;
-  overflow: visible;
-  border: 1px solid rgba(236, 235, 231, 0.42);
-  background: linear-gradient(
-    135deg,
-    rgba(236, 235, 231, 0.035),
-    rgba(103, 36, 95, 0.045) 55%,
-    rgba(4, 70, 48, 0.035)
-  );
+  overflow: hidden;
+  border: 1px solid rgba(236, 235, 231, 0.48);
+  background: rgba(24, 12, 23, 0.18);
   box-shadow:
-    0 18px 45px rgba(0, 0, 0, 0.22),
-    inset 0 0 35px rgba(236, 235, 231, 0.025);
-  transform-style: preserve-3d;
+    0 24px 55px rgba(0, 0, 0, 0.24),
+    inset 0 0 30px rgba(236, 235, 231, 0.025);
+  border-radius: 2px;
   will-change: transform;
 }
 
@@ -43,76 +35,51 @@
   content: '';
   position: absolute;
   inset: 8px;
-  border: 1px solid rgba(236, 235, 231, 0.09);
+  border: 1px solid rgba(236, 235, 231, 0.08);
 }
 
 .floating-frame::after {
   content: '';
   position: absolute;
-  width: 34px;
-  height: 34px;
-  top: -1px;
-  left: -1px;
+  left: 14px;
+  top: 14px;
+  width: 18px;
+  height: 18px;
   border-top: 1px solid rgba(245, 189, 26, 0.72);
   border-left: 1px solid rgba(245, 189, 26, 0.72);
 }
 
-.floating-frame-inner {
-  position: absolute;
-  inset: 0;
-}
-
-.floating-frame-inner::before,
-.floating-frame-inner::after {
+.floating-frame-inner::before {
   content: '';
   position: absolute;
-  width: 34px;
-  height: 34px;
-}
-
-.floating-frame-inner::before {
-  right: -1px;
-  top: -1px;
-  border-top: 1px solid rgba(245, 189, 26, 0.38);
-  border-right: 1px solid rgba(245, 189, 26, 0.38);
-}
-
-.floating-frame-inner::after {
-  right: -1px;
-  bottom: -1px;
-  border-right: 1px solid rgba(245, 189, 26, 0.38);
-  border-bottom: 1px solid rgba(245, 189, 26, 0.38);
-}
-
-.floating-frame-mark {
-  display: none;
+  right: 14px;
+  bottom: 14px;
+  width: 18px;
+  height: 18px;
+  border-right: 1px solid rgba(245, 189, 26, 0.55);
+  border-bottom: 1px solid rgba(245, 189, 26, 0.55);
 }
 
 .floating-frame-left {
-  left: 4%;
-  bottom: 4%;
-  width: 37%;
-  height: 72%;
-  transform: rotate(-9deg) translate3d(0, 0, -80px);
-  opacity: 0.82;
-  animation: frame-left-float 9s ease-in-out infinite;
+  left: 1%;
+  bottom: 8%;
+  width: 29%;
+  height: 62%;
+  transform: rotate(-7deg);
+  opacity: 0.7;
+  animation: frame-left-float 8s ease-in-out infinite;
 }
 
 .floating-frame-center {
   left: 50%;
-  bottom: 13%;
-  width: 42%;
+  bottom: 2%;
+  width: 35%;
   height: 82%;
-  transform: translateX(-50%) translateZ(80px);
-  border-color: rgba(236, 235, 231, 0.58);
-  background: linear-gradient(
-    145deg,
-    rgba(236, 235, 231, 0.045),
-    rgba(103, 36, 95, 0.06),
-    rgba(4, 70, 48, 0.035)
-  );
-  opacity: 0.96;
-  animation: frame-center-float 10s ease-in-out infinite;
+  transform: translateX(-50%);
+  border-color: rgba(236, 235, 231, 0.62);
+  background: rgba(24, 12, 23, 0.22);
+  opacity: 0.95;
+  animation: frame-center-float 9s ease-in-out infinite;
 }
 
 .floating-frame-center::after {
@@ -120,59 +87,59 @@
 }
 
 .floating-frame-right {
-  right: 4%;
-  bottom: 5%;
-  width: 37%;
-  height: 72%;
-  transform: rotate(9deg) translate3d(0, 0, -80px);
-  opacity: 0.82;
-  animation: frame-right-float 9s ease-in-out infinite;
+  right: 1%;
+  bottom: 13%;
+  width: 29%;
+  height: 62%;
+  transform: rotate(7deg);
+  opacity: 0.7;
+  animation: frame-right-float 8s ease-in-out infinite;
 }
 
 .floating-frame-glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(42px);
+  filter: blur(45px);
   pointer-events: none;
   z-index: -1;
   animation: floating-glow 9s ease-in-out infinite;
 }
 
 .floating-frame-glow-purple {
-  left: 12%;
-  top: 10%;
-  width: 38%;
+  left: 20%;
+  top: 8%;
+  width: 30%;
   height: 70%;
   background: rgba(103, 36, 95, 0.18);
 }
 
 .floating-frame-glow-green {
-  right: 12%;
+  right: 20%;
   top: 15%;
-  width: 34%;
-  height: 68%;
+  width: 28%;
+  height: 65%;
   background: rgba(4, 70, 48, 0.16);
   animation-delay: -4s;
 }
 
 @keyframes frame-left-float {
-  0%, 100% { transform: rotate(-9deg) translate3d(-5px, 5px, -80px); }
-  50% { transform: rotate(-7deg) translate3d(5px, -12px, -80px); }
+  0%, 100% { transform: rotate(-7deg) translateY(4px); }
+  50% { transform: rotate(-5deg) translateY(-9px); }
 }
 
 @keyframes frame-center-float {
-  0%, 100% { transform: translateX(-50%) translate3d(0, 5px, 80px) rotate(0.5deg); }
-  50% { transform: translateX(-50%) translate3d(0, -13px, 80px) rotate(-0.5deg); }
+  0%, 100% { transform: translateX(-50%) translateY(4px); }
+  50% { transform: translateX(-50%) translateY(-11px); }
 }
 
 @keyframes frame-right-float {
-  0%, 100% { transform: rotate(9deg) translate3d(5px, 5px, -80px); }
-  50% { transform: rotate(7deg) translate3d(-5px, -12px, -80px); }
+  0%, 100% { transform: rotate(7deg) translateY(5px); }
+  50% { transform: rotate(5deg) translateY(-8px); }
 }
 
 @keyframes floating-glow {
-  0%, 100% { opacity: 0.45; transform: scale(0.92); }
-  50% { opacity: 0.82; transform: scale(1.06); }
+  0%, 100% { opacity: 0.4; transform: scale(0.94); }
+  50% { opacity: 0.75; transform: scale(1.06); }
 }
 
 .iris-floating-frames-stage.is-paused .floating-frame,
@@ -182,38 +149,40 @@
 
 @media (max-width: 768px) {
   .floating-frames {
-    width: 108vw;
-    height: 38%;
-    bottom: 1%;
+    width: 88vw;
+    height: 31%;
+    bottom: 3%;
   }
 
   .floating-frame-left {
-    left: 1%;
-    width: 39%;
-    height: 70%;
+    left: 0;
+    width: 30%;
+    height: 58%;
   }
 
   .floating-frame-center {
-    width: 45%;
-    height: 80%;
-    bottom: 10%;
+    width: 38%;
+    height: 76%;
   }
 
   .floating-frame-right {
-    right: 1%;
-    width: 39%;
-    height: 70%;
+    right: 0;
+    width: 30%;
+    height: 58%;
   }
 
   .floating-frame::before {
     inset: 6px;
   }
 
-  .floating-frame::after,
-  .floating-frame-inner::before,
-  .floating-frame-inner::after {
-    width: 23px;
-    height: 23px;
+  .floating-frame::after {
+    left: 9px;
+    top: 9px;
+  }
+
+  .floating-frame-inner::before {
+    right: 9px;
+    bottom: 9px;
   }
 }
 
