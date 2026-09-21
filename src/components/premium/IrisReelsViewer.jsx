@@ -26,6 +26,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const [items, setItems] = useState(() => INITIAL_FLOW_ITEMS.map((item) => ({ ...item })));
   const [activeIndex, setActiveIndex] = useState(0);
   const [reelDirection, setReelDirection] = useState(null);
+  const [initialReelReady, setInitialReelReady] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [isStageActive, setIsStageActive] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -120,6 +121,25 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     };
     return () => {
       delete window.__resetReelToHero;
+    };
+  }, []);
+
+  useEffect(() => {
+    // Keep the first canvas physically outside the frame until the bundled image
+    // is decoded. The existing enter animation then reveals it without changing
+    // its timing or visual treatment.
+    const image = new Image();
+    image.src = heroMediaImg;
+    const reveal = () => setInitialReelReady(true);
+    if (image.decode) {
+      image.decode().then(reveal).catch(reveal);
+    } else {
+      image.onload = reveal;
+      image.onerror = reveal;
+    }
+    return () => {
+      image.onload = null;
+      image.onerror = null;
     };
   }, []);
 
@@ -513,7 +533,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
         <div className="reel-frame" data-locale={isRtl ? 'ar' : 'en'}>
           <div
               key={`reel-canvas-${currentReel.id}`}
-              className="reel-canvas-layer"
+              className={`reel-canvas-layer ${initialReelReady ? "initial-reel-ready" : "initial-reel-pending"}`}
             >
               <div className="reel-content-layer">
               {(() => {
