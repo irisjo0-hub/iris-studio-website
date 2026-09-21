@@ -1387,3 +1387,72 @@ body:has(.division-menu-overlay) {
     min-width: 0 !important;
   }
 }
+
+
+/* =========================================================
+   IRIS LIVE THEME — loaded with the menu/hero stylesheet.
+   The app does not import global.css, so the runtime theme
+   variables belong here to guarantee the toggle affects the
+   actual production bundle without a page reload.
+   Brand palette: #67245F / #044630 / #F5BD1A / #ECEBE7
+   ========================================================= */
+html[data-theme="dark"],
+html.iris-theme-dark {
+  --iris-theme-bg: #180C17;
+  --iris-theme-surface: #1A0D18;
+  --iris-theme-surface-alt: #0A1410;
+  --iris-theme-text: #ECEBE7;
+  --iris-theme-text-soft: rgba(236,235,231,.72);
+  --iris-theme-border: rgba(236,235,231,.14);
+}
+
+html[data-theme="light"],
+html.iris-theme-light {
+  --iris-theme-bg: #ECEBE7;
+  --iris-theme-surface: #ECEBE7;
+  --iris-theme-surface-alt: #ECEBE7;
+  --iris-theme-text: #180C17;
+  --iris-theme-text-soft: rgba(24,12,23,.72);
+  --iris-theme-border: rgba(103,36,95,.18);
+}
+
+html,
+body,
+#root {
+  background-color: var(--iris-theme-bg, #180C17);
+  color: var(--iris-theme-text, #ECEBE7);
+}
+
+html.iris-theme-light body {
+  background-color: #ECEBE7 !important;
+  color: #180C17 !important;
+}
+
+html.iris-theme-light input,
+html.iris-theme-light select,
+html.iris-theme-light textarea {
+  color: #180C17 !important;
+  background: #ECEBE7 !important;
+  border-color: rgba(103,36,95,.22) !important;
+  color-scheme: light;
+}
+
+html.iris-theme-light input::placeholder,
+html.iris-theme-light textarea::placeholder {
+  color: rgba(24,12,23,.52) !important;
+}
+
+html.iris-theme-light select option {
+  background: #ECEBE7 !important;
+  color: #180C17 !important;
+}
+
+/* Smooth client-side theme transition; no navigation/reload. */
+html,
+body,
+#root,
+body * {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: .28s;
+  transition-timing-function: ease;
+}
