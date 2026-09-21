@@ -23,6 +23,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
 
   const [items, setItems] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [reelDirection, setReelDirection] = useState(null);
   const [isLocked, setIsLocked] = useState(false);
   const [isStageActive, setIsStageActive] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -245,22 +246,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     setIsLocked(true);
     cooldownRef.current = true;
 
-    const update = () => {
-      if (typeof document !== 'undefined') {
-        document.documentElement.dataset.reelDirection = dir > 0 ? 'forward' : 'backward';
-      }
-      setActiveIndex(newIndex);
-    };
-
-    if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function') {
-      try {
-        document.startViewTransition(update);
-      } catch {
-        update();
-      }
-    } else {
-      update();
-    }
+    setReelDirection(dir > 0 ? 'forward' : 'backward');
+    setActiveIndex(newIndex);
 
     setTimeout(() => {
       setIsLocked(false);
@@ -487,6 +474,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       id={id}
       ref={stageRef}
       className={`iris-reels-viewer-wrapper ${isStageActive ? 'is-active' : 'is-offscreen'}`}
+      data-reel-direction={reelDirection || undefined}
       style={{ touchAction: feedbackOpen ? 'auto' : 'none' }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
