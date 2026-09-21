@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
+import irisLogo from '../../assets/iris_logo.png';
 import '../../styles/hero-living-collage.css';
 
 /**
- * IRIS HERO — GIANT MOVING GRID
- * A large architectural grid plane that continuously travels beneath
- * the hero content. It uses CSS only: no image/network dependency.
+ * IRIS HERO — LIVING LOGO
+ * The IRIS mark becomes the visual hero object:
+ * breathing, orbiting, glowing and receiving a subtle light sweep.
+ * No remote assets are required.
  */
-
-const GRID_CELLS = Array.from({ length: 84 }, (_, index) => index);
 
 export const HeroLivingCollage = () => {
   const { lang } = useSiteSettings();
@@ -37,40 +37,31 @@ export const HeroLivingCollage = () => {
   return (
     <div
       ref={stageRef}
-      className={`iris-hero-lower-stage iris-giant-grid-stage ${isPaused ? 'is-paused' : ''}`}
-      aria-label={isRtl ? 'شبكة آيرس الإبداعية' : 'IRIS creative grid'}
+      className={`iris-hero-lower-stage iris-living-logo-stage ${isPaused ? 'is-paused' : ''}`}
+      aria-label={isRtl ? 'شعار آيرس المتحرك' : 'IRIS living logo'}
     >
-      <div className="giant-grid-fade" aria-hidden="true" />
+      <div className="living-logo-field" aria-hidden="true">
+        <span className="living-logo-orbit living-logo-orbit-one" />
+        <span className="living-logo-orbit living-logo-orbit-two" />
+        <span className="living-logo-orbit living-logo-orbit-three" />
 
-      <div className="giant-grid-scene" aria-hidden="true">
-        <div className="giant-grid-plane">
-          <div className="giant-grid-cells">
-            {GRID_CELLS.map((cell) => (
-              <span key={cell} className="giant-grid-cell" />
-            ))}
-          </div>
+        <span className="living-logo-node living-logo-node-purple" />
+        <span className="living-logo-node living-logo-node-green" />
+        <span className="living-logo-node living-logo-node-gold" />
+
+        <div className="living-logo-halo" />
+
+        <div className="living-logo-mark">
+          <span className="living-logo-ring" />
+          <img src={irisLogo} alt="" className="living-logo-image" />
+          <span className="living-logo-sweep" />
         </div>
-      </div>
 
-      <div className="giant-grid-wordmark" aria-hidden="true">
-        IRIS
-      </div>
-
-      <div className="giant-grid-label giant-grid-label-left" aria-hidden="true">
-        <span>01</span>
-        <b>MEDIA</b>
-      </div>
-
-      <div className="giant-grid-label giant-grid-label-right" aria-hidden="true">
-        <span>02</span>
-        <b>STUDIO</b>
-      </div>
-
-      <div className="giant-grid-label giant-grid-label-bottom" aria-hidden="true">
-        <span>03</span>
-        <b>PRINT</b>
-        <i />
-        <em>CREATIVE SYSTEM</em>
+        <div className="living-logo-caption">
+          <span>IRIS</span>
+          <i />
+          <b>MEDIA · STUDIO · PRINT</b>
+        </div>
       </div>
     </div>
   );
