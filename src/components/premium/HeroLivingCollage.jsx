@@ -4,7 +4,7 @@ import '../../styles/hero-living-collage.css';
 
 /**
  * IRIS HERO — THREE FLOATING FRAMES
- * Three abstract frames create depth without using portfolio imagery.
+ * Three clean, empty frames floating as a single visual composition.
  */
 
 export const HeroLivingCollage = () => {
@@ -15,7 +15,6 @@ export const HeroLivingCollage = () => {
 
   useEffect(() => {
     const handleVisibilityChange = () => setIsPaused(document.hidden);
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const observer = new IntersectionObserver(
@@ -40,17 +39,14 @@ export const HeroLivingCollage = () => {
       <div className="floating-frames" aria-hidden="true">
         <div className="floating-frame floating-frame-left">
           <span className="floating-frame-inner" />
-          <span className="floating-frame-mark">01</span>
         </div>
 
         <div className="floating-frame floating-frame-center">
           <span className="floating-frame-inner" />
-          <span className="floating-frame-mark">IRIS</span>
         </div>
 
         <div className="floating-frame floating-frame-right">
           <span className="floating-frame-inner" />
-          <span className="floating-frame-mark">03</span>
         </div>
 
         <span className="floating-frame-glow floating-frame-glow-purple" />
