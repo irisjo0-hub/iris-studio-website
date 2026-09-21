@@ -6,7 +6,7 @@ import DivisionMenu from '../DivisionMenu';
 import {
   X, MessageSquare, Share2, ArrowUpRight,
   Camera, Calendar, ShoppingBag, FolderKanban,
-  Volume2, VolumeX, ChevronDown, ChevronUp
+  Volume2, VolumeX, ChevronDown, ChevronUp, Printer
 } from 'lucide-react';
 
 import { useSiteSettings } from '../../context/SiteSettingsContext';
