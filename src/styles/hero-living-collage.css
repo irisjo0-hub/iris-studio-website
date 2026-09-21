@@ -1,9 +1,9 @@
-/* IRIS HERO — THREE WORLDS / THREE OBJECTS
- * Three physical-feeling objects represent MEDIA / STUDIO / PRINT.
- * The composition lives below the hero CTA and has no image/network dependency.
+/* IRIS HERO — GIANT MOVING GRID
+ * Architectural perspective grid / endless floor.
+ * Kept behind the existing hero content and CTA.
  */
 
-.iris-hero-lower-stage.iris-three-worlds-stage {
+.iris-hero-lower-stage.iris-giant-grid-stage {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -13,298 +13,193 @@
   z-index: 10;
   border: none !important;
   box-shadow: none !important;
-  perspective: 1400px;
+  perspective: 1100px;
 }
 
-.three-worlds-container {
+.giant-grid-scene {
   position: absolute;
   left: 50%;
-  bottom: 5%;
-  width: min(1180px, 92vw);
-  height: 42%;
-  min-height: 250px;
+  bottom: -1%;
+  width: min(1500px, 130vw);
+  height: 58%;
   transform: translateX(-50%);
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: clamp(20px, 5vw, 90px);
-  perspective: 1200px;
+  perspective: 900px;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 13%, #000 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 13%, #000 78%, transparent 100%);
 }
 
-.iris-world-object {
-  --object-size: clamp(150px, 15vw, 235px);
-  position: relative;
-  width: var(--object-size);
-  height: var(--object-size);
-  flex: 0 0 var(--object-size);
-  transform-style: preserve-3d;
-  animation: iris-world-float 7s ease-in-out infinite;
-  animation-delay: calc(var(--world-index) * -1.35s);
-  filter: drop-shadow(0 28px 38px rgba(0, 0, 0, 0.55));
-}
-
-.iris-world-object::before {
-  content: '';
+.giant-grid-plane {
   position: absolute;
-  inset: 7%;
-  border: 1px solid rgba(236, 235, 231, 0.18);
-  border-radius: 28%;
-  transform: rotate(45deg) translateZ(-8px);
-  opacity: 0.55;
+  left: 50%;
+  top: -42%;
+  width: 150%;
+  height: 190%;
+  transform: translateX(-50%) rotateX(68deg) rotateZ(-1.5deg) translateY(0);
+  transform-origin: center center;
 }
 
-.iris-world-purple { --world-accent: #67245F; }
-.iris-world-green { --world-accent: #044630; }
-.iris-world-gold { --world-accent: #F5BD1A; }
-
-.world-object-glow {
-  position: absolute;
-  inset: 15%;
-  border-radius: 50%;
-  background: var(--world-accent);
-  opacity: 0.24;
-  filter: blur(30px);
-  transform: translateZ(-30px);
+.giant-grid-cells {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  width: 100%;
+  height: 100%;
+  border-top: 1px solid rgba(236, 235, 231, 0.15);
+  border-left: 1px solid rgba(236, 235, 231, 0.11);
+  animation: iris-grid-drift 11s linear infinite;
 }
 
-.world-object-core {
+.giant-grid-cell {
+  border-right: 1px solid rgba(236, 235, 231, 0.12);
+  border-bottom: 1px solid rgba(236, 235, 231, 0.12);
+  background: linear-gradient(
+    135deg,
+    rgba(103, 36, 95, 0.055),
+    transparent 48%,
+    rgba(4, 70, 48, 0.035)
+  );
+}
+
+.giant-grid-cell:nth-child(7n + 1) {
+  background: rgba(245, 189, 26, 0.055);
+}
+
+.giant-grid-fade {
   position: absolute;
-  inset: 8%;
-  border-radius: 30%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 58%;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(103, 36, 95, 0.16), transparent 38%),
+    linear-gradient(to bottom, transparent 0%, rgba(24, 12, 23, 0.06) 40%, rgba(24, 12, 23, 0.92) 100%);
+  z-index: 2;
+}
+
+.giant-grid-wordmark {
+  position: absolute;
+  left: 50%;
+  bottom: 13%;
+  transform: translateX(-50%);
+  color: rgba(236, 235, 231, 0.055);
+  font-family: var(--font-hero, var(--font-primary, sans-serif));
+  font-size: clamp(9rem, 25vw, 25rem);
+  font-weight: 900;
+  line-height: 0.72;
+  letter-spacing: -0.09em;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 3;
+  mix-blend-mode: screen;
+}
+
+.giant-grid-label {
+  position: absolute;
+  z-index: 4;
   display: flex;
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background:
-    linear-gradient(145deg, rgba(255,255,255,0.14), transparent 38%),
-    linear-gradient(145deg, color-mix(in srgb, var(--world-accent) 78%, #180C17), #180C17 76%);
-  border: 1px solid rgba(236, 235, 231, 0.22);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.16),
-    inset -18px -18px 35px rgba(0,0,0,0.32),
-    0 18px 38px rgba(0,0,0,0.36);
-  transform: rotateX(10deg) rotateY(-16deg) translateZ(20px);
-}
-
-.iris-world-green .world-object-core {
-  border-radius: 50%;
-  transform: rotateX(8deg) rotateY(14deg) translateZ(20px);
-}
-
-.iris-world-gold .world-object-core {
-  border-radius: 18px;
-  transform: rotateX(14deg) rotateY(-12deg) translateZ(20px);
-}
-
-.world-object-core::after {
-  content: '';
-  position: absolute;
-  width: 42%;
-  height: 42%;
-  top: 9%;
-  left: 10%;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.14);
-  filter: blur(2px);
-}
-
-.world-object-glyph {
-  position: relative;
-  z-index: 2;
-  color: #ECEBE7;
-  font-family: Arial, sans-serif;
-  font-size: clamp(2rem, 4vw, 4.5rem);
-  font-weight: 300;
-  line-height: 1;
-  text-shadow: 0 8px 24px rgba(0,0,0,0.4);
-}
-
-.iris-world-gold .world-object-glyph {
-  color: #180C17;
-}
-
-.world-object-number {
-  position: absolute;
-  top: 13px;
-  right: 15px;
-  z-index: 3;
-  color: rgba(236, 235, 231, 0.62);
-  font-family: var(--font-primary, sans-serif);
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
-}
-
-.world-object-meta {
-  position: absolute;
-  left: 4%;
-  bottom: -44px;
-  display: flex;
-  align-items: baseline;
   gap: 9px;
-  white-space: nowrap;
-}
-
-.world-object-label {
-  color: #ECEBE7;
-  font-family: var(--font-hero, var(--font-primary, sans-serif));
-  font-size: clamp(1rem, 1.55vw, 1.35rem);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
-.world-object-title {
-  color: rgba(236, 235, 231, 0.48);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.world-object-detail {
-  position: absolute;
-  right: 4%;
-  bottom: -42px;
   color: rgba(236, 235, 231, 0.34);
   font-size: 0.55rem;
   letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
-.three-worlds-orbit {
-  position: absolute;
+.giant-grid-label span {
+  color: #F5BD1A;
+  font-size: 0.48rem;
+}
+
+.giant-grid-label b {
+  color: rgba(236, 235, 231, 0.62);
+  font-weight: 700;
+}
+
+.giant-grid-label-left {
+  left: 5%;
+  bottom: 21%;
+}
+
+.giant-grid-label-right {
+  right: 5%;
+  bottom: 25%;
+}
+
+.giant-grid-label-bottom {
   left: 50%;
-  bottom: 7%;
-  width: min(1100px, 88vw);
-  height: 42%;
-  transform: translateX(-50%) rotateX(66deg);
-  transform-origin: center;
-  opacity: 0.42;
-}
-
-.orbit {
-  position: absolute;
-  inset: 0;
-  border: 1px solid rgba(236, 235, 231, 0.16);
-  border-radius: 50%;
-}
-
-.orbit-one { transform: scaleY(0.32); }
-.orbit-two { transform: scale(0.76) scaleY(0.24); }
-.orbit-three { transform: scale(0.48) scaleY(0.18); }
-
-.three-worlds-baseline {
-  position: absolute;
-  left: 50%;
-  bottom: 1.5%;
+  bottom: 5%;
   transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: rgba(236, 235, 231, 0.3);
-  font-size: 0.5rem;
-  letter-spacing: 0.28em;
-  white-space: nowrap;
+  gap: 10px;
 }
 
-.three-worlds-baseline i {
-  display: block;
-  width: 34px;
+.giant-grid-label-bottom i {
+  width: 28px;
   height: 1px;
   background: rgba(245, 189, 26, 0.5);
 }
 
-@keyframes iris-world-float {
-  0%, 100% {
-    transform: translate3d(0, 5px, 0) rotateZ(-1.5deg);
-  }
-  50% {
-    transform: translate3d(0, -13px, 0) rotateZ(1.5deg);
-  }
+.giant-grid-label-bottom em {
+  color: rgba(236, 235, 231, 0.24);
+  font-style: normal;
 }
 
-.iris-three-worlds-stage.is-paused .iris-world-object {
+.iris-giant-grid-stage.is-paused .giant-grid-cells {
   animation-play-state: paused;
 }
 
+@keyframes iris-grid-drift {
+  from {
+    transform: translate3d(0, -13%, 0);
+  }
+  to {
+    transform: translate3d(0, 13%, 0);
+  }
+}
+
 @media (max-width: 768px) {
-  .three-worlds-container {
-    bottom: 7%;
-    width: 94vw;
-    height: 31%;
-    min-height: 190px;
-    align-items: center;
-    gap: 8px;
+  .giant-grid-scene {
+    width: 175vw;
+    height: 49%;
+    bottom: 1%;
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 75%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 75%, transparent 100%);
   }
 
-  .iris-world-object {
-    --object-size: clamp(92px, 28vw, 145px);
+  .giant-grid-plane {
+    width: 145%;
+    top: -34%;
+    transform: translateX(-50%) rotateX(68deg) rotateZ(-2deg);
   }
 
-  .iris-world-object::before {
-    inset: 4%;
-    border-radius: 22%;
+  .giant-grid-wordmark {
+    bottom: 13%;
+    font-size: clamp(7rem, 34vw, 12rem);
   }
 
-  .world-object-core {
-    inset: 7%;
-    border-radius: 22%;
+  .giant-grid-label-left {
+    left: 4%;
+    bottom: 20%;
   }
 
-  .iris-world-green .world-object-core {
-    border-radius: 50%;
+  .giant-grid-label-right {
+    right: 4%;
+    bottom: 24%;
   }
 
-  .iris-world-gold .world-object-core {
-    border-radius: 12px;
+  .giant-grid-label-bottom {
+    bottom: 5%;
+    font-size: 0.44rem;
+    letter-spacing: 0.13em;
   }
 
-  .world-object-glyph {
-    font-size: clamp(1.6rem, 8vw, 2.7rem);
-  }
-
-  .world-object-number {
-    top: 8px;
-    right: 9px;
-    font-size: 0.52rem;
-  }
-
-  .world-object-meta {
-    left: 2%;
-    bottom: -30px;
-    gap: 4px;
-    flex-direction: column;
-  }
-
-  .world-object-label {
-    font-size: clamp(0.72rem, 3.1vw, 0.95rem);
-    letter-spacing: 0.06em;
-  }
-
-  .world-object-title {
-    font-size: 0.48rem;
-  }
-
-  .world-object-detail {
+  .giant-grid-label-bottom em {
     display: none;
-  }
-
-  .three-worlds-orbit {
-    bottom: 8%;
-    width: 95vw;
-    height: 32%;
-  }
-
-  .three-worlds-baseline {
-    bottom: 2.5%;
-    font-size: 0.38rem;
-    letter-spacing: 0.2em;
-  }
-
-  .three-worlds-baseline i {
-    width: 20px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .iris-world-object {
+  .giant-grid-cells {
     animation: none;
   }
 }
