@@ -1,5 +1,5 @@
 /* IRIS HERO — THREE FLOATING FRAMES
- * Abstract depth treatment. No portfolio images, no logo card.
+ * Clean abstract frames. No imagery, no logo, no captions.
  */
 
 .iris-hero-lower-stage.iris-floating-frames-stage {
@@ -15,166 +15,164 @@
 .floating-frames {
   position: absolute;
   left: 50%;
-  bottom: -2%;
-  width: min(1100px, 94vw);
-  height: 48%;
+  bottom: 2%;
+  width: min(980px, 88vw);
+  height: 42%;
   transform: translateX(-50%);
-  perspective: 1100px;
+  perspective: 1400px;
 }
 
 .floating-frame {
   position: absolute;
-  display: block;
-  border: 1px solid rgba(236, 235, 231, 0.22);
+  overflow: visible;
+  border: 1px solid rgba(236, 235, 231, 0.42);
   background: linear-gradient(
-    145deg,
-    rgba(236, 235, 231, 0.025),
-    rgba(103, 36, 95, 0.035) 48%,
-    rgba(4, 70, 48, 0.025)
+    135deg,
+    rgba(236, 235, 231, 0.035),
+    rgba(103, 36, 95, 0.045) 55%,
+    rgba(4, 70, 48, 0.035)
   );
   box-shadow:
-    0 22px 60px rgba(0, 0, 0, 0.24),
-    inset 0 0 45px rgba(236, 235, 231, 0.018);
+    0 18px 45px rgba(0, 0, 0, 0.22),
+    inset 0 0 35px rgba(236, 235, 231, 0.025);
   transform-style: preserve-3d;
-  animation: floating-frame-drift 8s ease-in-out infinite;
+  will-change: transform;
 }
 
-.floating-frame::before,
-.floating-frame::after,
+.floating-frame::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(236, 235, 231, 0.09);
+}
+
+.floating-frame::after {
+  content: '';
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid rgba(245, 189, 26, 0.72);
+  border-left: 1px solid rgba(245, 189, 26, 0.72);
+}
+
+.floating-frame-inner {
+  position: absolute;
+  inset: 0;
+}
+
 .floating-frame-inner::before,
 .floating-frame-inner::after {
   content: '';
   position: absolute;
-  pointer-events: none;
-}
-
-.floating-frame::before {
-  inset: 9px;
-  border: 1px solid rgba(236, 235, 231, 0.07);
-}
-
-.floating-frame::after {
-  left: 12%;
-  right: 12%;
-  top: 50%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(245, 189, 26, 0.28),
-    transparent
-  );
-  opacity: 0.45;
+  width: 34px;
+  height: 34px;
 }
 
 .floating-frame-inner::before {
-  width: 24px;
-  height: 24px;
+  right: -1px;
   top: -1px;
-  left: -1px;
-  border-top: 1px solid rgba(245, 189, 26, 0.55);
-  border-left: 1px solid rgba(245, 189, 26, 0.55);
+  border-top: 1px solid rgba(245, 189, 26, 0.38);
+  border-right: 1px solid rgba(245, 189, 26, 0.38);
 }
 
 .floating-frame-inner::after {
-  width: 24px;
-  height: 24px;
   right: -1px;
   bottom: -1px;
-  border-right: 1px solid rgba(245, 189, 26, 0.42);
-  border-bottom: 1px solid rgba(245, 189, 26, 0.42);
+  border-right: 1px solid rgba(245, 189, 26, 0.38);
+  border-bottom: 1px solid rgba(245, 189, 26, 0.38);
 }
 
 .floating-frame-mark {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  color: rgba(236, 235, 231, 0.2);
-  font-size: clamp(0.48rem, 0.7vw, 0.68rem);
-  font-weight: 700;
-  letter-spacing: 0.28em;
+  display: none;
 }
 
 .floating-frame-left {
-  left: 7%;
+  left: 4%;
   bottom: 4%;
-  width: 34%;
-  height: 67%;
-  transform: rotate(-8deg) translateZ(-70px);
-  opacity: 0.62;
-  animation-delay: -2.4s;
+  width: 37%;
+  height: 72%;
+  transform: rotate(-9deg) translate3d(0, 0, -80px);
+  opacity: 0.82;
+  animation: frame-left-float 9s ease-in-out infinite;
 }
 
 .floating-frame-center {
   left: 50%;
-  bottom: 9%;
-  width: 40%;
-  height: 76%;
+  bottom: 13%;
+  width: 42%;
+  height: 82%;
   transform: translateX(-50%) translateZ(80px);
-  border-color: rgba(236, 235, 231, 0.34);
-  opacity: 0.88;
-  animation-delay: -5.5s;
+  border-color: rgba(236, 235, 231, 0.58);
+  background: linear-gradient(
+    145deg,
+    rgba(236, 235, 231, 0.045),
+    rgba(103, 36, 95, 0.06),
+    rgba(4, 70, 48, 0.035)
+  );
+  opacity: 0.96;
+  animation: frame-center-float 10s ease-in-out infinite;
 }
 
-.floating-frame-center .floating-frame-mark {
-  color: rgba(236, 235, 231, 0.32);
-  letter-spacing: 0.34em;
+.floating-frame-center::after {
+  border-color: rgba(245, 189, 26, 0.9);
 }
 
 .floating-frame-right {
-  right: 7%;
+  right: 4%;
   bottom: 5%;
-  width: 34%;
-  height: 67%;
-  transform: rotate(8deg) translateZ(-70px);
-  opacity: 0.62;
-  animation-delay: -0.8s;
+  width: 37%;
+  height: 72%;
+  transform: rotate(9deg) translate3d(0, 0, -80px);
+  opacity: 0.82;
+  animation: frame-right-float 9s ease-in-out infinite;
 }
 
 .floating-frame-glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(34px);
+  filter: blur(42px);
   pointer-events: none;
+  z-index: -1;
   animation: floating-glow 9s ease-in-out infinite;
 }
 
 .floating-frame-glow-purple {
-  left: 20%;
-  top: 35%;
-  width: 30%;
-  height: 50%;
-  background: rgba(103, 36, 95, 0.16);
+  left: 12%;
+  top: 10%;
+  width: 38%;
+  height: 70%;
+  background: rgba(103, 36, 95, 0.18);
 }
 
 .floating-frame-glow-green {
-  right: 18%;
-  top: 38%;
-  width: 28%;
-  height: 48%;
-  background: rgba(4, 70, 48, 0.13);
+  right: 12%;
+  top: 15%;
+  width: 34%;
+  height: 68%;
+  background: rgba(4, 70, 48, 0.16);
   animation-delay: -4s;
 }
 
-@keyframes floating-frame-drift {
-  0%, 100% {
-    margin-top: 4px;
-  }
-  50% {
-    margin-top: -7px;
-  }
+@keyframes frame-left-float {
+  0%, 100% { transform: rotate(-9deg) translate3d(-5px, 5px, -80px); }
+  50% { transform: rotate(-7deg) translate3d(5px, -12px, -80px); }
+}
+
+@keyframes frame-center-float {
+  0%, 100% { transform: translateX(-50%) translate3d(0, 5px, 80px) rotate(0.5deg); }
+  50% { transform: translateX(-50%) translate3d(0, -13px, 80px) rotate(-0.5deg); }
+}
+
+@keyframes frame-right-float {
+  0%, 100% { transform: rotate(9deg) translate3d(5px, 5px, -80px); }
+  50% { transform: rotate(7deg) translate3d(-5px, -12px, -80px); }
 }
 
 @keyframes floating-glow {
-  0%, 100% {
-    opacity: 0.45;
-    transform: scale(0.9);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.06);
-  }
+  0%, 100% { opacity: 0.45; transform: scale(0.92); }
+  50% { opacity: 0.82; transform: scale(1.06); }
 }
 
 .iris-floating-frames-stage.is-paused .floating-frame,
@@ -184,36 +182,38 @@
 
 @media (max-width: 768px) {
   .floating-frames {
-    width: 116vw;
-    height: 36%;
+    width: 108vw;
+    height: 38%;
     bottom: 1%;
   }
 
   .floating-frame-left {
-    left: 3%;
+    left: 1%;
     width: 39%;
-    height: 64%;
+    height: 70%;
   }
 
   .floating-frame-center {
-    width: 44%;
-    height: 74%;
+    width: 45%;
+    height: 80%;
+    bottom: 10%;
   }
 
   .floating-frame-right {
-    right: 3%;
+    right: 1%;
     width: 39%;
-    height: 64%;
+    height: 70%;
   }
 
   .floating-frame::before {
     inset: 6px;
   }
 
+  .floating-frame::after,
   .floating-frame-inner::before,
   .floating-frame-inner::after {
-    width: 17px;
-    height: 17px;
+    width: 23px;
+    height: 23px;
   }
 }
 
