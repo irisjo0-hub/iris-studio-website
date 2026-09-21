@@ -1,13 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
-import irisLogo from '../../assets/iris_logo.png';
 import '../../styles/hero-living-collage.css';
 
 /**
- * IRIS HERO — LIVING LOGO
- * The logo is treated as part of the architecture of the hero,
- * not as a floating object. It is anchored into the lower edge
- * with a very subtle living/breathing motion.
+ * IRIS HERO — THREE FLOATING FRAMES
+ * Three abstract frames create depth without using portfolio imagery.
  */
 
 export const HeroLivingCollage = () => {
@@ -37,25 +34,27 @@ export const HeroLivingCollage = () => {
   return (
     <div
       ref={stageRef}
-      className={`iris-hero-lower-stage iris-living-logo-stage ${isPaused ? 'is-paused' : ''}`}
-      aria-label={isRtl ? 'هوية آيرس المتحركة' : 'Living IRIS identity'}
+      className={`iris-hero-lower-stage iris-floating-frames-stage ${isPaused ? 'is-paused' : ''}`}
+      aria-label={isRtl ? 'إطارات آيرس العائمة' : 'IRIS floating frames'}
     >
-      <div className="living-logo-architecture" aria-hidden="true">
-        <div className="living-logo-aura" />
-        <div className="living-logo-frame">
-          <span className="living-logo-corner living-logo-corner-tl" />
-          <span className="living-logo-corner living-logo-corner-tr" />
-          <span className="living-logo-corner living-logo-corner-bl" />
-          <span className="living-logo-corner living-logo-corner-br" />
-          <img src={irisLogo} alt="" className="living-logo-image" />
-          <span className="living-logo-light" />
+      <div className="floating-frames" aria-hidden="true">
+        <div className="floating-frame floating-frame-left">
+          <span className="floating-frame-inner" />
+          <span className="floating-frame-mark">01</span>
         </div>
-        <div className="living-logo-line" />
-        <div className="living-logo-caption">
-          <span>IRIS</span>
-          <i />
-          <b>MEDIA · STUDIO · PRINT</b>
+
+        <div className="floating-frame floating-frame-center">
+          <span className="floating-frame-inner" />
+          <span className="floating-frame-mark">IRIS</span>
         </div>
+
+        <div className="floating-frame floating-frame-right">
+          <span className="floating-frame-inner" />
+          <span className="floating-frame-mark">03</span>
+        </div>
+
+        <span className="floating-frame-glow floating-frame-glow-purple" />
+        <span className="floating-frame-glow floating-frame-glow-green" />
       </div>
     </div>
   );
