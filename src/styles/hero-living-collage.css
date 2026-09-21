@@ -1,9 +1,9 @@
-/* IRIS HERO — GIANT MOVING GRID
- * Architectural perspective grid / endless floor.
- * Kept behind the existing hero content and CTA.
+/* IRIS HERO — LIVING LOGO
+ * The logo is the hero object: subtle breathing, orbital movement,
+ * light sweep and three IRIS brand-energy nodes.
  */
 
-.iris-hero-lower-stage.iris-giant-grid-stage {
+.iris-hero-lower-stage.iris-living-logo-stage {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -13,193 +13,272 @@
   z-index: 10;
   border: none !important;
   box-shadow: none !important;
-  perspective: 1100px;
+  perspective: 1200px;
 }
 
-.giant-grid-scene {
+.living-logo-field {
   position: absolute;
   left: 50%;
-  bottom: -1%;
-  width: min(1500px, 130vw);
-  height: 58%;
+  bottom: 3%;
+  width: min(760px, 76vw);
+  height: min(430px, 42vh);
   transform: translateX(-50%);
-  perspective: 900px;
-  overflow: hidden;
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 13%, #000 78%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 13%, #000 78%, transparent 100%);
-}
-
-.giant-grid-plane {
-  position: absolute;
-  left: 50%;
-  top: -42%;
-  width: 150%;
-  height: 190%;
-  transform: translateX(-50%) rotateX(68deg) rotateZ(-1.5deg) translateY(0);
-  transform-origin: center center;
-}
-
-.giant-grid-cells {
   display: grid;
-  grid-template-columns: repeat(14, 1fr);
-  grid-template-rows: repeat(6, 1fr);
-  width: 100%;
-  height: 100%;
-  border-top: 1px solid rgba(236, 235, 231, 0.15);
-  border-left: 1px solid rgba(236, 235, 231, 0.11);
-  animation: iris-grid-drift 11s linear infinite;
+  place-items: center;
 }
 
-.giant-grid-cell {
-  border-right: 1px solid rgba(236, 235, 231, 0.12);
-  border-bottom: 1px solid rgba(236, 235, 231, 0.12);
-  background: linear-gradient(
-    135deg,
-    rgba(103, 36, 95, 0.055),
-    transparent 48%,
-    rgba(4, 70, 48, 0.035)
-  );
-}
-
-.giant-grid-cell:nth-child(7n + 1) {
-  background: rgba(245, 189, 26, 0.055);
-}
-
-.giant-grid-fade {
+.living-logo-halo {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 58%;
+  width: 42%;
+  aspect-ratio: 1;
+  border-radius: 50%;
   background:
-    radial-gradient(circle at 50% 28%, rgba(103, 36, 95, 0.16), transparent 38%),
-    linear-gradient(to bottom, transparent 0%, rgba(24, 12, 23, 0.06) 40%, rgba(24, 12, 23, 0.92) 100%);
-  z-index: 2;
+    radial-gradient(circle, rgba(103,36,95,0.24) 0%, rgba(103,36,95,0.08) 38%, transparent 70%);
+  filter: blur(12px);
+  animation: living-logo-breathe 5s ease-in-out infinite;
 }
 
-.giant-grid-wordmark {
-  position: absolute;
-  left: 50%;
-  bottom: 13%;
-  transform: translateX(-50%);
-  color: rgba(236, 235, 231, 0.055);
-  font-family: var(--font-hero, var(--font-primary, sans-serif));
-  font-size: clamp(9rem, 25vw, 25rem);
-  font-weight: 900;
-  line-height: 0.72;
-  letter-spacing: -0.09em;
-  user-select: none;
-  white-space: nowrap;
+.living-logo-mark {
+  position: relative;
+  width: clamp(210px, 28vw, 390px);
+  aspect-ratio: 1.8 / 1;
+  display: grid;
+  place-items: center;
+  transform-style: preserve-3d;
+  animation: living-logo-float 6s ease-in-out infinite;
+}
+
+.living-logo-image {
+  position: relative;
   z-index: 3;
-  mix-blend-mode: screen;
+  width: 72%;
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 10px rgba(236,235,231,0.12))
+    drop-shadow(0 24px 40px rgba(0,0,0,0.5));
+  animation: living-logo-pulse 4.5s ease-in-out infinite;
 }
 
-.giant-grid-label {
+.living-logo-ring {
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(236,235,231,0.12);
+  border-radius: 50%;
+  transform: rotateX(70deg) rotateZ(-12deg);
+  animation: living-logo-ring-spin 14s linear infinite;
+}
+
+.living-logo-ring::before,
+.living-logo-ring::after {
+  content: '';
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.living-logo-ring::before {
+  left: 8%;
+  top: 45%;
+  background: #67245F;
+  box-shadow: 0 0 18px rgba(103,36,95,0.9);
+}
+
+.living-logo-ring::after {
+  right: 8%;
+  top: 45%;
+  background: #044630;
+  box-shadow: 0 0 18px rgba(4,70,48,0.9);
+}
+
+.living-logo-sweep {
   position: absolute;
   z-index: 4;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245,189,26,0.75), transparent);
+  box-shadow: 0 0 18px rgba(245,189,26,0.45);
+  transform: translateY(55px);
+  animation: living-logo-sweep 4.8s ease-in-out infinite;
+}
+
+.living-logo-orbit {
+  position: absolute;
+  border: 1px solid rgba(236,235,231,0.08);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.living-logo-orbit-one {
+  width: 94%;
+  height: 58%;
+  transform: rotateX(66deg) rotateZ(-10deg);
+  animation: living-logo-orbit-drift 12s ease-in-out infinite;
+}
+
+.living-logo-orbit-two {
+  width: 72%;
+  height: 43%;
+  transform: rotateX(67deg) rotateZ(24deg);
+  border-color: rgba(103,36,95,0.18);
+  animation: living-logo-orbit-drift 9s ease-in-out infinite reverse;
+}
+
+.living-logo-orbit-three {
+  width: 52%;
+  height: 30%;
+  transform: rotateX(68deg) rotateZ(-30deg);
+  border-color: rgba(245,189,26,0.16);
+  animation: living-logo-orbit-drift 7s ease-in-out infinite;
+}
+
+.living-logo-node {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  z-index: 5;
+  animation: living-logo-node-pulse 3s ease-in-out infinite;
+}
+
+.living-logo-node-purple {
+  left: 12%;
+  top: 39%;
+  background: #67245F;
+  box-shadow: 0 0 22px rgba(103,36,95,0.9);
+}
+
+.living-logo-node-green {
+  right: 12%;
+  top: 31%;
+  background: #044630;
+  box-shadow: 0 0 22px rgba(4,70,48,0.9);
+  animation-delay: -1s;
+}
+
+.living-logo-node-gold {
+  left: 50%;
+  top: 4%;
+  background: #F5BD1A;
+  box-shadow: 0 0 22px rgba(245,189,26,0.9);
+  animation-delay: -2s;
+}
+
+.living-logo-caption {
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 9px;
-  color: rgba(236, 235, 231, 0.34);
-  font-size: 0.55rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.giant-grid-label span {
-  color: #F5BD1A;
-  font-size: 0.48rem;
-}
-
-.giant-grid-label b {
-  color: rgba(236, 235, 231, 0.62);
-  font-weight: 700;
-}
-
-.giant-grid-label-left {
-  left: 5%;
-  bottom: 21%;
-}
-
-.giant-grid-label-right {
-  right: 5%;
-  bottom: 25%;
-}
-
-.giant-grid-label-bottom {
-  left: 50%;
-  bottom: 5%;
-  transform: translateX(-50%);
   gap: 10px;
+  white-space: nowrap;
+  color: rgba(236,235,231,0.3);
+  font-size: 0.48rem;
+  letter-spacing: 0.24em;
 }
 
-.giant-grid-label-bottom i {
+.living-logo-caption span {
+  color: rgba(236,235,231,0.68);
+  font-weight: 800;
+}
+
+.living-logo-caption i {
   width: 28px;
   height: 1px;
-  background: rgba(245, 189, 26, 0.5);
+  background: rgba(245,189,26,0.55);
 }
 
-.giant-grid-label-bottom em {
-  color: rgba(236, 235, 231, 0.24);
-  font-style: normal;
+.living-logo-caption b {
+  font-weight: 500;
 }
 
-.iris-giant-grid-stage.is-paused .giant-grid-cells {
+@keyframes living-logo-float {
+  0%, 100% { transform: translate3d(0, 8px, 0) rotateZ(-1deg); }
+  50% { transform: translate3d(0, -10px, 0) rotateZ(1deg); }
+}
+
+@keyframes living-logo-pulse {
+  0%, 100% { transform: scale(0.97); opacity: 0.88; }
+  50% { transform: scale(1.03); opacity: 1; }
+}
+
+@keyframes living-logo-breathe {
+  0%, 100% { transform: scale(0.82); opacity: 0.55; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes living-logo-ring-spin {
+  from { transform: rotateX(70deg) rotateZ(0deg); }
+  to { transform: rotateX(70deg) rotateZ(360deg); }
+}
+
+@keyframes living-logo-orbit-drift {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+
+@keyframes living-logo-sweep {
+  0%, 100% { opacity: 0; transform: translateY(65px) scaleX(0.5); }
+  45%, 60% { opacity: 1; transform: translateY(-65px) scaleX(1); }
+}
+
+@keyframes living-logo-node-pulse {
+  0%, 100% { transform: scale(0.65); opacity: 0.45; }
+  50% { transform: scale(1.5); opacity: 1; }
+}
+
+.iris-living-logo-stage.is-paused .living-logo-mark,
+.iris-living-logo-stage.is-paused .living-logo-image,
+.iris-living-logo-stage.is-paused .living-logo-ring,
+.iris-living-logo-stage.is-paused .living-logo-halo,
+.iris-living-logo-stage.is-paused .living-logo-sweep,
+.iris-living-logo-stage.is-paused .living-logo-orbit,
+.iris-living-logo-stage.is-paused .living-logo-node {
   animation-play-state: paused;
 }
 
-@keyframes iris-grid-drift {
-  from {
-    transform: translate3d(0, -13%, 0);
-  }
-  to {
-    transform: translate3d(0, 13%, 0);
-  }
-}
-
 @media (max-width: 768px) {
-  .giant-grid-scene {
-    width: 175vw;
-    height: 49%;
-    bottom: 1%;
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 75%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 16%, #000 75%, transparent 100%);
+  .living-logo-field {
+    width: 108vw;
+    height: 36vh;
+    bottom: 4%;
   }
 
-  .giant-grid-plane {
-    width: 145%;
-    top: -34%;
-    transform: translateX(-50%) rotateX(68deg) rotateZ(-2deg);
+  .living-logo-mark {
+    width: clamp(190px, 66vw, 330px);
   }
 
-  .giant-grid-wordmark {
-    bottom: 13%;
-    font-size: clamp(7rem, 34vw, 12rem);
+  .living-logo-orbit-one {
+    width: 98%;
   }
 
-  .giant-grid-label-left {
-    left: 4%;
-    bottom: 20%;
+  .living-logo-caption {
+    bottom: 0;
+    font-size: 0.38rem;
+    letter-spacing: 0.14em;
   }
 
-  .giant-grid-label-right {
-    right: 4%;
-    bottom: 24%;
-  }
-
-  .giant-grid-label-bottom {
-    bottom: 5%;
-    font-size: 0.44rem;
-    letter-spacing: 0.13em;
-  }
-
-  .giant-grid-label-bottom em {
+  .living-logo-caption b {
     display: none;
+  }
+
+  .living-logo-node {
+    width: 5px;
+    height: 5px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .giant-grid-cells {
+  .living-logo-mark,
+  .living-logo-image,
+  .living-logo-ring,
+  .living-logo-halo,
+  .living-logo-sweep,
+  .living-logo-orbit,
+  .living-logo-node {
     animation: none;
   }
 }
