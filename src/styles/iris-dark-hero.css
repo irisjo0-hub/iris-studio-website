@@ -1483,6 +1483,6 @@ body * {
 /* Desktop-only fine tuning: lift the main headline block; mobile is untouched. */
 @media (min-width: 1024px) {
   .hero-v2-content-stage {
-    transform: translateY(-68px);
+    transform: translateY(-96px);
   }
 }
