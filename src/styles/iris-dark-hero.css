@@ -1456,3 +1456,25 @@ body * {
   transition-duration: .28s;
   transition-timing-function: ease;
 }
+
+
+/* FINAL DESKTOP HERO POSITION — mobile stays exactly as-is. */
+@media (min-width: 1024px) {
+  .hero-v2-content-stage {
+    transform: translateY(-42px);
+  }
+
+  .hero-v2-lower-animation-area {
+    top: clamp(300px, 40vh, 420px) !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  .hero-v2-content-stage {
+    transform: translateY(-48px);
+  }
+
+  .hero-v2-lower-animation-area {
+    top: clamp(315px, 38vh, 430px) !important;
+  }
+}
