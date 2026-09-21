@@ -383,3 +383,359 @@ html.iris-theme-light iframe { filter: none; }
     min-height: 100svh !important;
   }
 }
+
+
+/* =========================================================
+   LIGHT REBUILD V2 — PORTAL / DIVISION PAGES
+   The division pages use dedicated dark surfaces in home.css.
+   Replace those surfaces explicitly in light mode.
+   ========================================================= */
+
+html.iris-theme-light .division-portal-page {
+  background: #ECEBE7 !important;
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .portal-hero-banner {
+  background-color: #ECEBE7 !important;
+  background-image: none !important;
+  color: #180C17 !important;
+  border-bottom: 1px solid rgba(103,36,95,.12) !important;
+}
+
+html.iris-theme-light .portal-hero-overlay {
+  background:
+    radial-gradient(circle at 78% 18%, rgba(103,36,95,.14), transparent 38%),
+    radial-gradient(circle at 18% 82%, rgba(4,70,48,.12), transparent 42%),
+    linear-gradient(180deg, rgba(236,235,231,.20), rgba(236,235,231,.94)) !important;
+  opacity: 1 !important;
+}
+
+html.iris-theme-light .portal-hero-container {
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .portal-hero-title {
+  color: #180C17 !important;
+  text-shadow: none !important;
+}
+
+html.iris-theme-light .portal-hero-sub {
+  color: rgba(24,12,23,.70) !important;
+}
+
+html.iris-theme-light .portal-hero-badge {
+  background: rgba(103,36,95,.07) !important;
+  color: #67245F !important;
+  border-color: rgba(103,36,95,.28) !important;
+  box-shadow: none !important;
+}
+
+html.iris-theme-light .portal-hero-badge .badge-dot {
+  background: #F5BD1A !important;
+  box-shadow: 0 0 10px rgba(245,189,26,.45) !important;
+}
+
+html.iris-theme-light .portal-hero-ctas .btn-portal-primary {
+  background: #67245F !important;
+  color: #ECEBE7 !important;
+  border-color: #67245F !important;
+  box-shadow: 0 10px 24px rgba(103,36,95,.16) !important;
+}
+
+html.iris-theme-light .portal-hero-ctas .btn-portal-secondary {
+  background: rgba(103,36,95,.06) !important;
+  color: #67245F !important;
+  border-color: rgba(103,36,95,.28) !important;
+}
+
+html.iris-theme-light .portal-smart-tabs-bar {
+  background: rgba(236,235,231,.94) !important;
+  border-color: rgba(103,36,95,.12) !important;
+  box-shadow: 0 8px 24px rgba(103,36,95,.08) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+html.iris-theme-light .portal-smart-tabs-container {
+  background: transparent !important;
+}
+
+html.iris-theme-light .smart-tab-btn {
+  background: transparent !important;
+  color: rgba(24,12,23,.60) !important;
+  border-color: transparent !important;
+}
+
+html.iris-theme-light .smart-tab-btn:hover {
+  color: #67245F !important;
+  background: rgba(103,36,95,.06) !important;
+}
+
+html.iris-theme-light .smart-tab-btn.active {
+  background: #F4F2EE !important;
+  color: #67245F !important;
+  border-color: #F5BD1A !important;
+  box-shadow: 0 6px 18px rgba(103,36,95,.08) !important;
+}
+
+html.iris-theme-light .portal-section {
+  background: #ECEBE7 !important;
+  background-image: none !important;
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .portal-section.theme-alt-bg {
+  background:
+    radial-gradient(circle at 15% 15%, rgba(103,36,95,.08), transparent 34%),
+    radial-gradient(circle at 85% 85%, rgba(4,70,48,.08), transparent 34%),
+    #E8E5E0 !important;
+}
+
+html.iris-theme-light .portal-section-header h2 {
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .portal-section-header p {
+  color: rgba(24,12,23,.64) !important;
+}
+
+html.iris-theme-light .portal-section-header .section-eyebrow {
+  color: #67245F !important;
+}
+
+html.iris-theme-light .portal-card-box {
+  background: #F4F2EE !important;
+  background-image: none !important;
+  color: #180C17 !important;
+  border: 1px solid rgba(103,36,95,.14) !important;
+  box-shadow: 0 12px 30px rgba(103,36,95,.08) !important;
+}
+
+html.iris-theme-light .portal-card-box:hover {
+  background: #F8F6F2 !important;
+  border-color: rgba(103,36,95,.34) !important;
+  box-shadow: 0 16px 36px rgba(103,36,95,.12) !important;
+}
+
+html.iris-theme-light .portal-card-box h3 {
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .portal-card-box p {
+  color: rgba(24,12,23,.64) !important;
+}
+
+html.iris-theme-light .card-top-icon svg,
+html.iris-theme-light .card-top-icon > svg {
+  color: #044630 !important;
+}
+
+html.iris-theme-light .card-tag,
+html.iris-theme-light .feature-tag,
+html.iris-theme-light .visual-card-badge {
+  background: rgba(245,189,26,.15) !important;
+  color: #67245F !important;
+  border-color: rgba(245,189,26,.55) !important;
+}
+
+html.iris-theme-light .card-link-btn,
+html.iris-theme-light .visual-card-btn-text {
+  color: #67245F !important;
+}
+
+html.iris-theme-light .portal-banner-feature,
+html.iris-theme-light .portal-contact-box,
+html.iris-theme-light .portal-quote-container {
+  background: #F4F2EE !important;
+  background-image:
+    radial-gradient(circle at 90% 10%, rgba(103,36,95,.08), transparent 40%),
+    radial-gradient(circle at 10% 90%, rgba(4,70,48,.07), transparent 42%) !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.15) !important;
+  box-shadow: 0 14px 36px rgba(103,36,95,.08) !important;
+}
+
+html.iris-theme-light .feature-info h3,
+html.iris-theme-light .contact-info h2 {
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .feature-info p,
+html.iris-theme-light .contact-info p {
+  color: rgba(24,12,23,.66) !important;
+}
+
+html.iris-theme-light .workflow-timeline-card,
+html.iris-theme-light .process-step-card {
+  background: #F4F2EE !important;
+  background-image: none !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.14) !important;
+  box-shadow: 0 12px 30px rgba(103,36,95,.07) !important;
+}
+
+html.iris-theme-light .timeline-step-num,
+html.iris-theme-light .timeline-step-icon {
+  color: #67245F !important;
+}
+
+html.iris-theme-light .timeline-step-icon {
+  background: rgba(103,36,95,.07) !important;
+  border-color: rgba(103,36,95,.18) !important;
+}
+
+html.iris-theme-light .workflow-timeline-card h4,
+html.iris-theme-light .process-step-card h4 {
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .workflow-timeline-card p,
+html.iris-theme-light .process-step-card p {
+  color: rgba(24,12,23,.64) !important;
+}
+
+html.iris-theme-light .visual-project-card {
+  background: #F4F2EE !important;
+  background-image: none !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.14) !important;
+  box-shadow: 0 12px 32px rgba(103,36,95,.08) !important;
+}
+
+html.iris-theme-light .visual-card-gradient {
+  background: linear-gradient(to top, rgba(24,12,23,.72), transparent 70%) !important;
+}
+
+html.iris-theme-light .visual-card-body h3 {
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .visual-card-body p {
+  color: rgba(24,12,23,.66) !important;
+}
+
+html.iris-theme-light .visual-card-footer {
+  border-top-color: rgba(103,36,95,.12) !important;
+}
+
+html.iris-theme-light .as-label {
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .portal-quote-form .as-input {
+  background: #F8F6F2 !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.20) !important;
+}
+
+html.iris-theme-light .portal-quote-form .as-input:focus {
+  border-color: #67245F !important;
+  box-shadow: 0 0 0 3px rgba(103,36,95,.10) !important;
+}
+
+/* Homepage V2: remove the old dark shell while keeping its media/decorative content. */
+html.iris-theme-light .iris-dark-hero-v2-wrapper {
+  background-color: #ECEBE7 !important;
+  background-image:
+    radial-gradient(circle at 82% 16%, rgba(103,36,95,.13), transparent 38%),
+    radial-gradient(circle at 18% 84%, rgba(4,70,48,.11), transparent 42%) !important;
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .hero-v2-main-container,
+html.iris-theme-light .hero-v2-main {
+  background: transparent !important;
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .hero-v2-editorial-title,
+html.iris-theme-light .headline-line-1 {
+  color: #180C17 !important;
+  text-shadow: none !important;
+}
+
+html.iris-theme-light .headline-line-2 {
+  color: #67245F !important;
+  text-shadow: none !important;
+}
+
+html.iris-theme-light .hero-v2-supporting-desc {
+  color: rgba(24,12,23,.70) !important;
+}
+
+html.iris-theme-light .hero-v2-eyebrow-pill {
+  background: rgba(244,242,238,.72) !important;
+  border-color: rgba(245,189,26,.60) !important;
+}
+
+html.iris-theme-light .pill-text {
+  color: #67245F !important;
+}
+
+html.iris-theme-light .hero-v2-hamburger-btn {
+  background: rgba(244,242,238,.95) !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.20) !important;
+}
+
+html.iris-theme-light .hero-v2-logo-img {
+  filter: brightness(0) saturate(100%) invert(18%) sepia(18%) saturate(1930%) hue-rotate(280deg) brightness(88%) contrast(94%) !important;
+}
+
+html.iris-theme-light .hero-v2-grain-overlay {
+  opacity: .035 !important;
+}
+
+html.iris-theme-light .glow-purple-topright {
+  opacity: .20 !important;
+}
+
+html.iris-theme-light .glow-green-bottomleft {
+  opacity: .16 !important;
+}
+
+html.iris-theme-light .glow-gold-accent {
+  opacity: .18 !important;
+}
+
+/* Prevent the global dark portal overlay from surviving in light mode. */
+html.iris-theme-light .iris-portal-fullscreen-overlay {
+  background:
+    radial-gradient(circle at 86% 10%, rgba(103,36,95,.13), transparent 40%),
+    radial-gradient(circle at 12% 90%, rgba(4,70,48,.10), transparent 42%),
+    #ECEBE7 !important;
+  color: #180C17 !important;
+}
+
+html.iris-theme-light .overlay-nav-item {
+  color: #180C17 !important;
+  background: transparent !important;
+  border-bottom-color: rgba(103,36,95,.12) !important;
+}
+
+html.iris-theme-light .overlay-nav-item:hover,
+html.iris-theme-light .overlay-nav-item.active {
+  color: #67245F !important;
+  background: rgba(103,36,95,.07) !important;
+}
+
+html.iris-theme-light .overlay-nav-icon {
+  color: #67245F !important;
+  background: rgba(103,36,95,.06) !important;
+  border-color: rgba(103,36,95,.14) !important;
+}
+
+html.iris-theme-light .overlay-close-btn,
+html.iris-theme-light .overlay-lang-btn {
+  background: #F4F2EE !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.18) !important;
+}
+
+html.iris-theme-light .overlay-brand-logo {
+  filter: brightness(0) saturate(100%) invert(18%) sepia(18%) saturate(1930%) hue-rotate(280deg) brightness(88%) contrast(94%) !important;
+}
+
+html.iris-theme-light .overlay-brand-signature {
+  color: rgba(24,12,23,.52) !important;
+}
