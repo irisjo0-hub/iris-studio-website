@@ -139,10 +139,8 @@ export const HeroLivingCollage = () => {
         {pool.map((work, index) => {
           const config = channelConfigs[index % channelConfigs.length];
 
-          // Start just outside the hero edges, not a full viewport-and-a-half away.
-          // This preserves the same 24s movement/easing while making the first card
-          // enter visibly from the edge immediately on first paint.
-          const startX = isRtl ? '-62vw' : '62vw';
+          // Keep the original travel distance so the existing movement speed/path is unchanged.
+          const startX = isRtl ? '-130vw' : '130vw';
           const midX = '0vw';
           const endX = isRtl ? '130vw' : '-130vw';
           const cardDelay = index * staggerStep;
@@ -174,7 +172,7 @@ export const HeroLivingCollage = () => {
                 repeatType: 'loop',
                 repeatDelay: repeatDelay,
                 ease: 'easeInOut',
-                delay: cardDelay
+                delay: index === 0 ? -8 : cardDelay
               }}
             >
               <img
