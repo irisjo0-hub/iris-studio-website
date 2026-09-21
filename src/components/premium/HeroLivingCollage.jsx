@@ -4,7 +4,7 @@ import '../../styles/hero-living-collage.css';
 
 /**
  * IRIS HERO — ABSTRACT IRIS SYSTEM
- * Three asymmetric forms reveal three IRIS service cards after first paint.
+ * Three soft glass service cards rise from the visual core and settle above it.
  */
 
 export const HeroLivingCollage = () => {
@@ -25,7 +25,7 @@ export const HeroLivingCollage = () => {
 
     if (stageRef.current) observer.observe(stageRef.current);
 
-    const revealTimer = window.setTimeout(() => setShowCards(true), 1100);
+    const revealTimer = window.setTimeout(() => setShowCards(true), 1900);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
