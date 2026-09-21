@@ -3,41 +3,12 @@ import { useSiteSettings } from '../../context/SiteSettingsContext';
 import '../../styles/hero-living-collage.css';
 
 /**
- * IRIS HERO — THREE WORLDS / THREE OBJECTS
- * A visual system for the three IRIS divisions:
- * MEDIA / STUDIO / PRINT.
- * No portfolio image dependency: the hero remains visually complete immediately.
+ * IRIS HERO — GIANT MOVING GRID
+ * A large architectural grid plane that continuously travels beneath
+ * the hero content. It uses CSS only: no image/network dependency.
  */
 
-const WORLDS = [
-  {
-    id: 'media',
-    number: '01',
-    label: 'MEDIA',
-    title: 'Motion',
-    accent: 'purple',
-    glyph: '▶',
-    detail: 'DIGITAL / CONTENT'
-  },
-  {
-    id: 'studio',
-    number: '02',
-    label: 'STUDIO',
-    title: 'Portrait',
-    accent: 'green',
-    glyph: '◉',
-    detail: 'PHOTO / PEOPLE'
-  },
-  {
-    id: 'print',
-    number: '03',
-    label: 'PRINT',
-    title: 'Object',
-    accent: 'gold',
-    glyph: '▤',
-    detail: 'PAPER / PRODUCT'
-  }
-];
+const GRID_CELLS = Array.from({ length: 84 }, (_, index) => index);
 
 export const HeroLivingCollage = () => {
   const { lang } = useSiteSettings();
@@ -66,43 +37,40 @@ export const HeroLivingCollage = () => {
   return (
     <div
       ref={stageRef}
-      className={`iris-hero-lower-stage iris-three-worlds-stage ${isPaused ? 'is-paused' : ''}`}
-      aria-label={isRtl ? 'عالم آيرس: ميديا، استوديو، وطباعة' : 'IRIS worlds: Media, Studio, and Print'}
+      className={`iris-hero-lower-stage iris-giant-grid-stage ${isPaused ? 'is-paused' : ''}`}
+      aria-label={isRtl ? 'شبكة آيرس الإبداعية' : 'IRIS creative grid'}
     >
-      <div className="three-worlds-orbit" aria-hidden="true">
-        <span className="orbit orbit-one" />
-        <span className="orbit orbit-two" />
-        <span className="orbit orbit-three" />
-      </div>
+      <div className="giant-grid-fade" aria-hidden="true" />
 
-      <div className="three-worlds-container">
-        {WORLDS.map((world, index) => (
-          <div
-            key={world.id}
-            className={`iris-world-object iris-world-${world.accent}`}
-            style={{ '--world-index': index }}
-          >
-            <div className="world-object-glow" />
-
-            <div className="world-object-core">
-              <span className="world-object-glyph">{world.glyph}</span>
-              <span className="world-object-number">{world.number}</span>
-            </div>
-
-            <div className="world-object-meta">
-              <span className="world-object-label">{world.label}</span>
-              <span className="world-object-title">{world.title}</span>
-            </div>
-
-            <span className="world-object-detail">{world.detail}</span>
+      <div className="giant-grid-scene" aria-hidden="true">
+        <div className="giant-grid-plane">
+          <div className="giant-grid-cells">
+            {GRID_CELLS.map((cell) => (
+              <span key={cell} className="giant-grid-cell" />
+            ))}
           </div>
-        ))}
+        </div>
       </div>
 
-      <div className="three-worlds-baseline" aria-hidden="true">
-        <span>IRIS</span>
+      <div className="giant-grid-wordmark" aria-hidden="true">
+        IRIS
+      </div>
+
+      <div className="giant-grid-label giant-grid-label-left" aria-hidden="true">
+        <span>01</span>
+        <b>MEDIA</b>
+      </div>
+
+      <div className="giant-grid-label giant-grid-label-right" aria-hidden="true">
+        <span>02</span>
+        <b>STUDIO</b>
+      </div>
+
+      <div className="giant-grid-label giant-grid-label-bottom" aria-hidden="true">
+        <span>03</span>
+        <b>PRINT</b>
         <i />
-        <span>CREATIVE ECOSYSTEM</span>
+        <em>CREATIVE SYSTEM</em>
       </div>
     </div>
   );
