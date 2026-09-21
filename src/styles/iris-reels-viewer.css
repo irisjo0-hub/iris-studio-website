@@ -1204,6 +1204,17 @@
   contain: paint;
 }
 
+/* First paint: keep the first image just outside the frame until it is decoded,
+   then use the exact same forward entrance used by reel navigation. */
+.reel-canvas-layer.initial-reel-pending {
+  transform: translate3d(0, 100%, 0);
+}
+
+.reel-canvas-layer.initial-reel-ready {
+  animation: iris-reel-enter-from-bottom 0.46s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+
 .iris-reels-viewer-wrapper[data-reel-direction="forward"] .reel-canvas-layer {
   animation: iris-reel-enter-from-bottom 0.46s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
