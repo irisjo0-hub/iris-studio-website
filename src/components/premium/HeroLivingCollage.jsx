@@ -5,9 +5,9 @@ import '../../styles/hero-living-collage.css';
 
 /**
  * IRIS HERO — LIVING LOGO
- * The IRIS mark becomes the visual hero object:
- * breathing, orbiting, glowing and receiving a subtle light sweep.
- * No remote assets are required.
+ * The logo is treated as part of the architecture of the hero,
+ * not as a floating object. It is anchored into the lower edge
+ * with a very subtle living/breathing motion.
  */
 
 export const HeroLivingCollage = () => {
@@ -38,25 +38,19 @@ export const HeroLivingCollage = () => {
     <div
       ref={stageRef}
       className={`iris-hero-lower-stage iris-living-logo-stage ${isPaused ? 'is-paused' : ''}`}
-      aria-label={isRtl ? 'شعار آيرس المتحرك' : 'IRIS living logo'}
+      aria-label={isRtl ? 'هوية آيرس المتحركة' : 'Living IRIS identity'}
     >
-      <div className="living-logo-field" aria-hidden="true">
-        <span className="living-logo-orbit living-logo-orbit-one" />
-        <span className="living-logo-orbit living-logo-orbit-two" />
-        <span className="living-logo-orbit living-logo-orbit-three" />
-
-        <span className="living-logo-node living-logo-node-purple" />
-        <span className="living-logo-node living-logo-node-green" />
-        <span className="living-logo-node living-logo-node-gold" />
-
-        <div className="living-logo-halo" />
-
-        <div className="living-logo-mark">
-          <span className="living-logo-ring" />
+      <div className="living-logo-architecture" aria-hidden="true">
+        <div className="living-logo-aura" />
+        <div className="living-logo-frame">
+          <span className="living-logo-corner living-logo-corner-tl" />
+          <span className="living-logo-corner living-logo-corner-tr" />
+          <span className="living-logo-corner living-logo-corner-bl" />
+          <span className="living-logo-corner living-logo-corner-br" />
           <img src={irisLogo} alt="" className="living-logo-image" />
-          <span className="living-logo-sweep" />
+          <span className="living-logo-light" />
         </div>
-
+        <div className="living-logo-line" />
         <div className="living-logo-caption">
           <span>IRIS</span>
           <i />
