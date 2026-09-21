@@ -159,13 +159,6 @@ export const SiteSettingsProvider = ({ children }) => {
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   }, [lang]);
 
-  useEffect(() => {
-    const saved = localStorage.getItem('iris_theme');
-    const initialTheme = saved === 'light' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = initialTheme;
-    document.documentElement.classList.toggle('iris-theme-light', initialTheme === 'light');
-    document.documentElement.classList.toggle('iris-theme-dark', initialTheme === 'dark');
-  }, []);
 
   const fetchSettings = async () => {
     try {
