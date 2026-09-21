@@ -100,7 +100,6 @@ Deno.serve(async (req) => {
       return json({ success: false, code: "ALREADY_PAID", error: "This invoice is already paid." }, 409);
     }
 
-    let accessToken: string;
     const tokenResponse = await fetch(orangeTokenUrl, {
       method: "POST",
       headers: {
@@ -118,7 +117,7 @@ Deno.serve(async (req) => {
     }
 
     const tokenJson = JSON.parse(tokenText);
-    accessToken = tokenJson.access_token;
+    const accessToken: string = tokenJson.access_token;
     if (!accessToken) return json({ success: false, error: "Orange Money did not return an access token." }, 502);
 
     const providerOrderId = `IRIS-${orderType.toUpperCase()}-${orderId}`;
