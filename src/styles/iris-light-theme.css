@@ -1,0 +1,385 @@
+/*
+ * IRIS LIGHT THEME — COMPLETE PUBLIC SITE
+ * Dark mode remains the untouched default.
+ * This file only activates under html.iris-theme-light.
+ * Palette: #67245F / #044630 / #F5BD1A / #ECEBE7
+ */
+
+html.iris-theme-light {
+  --iris-bg-primary: #ECEBE7;
+  --iris-bg-deep: #ECEBE7;
+  --iris-bg-plum: #ECEBE7;
+  --iris-bg-secondary: #ECEBE7;
+  --iris-bg-green: #ECEBE7;
+  --iris-surface: #F4F2EE;
+  --iris-surface-alt: #E8E5E0;
+  --iris-surface-glass: rgba(244,242,238,.90);
+  --iris-surface-glass-strong: rgba(244,242,238,.97);
+  --iris-text-primary: #180C17;
+  --iris-text-secondary: rgba(24,12,23,.72);
+  --iris-text-muted: rgba(24,12,23,.52);
+  --iris-text-disabled: rgba(24,12,23,.32);
+  --iris-border: rgba(103,36,95,.16);
+  --iris-border-purple: rgba(103,36,95,.34);
+  --iris-border-gold: rgba(245,189,26,.48);
+  --iris-shadow: 0 18px 50px rgba(103,36,95,.10);
+  --iris-shadow-purple: 0 18px 50px rgba(103,36,95,.15);
+  --shadow-premium: 0 20px 40px rgba(103,36,95,.10);
+  --shadow-glass: 0 8px 32px rgba(103,36,95,.12);
+  --uds-shadow-sm: 0 4px 12px rgba(103,36,95,.08);
+  --uds-shadow-md: 0 8px 24px rgba(103,36,95,.12);
+  --uds-shadow-lg: 0 16px 36px rgba(103,36,95,.16);
+  color-scheme: light;
+}
+
+/* Base */
+html.iris-theme-light,
+html.iris-theme-light body,
+html.iris-theme-light #root {
+  background: #ECEBE7 !important;
+  color: #180C17 !important;
+}
+html.iris-theme-light body,
+html.iris-theme-light button,
+html.iris-theme-light input,
+html.iris-theme-light select,
+html.iris-theme-light textarea {
+  color: #180C17;
+}
+html.iris-theme-light p { color: rgba(24,12,23,.72); }
+html.iris-theme-light a { color: #180C17; }
+html.iris-theme-light a:hover { color: #67245F; }
+html.iris-theme-light ::-webkit-scrollbar-track { background: #ECEBE7; }
+html.iris-theme-light ::-webkit-scrollbar-thumb { background: #67245F; }
+html.iris-theme-light * { scrollbar-color: #67245F #ECEBE7; }
+
+/* Atmospheric utility classes */
+html.iris-theme-light .iris-atmosphere--purple,
+html.iris-theme-light .iris-atmosphere--green,
+html.iris-theme-light .iris-atmosphere--balanced,
+html.iris-theme-light .iris-atmosphere--footer {
+  background-color: #ECEBE7 !important;
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(103,36,95,.12), transparent 38%),
+    radial-gradient(circle at 82% 82%, rgba(4,70,48,.10), transparent 38%) !important;
+}
+
+/* Home */
+html.iris-theme-light .home-page,
+html.iris-theme-light .hero-section,
+html.iris-theme-light .about-section,
+html.iris-theme-light .location-section,
+html.iris-theme-light .preview-section,
+html.iris-theme-light .final-cta {
+  background-color: #ECEBE7 !important;
+  color: #180C17 !important;
+}
+html.iris-theme-light .hero-content h1,
+html.iris-theme-light .hero-title { color: #044630 !important; }
+html.iris-theme-light .hero-content p,
+html.iris-theme-light .about-section p,
+html.iris-theme-light .location-section p,
+html.iris-theme-light .preview-section p,
+html.iris-theme-light .final-cta p { color: rgba(24,12,23,.70) !important; }
+html.iris-theme-light .brand-section { background: #67245F !important; }
+html.iris-theme-light .brand-section h2,
+html.iris-theme-light .brand-section p { color: #ECEBE7 !important; }
+html.iris-theme-light .service-card-simple,
+html.iris-theme-light .feature-card,
+html.iris-theme-light .preview-card,
+html.iris-theme-light .location-card,
+html.iris-theme-light .cta-card {
+  background: #F4F2EE !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.14) !important;
+  box-shadow: 0 12px 32px rgba(103,36,95,.08) !important;
+}
+html.iris-theme-light .service-title,
+html.iris-theme-light .preview-card h3,
+html.iris-theme-light .about-section h2,
+html.iris-theme-light .location-section h2,
+html.iris-theme-light .preview-section h2,
+html.iris-theme-light .final-cta h2 { color: #67245F !important; }
+html.iris-theme-light .feature-card h3 { color: #044630 !important; }
+
+/* Shared public surfaces / cards */
+html.iris-theme-light .subpage-layout-content,
+html.iris-theme-light .portal-section,
+html.iris-theme-light .packages-section,
+html.iris-theme-light .work-page,
+html.iris-theme-light .booking-page,
+html.iris-theme-light .grad-page,
+html.iris-theme-light .grad-order-page,
+html.iris-theme-light .division-portal-page {
+  background-color: #ECEBE7 !important;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(103,36,95,.09), transparent 34%),
+    radial-gradient(circle at 88% 88%, rgba(4,70,48,.08), transparent 34%) !important;
+  color: #180C17 !important;
+}
+html.iris-theme-light .subpage-layout-content h1,
+html.iris-theme-light .subpage-layout-content h2,
+html.iris-theme-light .subpage-layout-content h3,
+html.iris-theme-light .subpage-layout-content h4,
+html.iris-theme-light .section-title,
+html.iris-theme-light .bk-title,
+html.iris-theme-light .portal-section-header h2 {
+  color: #180C17 !important;
+}
+html.iris-theme-light .subpage-layout-content p,
+html.iris-theme-light .bk-subtitle,
+html.iris-theme-light .portal-section-header p,
+html.iris-theme-light .package-duration,
+html.iris-theme-light .package-details,
+html.iris-theme-light .work-empty,
+html.iris-theme-light .portal-hero-sub {
+  color: rgba(24,12,23,.68) !important;
+}
+
+/* Cards that were hard-coded dark in the original stylesheet */
+html.iris-theme-light .package-card,
+html.iris-theme-light .work-card,
+html.iris-theme-light .work-empty,
+html.iris-theme-light .booking-success-card,
+html.iris-theme-light .bk-section,
+html.iris-theme-light .custom-calendar-box,
+html.iris-theme-light .compact-extra-card,
+html.iris-theme-light .delivery-card,
+html.iris-theme-light .deposit-payment-screen,
+html.iris-theme-light .receipt-preview-container,
+html.iris-theme-light .compact-confirmation-card,
+html.iris-theme-light .summary-card,
+html.iris-theme-light .grad-pkg-card,
+html.iris-theme-light .grad-extra-card,
+html.iris-theme-light .grad-gallery-item,
+html.iris-theme-light .grad-order-card,
+html.iris-theme-light .grad-summary,
+html.iris-theme-light .grad-deposit-block,
+html.iris-theme-light .grad-template-field,
+html.iris-theme-light .grad-upload-zone,
+html.iris-theme-light .grad-pkg-option,
+html.iris-theme-light .grad-extra-toggle,
+html.iris-theme-light .grad-summary-total,
+html.iris-theme-light .grad-order-hero,
+html.iris-theme-light .grad-steps-bar,
+html.iris-theme-light .visual-project-card,
+html.iris-theme-light .portal-quote-container,
+html.iris-theme-light .custom-print-box,
+html.iris-theme-light .portal-banner-feature,
+html.iris-theme-light .portal-contact-box,
+html.iris-theme-light .home-package-slide-card,
+html.iris-theme-light .home-offer-card,
+html.iris-theme-light .workflow-timeline-card,
+html.iris-theme-light .process-step-card {
+  background: #F4F2EE !important;
+  background-image: none !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.15) !important;
+  box-shadow: 0 12px 34px rgba(103,36,95,.08) !important;
+}
+html.iris-theme-light .package-card:hover,
+html.iris-theme-light .work-card:hover,
+html.iris-theme-light .visual-project-card:hover,
+html.iris-theme-light .compact-extra-card:hover,
+html.iris-theme-light .delivery-card:hover {
+  border-color: rgba(103,36,95,.42) !important;
+  box-shadow: 0 16px 38px rgba(103,36,95,.13) !important;
+}
+html.iris-theme-light .package-name,
+html.iris-theme-light .work-card-info h3,
+html.iris-theme-light .visual-card-body h3,
+html.iris-theme-light .workflow-timeline-card h4,
+html.iris-theme-light .process-step-card h4,
+html.iris-theme-light .contact-info h2,
+html.iris-theme-light .feature-info h3 {
+  color: #180C17 !important;
+}
+html.iris-theme-light .package-feature-item,
+html.iris-theme-light .visual-card-body p,
+html.iris-theme-light .workflow-timeline-card p,
+html.iris-theme-light .process-step-card p,
+html.iris-theme-light .contact-info p,
+html.iris-theme-light .feature-info p {
+  color: rgba(24,12,23,.68) !important;
+}
+
+/* Buttons */
+html.iris-theme-light .btn-primary,
+html.iris-theme-light .btn-portal-primary,
+html.iris-theme-light .bk-btn-primary,
+html.iris-theme-light .book-btn,
+html.iris-theme-light .grad-btn-primary,
+html.iris-theme-light .checkout-submit-btn {
+  background: #67245F !important;
+  color: #ECEBE7 !important;
+  border-color: #67245F !important;
+}
+html.iris-theme-light .btn-secondary,
+html.iris-theme-light .btn-portal-secondary,
+html.iris-theme-light .bk-btn-outline,
+html.iris-theme-light .grad-btn-prev {
+  background: rgba(103,36,95,.07) !important;
+  color: #67245F !important;
+  border-color: rgba(103,36,95,.40) !important;
+}
+html.iris-theme-light .btn-gold,
+html.iris-theme-light .hero-v2-discover-cta {
+  background: #F5BD1A !important;
+  color: #180C17 !important;
+}
+
+/* Forms */
+html.iris-theme-light input,
+html.iris-theme-light select,
+html.iris-theme-light textarea,
+html.iris-theme-light .bk-input,
+html.iris-theme-light .grad-input,
+html.iris-theme-light .grad-textarea,
+html.iris-theme-light .grad-select,
+html.iris-theme-light .as-input {
+  background: #F8F6F2 !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.20) !important;
+}
+html.iris-theme-light input::placeholder,
+html.iris-theme-light textarea::placeholder { color: rgba(24,12,23,.46) !important; }
+
+/* Hero V2 */
+html.iris-theme-light .iris-dark-hero-v2-wrapper,
+html.iris-theme-light .hero-v2-main-container,
+html.iris-theme-light .hero-v2-main,
+html.iris-theme-light .hero-v2-content {
+  background-color: #ECEBE7 !important;
+  color: #180C17 !important;
+}
+html.iris-theme-light .iris-dark-hero-v2-wrapper {
+  background-image:
+    radial-gradient(circle at 78% 12%, rgba(103,36,95,.15), transparent 38%),
+    radial-gradient(circle at 18% 82%, rgba(4,70,48,.13), transparent 42%) !important;
+}
+html.iris-theme-light .hero-v2-editorial-title,
+html.iris-theme-light .hero-v2-supporting-desc,
+html.iris-theme-light .hero-v2-eyebrow-pill,
+html.iris-theme-light .hero-v2-logo-link,
+html.iris-theme-light .hero-v2-main-container { color: #180C17 !important; }
+html.iris-theme-light .hero-v2-editorial-title { text-shadow: none !important; }
+html.iris-theme-light .hero-v2-hamburger-btn {
+  background: rgba(244,242,238,.92) !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.22) !important;
+  box-shadow: 0 8px 22px rgba(103,36,95,.10) !important;
+}
+
+/* Reels / media viewer surfaces */
+html.iris-theme-light .reels-page,
+html.iris-theme-light .reels-viewer,
+html.iris-theme-light .reels-container {
+  background: #ECEBE7 !important;
+  color: #180C17 !important;
+}
+
+/* Footer — complete light rebuild */
+html.iris-theme-light .footer,
+html.iris-theme-light #iris-footer-root {
+  background-color: #ECEBE7 !important;
+  background-image:
+    radial-gradient(circle at 82% 20%, rgba(103,36,95,.13), transparent 40%),
+    radial-gradient(circle at 20% 84%, rgba(4,70,48,.12), transparent 42%) !important;
+  color: #180C17 !important;
+  border-top-color: rgba(103,36,95,.14) !important;
+}
+html.iris-theme-light .footer-pillars-bar,
+html.iris-theme-light .footer-copyright-capsule,
+html.iris-theme-light .footer-social-icon {
+  background: rgba(244,242,238,.90) !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.18) !important;
+  box-shadow: 0 8px 24px rgba(103,36,95,.08) !important;
+}
+html.iris-theme-light .pillar-item,
+html.iris-theme-light .footer-tagline,
+html.iris-theme-light .footer-link,
+html.iris-theme-light .footer-contact-link,
+html.iris-theme-light .footer-social-icon,
+html.iris-theme-light .copyright-year,
+html.iris-theme-light .copyright-text {
+  color: rgba(24,12,23,.78) !important;
+}
+html.iris-theme-light .footer-heading,
+html.iris-theme-light .copyright-brand { color: #67245F !important; }
+html.iris-theme-light .footer-location-btn {
+  background: rgba(103,36,95,.08) !important;
+  color: #67245F !important;
+  border-color: #F5BD1A !important;
+  box-shadow: 0 8px 22px rgba(245,189,26,.14) !important;
+}
+html.iris-theme-light .footer-logo,
+html.iris-theme-light .footer-seal-logo {
+  filter: brightness(0) saturate(100%) invert(18%) sepia(18%) saturate(1930%) hue-rotate(280deg) brightness(88%) contrast(94%) !important;
+}
+
+/* Menu */
+html.iris-theme-light .division-menu-overlay {
+  background:
+    radial-gradient(circle at 84% 12%, rgba(103,36,95,.14), transparent 40%),
+    radial-gradient(circle at 16% 86%, rgba(4,70,48,.12), transparent 44%),
+    #ECEBE7 !important;
+  color: #180C17 !important;
+}
+html.iris-theme-light .division-menu-close,
+html.iris-theme-light .division-menu-lang {
+  background: #F4F2EE !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.24) !important;
+}
+html.iris-theme-light .division-menu-item {
+  color: #180C17 !important;
+  border-bottom-color: rgba(103,36,95,.12) !important;
+}
+html.iris-theme-light .division-menu-item:hover,
+html.iris-theme-light .division-menu-item.active {
+  background: rgba(103,36,95,.10) !important;
+  color: #67245F !important;
+}
+html.iris-theme-light .division-menu-number { color: rgba(24,12,23,.42) !important; }
+html.iris-theme-light .division-menu-item.contact {
+  border-color: rgba(245,189,26,.55) !important;
+}
+html.iris-theme-light .division-menu-signature { color: rgba(24,12,23,.54) !important; }
+
+/* Tables / misc dark blocks */
+html.iris-theme-light table,
+html.iris-theme-light .table-container,
+html.iris-theme-light .calendar,
+html.iris-theme-light .calendar-container {
+  color: #180C17 !important;
+}
+html.iris-theme-light .day-btn,
+html.iris-theme-light .slot-btn {
+  background: #F4F2EE !important;
+  color: #180C17 !important;
+  border-color: rgba(103,36,95,.16) !important;
+}
+html.iris-theme-light .day-btn.active-day,
+html.iris-theme-light .slot-btn.selected {
+  background: #67245F !important;
+  color: #ECEBE7 !important;
+  border-color: #67245F !important;
+}
+html.iris-theme-light .selected-date-display {
+  background: rgba(4,70,48,.08) !important;
+  color: #180C17 !important;
+  border-color: rgba(4,70,48,.22) !important;
+}
+
+/* Keep media itself untouched; only surrounding UI changes. */
+html.iris-theme-light img,
+html.iris-theme-light video,
+html.iris-theme-light iframe { filter: none; }
+
+/* Mobile: same visual system, no forced desktop dimensions. */
+@media (max-width: 767px) {
+  html.iris-theme-light .division-menu-overlay {
+    min-height: 100svh !important;
+  }
+}
