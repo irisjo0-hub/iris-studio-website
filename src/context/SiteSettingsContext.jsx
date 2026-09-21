@@ -150,16 +150,30 @@ export const SiteSettingsProvider = ({ children }) => {
     return saved === 'light' ? 'light' : 'dark';
   });
 
+  const applyThemeToDocument = (targetTheme) => {
+    document.documentElement.dataset.theme = targetTheme;
+    document.documentElement.classList.toggle('iris-theme-light', targetTheme === 'light');
+    document.documentElement.classList.toggle('iris-theme-dark', targetTheme === 'dark');
+    document.documentElement.style.colorScheme = targetTheme;
+  };
+
   const setTheme = (newTheme) => {
     const targetTheme = newTheme === 'light' ? 'light' : 'dark';
     setThemeState(targetTheme);
     localStorage.setItem('iris_theme', targetTheme);
-    document.documentElement.dataset.theme = targetTheme;
-    document.documentElement.classList.toggle('iris-theme-light', targetTheme === 'light');
-    document.documentElement.classList.toggle('iris-theme-dark', targetTheme === 'dark');
+    applyThemeToDocument(targetTheme);
   };
 
-  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+  // Use the previous state so the toggle can never capture a stale theme
+  // value from a memoized context consumer.
+  const toggleTheme = () => {
+    setThemeState((previousTheme) => {
+      const targetTheme = previousTheme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('iris_theme', targetTheme);
+      applyThemeToDocument(targetTheme);
+      return targetTheme;
+    });
+  };
 
   const setLanguage = (newLang) => {
     const targetLang = newLang === 'en' ? 'en' : 'ar';
@@ -281,7 +295,7 @@ export const SiteSettingsProvider = ({ children }) => {
       refreshSettings: fetchSettings,
       updateSettingsLocally
     }),
-    [settings, loading, lang]
+    [settings, loading, lang, theme]
   );
 
   return (
