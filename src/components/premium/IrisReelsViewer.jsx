@@ -6,7 +6,7 @@ import DivisionMenu from '../DivisionMenu';
 import {
   X, MessageSquare, Share2, ArrowUpRight,
   Camera, Calendar, ShoppingBag, FolderKanban,
-  Volume2, VolumeX, ChevronDown, ChevronUp, Printer
+  Volume2, VolumeX, ChevronDown, ChevronUp
 } from 'lucide-react';
 
 import { useSiteSettings } from '../../context/SiteSettingsContext';
@@ -374,7 +374,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       case 'camera': return <Camera size={20} />;
       case 'calendar': return <Calendar size={20} />;
       case 'order': return <ShoppingBag size={20} />;
-      case 'print': return <Printer size={20} />;
+      case 'print': return <ShoppingBag size={20} />;
       default: return <ArrowUpRight size={20} />;
     }
   };
