@@ -1,6 +1,6 @@
 /* IRIS HERO — LIVING LOGO
- * The logo is the hero object: subtle breathing, orbital movement,
- * light sweep and three IRIS brand-energy nodes.
+ * Anchored identity treatment. The logo belongs to the hero composition
+ * and is physically grounded at the bottom edge instead of floating.
  */
 
 .iris-hero-lower-stage.iris-living-logo-stage {
@@ -11,274 +11,253 @@
   overflow: hidden;
   pointer-events: none;
   z-index: 10;
-  border: none !important;
-  box-shadow: none !important;
-  perspective: 1200px;
 }
 
-.living-logo-field {
+.living-logo-architecture {
   position: absolute;
   left: 50%;
-  bottom: 3%;
-  width: min(760px, 76vw);
-  height: min(430px, 42vh);
+  bottom: -1px;
+  width: min(1050px, 82vw);
+  height: 37%;
+  min-height: 250px;
   transform: translateX(-50%);
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
-.living-logo-halo {
+.living-logo-aura {
   position: absolute;
-  width: 42%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, rgba(103,36,95,0.24) 0%, rgba(103,36,95,0.08) 38%, transparent 70%);
-  filter: blur(12px);
-  animation: living-logo-breathe 5s ease-in-out infinite;
+  left: 50%;
+  bottom: 4%;
+  width: min(700px, 68vw);
+  height: 48%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(103, 36, 95, 0.18) 0%,
+    rgba(4, 70, 48, 0.08) 40%,
+    transparent 72%
+  );
+  filter: blur(18px);
+  opacity: 0.8;
+  animation: living-logo-aura 7s ease-in-out infinite;
 }
 
-.living-logo-mark {
+.living-logo-frame {
   position: relative;
-  width: clamp(210px, 28vw, 390px);
-  aspect-ratio: 1.8 / 1;
+  width: min(720px, 66vw);
+  height: 82%;
   display: grid;
   place-items: center;
-  transform-style: preserve-3d;
-  animation: living-logo-float 6s ease-in-out infinite;
+  border-top: 1px solid rgba(236,235,231,0.12);
+  border-bottom: 1px solid rgba(236,235,231,0.08);
+  background: linear-gradient(
+    180deg,
+    rgba(236,235,231,0.018),
+    rgba(103,36,95,0.025) 50%,
+    transparent
+  );
+  animation: living-logo-breathe 7s ease-in-out infinite;
 }
+
+.living-logo-frame::before,
+.living-logo-frame::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(236,235,231,0.12) 35%,
+    transparent 100%
+  );
+}
+
+.living-logo-frame::before { left: 0; }
+.living-logo-frame::after { right: 0; }
 
 .living-logo-image {
   position: relative;
-  z-index: 3;
-  width: 72%;
+  z-index: 2;
+  width: min(430px, 43vw);
+  max-width: 72%;
   height: auto;
   object-fit: contain;
+  transform: translateY(11%);
   filter:
-    drop-shadow(0 0 10px rgba(236,235,231,0.12))
-    drop-shadow(0 24px 40px rgba(0,0,0,0.5));
-  animation: living-logo-pulse 4.5s ease-in-out infinite;
+    drop-shadow(0 0 20px rgba(236,235,231,0.08))
+    drop-shadow(0 24px 45px rgba(0,0,0,0.45));
+  animation: living-logo-scale 7s ease-in-out infinite;
 }
 
-.living-logo-ring {
+.living-logo-light {
   position: absolute;
-  inset: 8%;
-  border: 1px solid rgba(236,235,231,0.12);
-  border-radius: 50%;
-  transform: rotateX(70deg) rotateZ(-12deg);
-  animation: living-logo-ring-spin 14s linear infinite;
+  z-index: 3;
+  left: 10%;
+  right: 10%;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(245,189,26,0) 30%,
+    rgba(245,189,26,0.55) 50%,
+    rgba(245,189,26,0) 70%,
+    transparent 100%
+  );
+  opacity: 0;
+  animation: living-logo-scan 6s ease-in-out infinite;
 }
 
-.living-logo-ring::before,
-.living-logo-ring::after {
-  content: '';
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-}
-
-.living-logo-ring::before {
-  left: 8%;
-  top: 45%;
-  background: #67245F;
-  box-shadow: 0 0 18px rgba(103,36,95,0.9);
-}
-
-.living-logo-ring::after {
-  right: 8%;
-  top: 45%;
-  background: #044630;
-  box-shadow: 0 0 18px rgba(4,70,48,0.9);
-}
-
-.living-logo-sweep {
+.living-logo-corner {
   position: absolute;
   z-index: 4;
-  left: 8%;
-  right: 8%;
+  width: 22px;
+  height: 22px;
+  border-color: rgba(245,189,26,0.42);
+  border-style: solid;
+}
+
+.living-logo-corner-tl {
+  top: -1px;
+  left: -1px;
+  border-width: 1px 0 0 1px;
+}
+
+.living-logo-corner-tr {
+  top: -1px;
+  right: -1px;
+  border-width: 1px 1px 0 0;
+}
+
+.living-logo-corner-bl {
+  bottom: -1px;
+  left: -1px;
+  border-width: 0 0 1px 1px;
+}
+
+.living-logo-corner-br {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 1px 1px 0;
+}
+
+.living-logo-line {
+  position: absolute;
+  bottom: 8%;
+  left: 7%;
+  right: 7%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(245,189,26,0.75), transparent);
-  box-shadow: 0 0 18px rgba(245,189,26,0.45);
-  transform: translateY(55px);
-  animation: living-logo-sweep 4.8s ease-in-out infinite;
-}
-
-.living-logo-orbit {
-  position: absolute;
-  border: 1px solid rgba(236,235,231,0.08);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.living-logo-orbit-one {
-  width: 94%;
-  height: 58%;
-  transform: rotateX(66deg) rotateZ(-10deg);
-  animation: living-logo-orbit-drift 12s ease-in-out infinite;
-}
-
-.living-logo-orbit-two {
-  width: 72%;
-  height: 43%;
-  transform: rotateX(67deg) rotateZ(24deg);
-  border-color: rgba(103,36,95,0.18);
-  animation: living-logo-orbit-drift 9s ease-in-out infinite reverse;
-}
-
-.living-logo-orbit-three {
-  width: 52%;
-  height: 30%;
-  transform: rotateX(68deg) rotateZ(-30deg);
-  border-color: rgba(245,189,26,0.16);
-  animation: living-logo-orbit-drift 7s ease-in-out infinite;
-}
-
-.living-logo-node {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  z-index: 5;
-  animation: living-logo-node-pulse 3s ease-in-out infinite;
-}
-
-.living-logo-node-purple {
-  left: 12%;
-  top: 39%;
-  background: #67245F;
-  box-shadow: 0 0 22px rgba(103,36,95,0.9);
-}
-
-.living-logo-node-green {
-  right: 12%;
-  top: 31%;
-  background: #044630;
-  box-shadow: 0 0 22px rgba(4,70,48,0.9);
-  animation-delay: -1s;
-}
-
-.living-logo-node-gold {
-  left: 50%;
-  top: 4%;
-  background: #F5BD1A;
-  box-shadow: 0 0 22px rgba(245,189,26,0.9);
-  animation-delay: -2s;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(236,235,231,0.14) 18%,
+    rgba(245,189,26,0.42) 50%,
+    rgba(236,235,231,0.14) 82%,
+    transparent
+  );
 }
 
 .living-logo-caption {
   position: absolute;
-  bottom: 2%;
+  bottom: 1.5%;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: 10px;
   white-space: nowrap;
-  color: rgba(236,235,231,0.3);
+  color: rgba(236,235,231,0.28);
   font-size: 0.48rem;
   letter-spacing: 0.24em;
 }
 
 .living-logo-caption span {
-  color: rgba(236,235,231,0.68);
+  color: rgba(236,235,231,0.65);
   font-weight: 800;
 }
 
 .living-logo-caption i {
-  width: 28px;
+  width: 30px;
   height: 1px;
-  background: rgba(245,189,26,0.55);
+  background: rgba(245,189,26,0.5);
 }
 
 .living-logo-caption b {
   font-weight: 500;
 }
 
-@keyframes living-logo-float {
-  0%, 100% { transform: translate3d(0, 8px, 0) rotateZ(-1deg); }
-  50% { transform: translate3d(0, -10px, 0) rotateZ(1deg); }
-}
-
-@keyframes living-logo-pulse {
-  0%, 100% { transform: scale(0.97); opacity: 0.88; }
-  50% { transform: scale(1.03); opacity: 1; }
-}
-
 @keyframes living-logo-breathe {
-  0%, 100% { transform: scale(0.82); opacity: 0.55; }
-  50% { transform: scale(1.08); opacity: 1; }
+  0%, 100% { transform: scaleY(0.985); }
+  50% { transform: scaleY(1); }
 }
 
-@keyframes living-logo-ring-spin {
-  from { transform: rotateX(70deg) rotateZ(0deg); }
-  to { transform: rotateX(70deg) rotateZ(360deg); }
+@keyframes living-logo-scale {
+  0%, 100% { transform: translateY(11%) scale(0.985); opacity: 0.88; }
+  50% { transform: translateY(11%) scale(1.015); opacity: 1; }
 }
 
-@keyframes living-logo-orbit-drift {
-  0%, 100% { translate: 0 0; }
-  50% { translate: 0 -8px; }
+@keyframes living-logo-aura {
+  0%, 100% { opacity: 0.55; transform: translateX(-50%) scale(0.92); }
+  50% { opacity: 0.95; transform: translateX(-50%) scale(1.05); }
 }
 
-@keyframes living-logo-sweep {
-  0%, 100% { opacity: 0; transform: translateY(65px) scaleX(0.5); }
-  45%, 60% { opacity: 1; transform: translateY(-65px) scaleX(1); }
+@keyframes living-logo-scan {
+  0%, 28%, 100% { opacity: 0; transform: translateY(-65px) scaleX(0.4); }
+  45%, 58% { opacity: 1; transform: translateY(65px) scaleX(1); }
 }
 
-@keyframes living-logo-node-pulse {
-  0%, 100% { transform: scale(0.65); opacity: 0.45; }
-  50% { transform: scale(1.5); opacity: 1; }
-}
-
-.iris-living-logo-stage.is-paused .living-logo-mark,
+.iris-living-logo-stage.is-paused .living-logo-frame,
 .iris-living-logo-stage.is-paused .living-logo-image,
-.iris-living-logo-stage.is-paused .living-logo-ring,
-.iris-living-logo-stage.is-paused .living-logo-halo,
-.iris-living-logo-stage.is-paused .living-logo-sweep,
-.iris-living-logo-stage.is-paused .living-logo-orbit,
-.iris-living-logo-stage.is-paused .living-logo-node {
+.iris-living-logo-stage.is-paused .living-logo-aura,
+.iris-living-logo-stage.is-paused .living-logo-light {
   animation-play-state: paused;
 }
 
 @media (max-width: 768px) {
-  .living-logo-field {
-    width: 108vw;
-    height: 36vh;
-    bottom: 4%;
+  .living-logo-architecture {
+    width: 100vw;
+    height: 30%;
+    min-height: 205px;
+    bottom: 0;
   }
 
-  .living-logo-mark {
-    width: clamp(190px, 66vw, 330px);
+  .living-logo-frame {
+    width: 86vw;
+    height: 76%;
   }
 
-  .living-logo-orbit-one {
-    width: 98%;
+  .living-logo-image {
+    width: 66vw;
+    max-width: 78%;
+    transform: translateY(10%);
+  }
+
+  .living-logo-line {
+    left: 4%;
+    right: 4%;
+    bottom: 7%;
   }
 
   .living-logo-caption {
-    bottom: 0;
+    bottom: 0.5%;
     font-size: 0.38rem;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.15em;
   }
 
   .living-logo-caption b {
     display: none;
   }
-
-  .living-logo-node {
-    width: 5px;
-    height: 5px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .living-logo-mark,
+  .living-logo-frame,
   .living-logo-image,
-  .living-logo-ring,
-  .living-logo-halo,
-  .living-logo-sweep,
-  .living-logo-orbit,
-  .living-logo-node {
+  .living-logo-aura,
+  .living-logo-light {
     animation: none;
   }
 }
