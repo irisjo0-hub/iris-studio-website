@@ -125,6 +125,22 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     const cachedItems = getFlowItems();
     const loaded = cachedItems.filter((it) => it.enabled);
     const initialItems = loaded.length > 0 ? loaded : cachedItems;
+
+    // Give the very first reel image highest browser priority immediately.
+    // This only changes loading priority; the existing reveal/motion stays untouched.
+    const firstItem = initialItems[0];
+    const firstImage = firstItem?.image || firstItem?.media_url || '';
+    const isVideoUrl = (url) => typeof url === 'string' && /\\.(mp4|mov|webm|m4v|mkv|avi)($|\\?)/i.test(url);
+    let firstImagePreload;
+    if (firstImage && !isVideoUrl(firstImage) && !firstImage.startsWith('blob:')) {
+      firstImagePreload = document.createElement('link');
+      firstImagePreload.rel = 'preload';
+      firstImagePreload.as = 'image';
+      firstImagePreload.href = firstImage;
+      firstImagePreload.setAttribute('fetchpriority', 'high');
+      document.head.appendChild(firstImagePreload);
+    }
+
     setItems(initialItems);
 
     // Local cache renders immediately. Defer the Supabase refresh so the
@@ -525,7 +541,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                     />
                   );
                 }
-                return <img src={validImage} alt={isRtl ? currentReel.alt_ar : currentReel.alt_en} className="reel-static-img" decoding="async" />;
+                return <img src={validImage} alt={isRtl ? currentReel.alt_ar : currentReel.alt_en} className="reel-static-img" loading="eager" fetchPriority="high" decoding="async" />;
               })()}
               <div className="reel-darkness-gradient" />
 
