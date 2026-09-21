@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 import { useSiteSettings } from '../../context/SiteSettingsContext';
-import { getFlowItems, getFlowItemsAsync, getAllApprovedFeedbackAsync, submitFlowFeedback } from '../../repositories/flowRepository';
+import { INITIAL_FLOW_ITEMS, getFlowItems, getFlowItemsAsync, getAllApprovedFeedbackAsync, submitFlowFeedback } from '../../repositories/flowRepository';
 import irisLogo from '../../assets/iris_logo.png';
 import heroMediaImg from '../../assets/hero.png';
 import '../../styles/iris-reels-viewer.css';
@@ -21,7 +21,9 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const { settings, lang, toggleLanguage } = useSiteSettings();
   const isRtl = lang === 'ar';
 
-  const [items, setItems] = useState([]);
+  // Render the bundled first reel immediately on the very first React render.
+// The cloud/cache data can replace it afterward without delaying first paint.
+  const [items, setItems] = useState(() => INITIAL_FLOW_ITEMS.map((item) => ({ ...item })));
   const [activeIndex, setActiveIndex] = useState(0);
   const [reelDirection, setReelDirection] = useState(null);
   const [isLocked, setIsLocked] = useState(false);
