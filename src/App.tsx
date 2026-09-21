@@ -3,7 +3,6 @@ import { BrowserRouter } from 'react-router-dom';
 import AppRouter from './router/AppRouter';
 import { SiteSettingsProvider } from './context/SiteSettingsContext';
 import { CartProvider } from './context/CartContext';
-import Preloader from './components/premium/Preloader';
 
 type IrisWindow = Window & {
   hasPreloaded?: boolean;
@@ -11,7 +10,7 @@ type IrisWindow = Window & {
 
 const AppContent = () => {
   const irisWindow = window as IrisWindow;
-  const [loading, setLoading] = useState(() => !irisWindow.hasPreloaded);
+  const [loading, setLoading] = useState(false);
 
   const handlePreloaderComplete = useCallback(() => {
     irisWindow.hasPreloaded = true;
