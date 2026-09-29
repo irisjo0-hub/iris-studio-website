@@ -108,7 +108,7 @@ const Home = () => {
           <div className="iris-v3-section-head" data-reveal><div><span className="iris-v3-kicker">IRIS / 01</span><h2>{isRtl ? 'ثلاثة عوالم. كيان واحد.' : 'Three worlds. One IRIS.'}</h2></div><p>{isRtl ? 'اختر نقطة البداية. الباقي علينا.' : 'Choose where to start. We will take it from there.'}</p></div>
           <div className="iris-v3-division-list">
             {FLOW.map((division, index) => (
-              <Link key={division.id} to={division.route} className={\`iris-v3-division \${index === activeDivision ? 'is-active' : ''} iris-v3-tone-\${division.tone}\`} onMouseEnter={() => setActiveDivision(index)} onFocus={() => setActiveDivision(index)}>
+              <Link key={division.id} to={division.route} className={`iris-v3-division \${index === activeDivision ? 'is-active' : ''} iris-v3-tone-\${division.tone}`} onMouseEnter={() => setActiveDivision(index)} onFocus={() => setActiveDivision(index)}>
                 <div className="iris-v3-division-number">{division.number}</div>
                 <div className="iris-v3-division-copy"><span>{isRtl ? division.labelAr : division.labelEn}</span><h3>{isRtl ? division.copyAr : division.copyEn}</h3></div>
                 <div className="iris-v3-division-media"><img src={division.image} alt="" loading={index === 0 ? 'eager' : 'lazy'} decoding="async" /></div>
@@ -122,7 +122,7 @@ const Home = () => {
           <div className="iris-v3-section-head" data-reveal><div><span className="iris-v3-kicker">IRIS / 02</span><h2>{isRtl ? 'نصنع. نصور. نطبع.' : 'Create. Capture. Make.'}</h2></div><Link to="/work" className="iris-v3-inline-link">{isRtl ? 'كل الأعمال' : 'All work'} <ArrowUpRight size={16} /></Link></div>
           <div className="iris-v3-work-grid">
             {WORK.map((item, index) => (
-              <Link key={item.route + index} to={item.route} className={\`iris-v3-work-card iris-v3-work-card-\${index + 1}\`} data-reveal>
+              <Link key={item.route + index} to={item.route} className={`iris-v3-work-card iris-v3-work-card-\${index + 1}`} data-reveal>
                 <div className="iris-v3-work-image"><img src={item.image} alt="" loading="lazy" decoding="async" /><div className="iris-v3-work-overlay" /></div>
                 <div className="iris-v3-work-meta"><span>{isRtl ? item.categoryAr : item.categoryEn}</span><ArrowUpRight size={18} /></div>
                 <h3>{isRtl ? item.titleAr : item.titleEn}</h3>
