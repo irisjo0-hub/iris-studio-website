@@ -1,14 +1,5 @@
 import { lazy, Suspense } from 'react';
 
-const RouteLoading = () => (
-  <div style={{ minHeight: '60vh', display: 'grid', placeItems: 'center', background: '#0b0b0c', color: '#c5a25d' }}>
-    <div style={{ textAlign: 'center', fontFamily: 'ui-monospace, monospace', letterSpacing: '0.18em', fontSize: 11 }}>
-      <div style={{ fontSize: 24, marginBottom: 12 }}>IRIS</div>
-      <div style={{ opacity: 0.55 }}>LOADING EXPERIENCE</div>
-    </div>
-  </div>
-);
-
 const lazyRetry = (importer) =>
   lazy(() =>
     importer()
@@ -88,7 +79,7 @@ const RepresentativeProfile = lazyRetry(() => import('../pages/RepresentativePro
 const SalesLeads = lazyRetry(() => import('../pages/SalesLeads'));
 
 const AppRouter = () => (
-  <Suspense fallback={<RouteLoading />}>
+  <Suspense fallback={null}>
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
