@@ -48,8 +48,8 @@ const Layout = () => {
 
   return (
     <div dir={isRtl ? 'rtl' : 'ltr'} lang={lang} className={`customer-layout dir-${isRtl ? 'rtl' : 'ltr'}`}>
-      {!isHome && <PremiumCursorGlow />}
-      {!isHome && <Navbar />}
+      <PremiumCursorGlow />
+      <Navbar />
       {isHome ? (
         <main className="content-wrapper">
           <Outlet />
