@@ -153,26 +153,23 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       timeoutId = window.setTimeout(refreshFlowFromCloud, 900);
     }
 
+    // Restore deep-linked flow selection before returning the effect cleanup.
+    // This code was previously after the return, so it could never execute.
+    const currentHash = window.location.hash;
+    if (currentHash && currentHash.startsWith('#flow-')) {
+      const targetSlug = currentHash.replace('#flow-', '');
+      const matchedIndex = initialItems.findIndex((it) => it.slug === targetSlug);
+      setActiveIndex(matchedIndex !== -1 ? matchedIndex : 0);
+    } else {
+      setActiveIndex(0);
+    }
+
     return () => {
       if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
         window.cancelIdleCallback(idleId);
       }
       if (timeoutId !== undefined) window.clearTimeout(timeoutId);
     };
-
-    // Feedback is loaded only when the visitor opens the feedback drawer.
-    // Avoid an extra RPC on every homepage visit.
-    const currentHash = window.location.hash;
-    if (currentHash && currentHash.startsWith('#flow-')) {
-      const targetSlug = currentHash.replace('#flow-', '');
-      const matchedIndex = initialItems.findIndex((it) => it.slug === targetSlug);
-      if (matchedIndex !== -1) {
-        setActiveIndex(matchedIndex);
-        return;
-      }
-    }
-
-    setActiveIndex(0);
   }, []);
 
   useEffect(() => {
