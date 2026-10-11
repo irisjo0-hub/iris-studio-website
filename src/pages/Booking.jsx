@@ -65,7 +65,9 @@ const generateSlots = (date, durationMins, existingBookings) => {
 
   existingBookings.forEach((b) => {
     if (b.date === date && (b.status === 'approved' || b.status === 'completed' || b.status === 'pending')) {
-      const s = timeToMinutes(b.time);
+      // Booking hours run from 09:00 through 02:00 the following day.
+      // Normalize early-morning times onto that extended timeline before overlap checks.
+      const s = getAbsoluteMinutes(b.time);
       const d = b.duration || (b.package_name === 'بكج 20' ? 25 : 50);
       occupied.push([s, s + d]);
     }
