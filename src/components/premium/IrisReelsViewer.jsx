@@ -15,6 +15,8 @@ import irisLogo from '../../assets/iris_logo.png';
 import heroMediaImg from '../../assets/hero.png';
 import '../../styles/iris-reels-viewer.css';
 import '../../styles/iris-dark-hero.css';
+import '../../styles/reels-enhancements.css';
+import '../../styles/reels-typography-fix.css';
 
 export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const navigate = useNavigate();
