@@ -3,8 +3,8 @@ import { useSiteSettings } from "../../context/SiteSettingsContext";
 import logoImage from "../../assets/iris_logo.png";
 import "../../styles/preloader.css";
 
-const MIN_DISPLAY_MS = 350;
-const MAX_DISPLAY_MS = 1200;
+const MIN_DISPLAY_MS = 250;
+const MAX_DISPLAY_MS = 700;
 
 const Preloader = ({ onComplete }) => {
   const { settings, lang } = useSiteSettings();
