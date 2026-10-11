@@ -23,10 +23,6 @@ const cardVariant = {
 // ─────────────────────────────────────────────
 // Time helpers
 // ─────────────────────────────────────────────
-const timeToMinutes = (t) => {
-  const [h, m] = t.split(':').map(Number);
-  return h * 60 + m;
-};
 const minutesToTime = (min) => {
   const h = Math.floor(min / 60) % 24;
   const m = min % 60;
