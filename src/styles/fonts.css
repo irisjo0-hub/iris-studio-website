@@ -4,8 +4,8 @@
 /*
  * The IRIS UI uses local brand fonts. These are loaded from the same-origin
  * app bundle so the browser does not need a third-party font request.
- * `font-display: swap` keeps text visible on slow connections. Only the two
- * Arabic fonts needed for the first viewport are preloaded in index.html.
+ * `font-display: swap` keeps text visible on slow connections. Vite emits
+ * production-safe URLs for these assets from the CSS import graph.
  */
 
 /* Arabic font: Juman */
