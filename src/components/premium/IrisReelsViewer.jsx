@@ -83,7 +83,10 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     } else {
       video.pause();
     }
-  }, [isStageActive, activeIndex, isMuted]);
+  // isMuted is synchronized by the dedicated effect below; changing mute state
+  // should not restart an already-playing reel.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isStageActive, activeIndex]);
 
   useEffect(() => {
     const video = videoRef.current;
