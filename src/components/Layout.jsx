@@ -68,7 +68,7 @@ const Layout = () => {
               <Outlet />
             </motion.main>
           </AnimatePresence>
-          <Suspense fallback={null}>
+          <Suspense fallback={<div className="iris-footer-loading" aria-hidden="true" />}>
             <Footer />
           </Suspense>
         </>
