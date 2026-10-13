@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
 import heroMediaImg from '../assets/hero.png';
 
 const SiteSettingsContext = createContext(null);
@@ -190,6 +189,9 @@ export const SiteSettingsProvider = ({ children }) => {
         } catch {}
       }
 
+      // Load Supabase only after the first render; cached/default settings are
+      // already available so this network client is not on the critical path.
+      const { supabase } = await import('../lib/supabase');
       const { data, error } = await supabase
         .from('site_settings')
         .select('key,value')
@@ -260,7 +262,24 @@ export const SiteSettingsProvider = ({ children }) => {
         ));
       } catch {}
     }
-    fetchSettings();
+
+    // Let the hero paint before loading the database client/settings. The
+    // timeout guarantees refresh even on browsers that stay busy continuously.
+    let idleId;
+    let timeoutId;
+    const loadSettings = () => { void fetchSettings(); };
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      idleId = window.requestIdleCallback(loadSettings, { timeout: 1200 });
+    } else {
+      timeoutId = window.setTimeout(loadSettings, 200);
+    }
+
+    return () => {
+      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+    };
   }, []);
 
   const contextValue = useMemo(
