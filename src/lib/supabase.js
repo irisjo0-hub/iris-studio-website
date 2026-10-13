@@ -5,11 +5,33 @@ import { compressVideoIfNeeded } from './videoCompressor';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Accessing window.localStorage can itself throw in restricted/private browser
+// contexts. Keep auth functional for the current tab with a memory fallback.
+const createMemoryStorage = () => {
+  const values = new Map();
+  return {
+    getItem: async (key) => values.get(key) ?? null,
+    setItem: async (key, value) => { values.set(key, value); },
+    removeItem: async (key) => { values.delete(key); },
+  };
+};
+
+const getAuthStorage = () => {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) return window.localStorage;
+  } catch {
+    // Fall through to in-memory storage when browser storage is blocked.
+  }
+  return createMemoryStorage();
+};
+
+const authStorage = getAuthStorage();
+
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase configuration. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'iris-supabase-auth', storage: typeof window !== 'undefined' ? window.localStorage : undefined } });
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'iris-supabase-auth', storage: authStorage, } });
 
 
 // Separate auth storage for the sales portal so an admin session and a sales
@@ -20,7 +42,7 @@ export const salesSupabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     storageKey: 'iris-sales-auth',
-    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    storage: authStorage,
   },
 });
 
