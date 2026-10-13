@@ -165,6 +165,10 @@ input::placeholder, textarea::placeholder { color: rgba(236,235,231,.55) !import
   background: var(--iris-bg-deep, #180C17);
 }
 
+.iris-section-loading--reels { min-height: 100svh; }
+.iris-section-loading--divisions { min-height: 50svh; }
+.iris-section-loading--footer { min-height: 8rem; }
+
 .iris-footer-loading {
   min-height: 8rem;
   background: var(--iris-bg-deep, #180C17);
