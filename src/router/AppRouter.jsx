@@ -78,8 +78,14 @@ const RepresentativeWithdrawals = lazyRetry(() => import('../pages/Representativ
 const RepresentativeProfile = lazyRetry(() => import('../pages/RepresentativeProfile'));
 const SalesLeads = lazyRetry(() => import('../pages/SalesLeads'));
 
+const RouteLoadingFallback = () => (
+  <div className="iris-route-loading" role="status" aria-label="Loading page">
+    <span className="iris-route-loading__spinner" aria-hidden="true" />
+  </div>
+);
+
 const AppRouter = () => (
-  <Suspense fallback={null}>
+  <Suspense fallback={<RouteLoadingFallback />}>
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
