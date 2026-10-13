@@ -4,6 +4,25 @@ import heroMediaImg from '../assets/hero.png';
 
 const SiteSettingsContext = createContext(null);
 
+// Storage can be unavailable in private/restricted browser contexts. Treat it as
+// an optional cache so a storage exception never prevents the app from mounting.
+const getLocalStorageItem = (key) => {
+  try {
+    return typeof window !== 'undefined' ? window.localStorage.getItem(key) : null;
+  } catch {
+    return null;
+  }
+};
+
+const setLocalStorageItem = (key, value) => {
+  try {
+    if (typeof window !== 'undefined') window.localStorage.setItem(key, value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export const PUBLIC_SETTING_KEYS = [
   'whatsapp_number',
   'facebook_link',
@@ -140,14 +159,14 @@ export const SiteSettingsProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const [lang, setLangState] = useState(() => {
-    const saved = localStorage.getItem('iris_language');
+    const saved = getLocalStorageItem('iris_language');
     return saved === 'en' ? 'en' : 'ar';
   });
 
   const setLanguage = (newLang) => {
     const targetLang = newLang === 'en' ? 'en' : 'ar';
     setLangState(targetLang);
-    localStorage.setItem('iris_language', targetLang);
+    setLocalStorageItem('iris_language', targetLang);
     document.documentElement.lang = targetLang;
     document.documentElement.dir = targetLang === 'ar' ? 'rtl' : 'ltr';
   };
@@ -163,7 +182,7 @@ export const SiteSettingsProvider = ({ children }) => {
   const fetchSettings = async () => {
     try {
       setLoading(true);
-      const cached = localStorage.getItem('cached_site_settings');
+      const cached = getLocalStorageItem('cached_site_settings');
       let baseSettings = DEFAULT_SETTINGS;
       if (cached) {
         try {
@@ -200,13 +219,13 @@ export const SiteSettingsProvider = ({ children }) => {
           return merged;
         });
 
-        localStorage.setItem('cached_site_settings', JSON.stringify(merged));
+        setLocalStorageItem('cached_site_settings', JSON.stringify(merged));
       } else {
         setSettings(baseSettings);
       }
     } catch (err) {
       console.warn('Could not load settings from database. Using cached local settings.', err?.message || err);
-      const cached = localStorage.getItem('cached_site_settings');
+      const cached = getLocalStorageItem('cached_site_settings');
       if (cached) {
         try {
           setSettings({ ...DEFAULT_SETTINGS, ...pickPublicSettings(JSON.parse(cached)) });
@@ -224,13 +243,13 @@ export const SiteSettingsProvider = ({ children }) => {
   const updateSettingsLocally = (newSettings) => {
     setSettings((prev) => {
       const updated = { ...prev, ...pickPublicSettings(newSettings) };
-      localStorage.setItem('cached_site_settings', JSON.stringify(updated));
+      setLocalStorageItem('cached_site_settings', JSON.stringify(updated));
       return updated;
     });
   };
 
   useEffect(() => {
-    const cached = localStorage.getItem('cached_site_settings');
+    const cached = getLocalStorageItem('cached_site_settings');
     if (cached) {
       try {
         const cachedSettings = { ...DEFAULT_SETTINGS, ...pickPublicSettings(JSON.parse(cached)) };
