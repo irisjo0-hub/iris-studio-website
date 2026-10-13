@@ -158,6 +158,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           const filtered = cloudItems.filter((it) => it.enabled);
           const nextItems = filtered.length > 0 ? filtered : cloudItems;
 
+          // Keep the active index valid if the admin removes or disables reels.
+          setActiveIndex((currentIndex) => Math.min(currentIndex, nextItems.length - 1));
           setItems((prevItems) => {
             if (JSON.stringify(prevItems) === JSON.stringify(nextItems)) {
               return prevItems;
