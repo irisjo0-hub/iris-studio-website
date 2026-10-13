@@ -158,7 +158,21 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     // Observe only the React root. The previous body-wide observer reacted to
     // unrelated DOM changes across the entire application.
     const root = document.getElementById('root') || document.body;
-    const observer = new MutationObserver(scheduleInit);
+    const containsCalendarMarkup = (node) => {
+      if (!(node instanceof Element)) return false;
+      return node.matches(CALENDAR_SECTION_SELECTOR)
+        || node.matches('.custom-calendar-box')
+        || Boolean(node.querySelector(CALENDAR_SECTION_SELECTOR))
+        || Boolean(node.querySelector('.custom-calendar-box'));
+    };
+    const observer = new MutationObserver((records) => {
+      // React updates many unrelated nodes. Only rescan when a calendar section
+      // or its calendar markup is added, not on every DOM mutation in the app.
+      const hasCalendarMarkup = records.some((record) =>
+        Array.from(record.addedNodes).some(containsCalendarMarkup)
+      );
+      if (hasCalendarMarkup) scheduleInit();
+    });
     observer.observe(root, { childList: true, subtree: true });
   };
 
