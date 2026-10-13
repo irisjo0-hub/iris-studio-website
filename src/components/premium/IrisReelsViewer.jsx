@@ -1,7 +1,6 @@
 // __IRIS_BOOKING_HARDENING_APPLIED__
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import DivisionMenu from '../DivisionMenu';
 import {
   X, MessageSquare, Share2, ArrowUpRight,
@@ -20,7 +19,7 @@ import '../../styles/reels-typography-fix.css';
 
 export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const navigate = useNavigate();
-  const { settings, lang, toggleLanguage } = useSiteSettings();
+  const { settings, lang } = useSiteSettings();
   const isRtl = lang === 'ar';
 
   const [items, setItems] = useState([]);
@@ -46,7 +45,6 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const activeIndexRef = useRef(0);
   const navigationTimerRef = useRef(null);
   const isSkippingRef = useRef(false);
-  const isMobileRef = useRef(typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches);
 
   useEffect(() => {
     const handleReelMuteChange = (event) => {
@@ -85,7 +83,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     } else {
       video.pause();
     }
-  }, [isStageActive, activeIndex]);
+  }, [isStageActive, activeIndex, isMuted]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -95,6 +93,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   }, [isMuted]);
 
   useEffect(() => {
+    const videoAtEffectStart = videoRef.current;
     const handleVisibilityChange = () => {
       const video = videoRef.current;
       if (!video) return;
@@ -114,7 +113,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (videoRef.current) videoRef.current.pause();
+      videoAtEffectStart?.pause();
     };
   }, [isStageActive]);
 
