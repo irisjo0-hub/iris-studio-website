@@ -44,6 +44,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const touchStartY = useRef(0);
   const cooldownRef = useRef(false);
   const activeIndexRef = useRef(0);
+  const navigationTimerRef = useRef(null);
   const isSkippingRef = useRef(false);
   const isMobileRef = useRef(typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches);
 
@@ -71,8 +72,14 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       video.preload = 'metadata';
       const promise = video.play();
       if (promise !== undefined) {
-        promise.catch((err) => {
-          console.warn("Mobile autoplay notice:", err);
+        promise.catch(() => {
+          // Browsers commonly block autoplay with sound. Retry muted so the reel
+          // can still play, and keep the visible mute control in sync.
+          if (!isStageActive || document.visibilityState !== 'visible' || !video.isConnected) return;
+          video.muted = true;
+          video.defaultMuted = true;
+          setIsMuted(true);
+          video.play().catch(() => {});
         });
       }
     } else {
@@ -94,7 +101,13 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       if (document.visibilityState === 'hidden' || !isStageActive) {
         video.pause();
       } else if (isStageActive) {
-        video.play().catch(() => {});
+        video.play().catch(() => {
+          if (!isStageActive || document.visibilityState !== 'visible' || !video.isConnected) return;
+          video.muted = true;
+          video.defaultMuted = true;
+          setIsMuted(true);
+          video.play().catch(() => {});
+        });
       }
     };
 
@@ -108,6 +121,12 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   useEffect(() => {
     activeIndexRef.current = activeIndex;
   }, [activeIndex]);
+
+  useEffect(() => () => {
+    if (navigationTimerRef.current !== null) {
+      window.clearTimeout(navigationTimerRef.current);
+    }
+  }, []);
 
   useEffect(() => {
     window.__resetReelToHero = () => {
@@ -238,19 +257,24 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   }, [items.length]);
 
   const navigateToIndex = (newIndex, customDirection = null) => {
-    if (isLocked || cooldownRef.current) return;
+    if (isLocked || cooldownRef.current || items.length < 2) return;
+
+    const safeIndex = Math.max(0, Math.min(items.length - 1, newIndex));
+    if (safeIndex === activeIndex) return;
 
     videoRef.current?.pause();
-    const dir = customDirection !== null ? customDirection : (newIndex > activeIndex ? 1 : -1);
+    const dir = customDirection !== null ? customDirection : (safeIndex > activeIndex ? 1 : -1);
     setIsLocked(true);
     cooldownRef.current = true;
 
     setReelDirection(dir > 0 ? 'forward' : 'backward');
-    setActiveIndex(newIndex);
+    setActiveIndex(safeIndex);
 
-    setTimeout(() => {
+    if (navigationTimerRef.current !== null) window.clearTimeout(navigationTimerRef.current);
+    navigationTimerRef.current = window.setTimeout(() => {
       setIsLocked(false);
       cooldownRef.current = false;
+      navigationTimerRef.current = null;
     }, 500);
   };
 
@@ -286,9 +310,12 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
             const heroSec = document.getElementById('iris-dark-hero-root');
             if (heroSec) heroSec.scrollIntoView({ behavior: 'smooth' });
           }
-        } else {
+        } else if (maxIndex > 0) {
           e.preventDefault();
           if (!cooldownRef.current) navigateToIndex(1, 1);
+        } else {
+          const divisionsSec = document.getElementById('iris-divisions-section') || document.getElementById('iris-footer-root');
+          if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         return;
       }
@@ -546,7 +573,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 </a>
 
                 <div className="reel-caption-text-group">
-                  <span className="reel-item-number"><span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / 0{activeIndex + 1}</span>
+                  <span className="reel-item-number"><span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / {String(activeIndex + 1).padStart(2, '0')}</span>
                   <h2 className="reel-headline-text">{isRtl ? currentReel.headline_ar : currentReel.headline_en}</h2>
                   {currentReel.secondary_text_ar && <p className="reel-secondary-text">{isRtl ? currentReel.secondary_text_ar : currentReel.secondary_text_en}</p>}
                 </div>
@@ -557,7 +584,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           <div className="reels-persistent-ui-layer">
             <div className="reels-top-bar">
               <DivisionMenu />
-              <div className="reels-counter-pill-tag"><span className="gold-accent-line" /><span className="bidi-isolate" dir="ltr">0{activeIndex + 1} / 08</span></div>
+              <div className="reels-counter-pill-tag"><span className="gold-accent-line" /><span className="bidi-isolate" dir="ltr">{String(activeIndex + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}</span></div>
             </div>
 
             <div className="reels-action-rail">
