@@ -13,7 +13,9 @@ const Footer = lazy(() => import("../components/Footer"));
 const DeferredSection = ({ id, className, label, children }) => {
   const sectionRef = useRef(null);
   const [shouldRender, setShouldRender] = useState(
-    () => typeof window === "undefined" || !("IntersectionObserver" in window)
+    () => typeof window === "undefined"
+      || !("IntersectionObserver" in window)
+      || (id === "iris-reels-viewer-root" && window.location.hash.startsWith("#flow-"))
   );
 
   useEffect(() => {
