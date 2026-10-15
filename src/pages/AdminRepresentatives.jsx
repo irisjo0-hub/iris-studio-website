@@ -1108,19 +1108,36 @@ const AdminRepresentatives = () => {
                   </label>
 
                   <label>
-                    نوع المحفظة
-                    <select
+                    نوع المحفظة / البنك أو CliQ
+                    <input
+                      list="rep-wallet-types"
                       value={form.wallet_type || ''}
                       onChange={(e) =>
                         setForm({ ...form, wallet_type: e.target.value })
                       }
-                    >
-                      <option value="">—</option>
-                      <option>Zain Cash</option>
-                      <option>Orange Money</option>
-                      <option>UWallet</option>
-                      <option>Dinarak</option>
-                    </select>
+                      placeholder="اكتب اسم المحفظة أو البنك"
+                      autoComplete="off"
+                    />
+                    <datalist id="rep-wallet-types">
+                      <option value="Zain Cash" />
+                      <option value="Orange Money" />
+                      <option value="UWallet" />
+                      <option value="Dinarak" />
+                      <option value="CliQ - Arab Bank" />
+                      <option value="CliQ - Bank al Etihad" />
+                      <option value="CliQ - Housing Bank" />
+                      <option value="CliQ - Jordan Kuwait Bank" />
+                      <option value="CliQ - Cairo Amman Bank" />
+                      <option value="CliQ - Capital Bank" />
+                      <option value="CliQ - Jordan Islamic Bank" />
+                      <option value="CliQ - Islamic International Arab Bank" />
+                      <option value="CliQ - Bank of Jordan" />
+                      <option value="CliQ - Ahli Bank" />
+                      <option value="CliQ - Investbank" />
+                      <option value="CliQ - Safwa Islamic Bank" />
+                      <option value="CliQ - Societe Generale de Banque Jordanie" />
+                    </datalist>
+                    <small>يمكنك اختيار اقتراح أو كتابة اسم أي بنك أو محفظة يدويًا.</small>
                   </label>
 
                   <label>
