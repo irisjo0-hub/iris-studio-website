@@ -98,8 +98,8 @@ const RepresentativeLogin = () => {
   return <div className="rep-login" dir="rtl"><div className="rep-login-card">
     <Link to="/" className="rep-back"><ArrowLeft size={16}/> الموقع الرئيسي</Link>
     <img src={irisLogo} className="rep-login-logo" alt="IRIS"/>
-    <span className="rep-eyebrow">IRIS REPRESENTATIVE PORTAL</span>
-    <h1>بوابة المندوبين</h1><p>تابع مبيعاتك وعمولاتك وطلبات السحب من حسابك.</p>
+    <span className="rep-eyebrow">IRIS SALES TEAM</span>
+    <h1>مساحة فريق المبيعات</h1><p>تابع مبيعاتك وعمولاتك وطلبات السحب من حسابك.</p>
     <form onSubmit={submit}>
       <label>البريد الإلكتروني<input type="email" value={email} onChange={e=>setEmail(e.target.value)} required autoComplete="email"/></label>
       <label>كلمة المرور<div className="rep-password"><input type={show?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} required autoComplete="current-password"/><button type="button" onClick={()=>setShow(!show)}>{show?<EyeOff size={18}/>:<Eye size={18}/>}</button></div></label>
