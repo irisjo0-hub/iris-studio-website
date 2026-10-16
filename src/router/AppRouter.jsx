@@ -141,6 +141,9 @@ const AppRouter = () => (
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/sales" element={<RepresentativeLogin />} />
       <Route path="/sales/login" element={<RepresentativeLogin />} />
+      {/* Keep the old public URL working; some team messages still use it. */}
+      <Route path="/representative/login" element={<RepresentativeLogin />} />
+      <Route path="/representative/reset-password" element={<RepresentativeResetPassword />} />
       <Route path="/sales/reset-password" element={<RepresentativeResetPassword />} />
 
       <Route element={<ProtectedAdminRoute />}>
