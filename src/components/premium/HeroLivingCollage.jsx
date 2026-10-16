@@ -17,7 +17,24 @@ import '../../styles/hero-living-collage.css';
  * 8. Cards enter from one side off-screen, float across lower stage, exit out opposite side off-screen.
  */
 
-const HERO_IMAGE_PRELOAD_CACHE = new Set();
+const optimizeHeroImageUrl = (value) => {
+  if (typeof value !== 'string' || !value) return value;
+  try {
+    const url = new URL(value);
+    if (url.hostname !== 'images.unsplash.com') return value;
+
+    // Hero cards render at roughly 200–320 CSS px; 720 px is enough for
+    // high-density screens while avoiding the 1000 px / q80 defaults.
+    const requestedWidth = Number(url.searchParams.get('w')) || 720;
+    const requestedQuality = Number(url.searchParams.get('q')) || 70;
+    url.searchParams.set('w', String(Math.min(requestedWidth, 720)));
+    url.searchParams.set('q', String(Math.min(requestedQuality, 70)));
+    url.searchParams.set('auto', 'format');
+    return url.toString();
+  } catch {
+    return value;
+  }
+};
 
 export const HeroLivingCollage = () => {
   const { settings, lang } = useSiteSettings();
@@ -43,7 +60,7 @@ export const HeroLivingCollage = () => {
     if (typeof item === 'string') {
       return {
         id: `item-${idx}`,
-        image: item || heroMediaImg,
+        image: optimizeHeroImageUrl(item || heroMediaImg),
         alt_ar: 'أعمال آيرس الاحترافية',
         alt_en: 'IRIS Professional Work',
         url_optional: '/work'
@@ -51,7 +68,7 @@ export const HeroLivingCollage = () => {
     }
     return {
       id: item?.id || `item-${idx}`,
-      image: item?.image || item?.url || heroMediaImg,
+      image: optimizeHeroImageUrl(item?.image || item?.url || heroMediaImg),
       alt_ar: item?.alt_ar || item?.title || 'أعمال آيرس الاحترافية',
       alt_en: item?.alt_en || item?.title || 'IRIS Professional Work',
       url_optional: item?.url_optional || item?.link || '/work'

@@ -147,3 +147,47 @@ select option { background-color: #180C17 !important; color: #ECEBE7 !important;
 input::placeholder, textarea::placeholder { color: rgba(236,235,231,.55) !important; }
 
 .gold-card, .gold-card h1, .gold-card h2, .gold-card h3, .gold-card p, .gold-card span { color: #044630 !important; }
+
+
+/* Lightweight placeholders prevent blank screens while lazy chunks load. */
+.iris-route-loading {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  background: var(--iris-bg-deep, #180C17);
+  color: var(--iris-gold, #F5BD1A);
+}
+
+.iris-section-loading {
+  min-height: 35svh;
+  display: grid;
+  place-items: center;
+  background: var(--iris-bg-deep, #180C17);
+}
+
+.iris-section-loading--reels { min-height: 100svh; }
+.iris-section-loading--divisions { min-height: 50svh; }
+.iris-section-loading--footer { min-height: 8rem; }
+
+.iris-footer-loading {
+  min-height: 8rem;
+  background: var(--iris-bg-deep, #180C17);
+}
+
+.iris-route-loading__spinner {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid rgba(245, 189, 26, 0.25);
+  border-top-color: var(--iris-gold, #F5BD1A);
+  border-radius: 50%;
+  animation: iris-loading-spin 0.8s linear infinite;
+}
+
+@keyframes iris-loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iris-route-loading__spinner { animation: none; }
+}

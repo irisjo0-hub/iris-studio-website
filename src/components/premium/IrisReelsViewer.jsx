@@ -1,7 +1,6 @@
 // __IRIS_BOOKING_HARDENING_APPLIED__
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import DivisionMenu from '../DivisionMenu';
 import {
   X, MessageSquare, Share2, ArrowUpRight,
@@ -15,10 +14,12 @@ import irisLogo from '../../assets/iris_logo.png';
 import heroMediaImg from '../../assets/hero.png';
 import '../../styles/iris-reels-viewer.css';
 import '../../styles/iris-dark-hero.css';
+import '../../styles/reels-enhancements.css';
+import '../../styles/reels-typography-fix.css';
 
 export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const navigate = useNavigate();
-  const { settings, lang, toggleLanguage } = useSiteSettings();
+  const { settings, lang } = useSiteSettings();
   const isRtl = lang === 'ar';
 
   const [items, setItems] = useState([]);
@@ -42,8 +43,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   const touchStartY = useRef(0);
   const cooldownRef = useRef(false);
   const activeIndexRef = useRef(0);
+  const navigationTimerRef = useRef(null);
   const isSkippingRef = useRef(false);
-  const isMobileRef = useRef(typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches);
 
   useEffect(() => {
     const handleReelMuteChange = (event) => {
@@ -69,13 +70,22 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       video.preload = 'metadata';
       const promise = video.play();
       if (promise !== undefined) {
-        promise.catch((err) => {
-          console.warn("Mobile autoplay notice:", err);
+        promise.catch(() => {
+          // Browsers commonly block autoplay with sound. Retry muted so the reel
+          // can still play, and keep the visible mute control in sync.
+          if (!isStageActive || document.visibilityState !== 'visible' || !video.isConnected) return;
+          video.muted = true;
+          video.defaultMuted = true;
+          setIsMuted(true);
+          video.play().catch(() => {});
         });
       }
     } else {
       video.pause();
     }
+  // isMuted is synchronized by the dedicated effect below; changing mute state
+  // should not restart an already-playing reel.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isStageActive, activeIndex]);
 
   useEffect(() => {
@@ -86,26 +96,39 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   }, [isMuted]);
 
   useEffect(() => {
+    const videoAtEffectStart = videoRef.current;
     const handleVisibilityChange = () => {
       const video = videoRef.current;
       if (!video) return;
       if (document.visibilityState === 'hidden' || !isStageActive) {
         video.pause();
       } else if (isStageActive) {
-        video.play().catch(() => {});
+        video.play().catch(() => {
+          if (!isStageActive || document.visibilityState !== 'visible' || !video.isConnected) return;
+          video.muted = true;
+          video.defaultMuted = true;
+          setIsMuted(true);
+          video.play().catch(() => {});
+        });
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (videoRef.current) videoRef.current.pause();
+      videoAtEffectStart?.pause();
     };
   }, [isStageActive]);
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
   }, [activeIndex]);
+
+  useEffect(() => () => {
+    if (navigationTimerRef.current !== null) {
+      window.clearTimeout(navigationTimerRef.current);
+    }
+  }, []);
 
   useEffect(() => {
     window.__resetReelToHero = () => {
@@ -135,6 +158,8 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           const filtered = cloudItems.filter((it) => it.enabled);
           const nextItems = filtered.length > 0 ? filtered : cloudItems;
 
+          // Keep the active index valid if the admin removes or disables reels.
+          setActiveIndex((currentIndex) => Math.min(currentIndex, nextItems.length - 1));
           setItems((prevItems) => {
             if (JSON.stringify(prevItems) === JSON.stringify(nextItems)) {
               return prevItems;
@@ -153,26 +178,23 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
       timeoutId = window.setTimeout(refreshFlowFromCloud, 900);
     }
 
+    // Restore deep-linked flow selection before returning the effect cleanup.
+    // This code was previously after the return, so it could never execute.
+    const currentHash = window.location.hash;
+    if (currentHash && currentHash.startsWith('#flow-')) {
+      const targetSlug = currentHash.replace('#flow-', '');
+      const matchedIndex = initialItems.findIndex((it) => it.slug === targetSlug);
+      setActiveIndex(matchedIndex !== -1 ? matchedIndex : 0);
+    } else {
+      setActiveIndex(0);
+    }
+
     return () => {
       if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
         window.cancelIdleCallback(idleId);
       }
       if (timeoutId !== undefined) window.clearTimeout(timeoutId);
     };
-
-    // Feedback is loaded only when the visitor opens the feedback drawer.
-    // Avoid an extra RPC on every homepage visit.
-    const currentHash = window.location.hash;
-    if (currentHash && currentHash.startsWith('#flow-')) {
-      const targetSlug = currentHash.replace('#flow-', '');
-      const matchedIndex = initialItems.findIndex((it) => it.slug === targetSlug);
-      if (matchedIndex !== -1) {
-        setActiveIndex(matchedIndex);
-        return;
-      }
-    }
-
-    setActiveIndex(0);
   }, []);
 
   useEffect(() => {
@@ -239,19 +261,24 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
   }, [items.length]);
 
   const navigateToIndex = (newIndex, customDirection = null) => {
-    if (isLocked || cooldownRef.current) return;
+    if (isLocked || cooldownRef.current || items.length < 2) return;
+
+    const safeIndex = Math.max(0, Math.min(items.length - 1, newIndex));
+    if (safeIndex === activeIndex) return;
 
     videoRef.current?.pause();
-    const dir = customDirection !== null ? customDirection : (newIndex > activeIndex ? 1 : -1);
+    const dir = customDirection !== null ? customDirection : (safeIndex > activeIndex ? 1 : -1);
     setIsLocked(true);
     cooldownRef.current = true;
 
     setReelDirection(dir > 0 ? 'forward' : 'backward');
-    setActiveIndex(newIndex);
+    setActiveIndex(safeIndex);
 
-    setTimeout(() => {
+    if (navigationTimerRef.current !== null) window.clearTimeout(navigationTimerRef.current);
+    navigationTimerRef.current = window.setTimeout(() => {
       setIsLocked(false);
       cooldownRef.current = false;
+      navigationTimerRef.current = null;
     }, 500);
   };
 
@@ -287,9 +314,12 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
             const heroSec = document.getElementById('iris-dark-hero-root');
             if (heroSec) heroSec.scrollIntoView({ behavior: 'smooth' });
           }
-        } else {
+        } else if (maxIndex > 0) {
           e.preventDefault();
           if (!cooldownRef.current) navigateToIndex(1, 1);
+        } else {
+          const divisionsSec = document.getElementById('iris-divisions-section') || document.getElementById('iris-footer-root');
+          if (divisionsSec) divisionsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         return;
       }
@@ -547,7 +577,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
                 </a>
 
                 <div className="reel-caption-text-group">
-                  <span className="reel-item-number"><span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / 0{activeIndex + 1}</span>
+                  <span className="reel-item-number"><span className="bidi-isolate" dir="ltr">IRIS</span> / {isRtl ? currentReel.category_label_ar : currentReel.category_label_en} / {String(activeIndex + 1).padStart(2, '0')}</span>
                   <h2 className="reel-headline-text">{isRtl ? currentReel.headline_ar : currentReel.headline_en}</h2>
                   {currentReel.secondary_text_ar && <p className="reel-secondary-text">{isRtl ? currentReel.secondary_text_ar : currentReel.secondary_text_en}</p>}
                 </div>
@@ -558,7 +588,7 @@ export const IrisReelsViewer = ({ id = "iris-reels-viewer-root" }) => {
           <div className="reels-persistent-ui-layer">
             <div className="reels-top-bar">
               <DivisionMenu />
-              <div className="reels-counter-pill-tag"><span className="gold-accent-line" /><span className="bidi-isolate" dir="ltr">0{activeIndex + 1} / 08</span></div>
+              <div className="reels-counter-pill-tag"><span className="gold-accent-line" /><span className="bidi-isolate" dir="ltr">{String(activeIndex + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}</span></div>
             </div>
 
             <div className="reels-action-rail">

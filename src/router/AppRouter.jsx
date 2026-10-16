@@ -27,14 +27,17 @@ const lazyRetry = (importer) =>
   );
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from '../components/Layout';
-import ProtectedAdminRoute from '../components/ProtectedAdminRoute';
-import ProtectedRepresentativeRoute from '../components/ProtectedRepresentativeRoute';
 
 // Keep the landing shell eager; load secondary routes on demand so the initial
 // bundle does not pull every customer/admin page into the first render.
 import Home from '../pages/Home';
-import AdminLogin from '../pages/AdminLogin';
 import NotFound from '../pages/NotFound';
+
+// Auth guards and login screens also depend on Supabase; keep them out of
+// the public landing-page startup bundle.
+const AdminLogin = lazyRetry(() => import('../pages/AdminLogin'));
+const ProtectedAdminRoute = lazyRetry(() => import('../components/ProtectedAdminRoute'));
+const ProtectedRepresentativeRoute = lazyRetry(() => import('../components/ProtectedRepresentativeRoute'));
 
 const Work = lazyRetry(() => import('../pages/Work'));
 const Packages = lazyRetry(() => import('../pages/Packages'));
@@ -78,8 +81,14 @@ const RepresentativeWithdrawals = lazyRetry(() => import('../pages/Representativ
 const RepresentativeProfile = lazyRetry(() => import('../pages/RepresentativeProfile'));
 const SalesLeads = lazyRetry(() => import('../pages/SalesLeads'));
 
+const RouteLoadingFallback = () => (
+  <div className="iris-route-loading" role="status" aria-label="Loading page">
+    <span className="iris-route-loading__spinner" aria-hidden="true" />
+  </div>
+);
+
 const AppRouter = () => (
-  <Suspense fallback={null}>
+  <Suspense fallback={<RouteLoadingFallback />}>
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
@@ -132,6 +141,9 @@ const AppRouter = () => (
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/sales" element={<RepresentativeLogin />} />
       <Route path="/sales/login" element={<RepresentativeLogin />} />
+      {/* Keep the old public URL working; some team messages still use it. */}
+      <Route path="/representative/login" element={<RepresentativeLogin />} />
+      <Route path="/representative/reset-password" element={<RepresentativeResetPassword />} />
       <Route path="/sales/reset-password" element={<RepresentativeResetPassword />} />
 
       <Route element={<ProtectedAdminRoute />}>

@@ -4,8 +4,8 @@
 /*
  * The IRIS UI uses local brand fonts. These are loaded from the same-origin
  * app bundle so the browser does not need a third-party font request.
- * `font-display: block` intentionally prevents a fallback-font flash/layout
- * shift during the initial render. The index.html preloads the same files.
+ * `font-display: swap` keeps text visible on slow connections. Vite emits
+ * production-safe URLs for these assets from the CSS import graph.
  */
 
 /* Arabic font: Juman */
@@ -14,7 +14,7 @@
   src: url('../assets/fonts/alfont_com_AlFont_com_juman-normal.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
 @font-face {
@@ -22,7 +22,7 @@
   src: url('../assets/fonts/alfont_com_AlFont_com_juman-bold-.ttf') format('truetype');
   font-weight: 700 900;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
 /* English / display font: DegularDisplay */
@@ -31,7 +31,7 @@
   src: url('../assets/fonts/DegularDisplay-Black.otf') format('opentype');
   font-weight: 900;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
 @font-face {
@@ -39,7 +39,7 @@
   src: url('../assets/fonts/DegularDisplay-Bold.otf') format('opentype');
   font-weight: 600 700;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
 @font-face {
@@ -47,7 +47,7 @@
   src: url('../assets/fonts/DegularDisplay-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
 /* CSS variables for easy reference */

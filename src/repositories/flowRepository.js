@@ -79,11 +79,23 @@ export const INITIAL_FLOW_ITEMS = [
 function normalizeFlowItem(item = {}) {
   const copy = { ...item };
   const isVideo = (value) => typeof value === 'string' && /\.(webm|mp4|mov|mkv|m4v|avi)($|\?)/i.test(value);
+  const isStaleBuildAsset = (value) => (
+    typeof value === 'string'
+    && /^\/assets\/hero-[^/]+\.(png|jpe?g|webp|avif)(?:\?.*)?$/i.test(value)
+  );
+
   if (isVideo(copy.image)) {
     if (!copy.media_url) copy.media_url = copy.image;
     copy.image = heroMediaImg;
   }
-  if (!copy.image) copy.image = heroMediaImg;
+
+  // Never trust a Vite-generated asset hash stored in the database: it changes
+  // on every build, so old values such as /assets/hero-ABC123.png 404 after deploy.
+  // Resolve those legacy values to the current bundled hero asset without
+  // mutating the saved database record.
+  if (!copy.image || isStaleBuildAsset(copy.image)) {
+    copy.image = heroMediaImg;
+  }
   return copy;
 }
 

@@ -218,6 +218,14 @@
       transparent 75%
     );
   }
+
+  /* Keep blurred ambient lighting static on mobile to reduce continuous GPU work. */
+  .glow-purple-topleft,
+  .glow-purple-topright,
+  .glow-green-bottomleft,
+  .glow-gold-accent {
+    animation: none !important;
+  }
 }
 
 /* Pause expensive ambient layers while the hero is offscreen. */
