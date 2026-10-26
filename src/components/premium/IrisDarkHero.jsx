@@ -1,251 +1,102 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { HeroLivingCollage } from './HeroLivingCollage';
 import irisLogo from '../../assets/iris_logo.png';
 import DivisionMenu from '../DivisionMenu';
-
 import '../../styles/iris-dark-hero.css';
 
-/**
- * HERO V6 (Living Collage Motion System)
- * Approved Top Composition Preserved: Top Logo (Left), [ WE BREAK THE BOX ● ] (Right), Arabic Headline, Supporting Paragraph, Living CTA
- * Lower Viewport: IRIS Living Collage System (<HeroLivingCollage />)
- */
-
 export const IrisDarkHero = () => {
-  const { settings, lang, toggleLanguage } = useSiteSettings();
+  const { settings, lang } = useSiteSettings();
   const isRtl = lang === 'ar';
-  const [isHeroActive, setIsHeroActive] = useState(true);
+  const [active, setActive] = useState(true);
+  const heroRef = useRef(null);
 
-  // Desktop pointer effects. Keep glow transforms off React state so mouse movement
-  // does not re-render the entire hero/collage tree on every pointer event.
-  const glowRafRef = useRef(null);
-  const glowOffsetRef = useRef({ x: 0, y: 0 });
-  const glowElementsRef = useRef(null);
-  const [isCtaHovered, setIsCtaHovered] = useState(false);
-  const ctaRef = useRef(null);
-  const ctaOffsetRef = useRef({ x: 0, y: 0 });
-  const ctaRafRef = useRef(null);
+  const line1 = isRtl
+    ? (settings.slogan_line_1_ar || settings.slogan_line_1 || 'من زهرة نادرة')
+    : (settings.slogan_line_1_en || 'From a Rare Flower');
 
-  // Dynamic Headline Binds from Site Settings
-  const headlinePart1 = isRtl
-    ? (settings.slogan_line_1_ar || settings.slogan_line_1 || "من زهرة نادرة")
-    : (settings.slogan_line_1_en || "From a Rare Flower");
+  const line2 = isRtl
+    ? (settings.slogan_line_2_ar || settings.slogan_line_2 || 'إلى علامة تجارية لا تُنسى')
+    : (settings.slogan_line_2_en || 'to an Unforgettable Brand');
 
-  const headlinePart2 = isRtl
-    ? (settings.slogan_line_2_ar || settings.slogan_line_2 || "إلى علامة تجارية لا تُنسى")
-    : (settings.slogan_line_2_en || "to an Unforgettable Brand");
-
-  const supportingCopy = isRtl
-    ? (settings.supporting_text_ar || settings.supporting_text || "منظومة إبداعية متكاملة تجمع بين إنتاج الميديا، تصوير الاستوديو، والمطبوعات الفاخرة تحت سقف واحد.")
-    : (settings.supporting_text_en || "An integrated creative ecosystem unifying Media Production, Studio Photography, and Luxury Print under one roof.");
-
-  const ctaLabel = isRtl ? "اكتشف آيرس" : "Discover IRIS";
-
-  // Lerp Mouse Parallax Handler (Desktop Pointer Only)
-  const handleHeroMouseMove = (e) => {
-    if (window.innerWidth < 1024) return;
-    const hero = e.currentTarget;
-    if (!glowElementsRef.current) {
-      glowElementsRef.current = hero.querySelectorAll('.hero-v2-ambient-layer .ambient-glow');
-    }
-    const rect = hero.getBoundingClientRect();
-    const x = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 16;
-    const y = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * 16;
-    glowOffsetRef.current = { x, y };
-    if (glowRafRef.current) return;
-    glowRafRef.current = window.requestAnimationFrame(() => {
-      glowRafRef.current = null;
-      const { x: gx, y: gy } = glowOffsetRef.current;
-      const glows = glowElementsRef.current;
-      const multipliers = [[-0.5, -0.5], [0.8, 0.8], [-0.9, -0.9], [0.6, 0.6], [1.2, 1.2]];
-      glows.forEach((glow, index) => {
-        const [mx, my] = multipliers[index] || [1, 1];
-        glow.style.transform = 'translate(' + (gx * mx) + 'px, ' + (gy * my) + 'px)';
-      });
-    });
-  };
-
-  const handleHeroMouseLeave = (e) => {
-    if (glowRafRef.current) {
-      window.cancelAnimationFrame(glowRafRef.current);
-      glowRafRef.current = null;
-    }
-    const glows = glowElementsRef.current || e.currentTarget.querySelectorAll('.hero-v2-ambient-layer .ambient-glow');
-    glows.forEach((glow) => {
-      glow.style.transform = 'translate(0px, 0px)';
-    });
-    if (ctaRef.current) ctaRef.current.style.transform = 'translate3d(0,0,0)';
-    setIsCtaHovered(false);
-  };
-
-  // CTA Magnetic Proximity Handler
-  const handleCtaMouseMove = (e) => {
-    if (window.innerWidth < 1024) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - rect.left - rect.width / 2) * 0.25;
-    const y = (e.clientY - rect.top - rect.height / 2) * 0.25;
-    if (ctaRef.current) ctaRef.current.style.willChange = 'transform';
-    ctaOffsetRef.current = { x, y };
-    if (!ctaRafRef.current) {
-      ctaRafRef.current = window.requestAnimationFrame(() => {
-        ctaRafRef.current = null;
-        if (ctaRef.current) {
-          const { x: offsetX, y: offsetY } = ctaOffsetRef.current;
-          ctaRef.current.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`;
-        }
-      });
-    }
-    if (!isCtaHovered) setIsCtaHovered(true);
-  };
-
-  const handleCtaMouseLeave = () => {
-    if (ctaRafRef.current) {
-      window.cancelAnimationFrame(ctaRafRef.current);
-      ctaRafRef.current = null;
-    }
-    if (ctaRef.current) {
-      ctaRef.current.style.transform = 'translate3d(0,0,0)';
-      ctaRef.current.style.willChange = 'auto';
-    }
-    setIsCtaHovered(false);
-  };
-
-  // Smooth scroll transition from Hero to Reels stage (Resetting Reel index to 01)
-  const handleDiscoverScroll = (e) => {
-    e.preventDefault();
-    if (typeof window.__resetReelToHero === 'function') {
-      window.__resetReelToHero();
-    }
-    const reelsStage = document.getElementById('iris-reels-viewer-root');
-    if (reelsStage) {
-      reelsStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      const divisionsSection = document.getElementById('iris-divisions-section');
-      if (divisionsSection) {
-        divisionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
-  };
+  const copy = isRtl
+    ? (settings.supporting_text_ar || settings.supporting_text || 'منظومة إبداعية متكاملة تجمع بين إنتاج الميديا، تصوير الاستوديو، والمطبوعات الفاخرة تحت سقف واحد.')
+    : (settings.supporting_text_en || 'An integrated creative ecosystem unifying media, studio and premium print under one roof.');
 
   useEffect(() => {
-    const hero = document.getElementById('iris-dark-hero-root');
-    if (!hero) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsHeroActive(entry.isIntersecting),
-      { threshold: 0.05 }
-    );
-
-    observer.observe(hero);
+    const node = heroRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting), { threshold: 0.05 });
+    observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
+  const discover = () => {
+    const target = document.getElementById('iris-worlds') || document.getElementById('iris-work');
+    target?.scrollIntoView({ behavior:'smooth', block:'start' });
+  };
+
   return (
-    <section
-      id="iris-dark-hero-root"
-      className={`iris-dark-hero-v2-wrapper dir-${isRtl ? 'rtl' : 'ltr'} ${!isHeroActive ? 'is-offscreen' : 'is-active'}`}
-      dir={isRtl ? 'rtl' : 'ltr'}
-      onMouseMove={handleHeroMouseMove}
-      onMouseLeave={handleHeroMouseLeave}
-    >
-      {/* 1. Dynamic Ambient Background Color Fields */}
-      <div className="hero-v2-ambient-layer">
-        <div
-          className="ambient-glow glow-purple-topleft"
-
-        />
-        <div
-          className="ambient-glow glow-purple-topright"
-
-        />
-        <div
-          className="ambient-glow glow-green-bottomleft"
-
-        />
-        <div
-          className="ambient-glow glow-green-bottomright"
-
-        />
-        <div
-          className="ambient-glow glow-gold-accent"
-
-        />
+    <section ref={heroRef} id="iris-dark-hero-root" className={'iris-dark-hero-v2-wrapper iris-hero-v7 ' + (active ? 'is-active' : 'is-offscreen')} dir={isRtl ? 'rtl' : 'ltr'}>
+      <div className="hero-v7-bg" aria-hidden="true">
+        <div className="hero-v7-glow hero-v7-glow-purple" />
+        <div className="hero-v7-glow hero-v7-glow-green" />
+        <div className="hero-v7-glow hero-v7-glow-gold" />
+        <div className="hero-v7-grid" />
+        <div className="hero-v7-noise" />
       </div>
 
-      <div className="hero-v2-grain-overlay" />
-
-      {/* Dedicated Lower Floating Images Area Container (Starts strictly below the CTA button) */}
-      <div className="hero-v2-lower-animation-area">
-        <HeroLivingCollage isCtaHovered={isCtaHovered} />
-      </div>
-
-      {/* 3. Main Hero Content Container */}
-      <div className="hero-v2-main-container">
-        {/* Top Header Bar: Logo (Left) ... Equal-Distance Mid Wrapper (WE BREAK THE BOX) ... Menu (Right) */}
-        <header className="hero-v2-top-bar">
-          {/* 1. IRIS Logo (Left Edge) */}
-          <Link to="/" className="hero-v2-logo-link" aria-label="IRIS Agency">
-            <img
-              src={settings.hero_logo_url || settings.logo_url || irisLogo}
-              alt="IRIS"
-              className="hero-v2-logo-img"
-              decoding="async"
-            />
+      <div className="hero-v7-shell">
+        <header className="hero-v7-nav">
+          <Link to="/" className="hero-v7-logo" aria-label="IRIS home">
+            <img src={settings.hero_logo_url || settings.logo_url || irisLogo} alt="IRIS" />
           </Link>
 
-          {/* 2. Equal-Distance Middle Space Container for WE BREAK THE BOX */}
-          <div className="hero-v2-nav-mid-wrapper">
-            <div className="hero-v2-eyebrow-pill">
-              <span className="pill-text">WE BREAK THE BOX</span>
-              <span className="pill-dot" />
-            </div>
+          <div className="hero-v7-nav-center">
+            <span className="hero-v7-status-dot" />
+            <span>WE BREAK THE BOX</span>
           </div>
 
-          {/* 3. Hamburger Menu Control (Right Edge) */}
-          <DivisionMenu />
+          <div className="hero-v7-nav-right">
+            <span className="hero-v7-location">IRBID · JORDAN</span>
+            <DivisionMenu />
+          </div>
         </header>
 
-        {/* 4. Main Hero Content Stage (Simplified & Confident) */}
-        <div className="hero-v2-content-stage">
-          {/* Line-by-Line Headline */}
-          <div className="hero-v2-primary-headline-box">
-            <h1 className="hero-v2-editorial-title">
-              <span className="headline-line-1">
-                {headlinePart1}
-              </span>
-              <span className="headline-line-2">
-                {headlinePart2}
-              </span>
+        <div className="hero-v7-content">
+          <div className="hero-v7-kicker">
+            <span>01 / CREATIVE ECOSYSTEM</span>
+            <span>{isRtl ? 'ميديا · استوديو · مطبوعات' : 'MEDIA · STUDIO · PRINT'}</span>
+          </div>
+
+          <div className="hero-v7-title-wrap">
+            <h1>
+              <span>{line1}</span>
+              <strong>{line2}</strong>
             </h1>
 
-            <p className="hero-v2-supporting-desc">
-              {supportingCopy}
-            </p>
-          </div>
-
-          {/* Magnetic Interactive Primary CTA */}
-          <div className="hero-v2-action-wrapper">
-            <button
-              type="button"
-              className="hero-v2-discover-cta glass-gold-pulse-btn"
-              onClick={handleDiscoverScroll}
-              onMouseMove={handleCtaMouseMove}
-              onMouseLeave={handleCtaMouseLeave}
-              ref={ctaRef}
-              aria-label={ctaLabel}
-            >
-              <span className="cta-label-text">{ctaLabel}</span>
-              <span className="cta-arrow-badge">
-                <ArrowDown size={17} />
-              </span>
-            </button>
+            <div className="hero-v7-side-copy">
+              <p>{copy}</p>
+              <button type="button" onClick={discover} className="hero-v7-discover">
+                <span>{isRtl ? 'اكتشف آيرس' : 'Discover IRIS'}</span>
+                <span className="hero-v7-arrow"><ArrowDown size={17} /></span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
+        <div className="hero-v7-media">
+          <HeroLivingCollage />
+        </div>
+
+        <div className="hero-v7-footer">
+          <span>© {new Date().getFullYear()} IRIS</span>
+          <span className="hero-v7-scroll-cue"><i /> SCROLL TO EXPLORE</span>
+          <span><ArrowUpRight size={14} /> IRISJO.AGENCY</span>
+        </div>
+      </div>
     </section>
   );
 };
