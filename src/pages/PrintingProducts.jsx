@@ -149,6 +149,22 @@ const DEFAULT_PRODUCTS = [
   }
 ];
 
+// Store payment rule: everything is paid in full by transfer before we start,
+// except graduation sashes and caps, which need a fixed deposit per order.
+const SASH_DEPOSIT = 5;
+const isSashItem = (item) => /وشاح|أوشحة|اوشحة|طاق/.test(`${item?.category || ''} ${item?.name || ''}`);
+function computeAmountDue(items) {
+  let full = 0;
+  let sash = 0;
+  (items || []).forEach((item) => {
+    const line = (Number(item.price) || 0) * Math.max(1, Number(item.quantity) || 1);
+    if (isSashItem(item)) sash += line; else full += line;
+  });
+  const deposit = sash > 0 ? Math.min(SASH_DEPOSIT, sash) : 0;
+  const round = (n) => Math.round(n * 100) / 100;
+  return { now: round(full + deposit), later: round(sash - deposit), hasDeposit: sash > 0 };
+}
+
 const ProductStoreCard = ({ prod, onOrder, onAddToCart, viewMode = 'grid' }) => {
   let imagesList = [];
   if (Array.isArray(prod.image_urls)) {
@@ -515,7 +531,8 @@ const PrintingProducts = () => {
   const [googleMapsLink, setGoogleMapsLink] = useState('');
   
   // Payment State
-  const [paymentMethod, setPaymentMethod] = useState('cliq'); // 'cliq' | 'cod'
+  // Store orders are always paid by transfer (CliQ or wallet); cash on delivery was removed.
+  const paymentMethod = 'cliq';
 
   // Custom design uploads
   const [imagesPreviews, setImagesPreviews] = useState([]);
@@ -584,7 +601,6 @@ const PrintingProducts = () => {
     setPlacedInvoiceData(null);
     setOrderPlaced(false);
     setShowDirectOrderFields(false);
-    setPaymentMethod('cliq');
   };
 
   const closeOrderModal = () => {
@@ -651,7 +667,10 @@ const PrintingProducts = () => {
         finalNotes = `[استلام من الاستوديو]\n${finalNotes}`;
       }
 
-      const payLabel = paymentMethod === 'cliq' ? '[دفع عبر CliQ 📱]' : '[الدفع عند الاستلام 💵]';
+      const due = computeAmountDue(selectedProduct.id === 'cart_checkout' ? cart : [{ ...selectedProduct, quantity }]);
+      const payLabel = due.hasDeposit
+        ? `[تحويل CliQ/محفظة 📱 — المطلوب الآن ${due.now} JOD (عربون أوشحة ${SASH_DEPOSIT} JOD) والباقي ${due.later} JOD عند الاستلام]`
+        : `[تحويل CliQ/محفظة 📱 — المبلغ كامل ${due.now} JOD]`;
       finalNotes = `${payLabel}\n${finalNotes}`;
 
       const toNumericProductId = (id) => {
@@ -729,7 +748,7 @@ const PrintingProducts = () => {
         deliverySelected,
         deliveryAddress: deliveryAddress.trim(),
         paymentMethod,
-        paymentStatus: paymentMethod === 'cliq' ? '📱 تم الدفع عبر CliQ' : '💵 الدفع نقداً عند الاستلام',
+        paymentStatus: '📱 بانتظار التأكد من التحويل',
         cardMasked: '',
         items: selectedProduct.id === 'cart_checkout' ? [...cart] : [{
           cartItemId: selectedProduct.id,
@@ -1495,46 +1514,27 @@ const PrintingProducts = () => {
                         <div style={{ marginTop: '6px', borderTop: '1px dashed rgba(245, 189, 26, 0.3)', paddingTop: '14px' }}>
                           <label className="as-label" style={{ marginBottom: '10px', display: 'block', fontWeight: 'bold', color: '#F5BD1A' }}>اختر طريقة الدفع *</label>
                           
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
-                            {/* CliQ Option */}
-                            <div
-                              onClick={() => setPaymentMethod('cliq')}
-                              style={{
-                                background: paymentMethod === 'cliq' ? 'rgba(245, 189, 26, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                                border: paymentMethod === 'cliq' ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.12)',
-                                borderRadius: '12px',
-                                padding: '12px 8px',
-                                cursor: 'pointer',
-                                textAlign: 'center',
-                                boxShadow: paymentMethod === 'cliq' ? '0 4px 15px rgba(245, 189, 26, 0.25)' : 'none'
-                              }}
-                            >
-                              <div style={{ fontSize: '1.4rem' }}>📱</div>
-                              <div style={{ fontWeight: 'bold', fontSize: '0.85rem', color: '#FFFFFF', marginTop: '4px' }}>تحويل CliQ</div>
-                              <div style={{ fontSize: '0.74rem', color: '#F5BD1A' }}>محافظ إلكترونية</div>
-                            </div>
-
-                            {/* COD Option */}
-                            <div
-                              onClick={() => setPaymentMethod('cod')}
-                              style={{
-                                background: paymentMethod === 'cod' ? 'rgba(245, 189, 26, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                                border: paymentMethod === 'cod' ? '2px solid #F5BD1A' : '1px solid rgba(255, 255, 255, 0.12)',
-                                borderRadius: '12px',
-                                padding: '12px 8px',
-                                cursor: 'pointer',
-                                textAlign: 'center',
-                                boxShadow: paymentMethod === 'cod' ? '0 4px 15px rgba(245, 189, 26, 0.25)' : 'none'
-                              }}
-                            >
-                              <div style={{ fontSize: '1.4rem' }}>💵</div>
-                              <div style={{ fontWeight: 'bold', fontSize: '0.85rem', color: '#FFFFFF', marginTop: '4px' }}>عند الاستلام</div>
-                              <div style={{ fontSize: '0.74rem', color: '#F5BD1A' }}>دفع نقدي</div>
-                            </div>
-                          </div>
+                          {(() => {
+                            const due = computeAmountDue(
+                              selectedProduct.id === 'cart_checkout'
+                                ? cart
+                                : [{ ...selectedProduct, quantity }]
+                            );
+                            return (
+                              <div style={{ background: 'rgba(245, 189, 26, 0.12)', border: '2px solid #F5BD1A', borderRadius: '12px', padding: '12px', marginBottom: '14px', textAlign: 'center' }}>
+                                <div style={{ fontWeight: 'bold', color: '#FFFFFF' }}>المبلغ المطلوب تحويله الآن: <span style={{ color: '#F5BD1A', fontSize: '1.1rem' }}>{due.now} JOD</span></div>
+                                {due.hasDeposit && (
+                                  <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.75)', marginTop: '6px' }}>
+                                    يشمل عربون {SASH_DEPOSIT} JOD للأوشحة والطواقي، والباقي ({due.later} JOD) عند الاستلام.
+                                  </div>
+                                )}
+                                <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.75)', marginTop: '6px' }}>نبدأ تجهيز طلبك بعد التأكد من التحويل.</div>
+                              </div>
+                            );
+                          })()}
 
                           {/* CliQ Details Form */}
-                          {paymentMethod === 'cliq' && (
+                          {(
                             <div style={{ background: 'rgba(245, 189, 26, 0.08)', border: '1px solid rgba(245, 189, 26, 0.3)', borderRadius: '14px', padding: '14px', textAlign: 'center' }}>
                               <div style={{ fontWeight: 'bold', color: '#F5BD1A', fontSize: '0.9rem' }}>📱 تفاصيل التحويل عبر CliQ</div>
                               <div style={{ fontSize: '0.84rem', color: '#FFFFFF', margin: '8px 0', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
