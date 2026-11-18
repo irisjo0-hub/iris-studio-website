@@ -853,17 +853,17 @@ ${notes}`;
 
               {/* Payment Info */}
               <div className="payment-details-box">
-                <p>الرجاء تحويل قيمة العربون (10 JOD) عبر إحدى الطرق التالية:</p>
+                <p>الرجاء تحويل قيمة العربون ({DEPOSIT} JOD) عبر إحدى الطرق التالية:</p>
                 <div className="payment-methods-grid">
                   <div className="pay-method-card cliq">
                     <div className="method-title">CliQ</div>
-                    <div className="method-alias">iris0</div>
-                    <div className="method-recipient">الاسم: Hamzah Bani Domi</div>
+                    <div className="method-alias">{settings.payment_cliq_alias}</div>
+                    <div className="method-recipient">الاسم: {settings.payment_recipient_name}</div>
                   </div>
                   <div className="pay-method-card orange-money">
-                    <div className="method-title">Orange Money</div>
-                    <div className="method-alias">{settings.whatsapp_number ? `0${settings.whatsapp_number.slice(-9)}` : '0797303260'}</div>
-                    <div className="method-recipient">الاسم: Hamzah Bani Domi</div>
+                    <div className="method-title">{settings.payment_wallet_name}</div>
+                    <div className="method-alias">{settings.payment_wallet_number}</div>
+                    <div className="method-recipient">الاسم: {settings.payment_recipient_name}</div>
                   </div>
                 </div>
               </div>

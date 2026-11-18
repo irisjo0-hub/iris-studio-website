@@ -1,3 +1,4 @@
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Grid, List, ShoppingCart, Plus, Minus, Trash2, X, CheckCircle, ArrowRight, Download } from 'lucide-react';
@@ -400,6 +401,7 @@ const ProductStoreCard = ({ prod, onOrder, onAddToCart, viewMode = 'grid' }) => 
 };
 
 const PrintingProducts = () => {
+  const { settings: paySettings } = useSiteSettings();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null); // Product for ordering modal
@@ -1536,9 +1538,11 @@ const PrintingProducts = () => {
                             <div style={{ background: 'rgba(245, 189, 26, 0.08)', border: '1px solid rgba(245, 189, 26, 0.3)', borderRadius: '14px', padding: '14px', textAlign: 'center' }}>
                               <div style={{ fontWeight: 'bold', color: '#F5BD1A', fontSize: '0.9rem' }}>📱 تفاصيل التحويل عبر CliQ</div>
                               <div style={{ fontSize: '0.84rem', color: '#FFFFFF', margin: '8px 0', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                الاسم المستعار (Alias): <strong style={{ color: '#F5BD1A', fontSize: '0.98rem' }}>IRISSTUDIO</strong>
+                                CliQ (Alias): <strong style={{ color: '#F5BD1A', fontSize: '0.98rem' }}>{paySettings.payment_cliq_alias}</strong>
                                 <br />
-                                أو رقم الهاتف: <strong style={{ color: '#F5BD1A' }}>0797303260</strong>
+                                {paySettings.payment_wallet_name}: <strong style={{ color: '#F5BD1A' }}>{paySettings.payment_wallet_number}</strong>
+                                <br />
+                                المستلم: <strong>{paySettings.payment_recipient_name}</strong>
                               </div>
                               <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.7)', margin: 0 }}>يرجى التحويل بقيمة المبلغ وحفظ رقم المرجع أو الصورة لتأكيد الطلب.</p>
                             </div>

@@ -6,6 +6,10 @@ const SiteSettingsContext = createContext(null);
 
 export const PUBLIC_SETTING_KEYS = [
   'whatsapp_number',
+  'payment_cliq_alias',
+  'payment_wallet_name',
+  'payment_wallet_number',
+  'payment_recipient_name',
   'facebook_link',
   'instagram_link',
   'slogan_line_1_ar',
@@ -74,6 +78,11 @@ export const DEFAULT_HERO_MOTION_IMAGES = [
 
 export const DEFAULT_SETTINGS = {
   whatsapp_number: "962797303260",
+  // Manual payment: the customer transfers, then uploads a screenshot of the receipt.
+  payment_cliq_alias: "iris0",
+  payment_wallet_name: "Orange Money",
+  payment_wallet_number: "0797303260",
+  payment_recipient_name: "Hamzah Bani Domi",
   facebook_link: "https://facebook.com/iris.jo0",
   instagram_link: "https://instagram.com/iris.jo0",
   slogan_line_1_ar: "من زهرة نادرة",

@@ -1,3 +1,4 @@
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase, uploadFile } from '../lib/supabase';
@@ -239,6 +240,7 @@ const MultiImageUpload = ({ label, images, onChange, onFilesChange, files, valid
    MAIN COMPONENT
 ══════════════════════════════════════════════════════════════ */
 const GraduationBookOrder = () => {
+  const { settings: paySettings } = useSiteSettings();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -907,13 +909,13 @@ const GraduationBookOrder = () => {
           <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 24, flexWrap: 'wrap' }}>
             <div style={{ background: 'var(--g-bg)', padding: '12px 24px', borderRadius: 8, minWidth: 150 }}>
               <div style={{ fontWeight: 'bold', color: 'var(--g-purple)' }}>CliQ</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: '4px 0', color: 'var(--g-green)' }}>iris0</div>
-              <div style={{ fontSize: '0.8rem', color: '#666' }}>المستلم: Hamzah Bani Domi</div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: '4px 0', color: 'var(--g-green)' }}>{paySettings.payment_cliq_alias}</div>
+              <div style={{ fontSize: '0.8rem', color: '#666' }}>المستلم: {paySettings.payment_recipient_name}</div>
             </div>
             <div style={{ background: 'var(--g-bg)', padding: '12px 24px', borderRadius: 8, minWidth: 150 }}>
-              <div style={{ fontWeight: 'bold', color: '#f16e00' }}>Orange Money</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: '4px 0', color: 'var(--g-green)' }}>0797303260</div>
-              <div style={{ fontSize: '0.8rem', color: '#666' }}>المستلم: Hamzah Bani Domi</div>
+              <div style={{ fontWeight: 'bold', color: '#f16e00' }}>{paySettings.payment_wallet_name}</div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: '4px 0', color: 'var(--g-green)' }}>{paySettings.payment_wallet_number}</div>
+              <div style={{ fontSize: '0.8rem', color: '#666' }}>المستلم: {paySettings.payment_recipient_name}</div>
             </div>
           </div>
           <div style={{ textAlign: 'right', background: '#fff', padding: 20, borderRadius: 12, border: '2px dashed var(--g-purple)' }}>
