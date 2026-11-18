@@ -39,6 +39,11 @@ const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const ALLOWED_VIDEO_TYPES = new Set(['video/mp4', 'video/webm', 'video/quicktime']);
 const IMAGE_COMPRESSION_BUCKETS = new Set(['packages', 'portfolio', 'templates']);
 const VIDEO_COMPRESSION_BUCKETS = new Set(['packages', 'portfolio']);
+// Customer photos for printing: shrink phone originals to print size (JPEG, about 1 MB)
+// so a graduation book order no longer stores hundreds of megabytes.
+const PRINT_IMAGE_BUCKETS = new Set(['graduation-orders', 'printing-orders']);
+const PRINT_IMAGE_OPTIONS = { maxWidth: 3500, maxHeight: 3500, quality: 0.9, format: 'image/jpeg', keepIfUnderBytes: 1.5 * 1024 * 1024 };
+const RECEIPT_IMAGE_OPTIONS = { maxWidth: 1600, maxHeight: 1600, quality: 0.8, format: 'image/jpeg', keepIfUnderBytes: 400 * 1024 };
 
 function validateUploadFile(file) {
   if (!file || typeof file !== 'object') throw new Error('A valid file is required.');
@@ -80,6 +85,13 @@ export async function uploadFile(bucket, path, file, options = {}) {
     if (Number(file.size || 0) > 100 * 1024 * 1024) {
       throw new Error('Image exceeds the 100 MB source limit.');
     }
+  } else if ((PRINT_IMAGE_BUCKETS.has(bucket) || bucket === 'payment-receipts') && file.type?.startsWith('image/')) {
+    if (!ALLOWED_IMAGE_TYPES.has(String(file.type).toLowerCase())) {
+      throw new Error('Only JPG, PNG, and WebP images are allowed.');
+    }
+    if (Number(file.size || 0) > 60 * 1024 * 1024) {
+      throw new Error('Image exceeds the 60 MB source limit.');
+    }
   } else {
     validateUploadFile(file);
   }
@@ -97,6 +109,12 @@ export async function uploadFile(bucket, path, file, options = {}) {
       maxHeight: 1920,
       quality: 0.78
     });
+  }
+
+  if (PRINT_IMAGE_BUCKETS.has(bucket) && file.type?.startsWith('image/')) {
+    uploadFileObject = await compressImageForUpload(file, PRINT_IMAGE_OPTIONS);
+  } else if (bucket === 'payment-receipts' && file.type?.startsWith('image/')) {
+    uploadFileObject = await compressImageForUpload(file, RECEIPT_IMAGE_OPTIONS);
   }
 
   validateUploadFile(uploadFileObject);
