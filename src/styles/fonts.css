@@ -11,7 +11,7 @@
 /* Arabic font: Juman */
 @font-face {
   font-family: 'Juman';
-  src: url('../assets/fonts/alfont_com_AlFont_com_juman-normal.ttf') format('truetype');
+  src: url('../assets/fonts/Juman-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: block;
@@ -19,7 +19,7 @@
 
 @font-face {
   font-family: 'Juman';
-  src: url('../assets/fonts/alfont_com_AlFont_com_juman-bold-.ttf') format('truetype');
+  src: url('../assets/fonts/Juman-Bold.woff2') format('woff2');
   font-weight: 700 900;
   font-style: normal;
   font-display: block;
@@ -28,7 +28,7 @@
 /* English / display font: DegularDisplay */
 @font-face {
   font-family: 'DegularDisplay';
-  src: url('../assets/fonts/DegularDisplay-Black.otf') format('opentype');
+  src: url('../assets/fonts/DegularDisplay-Black.woff2') format('woff2');
   font-weight: 900;
   font-style: normal;
   font-display: block;
@@ -36,7 +36,7 @@
 
 @font-face {
   font-family: 'DegularDisplay';
-  src: url('../assets/fonts/DegularDisplay-Bold.otf') format('opentype');
+  src: url('../assets/fonts/DegularDisplay-Bold.woff2') format('woff2');
   font-weight: 600 700;
   font-style: normal;
   font-display: block;
@@ -44,7 +44,7 @@
 
 @font-face {
   font-family: 'DegularDisplay';
-  src: url('../assets/fonts/DegularDisplay-Regular.otf') format('opentype');
+  src: url('../assets/fonts/DegularDisplay-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: block;

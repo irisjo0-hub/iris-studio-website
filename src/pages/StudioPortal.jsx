@@ -311,7 +311,7 @@ const StudioPortal = () => {
             <a href="https://wa.me/962797303260" target="_blank" rel="noreferrer" className="btn-portal-primary whatsapp-bg">
               💬 واتساب الاستوديو
             </a>
-            <a href="tel:0790000000" className="btn-portal-secondary">
+            <a href="tel:0797303260" className="btn-portal-secondary">
               <PhoneCall size={18} />
               <span>اتصال مباشر</span>
             </a>

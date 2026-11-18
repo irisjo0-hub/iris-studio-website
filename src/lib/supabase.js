@@ -184,6 +184,27 @@ export async function deleteFile(bucket, path) {
   if (error) throw error;
 }
 
+// Delete a file we stored ourselves, given the URL saved in the database.
+// Safe to call with external links, data URLs or empty values: those are ignored.
+// Errors are swallowed on purpose, so a failed cleanup never blocks a save.
+export async function deleteStoredUrl(url) {
+  if (!url || typeof url !== 'string') return;
+  const match = url.match(/\/storage\/v1\/object\/(?:public|sign)\/([^/]+)\/(.+?)(?:\?|$)/);
+  if (!match || !supabaseUrl || !url.startsWith(supabaseUrl)) return;
+  const [, bucket, path] = match;
+  try {
+    const { error } = await supabase.storage.from(bucket).remove([decodeURIComponent(path)]);
+    if (error) console.warn('Cleanup skipped for', url, error.message);
+  } catch (err) {
+    console.warn('Cleanup skipped for', url, err);
+  }
+}
+
+export async function deleteStoredUrls(urls) {
+  const unique = [...new Set((urls || []).filter(Boolean))];
+  for (const url of unique) await deleteStoredUrl(url);
+}
+
 export function extractPathFromUrl(url, bucket) {
   if (!url || typeof url !== 'string' || !bucket) return null;
   const publicMarker = `/storage/v1/object/public/${bucket}/`;

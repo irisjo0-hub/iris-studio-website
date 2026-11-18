@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getFlowItems, getFlowItemsAsync, saveFlowItems } from '../repositories/flowRepository';
-import { uploadFile } from '../lib/supabase';
+import { uploadFile, deleteStoredUrls } from '../lib/supabase';
 import { compressVideoIfNeeded } from '../lib/videoCompressor';
 import AdminLayout from '../components/AdminLayout';
 import { Plus, Trash2, Edit2, Check, X, ArrowUp, ArrowDown, Eye, EyeOff, Film, Sparkles, Image as ImageIcon, Link as LinkIcon, Upload } from 'lucide-react';
@@ -188,10 +188,15 @@ export const AdminFlow = () => {
       media_type: isVid ? 'video' : 'image'
     };
 
+    const previous = items.find((it) => it.id === editingId);
     const updated = items.map((it) => (it.id === editingId ? updatedData : it));
     setItems(updated);
     const ok = await saveFlowItems(updated);
     setEditingId(null);
+    if (ok && previous) {
+      const stillUsed = new Set([updatedData.image, updatedData.media_url]);
+      await deleteStoredUrls([previous.image, previous.media_url].filter((url) => url && !stillUsed.has(url)));
+    }
     if (ok) {
       alert('✅ تم حفظ التعديلات ومزامنتها على السيرفر سحابياً بنجاح!');
     } else {
@@ -201,9 +206,11 @@ export const AdminFlow = () => {
 
   const handleDeleteReel = async (id) => {
     if (!window.confirm('هل أنت تأكد من رغبتك في حذف هذا الريل؟')) return;
+    const removed = items.find((it) => it.id === id);
     const updated = items.filter((it) => it.id !== id).map((it, idx) => ({ ...it, sort_order: idx + 1 }));
     setItems(updated);
-    await saveFlowItems(updated);
+    const ok = await saveFlowItems(updated);
+    if (ok && removed) await deleteStoredUrls([removed.image, removed.media_url]);
   };
 
   const toggleEnabled = (id) => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, uploadFile } from '../lib/supabase';
+import { supabase, uploadFile, deleteStoredUrls } from '../lib/supabase';
 import { useSiteSettings, DEFAULT_HERO_MOTION_IMAGES } from '../context/SiteSettingsContext';
 import AdminLayout from '../components/AdminLayout';
 import '../styles/admin.css';
@@ -109,6 +109,8 @@ const AdminSettings = () => {
     }
   }, [settings]);
 
+  const [pendingDeletes, setPendingDeletes] = useState([]);
+
   const handleMotionItemChange = (idx, field, val) => {
     const updated = [...heroMotionImages];
     updated[idx] = { ...updated[idx], [field]: val };
@@ -123,8 +125,10 @@ const AdminSettings = () => {
       const path = `hero-motion/photo-${Date.now()}-${file.name}`;
       const newUrl = await uploadFile('packages', path, file);
       const updated = [...heroMotionImages];
+      const previousUrl = updated[idx]?.image;
       updated[idx] = { ...updated[idx], image: newUrl };
       setHeroMotionImages(updated);
+      if (previousUrl) setPendingDeletes((prev) => [...prev, previousUrl]);
     } catch (err) {
       alert('حدث خطأ أثناء رفع الصورة: ' + err.message);
     } finally {
@@ -202,8 +206,13 @@ const AdminSettings = () => {
         division_print_url: divisionPrintUrl.trim()
       };
 
+      // Files replaced in this save; removed from storage only after the database save succeeds.
+      const replaced = [...pendingDeletes];
+      const queueOld = (key) => { if (settings?.[key]) replaced.push(settings[key]); };
+
       // Upload Logo if provided
       if (logoFile) {
+        queueOld('logo_url');
         setUploadProgress('جاري رفع الشعار الجديد...');
         const path = `branding/logo-${Date.now()}-${logoFile.name}`;
         const logoUrl = await uploadFile('packages', path, logoFile);
@@ -214,6 +223,7 @@ const AdminSettings = () => {
 
       // 1. Upload Division Media Image if provided
       if (divisionMediaImageFile) {
+        queueOld('division_media_image');
         setUploadProgress('جاري رفع غلاف قسم الميديا...');
         const path = `divisions/media-${Date.now()}-${divisionMediaImageFile.name}`;
         const mediaImgUrl = await uploadFile('packages', path, divisionMediaImageFile);
@@ -224,6 +234,7 @@ const AdminSettings = () => {
 
       // 2. Upload Division Studio Image if provided
       if (divisionStudioImageFile) {
+        queueOld('division_studio_image');
         setUploadProgress('جاري رفع غلاف قسم الاستوديو...');
         const path = `divisions/studio-${Date.now()}-${divisionStudioImageFile.name}`;
         const studioImgUrl = await uploadFile('packages', path, divisionStudioImageFile);
@@ -234,6 +245,7 @@ const AdminSettings = () => {
 
       // 3. Upload Division Print Image if provided
       if (divisionPrintImageFile) {
+        queueOld('division_print_image');
         setUploadProgress('جاري رفع غلاف قسم المطبوعات...');
         const path = `divisions/print-${Date.now()}-${divisionPrintImageFile.name}`;
         const printImgUrl = await uploadFile('packages', path, divisionPrintImageFile);
@@ -244,6 +256,7 @@ const AdminSettings = () => {
 
       // Upload Desktop Video if provided
       if (desktopVideoFile) {
+        queueOld('hero_desktop_video_url');
         setUploadProgress('جاري رفع فيديو الخلفية (نسخة الديسكتوب)... قد يستغرق ذلك دقيقة.');
         const path = `branding/hero-desktop-${Date.now()}-${desktopVideoFile.name}`;
         const desktopVideoUrl = await uploadFile('packages', path, desktopVideoFile);
@@ -252,6 +265,7 @@ const AdminSettings = () => {
 
       // Upload Mobile Video if provided
       if (mobileVideoFile) {
+        queueOld('hero_mobile_video_url');
         setUploadProgress('جاري رفع فيديو الخلفية (نسخة الجوال)... قد يستغرق ذلك دقيقة.');
         const path = `branding/hero-mobile-${Date.now()}-${mobileVideoFile.name}`;
         const mobileVideoUrl = await uploadFile('packages', path, mobileVideoFile);
@@ -287,6 +301,8 @@ const AdminSettings = () => {
         if (!dbSaveSuccess) {
           alert('⚠️ تنبيه مهم: تعذر الحفظ على السيرفر لعدم وجود جدول site_settings في Supabase بعد. تم الحفظ على هذا الجهاز فقط.\n\nيرجى تشغيل كود الـ SQL في Supabase SQL Editor لمزامنة جميع التعديلات بين التلفون والكمبيوتر فوراً!');
         } else {
+          await deleteStoredUrls(replaced.filter((url) => !Object.values(updates).includes(url)));
+          setPendingDeletes([]);
           alert('تم حفظ كافة إعدادات وتخصيصات الموقع ومزامنتها على السيرفر بنجاح! 🚀');
         }
       } catch (dbErr) {
@@ -329,12 +345,10 @@ const AdminSettings = () => {
             const path = `hero-motion/photo-${Date.now()}-${i}-${file.name}`;
             finalUrl = await uploadFile('packages', path, file);
           } catch (uploadErr) {
-            console.warn('Supabase file upload fallback to DataURL:', uploadErr);
-            finalUrl = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = (e) => resolve(e.target.result);
-              reader.readAsDataURL(file);
-            });
+            // Never store images as base64 inside the database: it bloats every page load.
+            console.warn('Upload failed, image skipped:', uploadErr);
+            alert(`تعذر رفع الصورة "${file.name}": ${uploadErr.message || uploadErr}`);
+            continue;
           }
 
           newItems.push({
@@ -388,13 +402,15 @@ const AdminSettings = () => {
   const handleDeleteMotionImage = async (idToDelete) => {
     if (!window.confirm('هل أنت تأكد من رغبتك في حذف هذه الصورة من الهيرو؟')) return;
 
+    const removedItem = heroMotionImages.find(item => item.id === idToDelete);
     const updatedList = heroMotionImages.filter(item => item.id !== idToDelete);
     setHeroMotionImages(updatedList);
 
     try {
-      await supabase
+      const { error } = await supabase
         .from('site_settings')
         .upsert({ key: 'hero_motion_images', value: JSON.stringify(updatedList) }, { onConflict: 'key' });
+      if (!error && removedItem?.image) await deleteStoredUrls([removedItem.image]);
 
       if (updateSettingsLocally) {
         updateSettingsLocally({ hero_motion_images: updatedList });
